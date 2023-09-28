@@ -1,11 +1,13 @@
 ﻿using RedHerring.Core;
 using RedHerring.Exceptions;
+using RedHerring.Render;
 
 namespace RedHerring;
 
 public class Engine : AnEssence
 {
     public EngineContext Context { get; private set; }
+    public Renderer Renderer { get; private set; }
     public bool IsRunning { get; private set; }
     public bool IsExiting { get; private set; }
 
@@ -57,6 +59,12 @@ public class Engine : AnEssence
 
     public void Draw(GameTime time)
     {
+        Renderer.BeginDraw();
+        
+        // TODO: systems draw
+        
+        Renderer.Draw();
+        Renderer.EndDraw();
     }
 
     public void Update(GameTime time)
