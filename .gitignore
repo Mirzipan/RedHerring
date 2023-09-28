@@ -70,3 +70,9 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+src/RedHerring/obj
+src/RedHerring.Alexandria/obj
+src/RedHerring.Core/obj
+src/RedHerring.Entities/obj
+src/RedHerring.Extensions/obj
+src/RedHerring.Render/obj

@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Extensions", "Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Render", "RedHerring.Render\RedHerring.Render.csproj", "{7AEB47B7-1274-487A-8EB2-BF021CC8B510}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Alexandria", "RedHerring.Alexandria\RedHerring.Alexandria.csproj", "{D9702F58-0AF2-4E14-A78F-63C62F8EC86A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{7AEB47B7-1274-487A-8EB2-BF021CC8B510}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AEB47B7-1274-487A-8EB2-BF021CC8B510}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AEB47B7-1274-487A-8EB2-BF021CC8B510}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9702F58-0AF2-4E14-A78F-63C62F8EC86A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9702F58-0AF2-4E14-A78F-63C62F8EC86A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9702F58-0AF2-4E14-A78F-63C62F8EC86A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9702F58-0AF2-4E14-A78F-63C62F8EC86A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
