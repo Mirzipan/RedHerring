@@ -1,5 +1,7 @@
-﻿namespace RedHerring.Entities;
+﻿using RedHerring.Core;
 
-public class Entity
+namespace RedHerring.Entities;
+
+public sealed class Entity : AnEssence
 {
 }
