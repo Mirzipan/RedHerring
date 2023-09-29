@@ -2,7 +2,7 @@
 
 namespace RedHerring;
 
-public class Ticker
+public class Cronos
 {
     private Stopwatch _stopwatch;
 
@@ -18,11 +18,11 @@ public class Ticker
     public long ElapsedTime => _elapsedTime;
     public long TotalTime => _totalTime;
 
-    public Ticker() : this(0)
+    public Cronos() : this(0)
     {
     }
 
-    public Ticker(long startTime)
+    public Cronos(long startTime)
     {
         _stopwatch = new Stopwatch();
         Reset();

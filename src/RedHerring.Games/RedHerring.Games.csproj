@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RedHerring.Alexandria\RedHerring.Alexandria.csproj" />
-      <ProjectReference Include="..\RedHerring.Extensions\RedHerring.Extensions.csproj" />
+      <ProjectReference Include="..\RedHerring.Core\RedHerring.Core.csproj" />
+      <ProjectReference Include="..\RedHerring\RedHerring.csproj" />
     </ItemGroup>
 
 
