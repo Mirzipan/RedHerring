@@ -5,11 +5,11 @@ namespace RedHerring.Core;
 
 public abstract class AnEssence : IEssence, IDisposerContainer, IDisposable
 {
-    private string _name;
+    private string? _name;
     private bool _isDisposed;
     private CompositeDisposable _disposer;
 
-    public virtual string Name
+    public virtual string? Name
     {
         get => _name;
         set => _name = value;

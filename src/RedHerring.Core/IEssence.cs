@@ -2,5 +2,5 @@
 
 public interface IEssence
 {
-    string Name { get; }
+    string? Name { get; }
 }

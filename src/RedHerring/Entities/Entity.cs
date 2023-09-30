@@ -1,16 +1,67 @@
-﻿using RedHerring.Core;
+﻿using System.Numerics;
+using RedHerring.Core;
+using RedHerring.Entities.Components;
 using RedHerring.Worlds;
 
 namespace RedHerring.Entities;
 
 public sealed class Entity : AnEssence
 {
+    internal TransformComponent _transform;
+    internal World? _world;
+    
     public EntityComponentCollection Components { get; }
+    public TransformComponent Transform { get; }
     public World? World { get; internal set; }
     public bool InWorld => World is not null;
 
-    public Entity(string? name = null) : base(name)
+    #region Lifecycle
+
+    public Entity() : this(null)
+    {
+    }
+
+    public Entity(string? name) : this(name, Vector3.Zero)
+    {
+    }
+
+    public Entity(string? name = null, Vector3 position = default, Quaternion? rotation = null) : this(name, true)
+    {
+        var matrix = Matrix4x4.CreateWorld(position, Vector3Direction.Forward, Vector3Direction.Up);
+        if (rotation is not null)
+        {
+            matrix = Matrix4x4.Transform(matrix, rotation.Value);
+        }
+        
+        _transform.LocalMatrix = matrix;
+    }
+
+    // `placeholder` only exists to not cause conflicts.
+
+    private Entity(string? name, bool placeholder) : base(name)
     {
         Components = new EntityComponentCollection(this);
+        _transform = new TransformComponent();
+        _transform.LocalMatrix = Matrix4x4.Identity;
+        Components.Add(_transform);
     }
+
+    #endregion Lifecycle
+
+    #region Manipulation
+
+    public void SetWorld(World? world)
+    {
+        if (World is not null)
+        {
+            World.Entities.Remove(this);
+        }
+
+        if (world is not null)
+        {
+            world.Entities.Add(this);
+        }
+    }
+
+    #endregion Manipulation
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Numerics;
 using RedHerring.Core;
 using RedHerring.Entities;
 
@@ -9,16 +10,24 @@ public sealed class World : AnEssence
     private World? _parent;
     private ObservableCollection<World> _children;
     private ObservableCollection<Entity> _entities;
-
+    private Matrix4x4 _worldMatrix;
+    
     public World? Parent => _parent;
     public ObservableCollection<World> Children => _children;
     public ObservableCollection<Entity> Entities => _entities;
+    public Matrix4x4 WorldMatrix => _worldMatrix;
+
+    #region Lifecycle
 
     public World(string? name = null) : base(name)
     {
         _children = new WorldCollection(this);
         _entities = new EntityCollection(this);
     }
+
+    #endregion Lifecycle
+
+    #region Manipulation
 
     public bool SetParent(World? parent)
     {
@@ -41,4 +50,16 @@ public sealed class World : AnEssence
 
         return true;
     }
+
+    public void SetWorldMatrix(Matrix4x4 matrix, bool applyRecursively)
+    {
+        _worldMatrix = matrix;
+        
+        if (applyRecursively && _parent is not null)
+        {
+            _parent.SetWorldMatrix(matrix, applyRecursively);
+        }
+    }
+
+    #endregion Manipulation
 }
