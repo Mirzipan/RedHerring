@@ -6,7 +6,7 @@ namespace RedHerring.Worlds;
 
 public class EntityCollection : ObservableCollection<Entity>
 {
-    private World _world;
+    private readonly World _world;
     
     public EntityCollection(World world)
     {

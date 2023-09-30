@@ -1,7 +1,8 @@
 ﻿using System.Collections;
+using RedHerring.Core.Components;
 
 namespace RedHerring.Games;
 
-public interface IGameComponentCollection : IEnumerable<GameComponent>, IEnumerable
+public interface IGameComponentCollection : IComponentContainer, IEnumerable<GameComponent>, IEnumerable
 {
 }

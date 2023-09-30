@@ -3,7 +3,7 @@ using RedHerring.Core.Components;
 
 namespace RedHerring.Games;
 
-public sealed class GameComponentCollection : IComponentContainer, IGameComponentCollection, IDisposable
+public sealed class GameComponentCollection : IGameComponentCollection, IDisposable
 {
     private readonly Dictionary<Type, GameComponent> _componentIndex = new();
     private readonly List<GameComponent> _components = new();

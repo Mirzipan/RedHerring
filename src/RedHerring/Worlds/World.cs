@@ -27,6 +27,38 @@ public sealed class World : AnEssence
 
     #endregion Lifecycle
 
+    #region Queries
+
+    public bool IsEmpty(bool checkChildren)
+    {
+        if (_entities.Count > 0)
+        {
+            return true;
+        }
+
+        if (!checkChildren)
+        {
+            return false;
+        }
+
+        if (_children.Count == 0)
+        {
+            return true;
+        }
+
+        foreach (var child in _children)
+        {
+            if (!child.IsEmpty(checkChildren))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    #endregion Queries
+
     #region Manipulation
 
     public bool SetParent(World? parent)

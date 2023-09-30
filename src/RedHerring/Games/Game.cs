@@ -1,18 +1,19 @@
 ﻿using RedHerring.Core;
+using RedHerring.Games.Components;
 using RedHerring.Worlds;
 
 namespace RedHerring.Games;
 
 public sealed class Game : AnEssence
 {
+    private World? _world;
+    
     public GameComponentCollection Components { get; }
     public GameContext? Context { get; }
-    public World? World { get; }
-    
+    public World? World => _world ??= Components.Get<WorldComponent>()?.World;
+
     public GamePhase Phase { get; private set; }
-    
-    public bool IsRunning { get; private set; }
-    public bool IsExiting { get; private set; }
+    public bool IsPlayable => Phase == GamePhase.Initialized;
 
     #region Lifecycle
 

@@ -3,7 +3,7 @@ using RedHerring.Core.Components;
 
 namespace RedHerring.Engines;
 
-public sealed class EngineComponentCollection : IComponentContainer, IEngineComponentCollection
+public sealed class EngineComponentCollection : IEngineComponentCollection
 {
     private readonly Dictionary<Type, EngineComponent> _componentIndex = new();
     private readonly List<EngineComponent> _components = new();

@@ -1,7 +1,8 @@
 ﻿using System.Collections;
+using RedHerring.Core.Components;
 
 namespace RedHerring.Engines;
 
-public interface IEngineComponentCollection : IEnumerable<EngineComponent>, IEnumerable
+public interface IEngineComponentCollection : IComponentContainer, IEnumerable<EngineComponent>, IEnumerable
 {
 }

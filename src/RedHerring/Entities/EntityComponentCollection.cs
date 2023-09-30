@@ -3,7 +3,7 @@ using RedHerring.Core.Components;
 
 namespace RedHerring.Entities;
 
-public sealed class EntityComponentCollection : IComponentContainer, IEntityComponentCollection
+public sealed class EntityComponentCollection : IEntityComponentCollection
 {
     // We don't use a dictionary, because we allows for duplicate components.
     private readonly List<EntityComponent> _components = new();
