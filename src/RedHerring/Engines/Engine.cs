@@ -7,8 +7,8 @@ namespace RedHerring.Engines;
 
 public sealed class Engine : AnEssence
 {
-    public GameContext Context { get; private set; }
-    public Game Game { get; private set; }
+    public EngineContext Context { get; private set; }
+    public Game? Game { get; private set; }
     public Renderer Renderer { get; private set; }
     public bool IsRunning { get; private set; }
     public bool IsExiting { get; private set; }
@@ -29,21 +29,13 @@ public sealed class Engine : AnEssence
         _cronos = new Cronos();
     }
 
-    // public void Run(AGame game)
-    // {
-    //     if (IsRunning)
-    //     {
-    //         throw new EngineAlreadyRunningException();
-    //     }
-    //
-    //     Game = game;
-    //     _cronos.Reset();
-    //     _frameCount = 0;
-    //     
-    //     IsRunning = true;
-    // }
+    public void Run(Game game)
+    {
+        Game = game;
+        Game.Initialize();
+    }
 
-    public void Run(GameContext context)
+    public void Run(EngineContext context)
     {
         if (IsRunning)
         {
@@ -77,7 +69,7 @@ public sealed class Engine : AnEssence
     {
         Renderer.BeginDraw();
         
-        // TODO: systems draw
+        Game?.Draw(time);
         
         Renderer.Draw();
         Renderer.EndDraw();
@@ -85,11 +77,13 @@ public sealed class Engine : AnEssence
 
     public void Update(GameTime time)
     {
+        Game?.Update(time);
     }
 
     public void Exit()
     {
         IsExiting = true;
+        Game?.Close();
     }
 
     #endregion Lifecycle

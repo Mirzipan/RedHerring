@@ -1,9 +1,9 @@
-﻿namespace RedHerring;
+﻿namespace RedHerring.Engines;
 
 /// <summary>
 /// Context used for running the engine.
 /// </summary>
-public abstract class GameContext
+public abstract class EngineContext
 {
     
 }
