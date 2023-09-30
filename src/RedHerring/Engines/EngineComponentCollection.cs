@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using RedHerring.Core.Components;
 
-namespace RedHerring.Components;
+namespace RedHerring.Engines;
 
 public sealed class EngineComponentCollection : IComponentContainer, IEngineComponentCollection
 {
@@ -19,16 +19,16 @@ public sealed class EngineComponentCollection : IComponentContainer, IEngineComp
         return _componentIndex.TryGetValue(type, out var value) ? value : null;
     }
 
-    public T? Get<T>() where T : EngineComponent
+    public TEngineComponent? Get<TEngineComponent>() where TEngineComponent : EngineComponent
     {
-        return _componentIndex.TryGetValue(typeof(T), out var value) ? (T)value : null;
+        return _componentIndex.TryGetValue(typeof(TEngineComponent), out var value) ? (TEngineComponent)value : null;
     }
 
-    public bool TryGet<T>(out T? component) where T : EngineComponent
+    public bool TryGet<TEngineComponent>(out TEngineComponent? component) where TEngineComponent : EngineComponent
     {
-        if (_componentIndex.TryGetValue(typeof(T), out var value))
+        if (_componentIndex.TryGetValue(typeof(TEngineComponent), out var value))
         {
-            component = (T)value;
+            component = (TEngineComponent)value;
             return true;
         }
 

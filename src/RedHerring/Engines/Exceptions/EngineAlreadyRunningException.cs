@@ -1,4 +1,4 @@
-﻿namespace RedHerring.Exceptions;
+﻿namespace RedHerring.Engines.Exceptions;
 
 public class EngineAlreadyRunningException : Exception
 {

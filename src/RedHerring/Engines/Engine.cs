@@ -1,13 +1,14 @@
 ﻿using RedHerring.Core;
-using RedHerring.Exceptions;
+using RedHerring.Engines.Exceptions;
+using RedHerring.Games;
 using RedHerring.Render;
 
-namespace RedHerring;
+namespace RedHerring.Engines;
 
-public class Engine : AnEssence
+public sealed class Engine : AnEssence
 {
     public GameContext Context { get; private set; }
-    // public AGame Game { get; private set; }
+    public Game Game { get; private set; }
     public Renderer Renderer { get; private set; }
     public bool IsRunning { get; private set; }
     public bool IsExiting { get; private set; }

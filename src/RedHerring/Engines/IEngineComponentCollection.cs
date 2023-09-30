@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace RedHerring.Components;
+namespace RedHerring.Engines;
 
 public interface IEngineComponentCollection : IEnumerable<EngineComponent>, IEnumerable
 {

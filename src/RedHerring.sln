@@ -1,10 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring", "RedHerring\RedHerring.csproj", "{D66F48DA-543B-4718-B84A-705D7B914774}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Core", "RedHerring.Core\RedHerring.Core.csproj", "{10ABE2C7-1352-49C2-A1DC-6D1C50C520B0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Entities", "RedHerring.Entities\RedHerring.Entities.csproj", "{80FB2474-865E-40BF-B897-B5C46DB09004}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Extensions", "RedHerring.Extensions\RedHerring.Extensions.csproj", "{54741EC6-762F-4B73-93D1-DA59590EC632}"
 EndProject
@@ -12,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Render", "RedHer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Alexandria", "RedHerring.Alexandria\RedHerring.Alexandria.csproj", "{D9702F58-0AF2-4E14-A78F-63C62F8EC86A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Games", "RedHerring.Games\RedHerring.Games.csproj", "{AB76F0F8-F9D6-4313-8541-8432B7263012}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring", "RedHerring\RedHerring.csproj", "{4CB6E889-7D46-496B-994E-A6D710D46489}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,18 +16,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D66F48DA-543B-4718-B84A-705D7B914774}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D66F48DA-543B-4718-B84A-705D7B914774}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D66F48DA-543B-4718-B84A-705D7B914774}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D66F48DA-543B-4718-B84A-705D7B914774}.Release|Any CPU.Build.0 = Release|Any CPU
 		{10ABE2C7-1352-49C2-A1DC-6D1C50C520B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{10ABE2C7-1352-49C2-A1DC-6D1C50C520B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10ABE2C7-1352-49C2-A1DC-6D1C50C520B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10ABE2C7-1352-49C2-A1DC-6D1C50C520B0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{80FB2474-865E-40BF-B897-B5C46DB09004}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{80FB2474-865E-40BF-B897-B5C46DB09004}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{80FB2474-865E-40BF-B897-B5C46DB09004}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{80FB2474-865E-40BF-B897-B5C46DB09004}.Release|Any CPU.Build.0 = Release|Any CPU
 		{54741EC6-762F-4B73-93D1-DA59590EC632}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{54741EC6-762F-4B73-93D1-DA59590EC632}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54741EC6-762F-4B73-93D1-DA59590EC632}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -44,9 +32,9 @@ Global
 		{D9702F58-0AF2-4E14-A78F-63C62F8EC86A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9702F58-0AF2-4E14-A78F-63C62F8EC86A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9702F58-0AF2-4E14-A78F-63C62F8EC86A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AB76F0F8-F9D6-4313-8541-8432B7263012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB76F0F8-F9D6-4313-8541-8432B7263012}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB76F0F8-F9D6-4313-8541-8432B7263012}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB76F0F8-F9D6-4313-8541-8432B7263012}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CB6E889-7D46-496B-994E-A6D710D46489}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CB6E889-7D46-496B-994E-A6D710D46489}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CB6E889-7D46-496B-994E-A6D710D46489}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CB6E889-7D46-496B-994E-A6D710D46489}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

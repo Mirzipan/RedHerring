@@ -1,9 +1,9 @@
 ﻿namespace RedHerring;
 
-public interface IDrawable
+public interface IDraw
 {
     bool IsVisible { get; }
-    int Order { get; }
+    int DrawOrder { get; }
 
     bool BeginDraw();
     void Draw(GameTime gameTime);

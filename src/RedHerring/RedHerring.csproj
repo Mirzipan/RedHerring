@@ -10,7 +10,4 @@
       <ProjectReference Include="..\RedHerring.Core\RedHerring.Core.csproj" />
       <ProjectReference Include="..\RedHerring.Render\RedHerring.Render.csproj" />
     </ItemGroup>
-
-
-
 </Project>

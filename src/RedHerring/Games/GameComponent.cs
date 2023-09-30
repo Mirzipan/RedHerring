@@ -1,6 +1,6 @@
 ﻿using RedHerring.Core.Components;
 
-namespace RedHerring.Games.Components;
+namespace RedHerring.Games;
 
 public class GameComponent : AComponent<GameComponentCollection>
 {
