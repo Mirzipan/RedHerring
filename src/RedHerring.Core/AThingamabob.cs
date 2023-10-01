@@ -41,16 +41,16 @@ public abstract class AThingamabob : INameable, IDisposerContainer, IDisposable
         _isDisposed = true;
     }
 
-    protected void Destroy()
+    protected void RaiseDestroy()
     {
-        OnDestroy();
+        Destroy();
         
         _disposer.Dispose();
     }
 
     #endregion Lifecycle
 
-    protected virtual void OnDestroy()
+    protected virtual void Destroy()
     {
     }
 }

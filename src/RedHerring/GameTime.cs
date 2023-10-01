@@ -9,6 +9,10 @@ public class GameTime
     public long Elapsed { get; private set; }
     public int FrameCount { get; private set; }
 
+    public GameTime() : this(0, 0)
+    {
+    }
+
     public GameTime(long total, long elapsed)
     {
         Total = total;

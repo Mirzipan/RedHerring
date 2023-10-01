@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Numerics;
 using RedHerring.Core;
+using RedHerring.Core.Maths;
 using RedHerring.Entities.Components;
 using RedHerring.Worlds;
 

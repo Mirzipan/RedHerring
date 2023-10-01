@@ -2,6 +2,7 @@
 using RedHerring.Engines.Exceptions;
 using RedHerring.Games;
 using RedHerring.Render;
+using Silk.NET.Maths;
 
 namespace RedHerring.Engines;
 
@@ -26,11 +27,19 @@ public sealed class Engine : AThingamabob
         IsRunning = false;
         IsExiting = false;
 
+        UpdateTime = new GameTime();
+        DrawTime = new GameTime();
+
         _cronos = new Cronos();
     }
 
     public void Run(Game game)
     {
+        if (!IsRunning)
+        {
+            throw new EngineNotRunningException();
+        }
+        
         Game = game;
         Game.Initialize();
     }
@@ -45,6 +54,8 @@ public sealed class Engine : AThingamabob
         Context = context;
         _cronos.Reset();
         _frameCount = 0;
+
+        InitFromContext();
         
         IsRunning = true;
     }
@@ -59,25 +70,8 @@ public sealed class Engine : AThingamabob
         _cronos.Tick();
         
         ++_frameCount;
-        
-        // TODO: make draw independent
-        DrawTime.Update(_cronos.TotalTime, _cronos.ElapsedTime, _frameCount);
-        UpdateTime.Update(_cronos.TotalTime, _cronos.ElapsedTime, _frameCount);
-    }
 
-    public void Draw(GameTime time)
-    {
-        Renderer.BeginDraw();
-        
-        Game?.Draw(time);
-        
-        Renderer.Draw();
-        Renderer.EndDraw();
-    }
-
-    public void Update(GameTime time)
-    {
-        Game?.Update(time);
+        TickInternal();
     }
 
     public void Exit()
@@ -87,4 +81,51 @@ public sealed class Engine : AThingamabob
     }
 
     #endregion Lifecycle
+
+    #region Public
+
+    public void Resize(Vector2D<int> size)
+    {
+        Renderer.Resize(size);
+    }
+
+    #endregion Public
+
+    #region Private
+
+    private void InitFromContext()
+    {
+        Renderer = new Renderer(Context.View, Context.GraphicsBackend);
+    }
+
+    private void TickInternal()
+    {
+        bool isDrawing = Renderer.BeginDraw();
+
+        // TODO: make draw and update independent
+        UpdateTime.Update(_cronos.TotalTime, _cronos.ElapsedTime, _frameCount);
+        Update(UpdateTime);        
+        
+        DrawTime.Update(_cronos.TotalTime, _cronos.ElapsedTime, _frameCount);
+        Draw(DrawTime);
+
+        if (isDrawing)
+        {
+            Renderer.EndDraw();
+        }
+    }
+
+    private void Draw(GameTime time)
+    {
+        Game?.Draw(time);
+        
+        Renderer.Draw();
+    }
+
+    private void Update(GameTime time)
+    {
+        Game?.Update(time);
+    }
+
+    #endregion Private
 }

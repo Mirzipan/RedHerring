@@ -37,37 +37,37 @@ public abstract class AnEntityComponent : AComponent<EntityComponentCollection>,
 
     internal void RaiseAddedToContainer()
     {
-        OnAddedToContainer();
+        AddedToContainer();
     }
 
     internal void RaiseRemoveFromContainer()
     {
-        OnRemoveFromContainer();
+        RemoveFromContainer();
     }
 
     internal void RaiseAddedToWorld()
     {
-        OnAddedToWorld();
+        AddedToWorld();
     }
 
     internal void RaiseRemoveFromWorld()
     {
-        OnRemoveFromWorld();
+        RemoveFromWorld();
     }
 
-    protected virtual void OnAddedToContainer()
+    protected virtual void AddedToContainer()
     {
     }
 
-    protected virtual void OnRemoveFromContainer()
+    protected virtual void RemoveFromContainer()
     {
     }
 
-    protected virtual void OnAddedToWorld()
+    protected virtual void AddedToWorld()
     {
     }
 
-    protected virtual void OnRemoveFromWorld()
+    protected virtual void RemoveFromWorld()
     {
     }
 }
