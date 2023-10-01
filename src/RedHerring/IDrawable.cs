@@ -1,6 +1,6 @@
 ﻿namespace RedHerring;
 
-public interface IDraw
+public interface IDrawable
 {
     bool IsVisible { get; }
     int DrawOrder { get; }

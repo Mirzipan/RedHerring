@@ -1,6 +1,6 @@
 ﻿namespace RedHerring;
 
-public interface IUpdate
+public interface IUpdatable
 {
     bool IsEnabled { get; }
     int UpdateOrder { get; }

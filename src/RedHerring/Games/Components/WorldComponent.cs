@@ -2,7 +2,7 @@
 
 namespace RedHerring.Games.Components;
 
-public sealed class WorldComponent : AGameComponent, IDraw
+public sealed class WorldComponent : AGameComponent, IDrawable
 {
     // TODO: any special tracking if necessary, if not, consider removing this component
     private World _world;

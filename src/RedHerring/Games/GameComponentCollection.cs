@@ -9,11 +9,11 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
     
     private readonly Dictionary<Type, AGameComponent> _componentIndex = new();
     private readonly List<AGameComponent> _components = new();
-    private readonly List<IUpdate> _updatables = new();
-    private readonly List<IDraw> _drawables = new();
+    private readonly List<IUpdatable> _updatables = new();
+    private readonly List<IDrawable> _drawables = new();
     
-    private readonly List<IUpdate> _currentlyUpdatingComponents = new();
-    private readonly List<IDraw> _currentlyDrawingComponents = new();
+    private readonly List<IUpdatable> _currentlyUpdatingComponents = new();
+    private readonly List<IDrawable> _currentlyDrawingComponents = new();
 
     #region Lifecycle
     
@@ -80,9 +80,9 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
         _drawables.Sort(CompareDrawables);
     }
 
-    private int CompareUpdatables(IUpdate lhs, IUpdate rhs) => lhs.UpdateOrder.CompareTo(rhs.UpdateOrder);
+    private int CompareUpdatables(IUpdatable lhs, IUpdatable rhs) => lhs.UpdateOrder.CompareTo(rhs.UpdateOrder);
     
-    private int CompareDrawables(IDraw lhs, IDraw rhs) => lhs.DrawOrder.CompareTo(rhs.DrawOrder);
+    private int CompareDrawables(IDrawable lhs, IDrawable rhs) => lhs.DrawOrder.CompareTo(rhs.DrawOrder);
 
     #endregion Manipulation
 
