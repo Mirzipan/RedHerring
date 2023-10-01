@@ -1,17 +1,18 @@
-﻿using System.Numerics;
+﻿using System.Collections;
+using System.Numerics;
 using RedHerring.Core;
 using RedHerring.Entities.Components;
 using RedHerring.Worlds;
 
 namespace RedHerring.Entities;
 
-public sealed class Entity : AnEssence
+public sealed class Entity : AnEssence, IEnumerable<EntityComponent>
 {
     internal TransformComponent _transform;
     internal World? _world;
     
     public EntityComponentCollection Components { get; }
-    public TransformComponent Transform { get; }
+    public TransformComponent Transform => _transform;
     public World? World { get; internal set; }
     public bool InWorld => World is not null;
 
@@ -37,7 +38,6 @@ public sealed class Entity : AnEssence
     }
 
     // `placeholder` only exists to not cause conflicts.
-
     private Entity(string? name, bool placeholder) : base(name)
     {
         Components = new EntityComponentCollection(this);
@@ -47,6 +47,20 @@ public sealed class Entity : AnEssence
     }
 
     #endregion Lifecycle
+
+    #region Queries
+
+    public IEnumerator<EntityComponent> GetEnumerator()
+    {
+        return Components.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return Components.GetEnumerator();
+    }
+
+    #endregion Queries
 
     #region Manipulation
 

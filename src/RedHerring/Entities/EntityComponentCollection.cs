@@ -158,7 +158,7 @@ public sealed class EntityComponentCollection : IEntityComponentCollection
 
     #region IEnumerable
 
-    IEnumerator<EntityComponent> IEnumerable<EntityComponent>.GetEnumerator()
+    public IEnumerator<EntityComponent> GetEnumerator()
     {
         return _components.GetEnumerator();
     }
