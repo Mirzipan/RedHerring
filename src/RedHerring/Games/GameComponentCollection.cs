@@ -29,8 +29,13 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
         int count = _currentlyUpdatingComponents.Count;
         for (int i = 0; i < count; i++)
         {
-            var drawable = _currentlyUpdatingComponents[i];
-            drawable.Update(gameTime);
+            var component = _currentlyUpdatingComponents[i];
+            if (!component.IsEnabled)
+            {
+                continue;
+            }
+
+            component.Update(gameTime);
         }
         
         _currentlyUpdatingComponents.Clear();
@@ -43,11 +48,16 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
         int count = _currentlyDrawingComponents.Count;
         for (int i = 0; i < count; i++)
         {
-            var drawable = _currentlyDrawingComponents[i];
-            if (drawable.BeginDraw())
+            var component = _currentlyDrawingComponents[i];
+            if (!component.IsVisible)
             {
-                drawable.Draw(gameTime);
-                drawable.EndDraw();
+                continue;
+            }
+            
+            if (component.BeginDraw())
+            {
+                component.Draw(gameTime);
+                component.EndDraw();
             }
         }
         
