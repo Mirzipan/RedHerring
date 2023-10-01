@@ -20,7 +20,7 @@ public sealed class Game : AThingamabob, IEnumerable<AGameComponent>
 
     public Game(string? name = null) : base(name)
     {
-        Components = new GameComponentCollection();
+        Components = new GameComponentCollection(this);
     }
 
     public Game(AGameContext? context): this(context?.Name)
@@ -42,6 +42,7 @@ public sealed class Game : AThingamabob, IEnumerable<AGameComponent>
     {
         Phase = GamePhase.Initializing;
         
+        InitFromContext();
         // TODO: loading magic
 
         Phase = GamePhase.Initialized;
@@ -58,6 +59,15 @@ public sealed class Game : AThingamabob, IEnumerable<AGameComponent>
     }
 
     #endregion Lifecycle
+
+    #region Private
+
+    private void InitFromContext()
+    {
+        // TODO: create components based on context
+    }
+
+    #endregion Private
 
     #region IEnumerable
 

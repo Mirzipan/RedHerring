@@ -5,6 +5,8 @@ namespace RedHerring.Games;
 
 public sealed class GameComponentCollection : IGameComponentCollection, IDisposable
 {
+    public Game Game { get; }
+    
     private readonly Dictionary<Type, AGameComponent> _componentIndex = new();
     private readonly List<AGameComponent> _components = new();
     private readonly List<IUpdate> _updatables = new();
@@ -15,8 +17,9 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
 
     #region Lifecycle
     
-    public GameComponentCollection()
+    public GameComponentCollection(Game game)
     {
+        Game = game;
     }
 
     internal void Update(GameTime gameTime)
@@ -54,11 +57,7 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
     public void Dispose()
     {
         int count = _components.Count;
-        for (int i = count - 1; i >= 0; i--)
-        {
-            var disposable = _components[i] as IDisposable;
-            disposable?.Dispose();
-        }
+        _components.Clear();
     }
 
     #endregion Lifecycle

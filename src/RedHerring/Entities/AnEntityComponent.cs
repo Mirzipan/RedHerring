@@ -1,5 +1,4 @@
-﻿using RedHerring.Alexandria.Identifiers;
-using RedHerring.Core;
+﻿using RedHerring.Core;
 using RedHerring.Core.Components;
 using RedHerring.Worlds;
 
@@ -9,12 +8,10 @@ public abstract class AnEntityComponent : AComponent<EntityComponentCollection>,
 {
     private EntityComponentCollection? _container;
 
-    public override EntityComponentCollection? Container => _container;
-
-    public Guid Id { get; set; }
-    public CompositeId DefinitionId { get; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public Entity? Entity => _container?.Entity;
     public World? World => _container?.Entity.World;
+    public override EntityComponentCollection? Container => _container;
 
     internal virtual bool SetContainer(EntityComponentCollection? container)
     {

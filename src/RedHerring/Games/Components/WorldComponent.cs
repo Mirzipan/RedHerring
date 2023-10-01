@@ -1,12 +1,10 @@
-﻿using RedHerring.Alexandria.Disposables;
-using RedHerring.Worlds;
+﻿using RedHerring.Worlds;
 
 namespace RedHerring.Games.Components;
 
 public sealed class WorldComponent : AGameComponent, IDraw
 {
     // TODO: any special tracking if necessary, if not, consider removing this component
-    
     private World _world;
 
     public bool IsVisible => true;
