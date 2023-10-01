@@ -1,14 +1,18 @@
-﻿using RedHerring.Core.Components;
+﻿using RedHerring.Alexandria.Identifiers;
+using RedHerring.Core;
+using RedHerring.Core.Components;
 using RedHerring.Worlds;
 
 namespace RedHerring.Entities;
 
-public abstract class EntityComponent : AComponent<EntityComponentCollection>
+public abstract class AnEntityComponent : AComponent<EntityComponentCollection>, IEssence
 {
     private EntityComponentCollection? _container;
 
     public override EntityComponentCollection? Container => _container;
 
+    public Guid Id { get; set; }
+    public CompositeId DefinitionId { get; }
     public Entity? Entity => _container?.Entity;
     public World? World => _container?.Entity.World;
 

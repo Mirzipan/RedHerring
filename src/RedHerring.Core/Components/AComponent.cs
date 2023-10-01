@@ -1,6 +1,6 @@
 ﻿namespace RedHerring.Core.Components;
 
-public abstract class AComponent : AnEssence, IComponent
+public abstract class AComponent : IComponent
 {
     public abstract IComponentContainer Container { get; }
 

@@ -2,5 +2,5 @@
 
 public interface IComponentContainer
 {
-    AComponent? Get(Type type);
+    IComponent? Get(Type type);
 }

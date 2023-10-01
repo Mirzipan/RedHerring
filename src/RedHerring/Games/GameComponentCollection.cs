@@ -5,8 +5,8 @@ namespace RedHerring.Games;
 
 public sealed class GameComponentCollection : IGameComponentCollection, IDisposable
 {
-    private readonly Dictionary<Type, GameComponent> _componentIndex = new();
-    private readonly List<GameComponent> _components = new();
+    private readonly Dictionary<Type, AGameComponent> _componentIndex = new();
+    private readonly List<AGameComponent> _components = new();
     private readonly List<IUpdate> _updatables = new();
     private readonly List<IDraw> _drawables = new();
     
@@ -79,17 +79,17 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
 
     #region Queries
     
-    AComponent? IComponentContainer.Get(Type type)
+    IComponent? IComponentContainer.Get(Type type)
     {
         return _componentIndex.TryGetValue(type, out var value) ? value : null;
     }
 
-    public T? Get<T>() where T : GameComponent
+    public T? Get<T>() where T : AGameComponent
     {
         return _componentIndex.TryGetValue(typeof(T), out var value) ? (T)value : null;
     }
 
-    public bool TryGet<T>(out T? component) where T : GameComponent
+    public bool TryGet<T>(out T? component) where T : AGameComponent
     {
         if (_componentIndex.TryGetValue(typeof(T), out var value))
         {
@@ -101,7 +101,7 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
         return false;
     }
 
-    public bool TryGet(Type type, out GameComponent? component)
+    public bool TryGet(Type type, out AGameComponent? component)
     {
         return _componentIndex.TryGetValue(type, out component);
     }
@@ -110,7 +110,7 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
 
     #region IEnumerable
 
-    IEnumerator<GameComponent> IEnumerable<GameComponent>.GetEnumerator()
+    public IEnumerator<AGameComponent> GetEnumerator()
     {
         return _components.GetEnumerator();
     }

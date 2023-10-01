@@ -6,13 +6,15 @@ using RedHerring.Worlds;
 
 namespace RedHerring.Entities;
 
-public sealed class Entity : AnEssence, IEnumerable<EntityComponent>
+public sealed class Entity : IEssence, INameable, IEnumerable<AnEntityComponent>
 {
-    internal TransformComponent _transform;
+    internal TransformComponent? _transform;
     internal World? _world;
     
+    public string? Name { get; set; }
+    public Guid Id { get; set; }
     public EntityComponentCollection Components { get; }
-    public TransformComponent Transform => _transform;
+    public TransformComponent? Transform => _transform;
     public World? World { get; internal set; }
     public bool InWorld => World is not null;
 
@@ -34,12 +36,15 @@ public sealed class Entity : AnEssence, IEnumerable<EntityComponent>
             matrix = Matrix4x4.Transform(matrix, rotation.Value);
         }
         
-        _transform.LocalMatrix = matrix;
+        _transform!.LocalMatrix = matrix;
     }
 
     // `placeholder` only exists to not cause conflicts.
-    private Entity(string? name, bool placeholder) : base(name)
+    private Entity(string? name, bool placeholder)
     {
+        Id = Guid.NewGuid();
+        Name = name;
+        
         Components = new EntityComponentCollection(this);
         _transform = new TransformComponent();
         _transform.LocalMatrix = Matrix4x4.Identity;
@@ -50,15 +55,8 @@ public sealed class Entity : AnEssence, IEnumerable<EntityComponent>
 
     #region Queries
 
-    public IEnumerator<EntityComponent> GetEnumerator()
-    {
-        return Components.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return Components.GetEnumerator();
-    }
+    public IEnumerator<AnEntityComponent> GetEnumerator() => Components.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => Components.GetEnumerator();
 
     #endregion Queries
 

@@ -5,13 +5,15 @@ using RedHerring.Entities;
 
 namespace RedHerring.Worlds;
 
-public sealed class World : AnEssence
+public sealed class World : IEssence, INameable
 {
     private World? _parent;
     private ObservableCollection<World> _children;
     private ObservableCollection<Entity> _entities;
     private Matrix4x4 _worldMatrix;
-    
+
+    public Guid Id { get; set; }
+    public string? Name { get; }
     public World? Parent => _parent;
     public ObservableCollection<World> Children => _children;
     public ObservableCollection<Entity> Entities => _entities;
@@ -19,8 +21,11 @@ public sealed class World : AnEssence
 
     #region Lifecycle
 
-    public World(string? name = null) : base(name)
+    public World(string? name = null)
     {
+        Id = Guid.NewGuid();
+        Name = name;
+        
         _children = new WorldCollection(this);
         _entities = new EntityCollection(this);
     }

@@ -5,9 +5,9 @@ using RedHerring.Render;
 
 namespace RedHerring.Engines;
 
-public sealed class Engine : AnEssence
+public sealed class Engine : AThingamabob
 {
-    public EngineContext Context { get; private set; }
+    public AnEngineContext Context { get; private set; }
     public Game? Game { get; private set; }
     public Renderer Renderer { get; private set; }
     public bool IsRunning { get; private set; }
@@ -35,7 +35,7 @@ public sealed class Engine : AnEssence
         Game.Initialize();
     }
 
-    public void Run(EngineContext context)
+    public void Run(AnEngineContext context)
     {
         if (IsRunning)
         {

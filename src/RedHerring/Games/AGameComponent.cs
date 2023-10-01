@@ -2,7 +2,7 @@
 
 namespace RedHerring.Games;
 
-public class GameComponent : AComponent<GameComponentCollection>
+public abstract class AGameComponent : AComponent<GameComponentCollection>
 {
     public override GameComponentCollection Container { get; }
 }

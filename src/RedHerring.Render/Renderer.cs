@@ -2,7 +2,7 @@
 
 namespace RedHerring.Render;
 
-public class Renderer : AnEssence
+public class Renderer : AThingamabob
 {
     // TODO graphics context
     // TODO command list

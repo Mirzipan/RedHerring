@@ -3,7 +3,7 @@ using RedHerring.Alexandria.Disposables;
 
 namespace RedHerring.Core;
 
-public abstract class AnEssence : IEssence, IDisposerContainer, IDisposable
+public abstract class AThingamabob : INameable, IDisposerContainer, IDisposable
 {
     private string? _name;
     private bool _isDisposed;
@@ -24,7 +24,7 @@ public abstract class AnEssence : IEssence, IDisposerContainer, IDisposable
 
     #region Lifecycle
 
-    protected AnEssence(string? name = null)
+    protected AThingamabob(string? name = null)
     {
         _disposer = new CompositeDisposable();
         _name = name ?? GetType().Name;

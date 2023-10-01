@@ -2,7 +2,7 @@
 
 namespace RedHerring.Engines;
 
-public abstract class EngineComponent : AComponent<EngineComponentCollection>
+public abstract class AnEngineComponent : AComponent<EngineComponentCollection>
 {
     public override EngineComponentCollection Container { get; }
 }

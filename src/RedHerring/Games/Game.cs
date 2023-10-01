@@ -1,15 +1,16 @@
-﻿using RedHerring.Core;
+﻿using System.Collections;
+using RedHerring.Core;
 using RedHerring.Games.Components;
 using RedHerring.Worlds;
 
 namespace RedHerring.Games;
 
-public sealed class Game : AnEssence
+public sealed class Game : AThingamabob, IEnumerable<AGameComponent>
 {
     private World? _world;
     
     public GameComponentCollection Components { get; }
-    public GameContext? Context { get; }
+    public AGameContext? Context { get; }
     public World? World => _world ??= Components.Get<WorldComponent>()?.World;
 
     public GamePhase Phase { get; private set; }
@@ -22,7 +23,7 @@ public sealed class Game : AnEssence
         Components = new GameComponentCollection();
     }
 
-    public Game(GameContext? context): this(context?.Name)
+    public Game(AGameContext? context): this(context?.Name)
     {
         Context = context;
     }
@@ -57,4 +58,11 @@ public sealed class Game : AnEssence
     }
 
     #endregion Lifecycle
+
+    #region IEnumerable
+
+    public IEnumerator<AGameComponent> GetEnumerator() => Components.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => Components.GetEnumerator();
+
+    #endregion IEnumerable
 }

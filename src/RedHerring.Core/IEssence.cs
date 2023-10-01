@@ -1,6 +1,5 @@
 ﻿namespace RedHerring.Core;
 
-public interface IEssence
+public interface IEssence : IIdentifiable
 {
-    string? Name { get; }
 }

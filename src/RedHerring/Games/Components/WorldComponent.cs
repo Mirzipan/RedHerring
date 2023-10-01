@@ -3,7 +3,7 @@ using RedHerring.Worlds;
 
 namespace RedHerring.Games.Components;
 
-public sealed class WorldComponent : GameComponent, IDraw
+public sealed class WorldComponent : AGameComponent, IDraw
 {
     // TODO: any special tracking if necessary, if not, consider removing this component
     
@@ -18,7 +18,6 @@ public sealed class WorldComponent : GameComponent, IDraw
     public WorldComponent()
     {
         _world = new World();
-        _world.DisposeWith(this);
     }
 
     public bool BeginDraw()

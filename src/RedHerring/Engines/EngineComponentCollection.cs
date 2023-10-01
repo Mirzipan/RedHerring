@@ -5,8 +5,8 @@ namespace RedHerring.Engines;
 
 public sealed class EngineComponentCollection : IEngineComponentCollection
 {
-    private readonly Dictionary<Type, EngineComponent> _componentIndex = new();
-    private readonly List<EngineComponent> _components = new();
+    private readonly Dictionary<Type, AnEngineComponent> _componentIndex = new();
+    private readonly List<AnEngineComponent> _components = new();
 
     public EngineComponentCollection()
     {
@@ -14,17 +14,17 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
 
     #region Queries
 
-    AComponent? IComponentContainer.Get(Type type)
+    IComponent? IComponentContainer.Get(Type type)
     {
         return _componentIndex.TryGetValue(type, out var value) ? value : null;
     }
 
-    public TEngineComponent? Get<TEngineComponent>() where TEngineComponent : EngineComponent
+    public TEngineComponent? Get<TEngineComponent>() where TEngineComponent : AnEngineComponent
     {
         return _componentIndex.TryGetValue(typeof(TEngineComponent), out var value) ? (TEngineComponent)value : null;
     }
 
-    public bool TryGet<TEngineComponent>(out TEngineComponent? component) where TEngineComponent : EngineComponent
+    public bool TryGet<TEngineComponent>(out TEngineComponent? component) where TEngineComponent : AnEngineComponent
     {
         if (_componentIndex.TryGetValue(typeof(TEngineComponent), out var value))
         {
@@ -36,7 +36,7 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
         return false;
     }
 
-    public bool TryGet(Type type, out EngineComponent? component)
+    public bool TryGet(Type type, out AnEngineComponent? component)
     {
         return _componentIndex.TryGetValue(type, out component);
     }
@@ -45,7 +45,7 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
 
     #region IEnumerable
 
-    IEnumerator<EngineComponent> IEnumerable<EngineComponent>.GetEnumerator()
+    IEnumerator<AnEngineComponent> IEnumerable<AnEngineComponent>.GetEnumerator()
     {
         return _components.GetEnumerator();
     }
