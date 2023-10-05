@@ -12,10 +12,13 @@ public class Renderer : AThingamabob
     private ResourceFactory _resourceFactory;
     private CommandList _commandList;
 
-    private DebugRender _debug;
+    private RendererComponentCollection _components;
+    
     // TODO graphics context
     // TODO command list
     // TODO graphics device
+
+    public RendererComponentCollection Components => _components;
 
     #region Lifecycle
 
@@ -29,8 +32,11 @@ public class Renderer : AThingamabob
 
         _resourceFactory = _graphicsDevice.ResourceFactory;
         _commandList = _resourceFactory.CreateCommandList();
+
+        _components = new RendererComponentCollection();
         
-        _debug = new DebugRender(_graphicsDevice, _resourceFactory);
+        var debug = new DebugRenderComponent(_graphicsDevice, _resourceFactory);
+        _components.Add(debug);
     }
 
     protected override void Destroy()
@@ -53,7 +59,7 @@ public class Renderer : AThingamabob
 
     public void Draw()
     {
-        _debug.Draw(_commandList);
+        _components.Draw(_commandList);
         
         // TODO ensure render targets and other magic
     }

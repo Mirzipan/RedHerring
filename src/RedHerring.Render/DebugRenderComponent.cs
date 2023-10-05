@@ -3,14 +3,18 @@ using Veldrid;
 
 namespace RedHerring.Render;
 
-public class DebugRender : IDisposable
+public class DebugRenderComponent : ARendererComponent, IDisposable
 {
     private DebugQuad _quad;
     private ModelResources _modelResources;
 
     private Pipeline _pipeline;
+    
+    public override int Priority { get; set; } = 0;
+    
+    #region Lifecycle
 
-    public DebugRender(GraphicsDevice device, ResourceFactory factory)
+    public DebugRenderComponent(GraphicsDevice device, ResourceFactory factory)
     {
         _pipeline = PipelineFactory.Default(device);
         
@@ -18,7 +22,7 @@ public class DebugRender : IDisposable
         _modelResources = _quad.CreateResources();
     }
 
-    public void Draw(CommandList commandList)
+    public override void Draw(CommandList commandList)
     {
         commandList.SetVertexBuffer(0, _modelResources.VertexBuffer);
         commandList.SetIndexBuffer(_modelResources.IndexBuffer, _modelResources.IndexFormat);
@@ -31,4 +35,6 @@ public class DebugRender : IDisposable
         _pipeline.Dispose();
         _modelResources.Dispose();
     }
+
+    #endregion Lifecycle
 }
