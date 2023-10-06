@@ -1,4 +1,5 @@
 ﻿using RedHerring.Core;
+using RedHerring.Render.Components;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Extensions.Veldrid;

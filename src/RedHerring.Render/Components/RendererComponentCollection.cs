@@ -1,7 +1,7 @@
 ﻿using RedHerring.Core.Components;
 using Veldrid;
 
-namespace RedHerring.Render;
+namespace RedHerring.Render.Components;
 
 public class RendererComponentCollection : IComponentContainer
 {

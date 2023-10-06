@@ -1,7 +1,7 @@
 ﻿using RedHerring.Render.Assets;
 using Veldrid;
 
-namespace RedHerring.Render;
+namespace RedHerring.Render.Components;
 
 public class DebugRenderComponent : ARendererComponent, IDisposable
 {
