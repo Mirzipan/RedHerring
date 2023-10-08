@@ -36,6 +36,7 @@ public struct BitMask16 : IComparable<BitMask16>, IEquatable<BitMask16>
     public void Set(int index) => Bits |= (ushort)(1 << index);
     public void Unset(int index) => Bits &= (ushort)~(1 << index);
     public void Toggle(int index) => Bits ^= (ushort)(1 << index);
+    public bool Get(int index) => (Bits & (ushort)index) != 0;
 
     public override string ToString()
     {

@@ -34,6 +34,7 @@ public struct BitMask8 : IComparable<BitMask8>, IEquatable<BitMask8>
     public void Set(int index) => Bits |= (byte)(1 << index);
     public void Unset(int index) => Bits &= (byte)~(1 << index);
     public void Toggle(int index) => Bits ^= (byte)(1 << index);
+    public bool Get(int index) => (Bits & (byte)index) != 0;
 
     public override string ToString()
     {

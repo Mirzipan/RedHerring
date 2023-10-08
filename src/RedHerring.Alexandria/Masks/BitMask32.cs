@@ -36,6 +36,7 @@ public struct BitMask32 : IComparable<BitMask32>, IEquatable<BitMask32>
     public void Set(int index) => Bits |= (uint)(1 << index);
     public void Unset(int index) => Bits &= (uint)~(1 << index);
     public void Toggle(int index) => Bits ^= (uint)(1 << index);
+    public bool Get(int index) => (Bits & (uint)index) != 0;
 
     public override string ToString()
     {

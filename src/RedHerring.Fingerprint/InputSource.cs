@@ -1,8 +1,8 @@
 ﻿namespace RedHerring.Fingerprint;
 
-public enum InputType
+public enum InputSource
 {
-    Button = 0,
+    Keyboard = 0,
     MouseButton = 8,
     MouseAxis = 9,
     ControllerButton = 16,
