@@ -1,21 +1,23 @@
 ﻿using RedHerring.Alexandria;
+using RedHerring.Alexandria.Components;
+using RedHerring.Engines.Components;
 using RedHerring.Engines.Exceptions;
 using RedHerring.Motive.Games;
-using RedHerring.Render;
 using Silk.NET.Maths;
 
 namespace RedHerring.Engines;
 
-public sealed class Engine : AThingamabob
+public sealed class Engine : AThingamabob, IComponentContainer
 {
-    public AnEngineContext Context { get; private set; }
+    public EngineComponentCollection Components { get; }
+    public AnEngineContext Context { get; private set; } = null!;
+    public RenderComponent? Renderer { get; private set; } = null!;
     public Game? Game { get; private set; }
-    public Renderer Renderer { get; private set; }
     public bool IsRunning { get; private set; }
     public bool IsExiting { get; private set; }
 
-    public GameTime UpdateTime { get; private set; }
-    public GameTime DrawTime { get; private set; }
+    public GameTime UpdateTime { get; }
+    public GameTime DrawTime { get; }
     
     private Cronos _cronos;
     private int _frameCount;
@@ -24,6 +26,8 @@ public sealed class Engine : AThingamabob
 
     public Engine()
     {
+        Components = new EngineComponentCollection(this);
+        
         IsRunning = false;
         IsExiting = false;
 
@@ -50,7 +54,7 @@ public sealed class Engine : AThingamabob
         {
             throw new EngineAlreadyRunningException();
         }
-
+        
         Context = context;
         _cronos.Reset();
         _frameCount = 0;
@@ -78,6 +82,8 @@ public sealed class Engine : AThingamabob
     {
         IsExiting = true;
         Game?.Close();
+        
+        Components.Unload();
     }
 
     #endregion Lifecycle
@@ -86,8 +92,10 @@ public sealed class Engine : AThingamabob
 
     public void Resize(Vector2D<int> size)
     {
-        Renderer.Resize(size);
+        Renderer?.Resize(size);
     }
+
+    IComponent? IComponentContainer.Get(Type type) => ((IComponentContainer)Components).Get(type);
 
     #endregion Public
 
@@ -95,12 +103,15 @@ public sealed class Engine : AThingamabob
 
     private void InitFromContext()
     {
-        Renderer = new Renderer(Context.View, Context.GraphicsBackend);
+        Components.Init();
+        Components.Load();
+
+        Renderer = Components.Get<RenderComponent>();
     }
 
     private void TickInternal()
     {
-        bool isDrawing = Renderer.BeginDraw();
+        bool isDrawing = Renderer?.BeginDraw() ?? false;
 
         // TODO: make draw and update independent
         UpdateTime.Update(_cronos.TotalTime, _cronos.ElapsedTime, _frameCount);
@@ -111,7 +122,7 @@ public sealed class Engine : AThingamabob
 
         if (isDrawing)
         {
-            Renderer.EndDraw();
+            Renderer!.EndDraw();
         }
     }
 
@@ -119,7 +130,7 @@ public sealed class Engine : AThingamabob
     {
         Game?.Draw(time);
         
-        Renderer.Draw();
+        Renderer!.Draw();
     }
 
     private void Update(GameTime time)

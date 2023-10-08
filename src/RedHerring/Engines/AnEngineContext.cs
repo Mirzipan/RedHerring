@@ -1,4 +1,5 @@
-﻿using Silk.NET.Windowing;
+﻿using RedHerring.Engines.Components;
+using Silk.NET.Windowing;
 using Veldrid;
 
 namespace RedHerring.Engines;
@@ -10,4 +11,5 @@ public abstract class AnEngineContext
 {
     public IView View { get; set; } = null!;
     public GraphicsBackend GraphicsBackend { get; set; }
+    public List<ComponentReference> Components { get; set; }
 }
