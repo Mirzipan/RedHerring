@@ -1,4 +1,4 @@
-﻿using RedHerring.Games;
+﻿using RedHerring.Motive.Games;
 
 namespace RedHerring.Examples;
 

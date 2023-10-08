@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using RedHerring.Entities.Components;
+using RedHerring.Motive.Entities.Components;
 
 namespace RedHerring.Incident;
 
