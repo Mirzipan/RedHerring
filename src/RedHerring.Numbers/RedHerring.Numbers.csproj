@@ -6,11 +6,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\RedHerring.Alexandria\RedHerring.Alexandria.csproj" />
-      <ProjectReference Include="..\RedHerring.Extensions\RedHerring.Extensions.csproj" />
-    </ItemGroup>
-
-
-
 </Project>

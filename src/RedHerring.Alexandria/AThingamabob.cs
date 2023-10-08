@@ -1,7 +1,7 @@
 ﻿using System.Reactive.Disposables;
 using RedHerring.Alexandria.Disposables;
 
-namespace RedHerring.Core;
+namespace RedHerring.Alexandria;
 
 public abstract class AThingamabob : INameable, IDisposerContainer, IDisposable
 {

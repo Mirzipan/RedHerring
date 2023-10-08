@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Numerics;
-using RedHerring.Core;
+using RedHerring.Alexandria;
 using RedHerring.Entities;
 
 namespace RedHerring.Worlds;

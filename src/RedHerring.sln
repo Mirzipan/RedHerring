@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Core", "RedHerring.Core\RedHerring.Core.csproj", "{10ABE2C7-1352-49C2-A1DC-6D1C50C520B0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Extensions", "RedHerring.Extensions\RedHerring.Extensions.csproj", "{54741EC6-762F-4B73-93D1-DA59590EC632}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Render", "RedHerring.Render\RedHerring.Render.csproj", "{7AEB47B7-1274-487A-8EB2-BF021CC8B510}"
@@ -14,16 +12,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Examples", "RedH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Incident", "RedHerring.Incident\RedHerring.Incident.csproj", "{80187185-53D8-4C85-A9F4-77CD45C5EED5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Numbers", "RedHerring.Numbers\RedHerring.Numbers.csproj", "{4E3CEF12-80C5-4750-A9BD-00D0A29EC3F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{10ABE2C7-1352-49C2-A1DC-6D1C50C520B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{10ABE2C7-1352-49C2-A1DC-6D1C50C520B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{10ABE2C7-1352-49C2-A1DC-6D1C50C520B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{10ABE2C7-1352-49C2-A1DC-6D1C50C520B0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{54741EC6-762F-4B73-93D1-DA59590EC632}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{54741EC6-762F-4B73-93D1-DA59590EC632}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54741EC6-762F-4B73-93D1-DA59590EC632}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -48,5 +44,9 @@ Global
 		{80187185-53D8-4C85-A9F4-77CD45C5EED5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80187185-53D8-4C85-A9F4-77CD45C5EED5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80187185-53D8-4C85-A9F4-77CD45C5EED5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E3CEF12-80C5-4750-A9BD-00D0A29EC3F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E3CEF12-80C5-4750-A9BD-00D0A29EC3F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E3CEF12-80C5-4750-A9BD-00D0A29EC3F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E3CEF12-80C5-4750-A9BD-00D0A29EC3F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Numerics;
-using RedHerring.Core;
-using RedHerring.Core.Maths;
+using RedHerring.Alexandria;
 using RedHerring.Entities.Components;
+using RedHerring.Numbers;
 using RedHerring.Worlds;
 
 namespace RedHerring.Entities;

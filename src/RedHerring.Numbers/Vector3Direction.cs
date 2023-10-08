@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace RedHerring.Core.Maths;
+namespace RedHerring.Numbers;
 
 public static class Vector3Direction
 {

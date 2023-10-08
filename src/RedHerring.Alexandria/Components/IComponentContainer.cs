@@ -1,4 +1,4 @@
-﻿namespace RedHerring.Core.Components;
+﻿namespace RedHerring.Alexandria.Components;
 
 public interface IComponentContainer
 {

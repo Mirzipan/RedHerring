@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RedHerring.Core\RedHerring.Core.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="Silk.NET.Core" Version="2.17.1" />
       <PackageReference Include="Silk.NET.Maths" Version="2.17.1" />
       <PackageReference Include="Silk.NET.Windowing.Common" Version="2.17.1" />
@@ -21,6 +17,10 @@
 
     <ItemGroup>
       <Folder Include="Shaders\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\RedHerring.Alexandria\RedHerring.Alexandria.csproj" />
     </ItemGroup>
 
 </Project>

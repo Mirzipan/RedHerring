@@ -1,4 +1,4 @@
-﻿namespace RedHerring.Core;
+﻿namespace RedHerring.Alexandria;
 
 public interface IIdentifiable
 {

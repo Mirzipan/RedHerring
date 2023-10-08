@@ -1,5 +1,5 @@
-﻿using RedHerring.Core;
-using RedHerring.Core.Components;
+﻿using RedHerring.Alexandria;
+using RedHerring.Alexandria.Components;
 using RedHerring.Worlds;
 
 namespace RedHerring.Entities;

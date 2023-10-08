@@ -1,4 +1,4 @@
-﻿using RedHerring.Core.Components;
+﻿using RedHerring.Alexandria.Components;
 using Veldrid;
 
 namespace RedHerring.Render.Components;
