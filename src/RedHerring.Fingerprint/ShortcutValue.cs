@@ -1,14 +1,20 @@
-﻿using Silk.NET.Input;
-using Silk.NET.SDL;
+﻿using System.Runtime.InteropServices;
 
 namespace RedHerring.Fingerprint;
 
+[StructLayout(LayoutKind.Explicit)]
 public struct ShortcutValue
 {
-    public byte Value;
-
-    public Key Key => (Key)Value;
-    public MouseButton MouseButton => (MouseButton)Value;
-    public GameControllerButton ControllerButton => (GameControllerButton)Value;
-    public GameControllerAxis ControllerAxis => (GameControllerAxis)Value;
+    [FieldOffset(0)]
+    public int Value;
+    [FieldOffset(0)]
+    public Key Key;
+    [FieldOffset(0)]
+    public MouseButton MouseButton;
+    [FieldOffset(0)]
+    public MouseAxis MouseAxis;
+    [FieldOffset(0)]
+    public GamepadButton GamepadButton;
+    [FieldOffset(0)]
+    public GamepadAxis GamepadAxis;
 }

@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using RedHerring.Alexandria.Masks;
 using Silk.NET.Input;
-using SilkMouseButton = Silk.NET.Input.MouseButton;
+using SilkButton = Silk.NET.Input.MouseButton;
 
 namespace RedHerring.Fingerprint.Devices;
 
@@ -92,28 +92,42 @@ internal class MouseState : IMouseState, IInputSource, IDisposable
         };
     }
 
+    public float GetAxis(MouseAxis axis)
+    {
+        return axis switch {
+            MouseAxis.None => 0,
+            MouseAxis.Horizontal => _delta.X,
+            MouseAxis.Vertical => _delta.Y,
+            MouseAxis.Wheel => _scrollWheel.Y,
+            MouseAxis.WheelUp => _scrollWheel.Y,
+            MouseAxis.WheelDown => _scrollWheel.Y,
+            _ => 0,
+        };
+
+    }
+
     #endregion Queries
 
 
     #region Private
 
-    internal static MouseButton ConvertMouseButton(SilkMouseButton button)
+    private static MouseButton ConvertButton(SilkButton button)
     {
         return button switch
         {
-            SilkMouseButton.Unknown => MouseButton.Unknown,
-            SilkMouseButton.Left => MouseButton.Left,
-            SilkMouseButton.Right => MouseButton.Right,
-            SilkMouseButton.Middle => MouseButton.Middle,
-            SilkMouseButton.Button4 => MouseButton.Button4,
-            SilkMouseButton.Button5 => MouseButton.Button5,
-            SilkMouseButton.Button6 => MouseButton.Button6,
-            SilkMouseButton.Button7 => MouseButton.Button7,
-            SilkMouseButton.Button8 => MouseButton.Button8,
-            SilkMouseButton.Button9 => MouseButton.Button9,
-            SilkMouseButton.Button10 => MouseButton.Button10,
-            SilkMouseButton.Button11 => MouseButton.Button11,
-            SilkMouseButton.Button12 => MouseButton.Button12,
+            SilkButton.Unknown => MouseButton.Unknown,
+            SilkButton.Left => MouseButton.Left,
+            SilkButton.Right => MouseButton.Right,
+            SilkButton.Middle => MouseButton.Middle,
+            SilkButton.Button4 => MouseButton.Button4,
+            SilkButton.Button5 => MouseButton.Button5,
+            SilkButton.Button6 => MouseButton.Button6,
+            SilkButton.Button7 => MouseButton.Button7,
+            SilkButton.Button8 => MouseButton.Button8,
+            SilkButton.Button9 => MouseButton.Button9,
+            SilkButton.Button10 => MouseButton.Button10,
+            SilkButton.Button11 => MouseButton.Button11,
+            SilkButton.Button12 => MouseButton.Button12,
             _ => MouseButton.Unknown,
         };
     }
@@ -132,18 +146,18 @@ internal class MouseState : IMouseState, IInputSource, IDisposable
         DebugPrint?.Invoke($"`{mouse.Name}` moved to `{position}`.");
     }
 
-    private void OnMouseDown(IMouse mouse, SilkMouseButton silkButton)
+    private void OnMouseDown(IMouse mouse, SilkButton silkButton)
     {
-        var button = ConvertMouseButton(silkButton);
+        var button = ConvertButton(silkButton);
         _pressed[(int)button] = true;
         _down[(int)button] = true;
             
         DebugPrint?.Invoke($"`{mouse.Name}` button `{button}` pressed.");
     }
 
-    private void OnMouseUp(IMouse mouse, SilkMouseButton silkButton)
+    private void OnMouseUp(IMouse mouse, SilkButton silkButton)
     {
-        var button = ConvertMouseButton(silkButton);
+        var button = ConvertButton(silkButton);
         _pressed[(int)button] = true;
         _down[(int)button] = true;
         

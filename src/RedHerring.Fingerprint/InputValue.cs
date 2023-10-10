@@ -1,6 +1,4 @@
-﻿using Silk.NET.Input;
-
-namespace RedHerring.Fingerprint;
+﻿namespace RedHerring.Fingerprint;
 
 public struct InputValue
 {
@@ -25,7 +23,7 @@ public struct InputValue
         Code = (int)axis;
     }
 
-    public InputValue(ButtonName button)
+    public InputValue(GamepadButton button)
     {
         Source = InputSource.ControllerButton;
         Code = (int)button;
@@ -34,5 +32,5 @@ public struct InputValue
     public Key GetKey() => (Key)Code;
     public MouseButton GetMouseButton() => (MouseButton)Code;
     public MouseAxis GetMouseAxis() => (MouseAxis)Code;
-    public ButtonName GetControllerButton() => (ButtonName)Code;
+    public GamepadButton GetGamepadButton() => (GamepadButton)Code;
 }

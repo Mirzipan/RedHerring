@@ -43,11 +43,20 @@ public class InputComponent : AnEngineComponent, IUpdatable
     public bool IsButtonDown(MouseButton button) => _input.IsButtonDown(button);
     public bool IsButtonReleased(MouseButton button) => _input.IsButtonReleased(button);
     public bool IsAnyMouseButtonDown() => _input.IsAnyMouseButtonDown();
-    public bool IsMouseMoved(MouseAxis axis) => _input.IsMouseMoved(axis);
     public void GetButtonsDown(IList<MouseButton> buttons) => _input.GetButtonsDown(buttons);
+    public bool IsMouseMoved(MouseAxis axis) => _input.IsMouseMoved(axis);
+    public float GetAxis(MouseAxis axis) => _input.GetAxis(axis);
     public Vector2 MousePosition => _input.MousePosition;
     public Vector2 MouseDelta => _input.MouseDelta;
     public float MouseWheelDelta => _input.MouseWheelDelta;
+    
+    public bool IsButtonUp(GamepadButton button) => _input.IsButtonUp(button);
+    public bool IsButtonPressed(GamepadButton button) => _input.IsButtonPressed(button);
+    public bool IsButtonDown(GamepadButton button) => _input.IsButtonDown(button);
+    public bool IsButtonReleased(GamepadButton button) => _input.IsButtonReleased(button);
+    public bool IsAnyButtonDown() => _input.IsAnyGamepadButtonDown();
+    public void GetButtonsDown(IList<GamepadButton> buttons) => _input.GetButtonsDown(buttons);
+    public float GetAxis(GamepadAxis axis) => _input.GetAxis(axis);
 
     #endregion Queries
 }

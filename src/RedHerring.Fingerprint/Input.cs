@@ -12,15 +12,13 @@ public class Input: IInput, IDisposable
 
     private KeyboardState? _keyboardState;
     private MouseState? _mouseState;
-    private IGamepad? _activeGamepad;
-
-    private ControllerState _lastControllerState;
-    private ControllerState _currentControllerState;
+    private GamepadState? _gamepadState;
     
     private bool _isDebugging;
 
     public IKeyboardState? Keyboard => _keyboardState;
     public IMouseState? Mouse => _mouseState;
+    public IGamepadState? Gamepad => _gamepadState;
     
     #region Lifecycle
 
@@ -31,19 +29,15 @@ public class Input: IInput, IDisposable
         _inputContext = view.CreateInput();
         _inputContext.ConnectionChanged += OnConnectionChanged;
 
-        KeyboardState.DebugPrint = DebugPrint;
-        MouseState.DebugPrint = DebugPrint;
-        
-        FindKeyboard(null);
-        FindMouse(null);
-        FindGamepad(null);
+        InjectDebug();
+        FindDevices();
     }
 
     public void Tick()
     {
         _keyboardState?.Update();
         _mouseState?.Update();
-        _lastControllerState = _currentControllerState;
+        _gamepadState?.Update();
     }
 
     public void Dispose()
@@ -72,17 +66,23 @@ public class Input: IInput, IDisposable
     public bool IsButtonPressed(MouseButton button) => _mouseState?.IsButtonPressed(button) ?? false;
     public bool IsButtonDown(MouseButton button) => _mouseState?.IsButtonDown(button) ?? false;
     public bool IsButtonReleased(MouseButton button) => _mouseState?.IsButtonReleased(button) ?? false;
+    public void GetButtonsDown(IList<MouseButton> buttons) => _mouseState?.GetButtonsDown(buttons);
     public bool IsAnyMouseButtonDown() => _mouseState?.IsAnyButtonDown() ?? false;
     public bool IsMouseMoved(MouseAxis axis) => _mouseState?.IsMoved(axis) ?? false;
-    public void GetButtonsDown(IList<MouseButton> buttons) => _mouseState?.GetButtonsDown(buttons);
+    public float GetAxis(MouseAxis axis) => _mouseState?.GetAxis(axis) ?? 0;
 
     public Vector2 MousePosition => _mouseState?.Position ?? Vector2.Zero;
     public Vector2 MouseDelta => _mouseState?.Delta ?? Vector2.Zero;
     public float MouseWheelDelta => _mouseState?.ScrollWheel.Y ?? 0;
-
-    public bool IsButtonUp(ButtonName button) => !_activeGamepad?.Buttons.FirstOrDefault(e => e.Name == button).Pressed ?? true;
-    public bool IsButtonDown(ButtonName button) => _activeGamepad?.Buttons.FirstOrDefault(e => e.Name == button).Pressed ?? false;
-
+    
+    public bool IsButtonUp(GamepadButton button) => _gamepadState?.IsButtonUp(button) ?? true;
+    public bool IsButtonPressed(GamepadButton button) => _gamepadState?.IsButtonPressed(button) ?? false;
+    public bool IsButtonDown(GamepadButton button) => _gamepadState?.IsButtonDown(button) ?? false;
+    public bool IsButtonReleased(GamepadButton button) => _gamepadState?.IsButtonReleased(button) ?? false;
+    public bool IsAnyGamepadButtonDown() => _gamepadState?.IsAnyButtonDown() ?? false;
+    public void GetButtonsDown(IList<GamepadButton> buttons) => _gamepadState?.GetButtonsDown(buttons);
+    public float GetAxis(GamepadAxis axis) => _gamepadState?.GetAxis(axis) ?? 0;
+    
     public bool IsUp(InputValue input)
     {
         return input.Source switch
@@ -90,7 +90,7 @@ public class Input: IInput, IDisposable
             InputSource.Keyboard => IsKeyUp(input.GetKey()),
             InputSource.MouseButton => IsButtonUp(input.GetMouseButton()),
             InputSource.MouseAxis => IsMouseMoved(input.GetMouseAxis()),
-            InputSource.ControllerButton => IsButtonUp(input.GetControllerButton()),
+            InputSource.ControllerButton => IsButtonUp(input.GetGamepadButton()),
             InputSource.ControllerAnalogButton => true,
             InputSource.ControllerAxis => true,
             _ => true,
@@ -118,7 +118,7 @@ public class Input: IInput, IDisposable
             InputSource.Keyboard => IsKeyDown(input.GetKey()),
             InputSource.MouseButton => IsButtonDown(input.GetMouseButton()),
             InputSource.MouseAxis => IsMouseMoved(input.GetMouseAxis()),
-            InputSource.ControllerButton => IsButtonDown(input.GetControllerButton()),
+            InputSource.ControllerButton => IsButtonDown(input.GetGamepadButton()),
             InputSource.ControllerAnalogButton => false,
             InputSource.ControllerAxis => false,
             _ => true,
@@ -157,9 +157,23 @@ public class Input: IInput, IDisposable
 
     #region Private
 
+    private void InjectDebug()
+    {
+        KeyboardState.DebugPrint = DebugPrint;
+        MouseState.DebugPrint = DebugPrint;
+        GamepadState.DebugPrint = DebugPrint;
+    }
+
+    private void FindDevices()
+    {
+        FindKeyboard(null);
+        FindMouse(null);
+        FindGamepad(null);
+    }
+
     private void SetKeyboard(IKeyboard? keyboard)
     {
-        if (_keyboardState is not null && _keyboardState.Device == keyboard)
+        if (_keyboardState?.Device == keyboard && keyboard is not null)
         {
             return;
         }
@@ -175,7 +189,7 @@ public class Input: IInput, IDisposable
 
     private void SetMouse(IMouse? mouse)
     {
-        if (_mouseState is not null && _mouseState.Device == mouse)
+        if (_mouseState?.Device == mouse && mouse is not null)
         {
             return;
         }
@@ -189,31 +203,20 @@ public class Input: IInput, IDisposable
         }
     }
 
-    private void SetGamepad(IGamepad gamepad)
+    private void SetGamepad(IGamepad? gamepad)
     {
-        if (_activeGamepad == gamepad)
+        if (_gamepadState?.Device == gamepad && gamepad is not null)
         {
             return;
-        }
-        
-        if (_activeGamepad is not null)
-        {
-            _activeGamepad.ButtonDown -= OnButtonDown;
-            _activeGamepad.ButtonUp -= OnButtonUp;
-            _activeGamepad.ThumbstickMoved -= OnThumbstickMoved;
-            _activeGamepad.TriggerMoved -= OnTriggerMoved;
         }
 
-        _activeGamepad = gamepad;
-        if (_activeGamepad is null)
+        _gamepadState?.Dispose();
+        _gamepadState = null;
+
+        if (gamepad is not null)
         {
-            return;
+            _gamepadState = new GamepadState(gamepad);
         }
-        
-        _activeGamepad.ButtonDown += OnButtonDown;
-        _activeGamepad.ButtonUp += OnButtonUp;
-        _activeGamepad.ThumbstickMoved += OnThumbstickMoved;
-        _activeGamepad.TriggerMoved += OnTriggerMoved;
     }
 
     private void FindKeyboard(IKeyboard? preferredKeyboard)
@@ -287,26 +290,6 @@ public class Input: IInput, IDisposable
                 FindGamepad(isConnected ? gamepad : null);
                 return;
         }
-    }
-
-    private void OnButtonDown(IGamepad gamepad, Button button)
-    {
-        DebugPrint($"Gamepad button `{button.Name}` pressed.");
-    }
-
-    private void OnButtonUp(IGamepad gamepad, Button button)
-    {
-        DebugPrint($"Gamepad button `{button.Name}` released.");
-    }
-
-    private void OnThumbstickMoved(IGamepad gamepad, Thumbstick thumbstick)
-    {
-        DebugPrint($"Gamepad thumbstick {thumbstick.Index} moved to `<{thumbstick.X} {thumbstick.Y}>`.");
-    }
-
-    private void OnTriggerMoved(IGamepad gamepad, Trigger trigger)
-    {
-        DebugPrint($"Gamepad thumbstick {trigger.Index} moved to `{trigger.Position}`.");
     }
 
     #endregion Bindings
