@@ -1,29 +1,26 @@
 ﻿using System.Numerics;
-using RedHerring.Extensions;
+using RedHerring.Fingerprint.Devices;
 using Silk.NET.Input;
 using Silk.NET.Input.Sdl;
 using Silk.NET.Windowing;
 
 namespace RedHerring.Fingerprint;
 
-public class Input: IDisposable
+public class Input: IInput, IDisposable
 {
     private IInputContext _inputContext;
 
-    private IKeyboard? _activeKeyboard;
-    private IMouse? _activeMouse;
+    private KeyboardState? _keyboardState;
+    private MouseState? _mouseState;
     private IGamepad? _activeGamepad;
-
-    private KeyboardState _lastKeyboardState;
-    private KeyboardState _currentKeyboardState;
-
-    private MouseState _lastMouseState;
-    private MouseState _currentMouseState;
 
     private ControllerState _lastControllerState;
     private ControllerState _currentControllerState;
     
     private bool _isDebugging;
+
+    public IKeyboardState? Keyboard => _keyboardState;
+    public IMouseState? Mouse => _mouseState;
     
     #region Lifecycle
 
@@ -33,6 +30,9 @@ public class Input: IDisposable
 
         _inputContext = view.CreateInput();
         _inputContext.ConnectionChanged += OnConnectionChanged;
+
+        KeyboardState.DebugPrint = DebugPrint;
+        MouseState.DebugPrint = DebugPrint;
         
         FindKeyboard(null);
         FindMouse(null);
@@ -41,8 +41,8 @@ public class Input: IDisposable
 
     public void Tick()
     {
-        _lastKeyboardState = _currentKeyboardState;
-        _lastMouseState = _currentMouseState;
+        _keyboardState?.Update();
+        _mouseState?.Update();
         _lastControllerState = _currentControllerState;
     }
 
@@ -56,34 +56,29 @@ public class Input: IDisposable
 
     #region Queries
 
-    public bool IsKeyUp(Key key) => _currentKeyboardState.IsKeyUp(key);
+    public bool IsKeyUp(Key key) => _keyboardState?.IsKeyUp(key) ?? true;
     
-    public bool IsKeyPressed(Key key) => _lastKeyboardState.IsKeyUp(key) && _currentKeyboardState.IsKeyDown(key);
+    public bool IsKeyPressed(Key key) => _keyboardState?.IsKeyPressed(key) ?? false;
 
-    public bool IsKeyDown(Key key) => _currentKeyboardState.IsKeyDown(key);
+    public bool IsKeyDown(Key key) => _keyboardState?.IsKeyDown(key) ?? false;
 
-    public bool IsKeyReleased(Key key) => _lastKeyboardState.IsKeyDown(key) && _currentKeyboardState.IsKeyUp(key);
-
-    public bool IsButtonUp(MouseButton button) => _currentMouseState.IsButtonUp(button);
-    public bool IsButtonPressed(MouseButton button) => _lastMouseState.IsButtonUp(button) && _currentMouseState.IsButtonDown(button);
-    public bool IsButtonDown(MouseButton button) => _currentMouseState.IsButtonDown(button);
-    public bool IsButtonReleased(MouseButton button) => _lastMouseState.IsButtonDown(button) && _currentMouseState.IsButtonUp(button);
-
-    public bool IsMouseMoved(MouseAxis axis)
-    {
-        return axis switch
-        {
-            MouseAxis.None => false,
-            MouseAxis.Horizontal => !_currentMouseState.Position.X.Approximately(_lastMouseState.Position.X),
-            MouseAxis.Vertical => !_currentMouseState.Position.Y.Approximately(_lastMouseState.Position.Y),
-            MouseAxis.Wheel => _currentMouseState.ScrollWheel.Y != 0,
-            MouseAxis.WheelUp => _currentMouseState.ScrollWheel.Y > float.Epsilon,
-            MouseAxis.WheelDown => _currentMouseState.ScrollWheel.Y < -float.Epsilon,
-            _ => false,
-        };
-    }
+    public bool IsKeyReleased(Key key) => _keyboardState?.IsKeyReleased(key) ?? false;
     
-    public Vector2 MousePosition => _currentMouseState.Position;
+    public bool IsAnyKeyDown() => _keyboardState?.IsAnyKeyDown() ?? false;
+
+    public void GetKeysDown(IList<Key> keys) => _keyboardState?.GetKeysDown(keys);
+
+    public bool IsButtonUp(MouseButton button) => _mouseState?.IsButtonUp(button) ?? true;
+    public bool IsButtonPressed(MouseButton button) => _mouseState?.IsButtonPressed(button) ?? false;
+    public bool IsButtonDown(MouseButton button) => _mouseState?.IsButtonDown(button) ?? false;
+    public bool IsButtonReleased(MouseButton button) => _mouseState?.IsButtonReleased(button) ?? false;
+    public bool IsAnyMouseButtonDown() => _mouseState?.IsAnyButtonDown() ?? false;
+    public bool IsMouseMoved(MouseAxis axis) => _mouseState?.IsMoved(axis) ?? false;
+    public void GetButtonsDown(IList<MouseButton> buttons) => _mouseState?.GetButtonsDown(buttons);
+
+    public Vector2 MousePosition => _mouseState?.Position ?? Vector2.Zero;
+    public Vector2 MouseDelta => _mouseState?.Delta ?? Vector2.Zero;
+    public float MouseWheelDelta => _mouseState?.ScrollWheel.Y ?? 0;
 
     public bool IsButtonUp(ButtonName button) => !_activeGamepad?.Buttons.FirstOrDefault(e => e.Name == button).Pressed ?? true;
     public bool IsButtonDown(ButtonName button) => _activeGamepad?.Buttons.FirstOrDefault(e => e.Name == button).Pressed ?? false;
@@ -164,52 +159,34 @@ public class Input: IDisposable
 
     private void SetKeyboard(IKeyboard? keyboard)
     {
-        if (_activeKeyboard == keyboard)
+        if (_keyboardState is not null && _keyboardState.Device == keyboard)
         {
             return;
-        }
-        
-        if (_activeKeyboard is not null)
-        {
-            _activeKeyboard.KeyDown -= OnKeyDown;
-            _activeKeyboard.KeyUp -= OnKeyUp;
         }
 
-        _activeKeyboard = keyboard;
-        if (_activeKeyboard is null)
+        _keyboardState?.Dispose();
+        _keyboardState = null;
+
+        if (keyboard is not null)
         {
-            return;
+            _keyboardState = new KeyboardState(keyboard);
         }
-        
-        _activeKeyboard.KeyDown += OnKeyDown;
-        _activeKeyboard.KeyUp += OnKeyUp;
     }
 
     private void SetMouse(IMouse? mouse)
     {
-        if (_activeMouse == mouse)
+        if (_mouseState is not null && _mouseState.Device == mouse)
         {
             return;
-        }
-        
-        if (_activeMouse is not null)
-        {
-            _activeMouse.MouseMove -= OnMouseMove;
-            _activeMouse.MouseDown -= OnMouseDown;
-            _activeMouse.MouseUp -= OnMouseUp;
-            _activeMouse.Scroll -= OnMouseScroll;
         }
 
-        _activeMouse = mouse;
-        if (_activeMouse is null)
+        _mouseState?.Dispose();
+        _mouseState = null;
+
+        if (mouse is not null)
         {
-            return;
+            _mouseState = new MouseState(mouse);
         }
-        
-        _activeMouse.MouseMove += OnMouseMove;
-        _activeMouse.MouseDown += OnMouseDown;
-        _activeMouse.MouseUp += OnMouseUp;
-        _activeMouse.Scroll += OnMouseScroll;
     }
 
     private void SetGamepad(IGamepad gamepad)
@@ -243,7 +220,7 @@ public class Input: IDisposable
     {
         if (preferredKeyboard is null && _inputContext.Keyboards.Count == 0)
         {
-            _activeKeyboard = null;
+            _keyboardState = null;
         }
 
         SetKeyboard(preferredKeyboard ?? _inputContext.Keyboards[0]);
@@ -253,7 +230,7 @@ public class Input: IDisposable
     {
         if (preferredMouse is null && _inputContext.Mice.Count == 0)
         {
-            _activeKeyboard = null;
+            _keyboardState = null;
         }
 
         SetMouse(preferredMouse ?? _inputContext.Mice[0]);
@@ -263,7 +240,7 @@ public class Input: IDisposable
     {
         if (preferredGamepad is null && _inputContext.Gamepads.Count == 0)
         {
-            _activeKeyboard = null;
+            _keyboardState = null;
         }
 
         SetGamepad(preferredGamepad ?? _inputContext.Gamepads[0]);
@@ -310,42 +287,6 @@ public class Input: IDisposable
                 FindGamepad(isConnected ? gamepad : null);
                 return;
         }
-    }
-
-    private void OnKeyDown(IKeyboard keyboard, Key key, int someValue)
-    {
-        DebugPrint($"Key `{key}` pressed (value = {someValue}).");
-        _currentKeyboardState.SetKey(key, true);
-    }
-
-    private void OnKeyUp(IKeyboard keyboard, Key key, int someValue)
-    {
-        DebugPrint($"Key `{key}` released (value = {someValue}).");
-        _currentKeyboardState.SetKey(key, false);
-    }
-
-    private void OnMouseMove(IMouse mouse, Vector2 position)
-    {
-        DebugPrint($"Mouse moved to `{position}`.");
-        _currentMouseState.Position = position;
-    }
-
-    private void OnMouseDown(IMouse mouse, MouseButton button)
-    {
-        DebugPrint($"Mouse button `{button}` pressed.");
-        _currentMouseState.SetButton(button, true);
-    }
-
-    private void OnMouseUp(IMouse mouse, MouseButton button)
-    {
-        DebugPrint($"Mouse button `{button}` pressed.");
-        _currentMouseState.SetButton(button, false);
-    }
-
-    private void OnMouseScroll(IMouse mouse, ScrollWheel scrollDelta)
-    {
-        DebugPrint($"Mouse scrolled by `{scrollDelta}`.");
-        _currentMouseState.ScrollWheel = new Vector2(scrollDelta.X, scrollDelta.Y);
     }
 
     private void OnButtonDown(IGamepad gamepad, Button button)
