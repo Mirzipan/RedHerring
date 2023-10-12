@@ -3,9 +3,8 @@
 public enum InputSource
 {
     Keyboard = 0,
-    MouseButton = 8,
-    MouseAxis = 9,
-    ControllerButton = 16,
-    ControllerAnalogButton = 17,
-    ControllerAxis = 18,
+    MouseButton = 1,
+    MouseAxis = 2,
+    GamepadButton = 3,
+    GamepadAxis = 4,
 }

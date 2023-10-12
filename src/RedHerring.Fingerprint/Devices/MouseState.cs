@@ -85,6 +85,8 @@ internal class MouseState : IMouseState, IInputSource, IDisposable
             MouseAxis.None => false,
             MouseAxis.Horizontal => _delta.X != 0,
             MouseAxis.Vertical => _delta.Y != 0,
+            MouseAxis.HorizontalDelta => _delta.X != 0,
+            MouseAxis.VerticalDelta => _delta.Y != 0,
             MouseAxis.Wheel => _scrollWheel.Y != 0,
             MouseAxis.WheelUp => _scrollWheel.Y > float.Epsilon,
             MouseAxis.WheelDown => _scrollWheel.Y < -float.Epsilon,
@@ -96,8 +98,10 @@ internal class MouseState : IMouseState, IInputSource, IDisposable
     {
         return axis switch {
             MouseAxis.None => 0,
-            MouseAxis.Horizontal => _delta.X,
-            MouseAxis.Vertical => _delta.Y,
+            MouseAxis.Horizontal => _position.X,
+            MouseAxis.Vertical => _position.Y,
+            MouseAxis.HorizontalDelta => _delta.X,
+            MouseAxis.VerticalDelta => _delta.Y,
             MouseAxis.Wheel => _scrollWheel.Y,
             MouseAxis.WheelUp => _scrollWheel.Y,
             MouseAxis.WheelDown => _scrollWheel.Y,

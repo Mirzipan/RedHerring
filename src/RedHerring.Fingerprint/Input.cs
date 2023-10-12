@@ -83,62 +83,6 @@ public class Input: IInput, IDisposable
     public void GetButtonsDown(IList<GamepadButton> buttons) => _gamepadState?.GetButtonsDown(buttons);
     public float GetAxis(GamepadAxis axis) => _gamepadState?.GetAxis(axis) ?? 0;
     
-    public bool IsUp(InputValue input)
-    {
-        return input.Source switch
-        {
-            InputSource.Keyboard => IsKeyUp(input.GetKey()),
-            InputSource.MouseButton => IsButtonUp(input.GetMouseButton()),
-            InputSource.MouseAxis => IsMouseMoved(input.GetMouseAxis()),
-            InputSource.ControllerButton => IsButtonUp(input.GetGamepadButton()),
-            InputSource.ControllerAnalogButton => true,
-            InputSource.ControllerAxis => true,
-            _ => true,
-        };
-    }
-
-    public bool IsPressed(InputValue input)
-    {
-        return input.Source switch
-        {
-            InputSource.Keyboard => IsKeyPressed(input.GetKey()),
-            InputSource.MouseButton => IsButtonPressed(input.GetMouseButton()),
-            InputSource.MouseAxis => IsMouseMoved(input.GetMouseAxis()),
-            InputSource.ControllerButton => false,
-            InputSource.ControllerAnalogButton => false,
-            InputSource.ControllerAxis => false,
-            _ => true,
-        };
-    }
-
-    public bool IsDown(InputValue input)
-    {
-        return input.Source switch
-        {
-            InputSource.Keyboard => IsKeyDown(input.GetKey()),
-            InputSource.MouseButton => IsButtonDown(input.GetMouseButton()),
-            InputSource.MouseAxis => IsMouseMoved(input.GetMouseAxis()),
-            InputSource.ControllerButton => IsButtonDown(input.GetGamepadButton()),
-            InputSource.ControllerAnalogButton => false,
-            InputSource.ControllerAxis => false,
-            _ => true,
-        };
-    }
-
-    public bool IsReleased(InputValue input)
-    {
-        return input.Source switch
-        {
-            InputSource.Keyboard => IsKeyReleased(input.GetKey()),
-            InputSource.MouseButton => IsButtonReleased(input.GetMouseButton()),
-            InputSource.MouseAxis => IsMouseMoved(input.GetMouseAxis()),
-            InputSource.ControllerButton => false,
-            InputSource.ControllerAnalogButton => false,
-            InputSource.ControllerAxis => false,
-            _ => true,
-        };
-    }
-
     #endregion Queries
 
     #region Public
