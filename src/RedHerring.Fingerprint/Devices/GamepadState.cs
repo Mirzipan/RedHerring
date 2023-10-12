@@ -24,6 +24,11 @@ public class GamepadState : IGamepadState, IInputSource, IDisposable
     public string Name => _gamepad.Name;
     public IInputDevice Device => _gamepad;
 
+    public Vector2 LeftThumb => _leftThumb;
+    public Vector2 RightThumb => _rightThumb;
+    public float LeftTrigger => _leftTrigger;
+    public float RightTrigger => _rightTrigger;
+
     public int Priority { get; set; }
 
     #region Lifecycle

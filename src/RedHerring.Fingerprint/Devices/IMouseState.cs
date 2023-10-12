@@ -1,4 +1,6 @@
-﻿namespace RedHerring.Fingerprint.Devices;
+﻿using System.Numerics;
+
+namespace RedHerring.Fingerprint.Devices;
 
 public interface IMouseState : IInputState
 {
@@ -7,4 +9,7 @@ public interface IMouseState : IInputState
     bool IsButtonDown(MouseButton button);
     bool IsButtonReleased(MouseButton button);
     bool IsMoved(MouseAxis axis);
+    Vector2 Position { get; }
+    Vector2 Delta { get; }
+    Vector2 ScrollWheel { get; }
 }
