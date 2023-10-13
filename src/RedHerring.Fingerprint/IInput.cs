@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using RedHerring.Fingerprint.Devices;
+using RedHerring.Fingerprint.Shortcuts;
 
 namespace RedHerring.Fingerprint;
 
@@ -16,7 +17,8 @@ public interface IInput
     Vector2 MousePosition { get; }
     Vector2 MouseDelta { get; }
     float MouseWheelDelta { get; }
-    
+    ShortcutBindings? Bindings { get; set; }
+
     bool IsKeyUp(Key key);
     bool IsKeyPressed(Key key);
     bool IsKeyDown(Key key);

@@ -14,4 +14,6 @@ public class ShortcutBinding
 
     public string? Name { get; set; }
     public IShortcut? Shortcut { get; set; }
+
+    public float GetValue(Input input) => Shortcut?.GetValue(input) ?? 0f;
 }

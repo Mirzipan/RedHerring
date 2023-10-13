@@ -16,6 +16,11 @@ public abstract class AShortcut : IShortcut
         };
     }
 
+    public IEnumerable<ShortcutValue> InputValues()
+    {
+        yield return Value;
+    }
+
     public abstract float GetValue(Input input);
 
     public abstract bool IsUp(Input input);

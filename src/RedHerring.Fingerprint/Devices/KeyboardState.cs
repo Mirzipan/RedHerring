@@ -33,7 +33,7 @@ internal class KeyboardState : IInputSource, IKeyboardState, IDisposable
         _keyboard.KeyUp += OnKeyUp;
     }
 
-    public void Update()
+    public void Reset()
     {
         _pressed.SetAll(false);
         _released.SetAll(false);

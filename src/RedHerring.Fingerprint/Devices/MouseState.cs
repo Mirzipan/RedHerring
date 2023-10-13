@@ -42,12 +42,13 @@ internal class MouseState : IMouseState, IInputSource, IDisposable
         _mouse.Scroll += OnMouseScroll;
     }
     
-    public void Update()
+    public void Reset()
     {
         _pressed.Set(false);
         _released.Set(false);
         
         _delta = Vector2.Zero;
+        _scrollWheel = Vector2.Zero;
     }
     
     public void Dispose()

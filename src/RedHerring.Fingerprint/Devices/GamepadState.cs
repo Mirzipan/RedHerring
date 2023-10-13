@@ -43,7 +43,7 @@ public class GamepadState : IGamepadState, IInputSource, IDisposable
         _gamepad.TriggerMoved += OnTriggerMoved;
     }
 
-    public void Update()
+    public void Reset()
     {
         _pressed.Set(false);
         _released.Set(false);

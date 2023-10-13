@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using RedHerring.Fingerprint.Devices;
+using RedHerring.Fingerprint.Shortcuts;
 using Silk.NET.Input;
 using Silk.NET.Input.Sdl;
 using Silk.NET.Windowing;
@@ -19,6 +20,8 @@ public class Input: IInput, IDisposable
     public IKeyboardState? Keyboard => _keyboardState;
     public IMouseState? Mouse => _mouseState;
     public IGamepadState? Gamepad => _gamepadState;
+
+    public ShortcutBindings? Bindings { get; set; }
     
     #region Lifecycle
 
@@ -35,9 +38,7 @@ public class Input: IInput, IDisposable
 
     public void Tick()
     {
-        _keyboardState?.Update();
-        _mouseState?.Update();
-        _gamepadState?.Update();
+        ResetStates();
     }
 
     public void Dispose()
@@ -193,24 +194,21 @@ public class Input: IInput, IDisposable
         SetGamepad(preferredGamepad ?? _inputContext.Gamepads[0]);
     }
 
-    private void DebugPrint(string message)
+    private void ResetStates()
     {
-        if (_isDebugging)
-        {
-            Console.WriteLine($"[Input] {message}");
-        }
+        _keyboardState?.Reset();
+        _mouseState?.Reset();
+        _gamepadState?.Reset();
     }
 
-    private void DebugPrint(IInputDevice device, bool isConnected)
+    private void ProcessBindings()
     {
-        if (isConnected)
+        if (Bindings is null)
         {
-            DebugPrint($"'{device.Name}' connected.");
+            return;
         }
-        else
-        {
-            DebugPrint($"'{device.Name}' disconnected.");
-        }
+
+        
     }
 
     #endregion Private
@@ -237,4 +235,28 @@ public class Input: IInput, IDisposable
     }
 
     #endregion Bindings
+
+    #region Logging
+
+    private void DebugPrint(string message)
+    {
+        if (_isDebugging)
+        {
+            Console.WriteLine($"[Input] {message}");
+        }
+    }
+
+    private void DebugPrint(IInputDevice device, bool isConnected)
+    {
+        if (isConnected)
+        {
+            DebugPrint($"'{device.Name}' connected.");
+        }
+        else
+        {
+            DebugPrint($"'{device.Name}' disconnected.");
+        }
+    }
+
+    #endregion Logging
 }

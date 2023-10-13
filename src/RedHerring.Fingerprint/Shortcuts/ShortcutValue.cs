@@ -50,4 +50,9 @@ public struct ShortcutValue
         GamepadAxis = axis;
         Source = InputSource.GamepadAxis;
     }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Id, Source);
+    }
 }

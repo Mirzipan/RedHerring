@@ -44,6 +44,17 @@ public class CompositeShortcut : Collection<IShortcut>, IShortcut
         return lhs;
     }
 
+    public IEnumerable<ShortcutValue> InputValues()
+    {
+        foreach (var entry in this)
+        {
+            foreach (var value in entry.InputValues())
+            {
+                yield return value;
+            }
+        }
+    }
+
     public float GetValue(Input input)
     {
         return Evaluation switch
