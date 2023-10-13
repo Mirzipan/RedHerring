@@ -18,6 +18,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Motive", "RedHer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Fingerprint", "RedHerring.Fingerprint\RedHerring.Fingerprint.csproj", "{0923F672-E900-462A-8DA7-94CFD3C352A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Serialization", "RedHerring.Serialization\RedHerring.Serialization.csproj", "{F65A11E2-FEC6-4A21-8869-274F35E9E761}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Studio", "RedHerring.Studio\RedHerring.Studio.csproj", "{A0DBE91D-CD40-446D-8DDE-35E767BDB3BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,5 +64,13 @@ Global
 		{0923F672-E900-462A-8DA7-94CFD3C352A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0923F672-E900-462A-8DA7-94CFD3C352A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0923F672-E900-462A-8DA7-94CFD3C352A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F65A11E2-FEC6-4A21-8869-274F35E9E761}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F65A11E2-FEC6-4A21-8869-274F35E9E761}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F65A11E2-FEC6-4A21-8869-274F35E9E761}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F65A11E2-FEC6-4A21-8869-274F35E9E761}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0DBE91D-CD40-446D-8DDE-35E767BDB3BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0DBE91D-CD40-446D-8DDE-35E767BDB3BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0DBE91D-CD40-446D-8DDE-35E767BDB3BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0DBE91D-CD40-446D-8DDE-35E767BDB3BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
