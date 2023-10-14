@@ -3,7 +3,7 @@ using RedHerring.Alexandria.Masks;
 using Silk.NET.Input;
 using SilkButton = Silk.NET.Input.MouseButton;
 
-namespace RedHerring.Fingerprint.Devices;
+namespace RedHerring.Fingerprint.States;
 
 internal class MouseState : IMouseState, IInputSource, IDisposable
 {

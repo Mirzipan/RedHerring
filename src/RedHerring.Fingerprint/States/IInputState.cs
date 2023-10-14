@@ -1,4 +1,4 @@
-﻿namespace RedHerring.Fingerprint.Devices;
+﻿namespace RedHerring.Fingerprint.States;
 
 public interface IInputState
 {

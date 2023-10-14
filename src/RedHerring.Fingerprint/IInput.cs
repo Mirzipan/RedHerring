@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
-using RedHerring.Fingerprint.Devices;
+using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
+using RedHerring.Fingerprint.States;
 
 namespace RedHerring.Fingerprint;
 
@@ -13,11 +14,13 @@ public interface IInput
     IKeyboardState? Keyboard { get; }
     IMouseState? Mouse { get; }
     IGamepadState? Gamepad { get; }
+    IActionState Actions { get; }
     
     Vector2 MousePosition { get; }
     Vector2 MouseDelta { get; }
     float MouseWheelDelta { get; }
     ShortcutBindings? Bindings { get; set; }
+    InputLayers Layers { get; }
 
     bool IsKeyUp(Key key);
     bool IsKeyPressed(Key key);
@@ -42,4 +45,11 @@ public interface IInput
     bool IsAnyGamepadButtonDown();
     void GetButtonsDown(IList<GamepadButton> buttons);
     float GetAxis(GamepadAxis axis);
+
+    bool IsActionUp(string action);
+    bool IsActionPressed(string action);
+    bool IsActionDown(string action);
+    bool IsActionReleased(string action);
+    bool IsAnyActionDown();
+    void GetActionsDown(IList<string> actions);
 }

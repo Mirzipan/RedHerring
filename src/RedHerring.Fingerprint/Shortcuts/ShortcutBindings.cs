@@ -4,63 +4,62 @@ namespace RedHerring.Fingerprint.Shortcuts;
 
 public class ShortcutBindings : Collection<ShortcutBinding>
 {
-    private readonly Dictionary<string, List<ShortcutBinding>> _namesToShortcuts = new();
+    private readonly Dictionary<string, List<ShortcutBinding>> _actionsToShortcuts = new();
+    private readonly Dictionary<IShortcut, HashSet<string>> _shortcutsToActions = new();
 
-    public IReadOnlyCollection<string> Actions => _namesToShortcuts.Keys;
+    public IReadOnlyCollection<string>? ActionsForShortcut(IShortcut shortcut)
+    {
+        return _shortcutsToActions.TryGetValue(shortcut, out var actions) ? actions : null;
+    }
 
     protected override void InsertItem(int index, ShortcutBinding item)
     {
-        if (!_namesToShortcuts.TryGetValue(item.Name!, out var values))
-        {
-            values = new List<ShortcutBinding>();
-            _namesToShortcuts[item.Name!] = values;
-        }
-        
-        
-        values.Add(item);
+        Map(item);
         base.InsertItem(index, item);
     }
 
     protected override void SetItem(int index, ShortcutBinding item)
     {
-        if (!_namesToShortcuts.TryGetValue(item.Name!, out var values))
-        {
-            values = new List<ShortcutBinding>();
-            _namesToShortcuts[item.Name!] = values;
-        }
-        
-        values.Add(item);
+        Map(item);
         base.SetItem(index, item);
     }
 
     protected override void RemoveItem(int index)
     {
         var item = this[index];
-        if (_namesToShortcuts.TryGetValue(item.Name!, out var values))
-        {
-            values.Remove(item);
-        }
-        
+        Unmap(item);
+
         base.RemoveItem(index);
     }
 
-    public float GetValue(Input input, string name)
+    private void Map(ShortcutBinding item)
     {
-        float result = 0;
-        if (!_namesToShortcuts.TryGetValue(name, out var bindings))
+        if (!_actionsToShortcuts.TryGetValue(item.Name!, out var bindings))
         {
-            return result;
+            bindings = new List<ShortcutBinding>();
+            _actionsToShortcuts[item.Name!] = bindings;
         }
 
-        foreach (var entry in bindings)
+        if (!_shortcutsToActions.TryGetValue(item.Shortcut!, out var actions))
         {
-            float value = entry.GetValue(input);
-            if (Math.Abs(value) > Math.Abs(result))
-            {
-                result = value;
-            }
+            actions = new HashSet<string>();
+            _shortcutsToActions[item.Shortcut!] = actions;
+        }
+        
+        bindings.Add(item);
+        actions.Add(item.Name!);
+    }
+
+    private void Unmap(ShortcutBinding item)
+    {
+        if (_actionsToShortcuts.TryGetValue(item.Name!, out var bindings))
+        {
+            bindings.Remove(item);
         }
 
-        return result;
+        if (_shortcutsToActions.TryGetValue(item.Shortcut!, out var actions))
+        {
+            actions.Remove(item.Name!);
+        }
     }
 }

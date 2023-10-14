@@ -3,7 +3,7 @@ using RedHerring.Alexandria.Masks;
 using Silk.NET.Input;
 using SilkButton = Silk.NET.Input.ButtonName;
 
-namespace RedHerring.Fingerprint.Devices;
+namespace RedHerring.Fingerprint.States;
 
 public class GamepadState : IGamepadState, IInputSource, IDisposable
 {

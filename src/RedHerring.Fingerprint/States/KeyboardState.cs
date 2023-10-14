@@ -2,7 +2,7 @@
 using Silk.NET.Input;
 using SilkKey = Silk.NET.Input.Key;
 
-namespace RedHerring.Fingerprint.Devices;
+namespace RedHerring.Fingerprint.States;
 
 internal class KeyboardState : IInputSource, IKeyboardState, IDisposable
 {

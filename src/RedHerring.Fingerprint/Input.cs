@@ -1,13 +1,13 @@
-﻿using System.Numerics;
-using RedHerring.Fingerprint.Devices;
+﻿using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
+using RedHerring.Fingerprint.States;
 using Silk.NET.Input;
 using Silk.NET.Input.Sdl;
 using Silk.NET.Windowing;
 
 namespace RedHerring.Fingerprint;
 
-public class Input: IInput, IDisposable
+public partial class Input: IInput, IDisposable
 {
     private IInputContext _inputContext;
 
@@ -15,13 +15,19 @@ public class Input: IInput, IDisposable
     private MouseState? _mouseState;
     private GamepadState? _gamepadState;
     
+    private ActionsState _actionsState;
+
+    private InputProcessor _processor;
+    
     private bool _isDebugging;
 
     public IKeyboardState? Keyboard => _keyboardState;
     public IMouseState? Mouse => _mouseState;
     public IGamepadState? Gamepad => _gamepadState;
+    public IActionState Actions => _actionsState;
 
     public ShortcutBindings? Bindings { get; set; }
+    public InputLayers Layers { get; }
     
     #region Lifecycle
 
@@ -32,6 +38,12 @@ public class Input: IInput, IDisposable
         _inputContext = view.CreateInput();
         _inputContext.ConnectionChanged += OnConnectionChanged;
 
+        Layers = new InputLayers();
+        _actionsState = new ActionsState("actions");
+        _processor = new InputProcessor(this, _actionsState);
+
+        Bindings = new ShortcutBindings();
+        
         InjectDebug();
         FindDevices();
     }
@@ -39,52 +51,19 @@ public class Input: IInput, IDisposable
     public void Tick()
     {
         ResetStates();
+        
+        _processor.Tick();
     }
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
+        
         _inputContext.ConnectionChanged -= OnConnectionChanged;
         _inputContext.Dispose();
     }
 
     #endregion Lifecycle
-
-    #region Queries
-
-    public bool IsKeyUp(Key key) => _keyboardState?.IsKeyUp(key) ?? true;
-    
-    public bool IsKeyPressed(Key key) => _keyboardState?.IsKeyPressed(key) ?? false;
-
-    public bool IsKeyDown(Key key) => _keyboardState?.IsKeyDown(key) ?? false;
-
-    public bool IsKeyReleased(Key key) => _keyboardState?.IsKeyReleased(key) ?? false;
-    
-    public bool IsAnyKeyDown() => _keyboardState?.IsAnyKeyDown() ?? false;
-
-    public void GetKeysDown(IList<Key> keys) => _keyboardState?.GetKeysDown(keys);
-
-    public bool IsButtonUp(MouseButton button) => _mouseState?.IsButtonUp(button) ?? true;
-    public bool IsButtonPressed(MouseButton button) => _mouseState?.IsButtonPressed(button) ?? false;
-    public bool IsButtonDown(MouseButton button) => _mouseState?.IsButtonDown(button) ?? false;
-    public bool IsButtonReleased(MouseButton button) => _mouseState?.IsButtonReleased(button) ?? false;
-    public void GetButtonsDown(IList<MouseButton> buttons) => _mouseState?.GetButtonsDown(buttons);
-    public bool IsAnyMouseButtonDown() => _mouseState?.IsAnyButtonDown() ?? false;
-    public bool IsMouseMoved(MouseAxis axis) => _mouseState?.IsMoved(axis) ?? false;
-    public float GetAxis(MouseAxis axis) => _mouseState?.GetAxis(axis) ?? 0;
-
-    public Vector2 MousePosition => _mouseState?.Position ?? Vector2.Zero;
-    public Vector2 MouseDelta => _mouseState?.Delta ?? Vector2.Zero;
-    public float MouseWheelDelta => _mouseState?.ScrollWheel.Y ?? 0;
-    
-    public bool IsButtonUp(GamepadButton button) => _gamepadState?.IsButtonUp(button) ?? true;
-    public bool IsButtonPressed(GamepadButton button) => _gamepadState?.IsButtonPressed(button) ?? false;
-    public bool IsButtonDown(GamepadButton button) => _gamepadState?.IsButtonDown(button) ?? false;
-    public bool IsButtonReleased(GamepadButton button) => _gamepadState?.IsButtonReleased(button) ?? false;
-    public bool IsAnyGamepadButtonDown() => _gamepadState?.IsAnyButtonDown() ?? false;
-    public void GetButtonsDown(IList<GamepadButton> buttons) => _gamepadState?.GetButtonsDown(buttons);
-    public float GetAxis(GamepadAxis axis) => _gamepadState?.GetAxis(axis) ?? 0;
-    
-    #endregion Queries
 
     #region Public
 
@@ -196,19 +175,11 @@ public class Input: IInput, IDisposable
 
     private void ResetStates()
     {
+        _actionsState.Reset();
+        
         _keyboardState?.Reset();
         _mouseState?.Reset();
         _gamepadState?.Reset();
-    }
-
-    private void ProcessBindings()
-    {
-        if (Bindings is null)
-        {
-            return;
-        }
-
-        
     }
 
     #endregion Private

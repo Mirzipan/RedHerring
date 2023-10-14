@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace RedHerring.Fingerprint.Devices;
+namespace RedHerring.Fingerprint.States;
 
 public interface IMouseState : IInputState
 {

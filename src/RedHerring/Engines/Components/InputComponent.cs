@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using RedHerring.Alexandria;
 using RedHerring.Fingerprint;
-using RedHerring.Fingerprint.Devices;
+using RedHerring.Fingerprint.States;
 
 namespace RedHerring.Engines.Components;
 
