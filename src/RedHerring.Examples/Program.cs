@@ -30,9 +30,9 @@ internal class Program
             VSync = false,
             ShouldSwapAutomatically = false,
         };
-
+        
         _window = Window.Create(opts);
-
+        
         _window.Load += OnLoad;
         _window.Render += OnDraw;
         _window.Closing += OnClose;

@@ -14,6 +14,7 @@ public class InputComponent : AnEngineComponent, IUpdatable
     public bool IsEnabled => true;
     public int UpdateOrder => -1_000_000;
 
+    public IInput Input => _input;
     public IKeyboardState? Keyboard => _input.Keyboard;
     public IMouseState? Mouse => _input.Mouse;
 

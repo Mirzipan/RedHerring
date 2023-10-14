@@ -11,5 +11,6 @@ public abstract class AnEngineContext
 {
     public IView View { get; set; } = null!;
     public GraphicsBackend GraphicsBackend { get; set; }
-    public List<ComponentReference> Components { get; set; }
+    public List<ComponentReference> Components { get; set; } = new();
+    public bool UseSeparateRenderThread { get; set; }
 }

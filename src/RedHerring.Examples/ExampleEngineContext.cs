@@ -7,9 +7,9 @@ public class ExampleEngineContext : AnEngineContext
 {
     public ExampleEngineContext()
     {
-        Components = new List<ComponentReference>();
-        
         Components.Add(new ComponentReference(typeof(RenderComponent)));
         Components.Add(new ComponentReference(typeof(InputComponent)));
+
+        UseSeparateRenderThread = true;
     }
 }

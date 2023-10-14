@@ -1,4 +1,5 @@
-﻿using RedHerring.Alexandria;
+﻿using System.Globalization;
+using RedHerring.Alexandria;
 using RedHerring.Render.Components;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
@@ -9,6 +10,8 @@ namespace RedHerring.Render;
 
 public class Renderer : AThingamabob
 {
+    public readonly Thread Thread;
+    
     private GraphicsDevice _graphicsDevice;
     private ResourceFactory _resourceFactory;
     private CommandList _commandList;
@@ -23,8 +26,23 @@ public class Renderer : AThingamabob
 
     #region Lifecycle
 
-    public Renderer(IView view, GraphicsBackend backend, string? name = null) : base(name)
+    public Renderer(IView view, GraphicsBackend backend, bool useSeparateThread, string? name = null) : base(name)
     {
+        if (useSeparateThread)
+        {
+            Thread = new Thread(ThreadStart)
+            {
+                IsBackground = true,
+                Name = "Render",
+                CurrentCulture = CultureInfo.InvariantCulture,
+                CurrentUICulture = CultureInfo.InvariantCulture,
+            };
+        }
+        else
+        {
+            Thread = Thread.CurrentThread;
+        }
+        
         _graphicsDevice = view.CreateGraphicsDevice(new GraphicsDeviceOptions
         {
             PreferDepthRangeZeroToOne = true,
@@ -38,6 +56,11 @@ public class Renderer : AThingamabob
         
         var debug = new DebugRenderComponent(_graphicsDevice, _resourceFactory);
         _components.Add(debug);
+    }
+
+    private void ThreadStart(object? obj)
+    {
+        
     }
 
     protected override void Destroy()

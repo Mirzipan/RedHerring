@@ -9,7 +9,7 @@ public class RenderComponent : AnEngineComponent
     
     protected override void Init()
     {
-        _renderer = new Renderer(Context.View, Context.GraphicsBackend);
+        _renderer = new Renderer(Context.View, Context.GraphicsBackend, Context.UseSeparateRenderThread);
     }
 
     public bool BeginDraw() => _renderer.BeginDraw();
