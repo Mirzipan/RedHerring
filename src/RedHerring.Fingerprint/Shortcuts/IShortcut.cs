@@ -2,7 +2,7 @@
 
 public interface IShortcut
 {
-    IEnumerable<ShortcutValue> InputValues();
+    void GetInputCodes(IList<InputCode> result);
     float GetValue(Input input);
     bool IsUp(Input input);
     bool IsPressed(Input input);

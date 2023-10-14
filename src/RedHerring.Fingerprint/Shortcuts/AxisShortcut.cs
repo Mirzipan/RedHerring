@@ -15,23 +15,10 @@ public class AxisShortcut : IShortcut
     public IShortcut? NegativeShortcut { get; set; }
     public IShortcut? PositiveShortcut { get; set; }
 
-    public IEnumerable<ShortcutValue> InputValues()
+    public void GetInputCodes(IList<InputCode> result)
     {
-        if (NegativeShortcut is not null)
-        {
-            foreach (var value in NegativeShortcut.InputValues())
-            {
-                yield return value;
-            }
-        }
-
-        if (PositiveShortcut is not null)
-        {
-            foreach (var value in PositiveShortcut.InputValues())
-            {
-                yield return value;
-            }
-        }
+        NegativeShortcut?.GetInputCodes(result);
+        PositiveShortcut?.GetInputCodes(result);
     }
 
     public float GetValue(Input input)

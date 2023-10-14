@@ -2,23 +2,23 @@
 
 public abstract class AShortcut : IShortcut
 {
-    protected readonly ShortcutValue Value;
+    protected readonly InputCode Code;
 
-    public InputSource Source => Value.Source;
-    public int Id => Value.Id;
+    public InputSource Source => Code.Source;
+    public int Id => Code.Id;
 
     protected AShortcut(InputSource source, int id)
     {
-        Value = new ShortcutValue
+        Code = new InputCode
         {
             Source = source,
             Id = id,
         };
     }
 
-    public IEnumerable<ShortcutValue> InputValues()
+    public void GetInputCodes(IList<InputCode> result)
     {
-        yield return Value;
+        result.Add(Code);
     }
 
     public abstract float GetValue(Input input);

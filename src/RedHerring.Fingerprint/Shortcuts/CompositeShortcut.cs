@@ -44,14 +44,11 @@ public class CompositeShortcut : Collection<IShortcut>, IShortcut
         return lhs;
     }
 
-    public IEnumerable<ShortcutValue> InputValues()
+    public void GetInputCodes(IList<InputCode> result)
     {
         foreach (var entry in this)
         {
-            foreach (var value in entry.InputValues())
-            {
-                yield return value;
-            }
+            entry.GetInputCodes(result);
         }
     }
 

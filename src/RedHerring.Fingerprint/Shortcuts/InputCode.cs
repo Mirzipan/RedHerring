@@ -3,7 +3,7 @@
 namespace RedHerring.Fingerprint.Shortcuts;
 
 [StructLayout(LayoutKind.Explicit)]
-public struct ShortcutValue
+public struct InputCode
 {
     [FieldOffset(0)]
     public int Id;
@@ -21,31 +21,31 @@ public struct ShortcutValue
     [FieldOffset(4)]
     public InputSource Source;
 
-    public ShortcutValue(Key key)
+    public InputCode(Key key)
     {
         Key = key;
         Source = InputSource.Keyboard;
     }
 
-    public ShortcutValue(MouseButton button)
+    public InputCode(MouseButton button)
     {
         MouseButton = button;
         Source = InputSource.MouseButton;
     }
 
-    public ShortcutValue(MouseAxis axis)
+    public InputCode(MouseAxis axis)
     {
         MouseAxis = axis;
         Source = InputSource.MouseAxis;
     }
 
-    public ShortcutValue(GamepadButton button)
+    public InputCode(GamepadButton button)
     {
         GamepadButton = button;
         Source = InputSource.GamepadButton;
     }
 
-    public ShortcutValue(GamepadAxis axis)
+    public InputCode(GamepadAxis axis)
     {
         GamepadAxis = axis;
         Source = InputSource.GamepadAxis;
