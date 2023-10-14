@@ -8,6 +8,7 @@ namespace RedHerring.Fingerprint;
 public interface IInput
 {
     void Tick();
+    bool IsDebugging { get; }
     void EnableDebug();
     void DisableDebug();
     

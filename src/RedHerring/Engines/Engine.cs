@@ -128,6 +128,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
 
     private void Draw(GameTime time)
     {
+        Components.Draw(time);
         Game?.Draw(time);
         
         Renderer!.Draw();
@@ -135,6 +136,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
 
     private void Update(GameTime time)
     {
+        Components.Update(time);
         Game?.Update(time);
     }
 

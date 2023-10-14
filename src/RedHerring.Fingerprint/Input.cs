@@ -21,6 +21,8 @@ public partial class Input: IInput, IDisposable
     
     private bool _isDebugging;
 
+    public bool IsDebugging => _isDebugging;
+
     public IKeyboardState? Keyboard => _keyboardState;
     public IMouseState? Mouse => _mouseState;
     public IGamepadState? Gamepad => _gamepadState;
@@ -50,9 +52,9 @@ public partial class Input: IInput, IDisposable
 
     public void Tick()
     {
-        ResetStates();
-        
         _processor.Tick();
+        
+        ResetStates();
     }
 
     public void Dispose()

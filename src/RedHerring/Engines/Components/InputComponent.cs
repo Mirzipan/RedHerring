@@ -1,6 +1,8 @@
 ﻿using System.Numerics;
 using RedHerring.Alexandria;
 using RedHerring.Fingerprint;
+using RedHerring.Fingerprint.Layers;
+using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Fingerprint.States;
 
 namespace RedHerring.Engines.Components;
@@ -15,12 +17,15 @@ public class InputComponent : AnEngineComponent, IUpdatable
     public IKeyboardState? Keyboard => _input.Keyboard;
     public IMouseState? Mouse => _input.Mouse;
 
+    private InputReceiver _receiver = new InputReceiver("input_debug");
+
     #region Lifecycle
 
     protected override void Init()
     {
         _input = new Input(Context.View);
-        _input.EnableDebug();
+        
+        AddDebugBindings();
     }
     public void Update(GameTime gameTime)
     {
@@ -59,4 +64,38 @@ public class InputComponent : AnEngineComponent, IUpdatable
     public float GetAxis(GamepadAxis axis) => _input.GetAxis(axis);
 
     #endregion Queries
+
+    #region Debug
+
+    private void AddDebugBindings()
+    {
+        if (_input.Bindings is null)
+        {
+            return;
+        }
+        
+        var shortcut = new CompositeShortcut();
+        //shortcut.Add(new KeyboardShortcut(Key.ShiftLeft));
+        shortcut.Add(new KeyboardShortcut(Key.F12));
+        _input.Bindings.Add(new ShortcutBinding("dbg_draw", shortcut));
+        
+        _receiver.Bind("dbg_draw", InputState.Released, ToggleDebugDraw);
+        _input.Layers.Push(_receiver);
+    }
+
+    private void ToggleDebugDraw(ref ActionEvent evt)
+    {
+        evt.Consumed = true;
+        
+        if (_input.IsDebugging)
+        {
+            _input.DisableDebug();
+        }
+        else
+        {
+            _input.EnableDebug();
+        }
+    }
+
+    #endregion Debug
 }

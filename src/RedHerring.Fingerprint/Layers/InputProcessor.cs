@@ -80,21 +80,22 @@ public class InputProcessor
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private InputState GetShortcutState(IShortcut shortcut)
     {
-        var state = InputState.Up;
         if (shortcut.IsPressed(_input))
         {
-            state |= InputState.Pressed;
-        }
-        else if (shortcut.IsDown(_input))
-        {
-            state |= InputState.Down;
-        }
-        else if (shortcut.IsReleased(_input))
-        {
-            state |= InputState.Released;
+            return InputState.Pressed | InputState.Down;
         }
 
-        return state;
+        if (shortcut.IsDown(_input))
+        {
+            return InputState.Down;
+        }
+
+        if (shortcut.IsReleased(_input))
+        {
+            return InputState.Released;
+        }
+
+        return InputState.Up;
     }
 
     private void QueueInput(IReadOnlyCollection<string> actions, InputState state, float value)

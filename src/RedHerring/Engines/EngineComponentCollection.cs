@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using RedHerring.Alexandria;
 using RedHerring.Alexandria.Components;
 using RedHerring.Engines.Exceptions;
 using RedHerring.Extensions.Collections;
@@ -10,6 +11,12 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
     private readonly Dictionary<Type, AnEngineComponent> _componentIndex = new();
     private readonly List<AnEngineComponent> _components = new();
     private readonly Engine _engine;
+    
+    private readonly List<IUpdatable> _updatables = new();
+    private readonly List<IDrawable> _drawables = new();
+    
+    private readonly List<IUpdatable> _currentlyUpdatingComponents = new();
+    private readonly List<IDrawable> _currentlyDrawingComponents = new();
 
     public Engine Engine => _engine;
 
@@ -45,7 +52,19 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
             var componentInstance = (instance as AnEngineComponent)!;
             _components.Add(componentInstance);
             _componentIndex[component.Type] = componentInstance;
+
+            if (componentInstance is IUpdatable updatable)
+            {
+                _updatables.Add(updatable);
+            }
+
+            if (componentInstance is IDrawable drawable)
+            {
+                _drawables.Add(drawable);
+            }
         }
+        
+        Sort();
         
         count = _components.Count;
         for (int i = 0; i < count; i++)
@@ -74,6 +93,48 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
             var component = _components[i];
             component.RaiseUnload();
         }
+    }
+    
+    internal void Update(GameTime gameTime)
+    {
+        _currentlyUpdatingComponents.AddRange(_updatables);
+        
+        int count = _currentlyUpdatingComponents.Count;
+        for (int i = 0; i < count; i++)
+        {
+            var component = _currentlyUpdatingComponents[i];
+            if (!component.IsEnabled)
+            {
+                continue;
+            }
+
+            component.Update(gameTime);
+        }
+        
+        _currentlyUpdatingComponents.Clear();
+    }
+
+    internal void Draw(GameTime gameTime)
+    {
+        _currentlyDrawingComponents.AddRange(_drawables);
+        
+        int count = _currentlyDrawingComponents.Count;
+        for (int i = 0; i < count; i++)
+        {
+            var component = _currentlyDrawingComponents[i];
+            if (!component.IsVisible)
+            {
+                continue;
+            }
+            
+            if (component.BeginDraw())
+            {
+                component.Draw(gameTime);
+                component.EndDraw();
+            }
+        }
+        
+        _currentlyDrawingComponents.Clear();
     }
 
     #endregion Lifecycle
@@ -108,6 +169,20 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
     }
     
     #endregion Queries
+    
+    #region Manipulation
+
+    private void Sort()
+    {
+        _updatables.Sort(CompareUpdatables);
+        _drawables.Sort(CompareDrawables);
+    }
+
+    private int CompareUpdatables(IUpdatable lhs, IUpdatable rhs) => lhs.UpdateOrder.CompareTo(rhs.UpdateOrder);
+    
+    private int CompareDrawables(IDrawable lhs, IDrawable rhs) => lhs.DrawOrder.CompareTo(rhs.DrawOrder);
+
+    #endregion Manipulation
 
     #region IEnumerable
 
