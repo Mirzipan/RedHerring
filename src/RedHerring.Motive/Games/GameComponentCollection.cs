@@ -77,13 +77,9 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
 
     private void Sort()
     {
-        _updatables.Sort(CompareUpdatables);
-        _drawables.Sort(CompareDrawables);
+        _updatables.Sort(Comparison.Updatables);
+        _drawables.Sort(Comparison.Drawables);
     }
-
-    private int CompareUpdatables(IUpdatable lhs, IUpdatable rhs) => lhs.UpdateOrder.CompareTo(rhs.UpdateOrder);
-    
-    private int CompareDrawables(IDrawable lhs, IDrawable rhs) => lhs.DrawOrder.CompareTo(rhs.DrawOrder);
 
     #endregion Manipulation
 
