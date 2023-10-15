@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Serialization", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Studio", "RedHerring.Studio\RedHerring.Studio.csproj", "{A0DBE91D-CD40-446D-8DDE-35E767BDB3BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Infusion", "RedHerring.Infusion\RedHerring.Infusion.csproj", "{B9A1CEEC-6733-4293-9EDC-F6A7673A8382}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,9 @@ Global
 		{A0DBE91D-CD40-446D-8DDE-35E767BDB3BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0DBE91D-CD40-446D-8DDE-35E767BDB3BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0DBE91D-CD40-446D-8DDE-35E767BDB3BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9A1CEEC-6733-4293-9EDC-F6A7673A8382}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9A1CEEC-6733-4293-9EDC-F6A7673A8382}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9A1CEEC-6733-4293-9EDC-F6A7673A8382}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9A1CEEC-6733-4293-9EDC-F6A7673A8382}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

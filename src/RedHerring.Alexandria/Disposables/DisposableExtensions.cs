@@ -13,4 +13,15 @@ public static class DisposableExtensions
         container.Disposer.Add(@this);
         return @this;
     }
+
+    public static IDisposable? TryDisposeWith(this object @this, IDisposerContainer container)
+    {
+        if (@this is IDisposable disposable)
+        {
+            container.Disposer.Add(disposable);
+            return disposable;
+        }
+
+        return null;
+    }
 }
