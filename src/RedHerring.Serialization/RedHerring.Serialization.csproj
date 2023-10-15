@@ -6,4 +6,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Reference Include="OdinSerializer">
+        <HintPath>..\Libraries\OdinSerializer\OdinSerializer.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

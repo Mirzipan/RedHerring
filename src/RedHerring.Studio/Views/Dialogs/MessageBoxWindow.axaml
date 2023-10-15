@@ -1,0 +1,24 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:RedHerring.Studio.ViewModels"
+        mc:Ignorable="d"
+        d:DesignWidth="400"
+        d:DesignHeight="200"
+        x:Class="RedHerring.Studio.Views.Dialogs.MessageBoxWindow"
+        x:DataType="vm:MessageBoxWindowViewModel"
+        Width="400"
+        Height="200"
+        Title="{Binding Title}"
+        WindowStartupLocation="CenterScreen"
+>
+    <DockPanel>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Height="{Binding Source={x:Static vm:Constants.RowHeight}}">
+            <Button HorizontalAlignment="Center" HorizontalContentAlignment="Center" Content="{Binding PositiveChoiceLabel}" Command="{Binding OnPositiveButtonClicked}" IsVisible="{Binding IsPositiveChoiceAvailable}" />
+            <Button HorizontalAlignment="Center" HorizontalContentAlignment="Center" Content="{Binding NegativeChoiceLabel}" Command="{Binding OnNegativeButtonClicked}" />
+        </StackPanel>
+
+        <TextBlock TextAlignment="Center" VerticalAlignment="Center" Text="{Binding Message}">This is some text</TextBlock>
+    </DockPanel>
+</Window>

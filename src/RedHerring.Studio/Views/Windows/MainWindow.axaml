@@ -1,0 +1,74 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:RedHerring.Studio.ViewModels"
+        xmlns:views="using:RedHerring.Studio.Views"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DesignWidth="{Binding Source={x:Static vm:Constants.ApplicationWindowWidth}}"
+        d:DesignHeight="{Binding Source={x:Static vm:Constants.ApplicationWindowHeight}}"
+        x:Class="RedHerring.Studio.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="RedHerring.Studio"
+        WindowStartupLocation="CenterScreen"
+       >
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="20,*,20">
+        <!-- Menu -->
+        <Menu Grid.Row="0">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New project.." Command="{Binding OnFileNewProject}"/>
+                <MenuItem Header="_Open project.." Command="{Binding OnFileOpenProject}"/>
+                <Separator/>
+                <MenuItem Header="_Exit" Command="{Binding OnFileExit}"/>
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="Copy"/>
+                <MenuItem Header="Paste"/>
+                <Separator/>
+                <MenuItem Header="Project settings.."/>
+                <MenuItem Header="Options.."/>
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem Header="Project"/>
+            </MenuItem>
+            <MenuItem Header="Debug">
+                <MenuItem Header="Task processor test" Command="{Binding OnDebugTaskProcessorTest}"/>
+                <MenuItem Header="Serialization test" Command="{Binding OnDebugSerializationTest}"/>
+                <MenuItem Header="Importer test" Command="{Binding OnDebugImporterTest}"/>
+            </MenuItem>
+        </Menu>
+        
+        <!-- Main area -->
+        <Grid  Grid.Row="1" ColumnDefinitions="1*,3,2*,3,1*">
+            
+            <!-- Left - project -->
+            <views:ProjectView Grid.Column="0" DataContext="{Binding Project}"/>
+            
+            <GridSplitter Grid.Column="1" Background="{DynamicResource SplitterBackground}" ResizeDirection="Columns"/>
+            
+            <!-- Center - scene + console -->
+            <Grid Grid.Column="2" RowDefinitions="3*,3,1*">
+                <Rectangle Grid.Row="0"/>
+                <GridSplitter Grid.Row="1" Background="{DynamicResource SplitterBackground}" ResizeDirection="Rows"/>
+                <views:ConsoleView Grid.Row="2" DataContext="{Binding Console}"/>
+            </Grid>
+            
+            <GridSplitter Grid.Column="3" Background="{DynamicResource SplitterBackground}" ResizeDirection="Columns"/>
+
+            <!-- Right - inspector -->
+            <views:InspectorView Grid.Column="4" DataContext="{Binding Inspector}"/>
+        </Grid>
+        
+        <!-- Status bar -->
+        <TextBlock Grid.Row="2" VerticalAlignment="Stretch" Padding="3" Text="{Binding StatusBarMessage}" Background="{Binding StatusBarColor}"/>
+    </Grid>
+   
+</Window>

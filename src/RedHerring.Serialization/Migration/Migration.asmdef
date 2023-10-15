@@ -1,0 +1,16 @@
+{
+    "name": "Migration",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b96db29da3cc6a85aba51e6e3a352d1f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

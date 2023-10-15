@@ -1,0 +1,86 @@
+===== Migration rules =====
+
+TODO - remove
+
+Migratable interface:
+    - always empty
+    - attributes: [MigratableInterface, Preserve, OriginalInterface(typeof(CItemDefinitionOverrideModel))]
+
+Migratable class:
+    - attributes: [Serializable, Preserve]
+    - only latest version have also attribute [OriginalClass(typeof(CItemDefinitionOverrideModel))]
+    - must have a name ending with number (for example: CItemDefinitionOverrideModel_000 )
+    - derived from migratable interface
+    - serialized migratable field must have attribute [SerializeReference] and must be the type of migratable interface, not the original type nor the migratable type
+        - the same field in original class have standard [SerializeReference] to other type
+    - serialized field that is not migratable class but can contain migratable classes (for example List of migratable classes) needs also attribute [MigrateField]
+        - for example: [SerializeReference, MigrateField] private List<ITransformModelMigratable> m_RigidBodyTransforms;
+    - all versions except first must have Migrate function: public void Migrate(CItemModel_000 prev)
+
+Derived migratable class:
+    - derived from other migratable class at the LATEST version!
+    - no additional interface is needed
+
+Example:
+
+    // interface
+	[MigratableInterface, Preserve, OriginalInterface(typeof(CItemModel))]
+	public interface IItemModelMigratable
+	{
+	}
+
+
+    // old version of migratable class
+	[Serializable, Preserve]
+	public class CItemModel_000 : IItemModelMigratable
+	{
+		[SerializeField] public SItemDefinitionId m_DefinitionId; 
+		
+		[SerializeField] public int m_OwnerInventoryIndex;
+		
+		[SerializeField] public int m_Durability;
+
+		[SerializeReference] public IProjectileSequenceModelMigratable m_ProjectileSequence;
+
+		[SerializeReference] public ITransformModelMigratable m_Transform;
+	}
+
+
+    // latest version of migratable class
+	[Serializable, Preserve, OriginalClass(typeof(CItemModel))]
+	public class CItemModel_001 : IItemModelMigratable
+	{
+		[SerializeField]     public  SItemDefinitionId            m_DefinitionId; 
+		[SerializeReference] public IItemDefinitionOverrideModelMigratable m_DefinitionOverride;
+		
+		[SerializeField] public int m_OwnerInventoryIndex;
+		
+		[SerializeField] public int m_RelativeLevel;
+		[SerializeField] public int m_Level;
+		[SerializeField] public int m_Durability;
+
+		[SerializeReference] public IProjectileSequenceModelMigratable m_ProjectileSequence;
+
+		[SerializeReference]               public  ITransformModelMigratable       m_Transform;
+		[SerializeReference, MigrateField] private List<ITransformModelMigratable> m_RigidBodyTransforms;
+
+		public void Migrate(CItemModel_000 prev)
+		{
+			m_DefinitionId        = prev.m_DefinitionId;
+			m_OwnerInventoryIndex = prev.m_OwnerInventoryIndex;
+			m_RelativeLevel       = 0;
+			m_Level               = -1;
+			m_Durability          = prev.m_Durability;
+			m_ProjectileSequence  = prev.m_ProjectileSequence;
+			m_Transform           = prev.m_Transform;
+		}
+	}
+
+
+    // derived class
+	[Serializable, Preserve, OriginalClass(typeof(CItemSpellModel))]
+	public class CItemSpellModel_000 : CItemModel_001
+	{
+		[SerializeField] public int m_CurrentProjectileIndex;
+	}
+

@@ -1,0 +1,7 @@
+{
+  "Id":"Migration",
+  "Name":"Migration",
+  "Description" : "Universal data migration for Unity. Uses Odin serializer.",
+  "Version":"1.2.1",
+  "Dependencies":[]
+}
