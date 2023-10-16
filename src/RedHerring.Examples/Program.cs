@@ -1,4 +1,5 @@
-﻿using RedHerring.Engines;
+﻿using System.Runtime.InteropServices;
+using RedHerring.Engines;
 using RedHerring.Motive.Games;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
@@ -9,8 +10,6 @@ namespace RedHerring.Examples;
 
 internal class Program
 {
-    private const GraphicsBackend PreferredBackend = GraphicsBackend.Vulkan;
-
     private static IWindow? _window;
 
     private static ExampleEngineContext _engineContext = null!;
@@ -19,14 +18,18 @@ internal class Program
     private static ExampleGameContext _gameContext = null!;
     private static Game _game = null!;
 
+    private static GraphicsBackend _graphicsBackend;
+
     private static void Main(string[] args)
     {
+        Init();
+        
         var opts = new WindowOptions
         {
             Title = "Red Herring Engine Example",
             Position = new Vector2D<int>(100, 100),
             Size = new Vector2D<int>(960, 540),
-            API = PreferredBackend.ToGraphicsAPI(),
+            API = _graphicsBackend.ToGraphicsAPI(),
             VSync = false,
             ShouldSwapAutomatically = false,
         };
@@ -41,6 +44,36 @@ internal class Program
         _window.Run();
     }
 
+    #region Private
+
+    private static void Init()
+    {
+        _graphicsBackend = GetPreferredBackend();
+    }
+
+    private static GraphicsBackend GetPreferredBackend()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return GraphicsDevice.IsBackendSupported(GraphicsBackend.Vulkan)
+                ? GraphicsBackend.Vulkan
+                : GraphicsBackend.Direct3D11;
+        }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            return GraphicsDevice.IsBackendSupported(GraphicsBackend.Metal)
+                ? GraphicsBackend.Metal
+                : GraphicsBackend.OpenGL;
+        }
+
+        return GraphicsDevice.IsBackendSupported(GraphicsBackend.Vulkan)
+            ? GraphicsBackend.Vulkan
+            : GraphicsBackend.OpenGL;
+    }
+
+    #endregion Private
+
     #region Bindings
 
     static void OnLoad()
@@ -50,7 +83,7 @@ internal class Program
         _engineContext = new ExampleEngineContext
         {
             View = _window!,
-            GraphicsBackend = PreferredBackend,
+            GraphicsBackend = _graphicsBackend,
         };
         _engine.Run(_engineContext);
 
