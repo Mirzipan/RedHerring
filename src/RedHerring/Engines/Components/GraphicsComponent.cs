@@ -3,7 +3,7 @@ using Silk.NET.Maths;
 
 namespace RedHerring.Engines.Components;
 
-public sealed class RenderComponent : AnEngineComponent
+public sealed class GraphicsComponent : AnEngineComponent
 {
     private Renderer _renderer = null!;
     

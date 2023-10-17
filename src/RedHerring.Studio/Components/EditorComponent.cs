@@ -12,7 +12,7 @@ namespace RedHerring.Studio;
 public sealed class EditorComponent : AnEngineComponent, IUpdatable, IDrawable
 {
     private InputComponent _inputComponent;
-    private RenderComponent _renderComponent;
+    private GraphicsComponent _graphicsComponent;
 
     private InputReceiver _inputReceiver;
     
@@ -39,7 +39,7 @@ public sealed class EditorComponent : AnEngineComponent, IUpdatable, IDrawable
     {
         // TODO: replace by injection when available
         _inputComponent = Container.Components.Get<InputComponent>()!;
-        _renderComponent = Container.Components.Get<RenderComponent>()!;
+        _graphicsComponent = Container.Components.Get<GraphicsComponent>()!;
         
         InitInput();
     }

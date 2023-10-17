@@ -11,7 +11,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
 {
     public EngineComponentCollection Components { get; }
     public AnEngineContext Context { get; private set; } = null!;
-    public RenderComponent? Renderer { get; private set; } = null!;
+    public GraphicsComponent? Renderer { get; private set; } = null!;
     public Game? Game { get; private set; }
     public bool IsRunning { get; private set; }
     public bool IsExiting { get; private set; }
@@ -106,7 +106,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
         Components.Init();
         Components.Load();
 
-        Renderer = Components.Get<RenderComponent>();
+        Renderer = Components.Get<GraphicsComponent>();
     }
 
     private void TickInternal()
