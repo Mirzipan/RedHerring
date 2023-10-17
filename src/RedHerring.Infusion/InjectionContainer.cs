@@ -1,24 +1,22 @@
 ﻿using RedHerring.Alexandria;
 using RedHerring.Alexandria.Collections;
-using RedHerring.Extensions;
-using RedHerring.Extensions.Collections;
+using RedHerring.Alexandria.Disposables;
 using RedHerring.Infusion.Resolvers;
 
 namespace RedHerring.Infusion;
 
 public sealed class InjectionContainer : AThingamabob
 {
-    public string Name { get; }
     internal InjectionContainer? Parent { get; private set; }
     internal List<InjectionContainer> Children { get; } = new();
     internal ListDictionary<Type, AResolver> ResolversByContract;
 
     #region Lifecycle
 
-    internal InjectionContainer(string name, ListDictionary<Type, AResolver> resolvers)
+    internal InjectionContainer(string name, ListDictionary<Type, AResolver> resolvers, IDisposable disposable) : base(name)
     {
-        Name = name;
         ResolversByContract = resolvers;
+        disposable.DisposeWith(this);
         
         InjectSelf();
     }
