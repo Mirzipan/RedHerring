@@ -7,7 +7,7 @@ using RedHerring.Fingerprint.States;
 
 namespace RedHerring.Engines.Components;
 
-public class InputComponent : AnEngineComponent, IUpdatable
+public sealed class InputComponent : AnEngineComponent, IUpdatable
 {
     private IInput _input = null!;
 

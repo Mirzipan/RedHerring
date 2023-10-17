@@ -9,7 +9,7 @@ using RedHerring.Studio.Commands;
 namespace RedHerring.Studio;
 
 // TODO: Add this to engine context when creating editor window.
-public class EditorComponent : AnEngineComponent, IUpdatable, IDrawable
+public sealed class EditorComponent : AnEngineComponent, IUpdatable, IDrawable
 {
     private InputComponent _inputComponent;
     private RenderComponent _renderComponent;
