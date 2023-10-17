@@ -1,6 +1,6 @@
 ﻿namespace RedHerring.Studio.Commands;
 
-public class CompositeCommand : ACommand
+public sealed class CompositeCommand : ACommand
 {
     private readonly ACommand[] _subCommands;
     

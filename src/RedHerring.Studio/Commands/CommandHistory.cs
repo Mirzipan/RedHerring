@@ -1,6 +1,6 @@
 ﻿namespace RedHerring.Studio.Commands;
 
-public class CommandHistory
+public sealed class CommandHistory
 {
     public int Capacity { get; set; } = byte.MaxValue;
 
