@@ -147,7 +147,7 @@ public partial class Input: IInput, IDisposable
 
     private void FindKeyboard(IKeyboard? preferredKeyboard)
     {
-        if (preferredKeyboard is null && _inputContext.Keyboards.Count == 0)
+        if (preferredKeyboard is null || _inputContext.Keyboards.Count == 0)
         {
             _keyboardState = null;
         }
@@ -157,9 +157,9 @@ public partial class Input: IInput, IDisposable
 
     private void FindMouse(IMouse? preferredMouse)
     {
-        if (preferredMouse is null && _inputContext.Mice.Count == 0)
+        if (preferredMouse is null || _inputContext.Mice.Count == 0)
         {
-            _keyboardState = null;
+            _mouseState = null;
         }
 
         SetMouse(preferredMouse ?? _inputContext.Mice[0]);
@@ -167,9 +167,9 @@ public partial class Input: IInput, IDisposable
 
     private void FindGamepad(IGamepad? preferredGamepad)
     {
-        if (preferredGamepad is null && _inputContext.Gamepads.Count == 0)
+        if (preferredGamepad is null || _inputContext.Gamepads.Count == 0)
         {
-            _keyboardState = null;
+            _gamepadState = null;
         }
 
         SetGamepad(preferredGamepad ?? _inputContext.Gamepads[0]);
