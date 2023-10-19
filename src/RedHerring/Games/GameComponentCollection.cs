@@ -1,8 +1,11 @@
 ﻿using System.Collections;
 using RedHerring.Alexandria;
 using RedHerring.Alexandria.Components;
+using RedHerring.Exceptions;
+using RedHerring.Extensions.Collections;
+using RedHerring.Infusion;
 
-namespace RedHerring.Motive.Games;
+namespace RedHerring.Games;
 
 public sealed class GameComponentCollection : IGameComponentCollection, IDisposable
 {
@@ -10,8 +13,10 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
     
     private readonly Dictionary<Type, AGameComponent> _componentIndex = new();
     private readonly List<AGameComponent> _components = new();
+    
     private readonly List<IUpdatable> _updatables = new();
     private readonly List<IDrawable> _drawables = new();
+    private readonly List<IBindingsInstaller> _installers = new();
     
     private readonly List<IUpdatable> _currentlyUpdatingComponents = new();
     private readonly List<IDrawable> _currentlyDrawingComponents = new();
@@ -21,6 +26,63 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
     public GameComponentCollection(Game game)
     {
         Game = game;
+    }
+
+    internal void Init()
+    {
+        if (Game.Context!.Components.IsNullOrEmpty())
+        {
+            return;
+        }
+
+        int count = Game.Context.Components.Count;
+        for (int i = 0; i < count; i++)
+        {
+            var componentType = Game.Context.Components[i];
+            if (!componentType.IsSubclassOf(typeof(AGameComponent)))
+            {
+                throw new TypeIsNotAGameComponentException(componentType);
+            }
+            
+            object? instance = Activator.CreateInstance(componentType);
+            if (instance is null)
+            {
+                throw new NullReferenceException();
+            }
+
+            var componentInstance = (instance as AGameComponent)!;
+            _components.Add(componentInstance);
+            _componentIndex[componentType] = componentInstance;
+
+            TryAddSpecializedComponent(componentInstance);
+        }
+        
+        Sort();
+    }
+
+    internal void InstallBindings(ContainerDescription description)
+    {
+        for (int i = 0; i < _components.Count; i++)
+        {
+            var component = _components[i];
+            description.AddInstance(component);
+        }
+        
+        if (_installers.Count == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _installers.Count; i++)
+        {
+            var installer = _installers[i];
+            installer.InstallBindings(description);
+        }
+    }
+
+    internal void Load()
+    {
+        
     }
 
     internal void Update(GameTime gameTime)
@@ -113,6 +175,28 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
     }
     
     #endregion Queries
+
+    #region Private
+
+    private void TryAddSpecializedComponent(AGameComponent component)
+    {
+        if (component is IUpdatable updatable)
+        {
+            _updatables.Add(updatable);
+        }
+
+        if (component is IDrawable drawable)
+        {
+            _drawables.Add(drawable);
+        }
+
+        if (component is IBindingsInstaller installer)
+        {
+            _installers.Add(installer);
+        }
+    }
+
+    #endregion Private
 
     #region IEnumerable
 

@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using RedHerring.Alexandria;
 using RedHerring.Alexandria.Components;
-using RedHerring.Engines.Exceptions;
+using RedHerring.Exceptions;
 using RedHerring.Extensions.Collections;
+using RedHerring.Infusion;
 
 namespace RedHerring.Engines;
 
@@ -14,6 +15,7 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
     
     private readonly List<IUpdatable> _updatables = new();
     private readonly List<IDrawable> _drawables = new();
+    private readonly List<IBindingsInstaller> _installers = new();
     
     private readonly List<IUpdatable> _currentlyUpdatingComponents = new();
     private readonly List<IDrawable> _currentlyDrawingComponents = new();
@@ -53,25 +55,30 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
             _components.Add(componentInstance);
             _componentIndex[component.Type] = componentInstance;
 
-            if (componentInstance is IUpdatable updatable)
-            {
-                _updatables.Add(updatable);
-            }
-
-            if (componentInstance is IDrawable drawable)
-            {
-                _drawables.Add(drawable);
-            }
+            TryAddSpecializedComponent(componentInstance);
         }
         
         Sort();
-        
-        count = _components.Count;
-        for (int i = 0; i < count; i++)
+        RaiseInitOnComponents();
+    }
+
+    internal void InstallBindings(ContainerDescription description)
+    {
+        for (int i = 0; i < _components.Count; i++)
         {
             var component = _components[i];
-            component.SetContainer(_engine);
-            component.RaiseInit();
+            description.AddInstance(component);
+        }
+        
+        if (_installers.Count == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _installers.Count; i++)
+        {
+            var installer = _installers[i];
+            installer.InstallBindings(description);
         }
     }
 
@@ -179,6 +186,39 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
     }
 
     #endregion Manipulation
+
+    #region Private
+
+    private void TryAddSpecializedComponent(AnEngineComponent component)
+    {
+        if (component is IUpdatable updatable)
+        {
+            _updatables.Add(updatable);
+        }
+
+        if (component is IDrawable drawable)
+        {
+            _drawables.Add(drawable);
+        }
+
+        if (component is IBindingsInstaller installer)
+        {
+            _installers.Add(installer);
+        }
+    }
+
+    private void RaiseInitOnComponents()
+    {
+        int count = _components.Count;
+        for (int i = 0; i < count; i++)
+        {
+            var component = _components[i];
+            component.SetContainer(_engine);
+            component.RaiseInit();
+        }
+    }
+
+    #endregion Private
 
     #region IEnumerable
 

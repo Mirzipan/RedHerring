@@ -1,16 +1,21 @@
 ﻿using System.Collections;
 using RedHerring.Alexandria;
-using RedHerring.Motive.Games.Components;
+using RedHerring.Engines;
+using RedHerring.Games.Components;
+using RedHerring.Infusion;
 using RedHerring.Motive.Worlds;
 
-namespace RedHerring.Motive.Games;
+namespace RedHerring.Games;
 
 public sealed class Game : AThingamabob, IEnumerable<AGameComponent>
 {
+    private Engine _engine;
     private World? _world;
     
+    public InjectionContainer InjectionContainer { get; private set; } = null!;
     public GameComponentCollection Components { get; }
     public AGameContext? Context { get; }
+    public Engine Engine => _engine;
     public World? World => _world ??= Components.Get<WorldComponent>()?.World;
 
     public GamePhase Phase { get; private set; }
@@ -18,7 +23,7 @@ public sealed class Game : AThingamabob, IEnumerable<AGameComponent>
 
     #region Lifecycle
 
-    public Game(string? name = null) : base(name)
+    private Game(string? name = null) : base(name)
     {
         Components = new GameComponentCollection(this);
     }
@@ -38,8 +43,9 @@ public sealed class Game : AThingamabob, IEnumerable<AGameComponent>
         Components.Draw(gameTime);
     }
 
-    public void Initialize()
+    public void Initialize(Engine engine)
     {
+        _engine = engine;
         Phase = GamePhase.Initializing;
         
         InitFromContext();
@@ -64,7 +70,13 @@ public sealed class Game : AThingamabob, IEnumerable<AGameComponent>
 
     private void InitFromContext()
     {
-        // TODO: create components based on context
+        Components.Init();
+        
+        var description = new ContainerDescription($"[Game] {Name}", _engine.InjectionContainer);
+        Components.InstallBindings(description);
+        InjectionContainer = description.Build();
+        
+        Components.Load();
     }
 
     #endregion Private

@@ -1,14 +1,16 @@
 ﻿using RedHerring.Alexandria;
 using RedHerring.Alexandria.Components;
 using RedHerring.Engines.Components;
-using RedHerring.Engines.Exceptions;
-using RedHerring.Motive.Games;
+using RedHerring.Exceptions;
+using RedHerring.Games;
+using RedHerring.Infusion;
 using Silk.NET.Maths;
 
 namespace RedHerring.Engines;
 
 public sealed class Engine : AThingamabob, IComponentContainer
 {
+    public InjectionContainer InjectionContainer { get; private set; } = null!;
     public EngineComponentCollection Components { get; }
     public AnEngineContext Context { get; private set; } = null!;
     public GraphicsComponent? Renderer { get; private set; } = null!;
@@ -45,7 +47,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
         }
         
         Game = game;
-        Game.Initialize();
+        Game.Initialize(this);
     }
 
     public void Run(AnEngineContext context)
@@ -104,6 +106,11 @@ public sealed class Engine : AThingamabob, IComponentContainer
     private void InitFromContext()
     {
         Components.Init();
+        
+        var description = new ContainerDescription("Engine");
+        Components.InstallBindings(description);
+        InjectionContainer = description.Build();
+        
         Components.Load();
 
         Renderer = Components.Get<GraphicsComponent>();

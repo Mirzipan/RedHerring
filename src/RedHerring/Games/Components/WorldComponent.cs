@@ -1,7 +1,7 @@
 ﻿using RedHerring.Alexandria;
 using RedHerring.Motive.Worlds;
 
-namespace RedHerring.Motive.Games.Components;
+namespace RedHerring.Games.Components;
 
 public sealed class WorldComponent : AGameComponent, IDrawable
 {

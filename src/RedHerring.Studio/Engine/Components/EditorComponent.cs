@@ -4,14 +4,17 @@ using RedHerring.Engines.Components;
 using RedHerring.Fingerprint;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
+using RedHerring.Infusion.Attributes;
 using RedHerring.Studio.Commands;
 
-namespace RedHerring.Studio;
+namespace RedHerring.Studio.Engine.Components;
 
 // TODO: Add this to engine context when creating editor window.
 public sealed class EditorComponent : AnEngineComponent, IUpdatable, IDrawable
 {
+    [Inject]
     private InputComponent _inputComponent;
+    [Inject]
     private GraphicsComponent _graphicsComponent;
 
     private InputReceiver _inputReceiver;

@@ -1,7 +1,7 @@
 ﻿using RedHerring.Alexandria;
 using RedHerring.Alexandria.Components;
 
-namespace RedHerring.Motive.Games;
+namespace RedHerring.Games;
 
 public abstract class AGameComponent : AComponent<GameComponentCollection>, IEssence
 {

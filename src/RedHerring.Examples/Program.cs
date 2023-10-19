@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using RedHerring.Engines;
-using RedHerring.Motive.Games;
+using RedHerring.Games;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Extensions.Veldrid;
@@ -37,6 +37,7 @@ internal class Program
         _window = Window.Create(opts);
         
         _window.Load += OnLoad;
+        _window.Update += OnUpdate;
         _window.Render += OnDraw;
         _window.Closing += OnClose;
         _window.Resize += OnResize;
@@ -97,6 +98,11 @@ internal class Program
     private static void OnResize(Vector2D<int> size)
     {
         _engine.Resize(size);
+    }
+
+    private static void OnUpdate(double obj)
+    {
+        
     }
 
     private static void OnDraw(double time)

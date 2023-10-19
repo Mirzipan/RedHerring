@@ -1,4 +1,4 @@
-﻿namespace RedHerring.Motive.Games;
+﻿namespace RedHerring.Games;
 
 public enum GamePhase
 {
