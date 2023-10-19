@@ -147,32 +147,17 @@ public partial class Input: IInput, IDisposable
 
     private void FindKeyboard(IKeyboard? preferredKeyboard)
     {
-        if (preferredKeyboard is null || _inputContext.Keyboards.Count == 0)
-        {
-            _keyboardState = null;
-        }
-
-        SetKeyboard(preferredKeyboard ?? _inputContext.Keyboards[0]);
+        SetKeyboard(preferredKeyboard ?? _inputContext.Keyboards.FirstOrDefault());
     }
 
     private void FindMouse(IMouse? preferredMouse)
     {
-        if (preferredMouse is null || _inputContext.Mice.Count == 0)
-        {
-            _mouseState = null;
-        }
-
-        SetMouse(preferredMouse ?? _inputContext.Mice[0]);
+        SetMouse(preferredMouse ?? _inputContext.Mice.FirstOrDefault());
     }
 
     private void FindGamepad(IGamepad? preferredGamepad)
     {
-        if (preferredGamepad is null || _inputContext.Gamepads.Count == 0)
-        {
-            _gamepadState = null;
-        }
-
-        SetGamepad(preferredGamepad ?? _inputContext.Gamepads[0]);
+        SetGamepad(preferredGamepad ?? _inputContext.Gamepads.FirstOrDefault());
     }
 
     private void ResetStates()
