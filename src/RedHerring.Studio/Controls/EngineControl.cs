@@ -9,7 +9,14 @@ public class EngineControl : SilkControl
     
     protected override void OnLoad()
     {
-        _engine = EngineBootstrap.Start(View);
+        try
+        {
+            _engine = EngineBootstrap.Start(View);
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     protected override void OnDraw(double delta)

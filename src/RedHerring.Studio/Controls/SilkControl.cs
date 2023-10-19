@@ -9,7 +9,7 @@ namespace RedHerring.Studio.Controls;
 
 public abstract class SilkControl : Control
 {
-    private IView _view;
+    private IView _view = null!;
 
     public IView View => _view;
 
@@ -17,26 +17,40 @@ public abstract class SilkControl : Control
     {
         base.BeginInit();
 
-        var options = new ViewOptions
+        try
         {
-            API = EngineBootstrap.GetPreferredBackend().ToGraphicsAPI(),
-            VSync = false,
-            ShouldSwapAutomatically = false,
-        };
-        
-        _view = Window.GetView(options);
-        _view.Load += OnLoad;
-        _view.Update += OnUpdate;
-        _view.Render += OnDraw;
-        _view.Closing += OnClose;
-        _view.Resize += OnResize;
+            var options = new ViewOptions
+            {
+                API = EngineBootstrap.GetPreferredBackend().ToGraphicsAPI(),
+                VSync = false,
+                ShouldSwapAutomatically = false,
+            };
+
+            _view = Window.GetView(options); // this unfortunately creates a new window .... 
+            _view.Load += OnLoad;
+            _view.Update += OnUpdate;
+            _view.Render += OnDraw;
+            _view.Closing += OnClose;
+            _view.Resize += OnResize;
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     public override void EndInit()
     {
         base.EndInit();
 
-        _view.Run();
+        try
+        {
+            _view.Run();
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     protected virtual void OnLoad()
