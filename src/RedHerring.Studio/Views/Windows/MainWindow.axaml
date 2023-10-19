@@ -57,7 +57,8 @@
             
             <!-- Center - scene + console -->
             <Grid Grid.Column="2" RowDefinitions="3*,3,1*">
-                <Rectangle Grid.Row="0"/>
+                <!-- <Rectangle Grid.Row="0"/> -->
+                <controls:EngineControl Grid.Row="0"/>
                 <GridSplitter Grid.Row="1" Background="{DynamicResource SplitterBackground}" ResizeDirection="Rows"/>
                 <views:ConsoleView Grid.Row="2" DataContext="{Binding Console}"/>
             </Grid>

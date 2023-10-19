@@ -6,14 +6,15 @@ internal sealed class InjectionIndexer
 
     #region Queries
 
-    public static void Index(Type type)
+    public static TypeDescription Index(Type type)
     {
-        if (Types.ContainsKey(type))
+        if (!Types.TryGetValue(type, out var description))
         {
-            return;
+            description = new TypeDescription(type);
+            Types[type] = description;
         }
 
-        Types[type] = new TypeDescription(type);
+        return description;
     }
 
     public static bool TryGetInfo(Type type, out TypeDescription? info)

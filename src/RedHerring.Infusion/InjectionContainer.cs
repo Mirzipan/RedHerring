@@ -1,6 +1,7 @@
 ﻿using RedHerring.Alexandria;
 using RedHerring.Alexandria.Collections;
 using RedHerring.Alexandria.Disposables;
+using RedHerring.Infusion.Injectors;
 using RedHerring.Infusion.Resolvers;
 
 namespace RedHerring.Infusion;
@@ -37,9 +38,9 @@ public sealed class InjectionContainer : AThingamabob
 
     public object Instantiate(Type concrete)
     {
-        var instance = Activator.CreateInstance(concrete);
-        // TODO: construct and inject properly
-        return instance!;
+        object instance = ConstructorInjector.Construct(concrete, this);
+        AttributeInjector.Inject(instance, this);
+        return instance;
     }
 
     #endregion Creation
