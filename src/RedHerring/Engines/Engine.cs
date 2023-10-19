@@ -23,6 +23,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
     public GameTime DrawTime { get; }
     
     private Cronos _cronos;
+    private int _updateCount;
     private int _frameCount;
     
     #region Lifecycle
@@ -60,6 +61,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
         
         Context = context;
         _cronos.Reset();
+        _updateCount = 0;
         _frameCount = 0;
 
         InitFromContext();
@@ -67,18 +69,36 @@ public sealed class Engine : AThingamabob, IComponentContainer
         IsRunning = true;
     }
 
-    public void Tick()
+    public void Update()
     {
         if (IsExiting)
         {
             return;
         }
 
+        ++_updateCount;
         _cronos.Tick();
+        UpdateTime.Update(_cronos.TotalTime, _cronos.ElapsedTime, _updateCount);
+        Update(UpdateTime);
+    }
+
+    public void Draw()
+    {
+        if (IsExiting)
+        {
+            return;
+        }
         
         ++_frameCount;
-
-        TickInternal();
+        _cronos.Tick();
+        DrawTime.Update(_cronos.TotalTime, _cronos.ElapsedTime, _frameCount);
+        
+        bool isDrawing = Renderer?.BeginDraw() ?? false;
+        if (isDrawing)
+        {
+            Draw(DrawTime);
+            Renderer!.EndDraw();
+        }
     }
 
     public void Exit()
@@ -118,23 +138,6 @@ public sealed class Engine : AThingamabob, IComponentContainer
         Renderer = Components.Get<GraphicsComponent>();
     }
 
-    private void TickInternal()
-    {
-        bool isDrawing = Renderer?.BeginDraw() ?? false;
-
-        // TODO: make draw and update independent
-        UpdateTime.Update(_cronos.TotalTime, _cronos.ElapsedTime, _frameCount);
-        Update(UpdateTime);        
-        
-        DrawTime.Update(_cronos.TotalTime, _cronos.ElapsedTime, _frameCount);
-        Draw(DrawTime);
-
-        if (isDrawing)
-        {
-            Renderer!.EndDraw();
-        }
-    }
-
     private void Draw(GameTime time)
     {
         Components.Draw(time);
@@ -142,7 +145,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
         
         Renderer!.Draw();
     }
-
+    
     private void Update(GameTime time)
     {
         Components.Update(time);

@@ -100,14 +100,14 @@ internal class Program
         _engine.Resize(size);
     }
 
-    private static void OnUpdate(double obj)
+    private static void OnUpdate(double time)
     {
-        
+        _engine.Update();
     }
 
     private static void OnDraw(double time)
     {
-        _engine.Tick();
+        _engine.Draw();
     }
 
     private static void OnClose()
