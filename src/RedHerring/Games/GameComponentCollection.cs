@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using RedHerring.Alexandria;
 using RedHerring.Alexandria.Components;
+using RedHerring.Engines;
 using RedHerring.Exceptions;
 using RedHerring.Extensions.Collections;
 using RedHerring.Infusion;
+using RedHerring.Infusion.Injectors;
 
 namespace RedHerring.Games;
 
@@ -82,7 +84,12 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
 
     internal void Load()
     {
-        
+        int count = _components.Count;
+        for (int i = 0; i < count; i++)
+        {
+            var component = _components[i];
+            AttributeInjector.Inject(component, Game.InjectionContainer);
+        }
     }
 
     internal void Update(GameTime gameTime)

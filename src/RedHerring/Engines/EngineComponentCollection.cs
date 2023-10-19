@@ -4,6 +4,7 @@ using RedHerring.Alexandria.Components;
 using RedHerring.Exceptions;
 using RedHerring.Extensions.Collections;
 using RedHerring.Infusion;
+using RedHerring.Infusion.Injectors;
 
 namespace RedHerring.Engines;
 
@@ -85,6 +86,12 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
     internal void Load()
     {
         int count = _components.Count;
+        for (int i = 0; i < count; i++)
+        {
+            var component = _components[i];
+            AttributeInjector.Inject(component, Engine.InjectionContainer);
+        }
+        
         for (int i = 0; i < count; i++)
         {
             var component = _components[i];

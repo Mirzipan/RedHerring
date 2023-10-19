@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using RedHerring.Alexandria;
+using RedHerring.Alexandria.Disposables;
 using RedHerring.Engines;
 using RedHerring.Games.Components;
 using RedHerring.Infusion;
@@ -58,6 +59,7 @@ public sealed class Game : AThingamabob, IEnumerable<AGameComponent>
     {
         Phase = GamePhase.Closing;
         
+        Dispose();
         // TODO: unload stuff
         // TODO: dispose of stuff
 
@@ -75,6 +77,7 @@ public sealed class Game : AThingamabob, IEnumerable<AGameComponent>
         var description = new ContainerDescription($"[Game] {Name}", _engine.InjectionContainer);
         Components.InstallBindings(description);
         InjectionContainer = description.Build();
+        InjectionContainer.DisposeWith(this);
         
         Components.Load();
     }

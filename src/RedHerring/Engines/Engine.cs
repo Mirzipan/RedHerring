@@ -1,5 +1,6 @@
 ﻿using RedHerring.Alexandria;
 using RedHerring.Alexandria.Components;
+using RedHerring.Alexandria.Disposables;
 using RedHerring.Engines.Components;
 using RedHerring.Exceptions;
 using RedHerring.Games;
@@ -110,6 +111,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
         var description = new ContainerDescription("Engine");
         Components.InstallBindings(description);
         InjectionContainer = description.Build();
+        InjectionContainer.DisposeWith(this);
         
         Components.Load();
 
