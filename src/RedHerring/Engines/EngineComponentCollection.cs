@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using RedHerring.Alexandria;
 using RedHerring.Alexandria.Components;
+using RedHerring.Alexandria.Extensions.Collections;
 using RedHerring.Exceptions;
-using RedHerring.Extensions.Collections;
 using RedHerring.Infusion;
 using RedHerring.Infusion.Injectors;
 

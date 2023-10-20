@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using RedHerring.Extensions;
+using RedHerring.Alexandria.Extensions;
 
 namespace RedHerring.Fingerprint.Shortcuts;
 

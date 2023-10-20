@@ -1,4 +1,4 @@
-﻿using RedHerring.Extensions.Collections;
+﻿using RedHerring.Alexandria.Extensions.Collections;
 
 namespace RedHerring.Alexandria.Collections;
 
