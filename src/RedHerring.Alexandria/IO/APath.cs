@@ -7,6 +7,7 @@ public abstract record class APath : IComparable
 {
     private string _fullPath;
     
+    // TODO: replace with ArraySegment<char>?
     protected readonly Region DriveRegion;
     protected readonly Region DirectoryRegion;
     protected readonly Region NameRegion;
@@ -23,7 +24,6 @@ public abstract record class APath : IComparable
     protected APath(string fullPath, bool isDirectory)
     {
         // TODO: maybe some validation?
-        
         _fullPath = Decode(fullPath, isDirectory, out DriveRegion, out DirectoryRegion, out NameRegion, out ExtensionRegion);
     }
 
@@ -55,13 +55,13 @@ public abstract record class APath : IComparable
 
     #region Private
 
-    private static string Decode(string filePath, bool isDirectory, out Region driveRegion, out Region directoryRegion,
-        out Region nameRegion, out Region extensionRegion)
+    private static string Decode(string filePath, bool isDirectory, out Region drive, out Region directory,
+        out Region name, out Region extension)
     {
-        driveRegion = new Region();
-        directoryRegion = new Region();
-        nameRegion = new Region();
-        extensionRegion = new Region();
+        drive = new Region();
+        directory = new Region();
+        name = new Region();
+        extension = new Region();
 
         if (filePath.IsNullOrWhitespace())
         {
@@ -69,7 +69,39 @@ public abstract record class APath : IComparable
         }
 
         // TODO: normalize the separators
-        // TODO: split path into pieces and calculate regions
+        
+        var root = Path.GetPathRoot(filePath.AsSpan());
+        if (root.Length > 0)
+        {
+            drive.Length = root.Length;
+        }
+        
+        var dir = Path.GetDirectoryName(filePath.AsSpan());
+        var file = Path.GetFileNameWithoutExtension(filePath.AsSpan());
+        
+        if (drive.IsValid)
+        {
+            directory.Start = drive.Next;
+            directory.Length = dir.Length;
+        }
+        else
+        {
+            directory.Start = 0;
+            directory.Length = dir.Length;
+        }
+
+        if (file.Length > 0)
+        {
+            name.Start = directory.Next;
+            name.Length = file.Length;
+        }
+        
+        if (name.IsValid)
+        {
+            var ext = Path.GetExtension(filePath.AsSpan());
+            extension.Length = ext.Length;
+            extension.Start = filePath.Length - ext.Length;
+        }
         
         return filePath;
     }
