@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RedHerring.Extensions\RedHerring.Extensions.csproj" />
       <ProjectReference Include="..\RedHerring.Numbers\RedHerring.Numbers.csproj" />
     </ItemGroup>
 
