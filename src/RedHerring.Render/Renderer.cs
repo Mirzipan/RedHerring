@@ -23,6 +23,8 @@ public class Renderer : AThingamabob
     // TODO graphics device
 
     public RendererComponentCollection Components => _components;
+    public GraphicsDevice Device => _graphicsDevice;
+    public CommandList CommandList => _commandList;
 
     #region Lifecycle
 

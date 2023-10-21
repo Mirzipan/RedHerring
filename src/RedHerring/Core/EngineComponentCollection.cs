@@ -220,7 +220,7 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
         for (int i = 0; i < count; i++)
         {
             var component = _components[i];
-            component.SetContainer(_engine);
+            component.SetContainer(this);
             component.RaiseInit();
         }
     }

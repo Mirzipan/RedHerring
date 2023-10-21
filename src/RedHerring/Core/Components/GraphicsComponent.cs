@@ -1,11 +1,15 @@
 ﻿using RedHerring.Render;
 using Silk.NET.Maths;
+using Veldrid;
 
 namespace RedHerring.Core.Components;
 
 public sealed class GraphicsComponent : AnEngineComponent
 {
     private Renderer _renderer = null!;
+
+    public GraphicsDevice Device => _renderer.Device;
+    public CommandList CommandList => _renderer.CommandList;
     
     protected override void Init()
     {

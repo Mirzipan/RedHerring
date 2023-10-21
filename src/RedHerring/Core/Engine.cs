@@ -140,10 +140,10 @@ public sealed class Engine : AThingamabob, IComponentContainer
 
     private void Draw(GameTime time)
     {
+        Renderer!.Draw();
+        
         Components.Draw(time);
         Session?.Draw(time);
-        
-        Renderer!.Draw();
     }
     
     private void Update(GameTime time)
