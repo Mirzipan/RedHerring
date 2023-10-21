@@ -1,6 +1,6 @@
 ﻿using RedHerring.Alexandria;
-using RedHerring.Engines;
-using RedHerring.Engines.Components;
+using RedHerring.Core;
+using RedHerring.Core.Components;
 using RedHerring.Fingerprint;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;

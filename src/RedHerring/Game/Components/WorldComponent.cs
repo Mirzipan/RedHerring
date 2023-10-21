@@ -1,9 +1,9 @@
 ﻿using RedHerring.Alexandria;
 using RedHerring.Motive.Worlds;
 
-namespace RedHerring.Games.Components;
+namespace RedHerring.Game.Components;
 
-public sealed class WorldComponent : AGameComponent, IDrawable
+public sealed class WorldComponent : ASessionComponent, IDrawable
 {
     // TODO: any special tracking if necessary, if not, consider removing this component
     private World _world;

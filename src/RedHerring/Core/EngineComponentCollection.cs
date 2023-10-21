@@ -2,19 +2,17 @@
 using RedHerring.Alexandria;
 using RedHerring.Alexandria.Components;
 using RedHerring.Alexandria.Extensions.Collections;
-using RedHerring.Engines;
 using RedHerring.Exceptions;
 using RedHerring.Infusion;
 using RedHerring.Infusion.Injectors;
 
-namespace RedHerring.Games;
+namespace RedHerring.Core;
 
-public sealed class GameComponentCollection : IGameComponentCollection, IDisposable
+public sealed class EngineComponentCollection : IEngineComponentCollection
 {
-    public Game Game { get; }
-    
-    private readonly Dictionary<Type, AGameComponent> _componentIndex = new();
-    private readonly List<AGameComponent> _components = new();
+    private readonly Dictionary<Type, AnEngineComponent> _componentIndex = new();
+    private readonly List<AnEngineComponent> _components = new();
+    private readonly Engine _engine;
     
     private readonly List<IUpdatable> _updatables = new();
     private readonly List<IDrawable> _drawables = new();
@@ -23,43 +21,46 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
     private readonly List<IUpdatable> _currentlyUpdatingComponents = new();
     private readonly List<IDrawable> _currentlyDrawingComponents = new();
 
+    public Engine Engine => _engine;
+
     #region Lifecycle
-    
-    public GameComponentCollection(Game game)
+
+    public EngineComponentCollection(Engine engine)
     {
-        Game = game;
+        _engine = engine;
     }
 
     internal void Init()
     {
-        if (Game.Context!.Components.IsNullOrEmpty())
+        if (_engine.Context.Components.IsNullOrEmpty())
         {
             return;
         }
 
-        int count = Game.Context.Components.Count;
+        int count = _engine.Context.Components.Count;
         for (int i = 0; i < count; i++)
         {
-            var componentType = Game.Context.Components[i];
-            if (!componentType.IsSubclassOf(typeof(AGameComponent)))
+            var component = _engine.Context.Components[i];
+            if (!component.Type.IsSubclassOf(typeof(AnEngineComponent)))
             {
-                throw new TypeIsNotAGameComponentException(componentType);
+                throw new TypeIsNotAnEngineComponentException(component.Type);
             }
             
-            object? instance = Activator.CreateInstance(componentType);
+            object? instance = Activator.CreateInstance(component.Type);
             if (instance is null)
             {
                 throw new NullReferenceException();
             }
 
-            var componentInstance = (instance as AGameComponent)!;
+            var componentInstance = (instance as AnEngineComponent)!;
             _components.Add(componentInstance);
-            _componentIndex[componentType] = componentInstance;
+            _componentIndex[component.Type] = componentInstance;
 
             TryAddSpecializedComponent(componentInstance);
         }
         
         Sort();
+        RaiseInitOnComponents();
     }
 
     internal void InstallBindings(ContainerDescription description)
@@ -88,10 +89,26 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
         for (int i = 0; i < count; i++)
         {
             var component = _components[i];
-            AttributeInjector.Inject(component, Game.InjectionContainer);
+            AttributeInjector.Inject(component, Engine.InjectionContainer);
+        }
+        
+        for (int i = 0; i < count; i++)
+        {
+            var component = _components[i];
+            component.RaiseLoad();
         }
     }
 
+    internal void Unload()
+    {
+        int count = _components.Count;
+        for (int i = 0; i < count; i++)
+        {
+            var component = _components[i];
+            component.RaiseUnload();
+        }
+    }
+    
     internal void Update(GameTime gameTime)
     {
         _currentlyUpdatingComponents.AddRange(_updatables);
@@ -134,14 +151,39 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
         _currentlyDrawingComponents.Clear();
     }
 
-    public void Dispose()
-    {
-        int count = _components.Count;
-        _components.Clear();
-    }
-
     #endregion Lifecycle
 
+    #region Queries
+
+    IComponent? IComponentContainer.Get(Type type)
+    {
+        return _componentIndex.TryGetValue(type, out var value) ? value : null;
+    }
+
+    public TEngineComponent? Get<TEngineComponent>() where TEngineComponent : AnEngineComponent
+    {
+        return _componentIndex.TryGetValue(typeof(TEngineComponent), out var value) ? (TEngineComponent)value : null;
+    }
+
+    public bool TryGet<TEngineComponent>(out TEngineComponent? component) where TEngineComponent : AnEngineComponent
+    {
+        if (_componentIndex.TryGetValue(typeof(TEngineComponent), out var value))
+        {
+            component = (TEngineComponent)value;
+            return true;
+        }
+
+        component = null;
+        return false;
+    }
+
+    public bool TryGet(Type type, out AnEngineComponent? component)
+    {
+        return _componentIndex.TryGetValue(type, out component);
+    }
+    
+    #endregion Queries
+    
     #region Manipulation
 
     private void Sort()
@@ -152,40 +194,9 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
 
     #endregion Manipulation
 
-    #region Queries
-    
-    IComponent? IComponentContainer.Get(Type type)
-    {
-        return _componentIndex.TryGetValue(type, out var value) ? value : null;
-    }
-
-    public T? Get<T>() where T : AGameComponent
-    {
-        return _componentIndex.TryGetValue(typeof(T), out var value) ? (T)value : null;
-    }
-
-    public bool TryGet<T>(out T? component) where T : AGameComponent
-    {
-        if (_componentIndex.TryGetValue(typeof(T), out var value))
-        {
-            component = (T)value;
-            return true;
-        }
-
-        component = null;
-        return false;
-    }
-
-    public bool TryGet(Type type, out AGameComponent? component)
-    {
-        return _componentIndex.TryGetValue(type, out component);
-    }
-    
-    #endregion Queries
-
     #region Private
 
-    private void TryAddSpecializedComponent(AGameComponent component)
+    private void TryAddSpecializedComponent(AnEngineComponent component)
     {
         if (component is IUpdatable updatable)
         {
@@ -203,11 +214,22 @@ public sealed class GameComponentCollection : IGameComponentCollection, IDisposa
         }
     }
 
+    private void RaiseInitOnComponents()
+    {
+        int count = _components.Count;
+        for (int i = 0; i < count; i++)
+        {
+            var component = _components[i];
+            component.SetContainer(_engine);
+            component.RaiseInit();
+        }
+    }
+
     #endregion Private
 
     #region IEnumerable
 
-    public IEnumerator<AGameComponent> GetEnumerator()
+    IEnumerator<AnEngineComponent> IEnumerable<AnEngineComponent>.GetEnumerator()
     {
         return _components.GetEnumerator();
     }

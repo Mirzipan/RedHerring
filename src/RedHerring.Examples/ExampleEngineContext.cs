@@ -1,5 +1,5 @@
-﻿using RedHerring.Engines;
-using RedHerring.Engines.Components;
+﻿using RedHerring.Core;
+using RedHerring.Core.Components;
 
 namespace RedHerring.Examples;
 

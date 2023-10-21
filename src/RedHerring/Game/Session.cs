@@ -1,37 +1,34 @@
 ﻿using System.Collections;
 using RedHerring.Alexandria;
 using RedHerring.Alexandria.Disposables;
-using RedHerring.Engines;
-using RedHerring.Games.Components;
+using RedHerring.Core;
+using RedHerring.Game.Components;
 using RedHerring.Infusion;
 using RedHerring.Motive.Worlds;
 
-namespace RedHerring.Games;
+namespace RedHerring.Game;
 
-public sealed class Game : AThingamabob, IEnumerable<AGameComponent>
+public sealed class Session : AThingamabob, IEnumerable<ASessionComponent>
 {
-    private Engine _engine;
+    private Engine _engine = null!;
     private World? _world;
     
     public InjectionContainer InjectionContainer { get; private set; } = null!;
-    public GameComponentCollection Components { get; }
-    public AGameContext? Context { get; }
+    public SessionComponentCollection Components { get; }
+    public ASessionContext? Context { get; }
     public Engine Engine => _engine;
     public World? World => _world ??= Components.Get<WorldComponent>()?.World;
 
-    public GamePhase Phase { get; private set; }
-    public bool IsPlayable => Phase == GamePhase.Initialized;
+    public SessionPhase Phase { get; private set; }
+    public bool IsPlayable => Phase == SessionPhase.Initialized;
 
     #region Lifecycle
 
-    private Game(string? name = null) : base(name)
+    public Session(Engine engine, ASessionContext? context): base(context?.Name)
     {
-        Components = new GameComponentCollection(this);
-    }
-
-    public Game(AGameContext? context): this(context?.Name)
-    {
+        _engine = engine;
         Context = context;
+        Components = new SessionComponentCollection(this);
     }
 
     public void Update(GameTime gameTime)
@@ -44,26 +41,25 @@ public sealed class Game : AThingamabob, IEnumerable<AGameComponent>
         Components.Draw(gameTime);
     }
 
-    public void Initialize(Engine engine)
+    public void Initialize()
     {
-        _engine = engine;
-        Phase = GamePhase.Initializing;
+        Phase = SessionPhase.Initializing;
         
         InitFromContext();
         // TODO: loading magic
 
-        Phase = GamePhase.Initialized;
+        Phase = SessionPhase.Initialized;
     }
 
     public void Close()
     {
-        Phase = GamePhase.Closing;
+        Phase = SessionPhase.Closing;
         
         Dispose();
         // TODO: unload stuff
         // TODO: dispose of stuff
 
-        Phase = GamePhase.Closed;
+        Phase = SessionPhase.Closed;
     }
 
     #endregion Lifecycle
@@ -86,7 +82,7 @@ public sealed class Game : AThingamabob, IEnumerable<AGameComponent>
 
     #region IEnumerable
 
-    public IEnumerator<AGameComponent> GetEnumerator() => Components.GetEnumerator();
+    public IEnumerator<ASessionComponent> GetEnumerator() => Components.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => Components.GetEnumerator();
 
     #endregion IEnumerable

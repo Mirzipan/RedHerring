@@ -1,6 +1,6 @@
 ﻿using RedHerring.Alexandria.Components;
 
-namespace RedHerring.Engines;
+namespace RedHerring.Core;
 
 public abstract class AnEngineComponent : AComponent<Engine>
 {

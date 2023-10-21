@@ -1,8 +1,8 @@
-﻿using RedHerring.Engines.Components;
+﻿using RedHerring.Core.Components;
 using Silk.NET.Windowing;
 using Veldrid;
 
-namespace RedHerring.Engines;
+namespace RedHerring.Core;
 
 /// <summary>
 /// Context used for running the engine.

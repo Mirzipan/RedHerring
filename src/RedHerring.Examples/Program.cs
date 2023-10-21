@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
-using RedHerring.Engines;
-using RedHerring.Games;
+using RedHerring.Core;
+using RedHerring.Game;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Extensions.Veldrid;
@@ -15,8 +15,7 @@ internal class Program
     private static ExampleEngineContext _engineContext = null!;
     private static Engine _engine = null!;
 
-    private static ExampleGameContext _gameContext = null!;
-    private static Game _game = null!;
+    private static ExampleSessionContext _sessionContext = null!;
 
     private static GraphicsBackend _graphicsBackend;
 
@@ -88,9 +87,8 @@ internal class Program
         };
         _engine.Run(_engineContext);
 
-        _gameContext = new ExampleGameContext();
-        _game = new Game(_gameContext);
-        _engine.Run(_game);
+        _sessionContext = new ExampleSessionContext();
+        _engine.Run(_sessionContext);
         
         _window!.IsVisible = true;
     }

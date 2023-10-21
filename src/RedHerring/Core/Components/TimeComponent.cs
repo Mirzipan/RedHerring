@@ -1,4 +1,4 @@
-﻿namespace RedHerring.Engines.Components;
+﻿namespace RedHerring.Core.Components;
 
 public sealed class TimeComponent : AnEngineComponent
 {

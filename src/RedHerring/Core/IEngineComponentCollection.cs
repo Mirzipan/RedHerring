@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using RedHerring.Alexandria.Components;
 
-namespace RedHerring.Engines;
+namespace RedHerring.Core;
 
 public interface IEngineComponentCollection : IComponentContainer, IEnumerable<AnEngineComponent>, IEnumerable
 {

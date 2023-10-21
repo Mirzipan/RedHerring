@@ -6,13 +6,14 @@ using RedHerring.Exceptions;
 using RedHerring.Infusion;
 using RedHerring.Infusion.Injectors;
 
-namespace RedHerring.Engines;
+namespace RedHerring.Game;
 
-public sealed class EngineComponentCollection : IEngineComponentCollection
+public sealed class SessionComponentCollection : ISessionComponentCollection, IDisposable
 {
-    private readonly Dictionary<Type, AnEngineComponent> _componentIndex = new();
-    private readonly List<AnEngineComponent> _components = new();
-    private readonly Engine _engine;
+    public Session Session { get; }
+    
+    private readonly Dictionary<Type, ASessionComponent> _componentIndex = new();
+    private readonly List<ASessionComponent> _components = new();
     
     private readonly List<IUpdatable> _updatables = new();
     private readonly List<IDrawable> _drawables = new();
@@ -21,46 +22,43 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
     private readonly List<IUpdatable> _currentlyUpdatingComponents = new();
     private readonly List<IDrawable> _currentlyDrawingComponents = new();
 
-    public Engine Engine => _engine;
-
     #region Lifecycle
-
-    public EngineComponentCollection(Engine engine)
+    
+    public SessionComponentCollection(Session session)
     {
-        _engine = engine;
+        Session = session;
     }
 
     internal void Init()
     {
-        if (_engine.Context.Components.IsNullOrEmpty())
+        if (Session.Context!.Components.IsNullOrEmpty())
         {
             return;
         }
 
-        int count = _engine.Context.Components.Count;
+        int count = Session.Context.Components.Count;
         for (int i = 0; i < count; i++)
         {
-            var component = _engine.Context.Components[i];
-            if (!component.Type.IsSubclassOf(typeof(AnEngineComponent)))
+            var componentType = Session.Context.Components[i];
+            if (!componentType.IsSubclassOf(typeof(ASessionComponent)))
             {
-                throw new TypeIsNotAnEngineComponentException(component.Type);
+                throw new TypeIsNotAGameComponentException(componentType);
             }
             
-            object? instance = Activator.CreateInstance(component.Type);
+            object? instance = Activator.CreateInstance(componentType);
             if (instance is null)
             {
                 throw new NullReferenceException();
             }
 
-            var componentInstance = (instance as AnEngineComponent)!;
+            var componentInstance = (instance as ASessionComponent)!;
             _components.Add(componentInstance);
-            _componentIndex[component.Type] = componentInstance;
+            _componentIndex[componentType] = componentInstance;
 
             TryAddSpecializedComponent(componentInstance);
         }
         
         Sort();
-        RaiseInitOnComponents();
     }
 
     internal void InstallBindings(ContainerDescription description)
@@ -89,26 +87,10 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
         for (int i = 0; i < count; i++)
         {
             var component = _components[i];
-            AttributeInjector.Inject(component, Engine.InjectionContainer);
-        }
-        
-        for (int i = 0; i < count; i++)
-        {
-            var component = _components[i];
-            component.RaiseLoad();
+            AttributeInjector.Inject(component, Session.InjectionContainer);
         }
     }
 
-    internal void Unload()
-    {
-        int count = _components.Count;
-        for (int i = 0; i < count; i++)
-        {
-            var component = _components[i];
-            component.RaiseUnload();
-        }
-    }
-    
     internal void Update(GameTime gameTime)
     {
         _currentlyUpdatingComponents.AddRange(_updatables);
@@ -151,39 +133,14 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
         _currentlyDrawingComponents.Clear();
     }
 
+    public void Dispose()
+    {
+        int count = _components.Count;
+        _components.Clear();
+    }
+
     #endregion Lifecycle
 
-    #region Queries
-
-    IComponent? IComponentContainer.Get(Type type)
-    {
-        return _componentIndex.TryGetValue(type, out var value) ? value : null;
-    }
-
-    public TEngineComponent? Get<TEngineComponent>() where TEngineComponent : AnEngineComponent
-    {
-        return _componentIndex.TryGetValue(typeof(TEngineComponent), out var value) ? (TEngineComponent)value : null;
-    }
-
-    public bool TryGet<TEngineComponent>(out TEngineComponent? component) where TEngineComponent : AnEngineComponent
-    {
-        if (_componentIndex.TryGetValue(typeof(TEngineComponent), out var value))
-        {
-            component = (TEngineComponent)value;
-            return true;
-        }
-
-        component = null;
-        return false;
-    }
-
-    public bool TryGet(Type type, out AnEngineComponent? component)
-    {
-        return _componentIndex.TryGetValue(type, out component);
-    }
-    
-    #endregion Queries
-    
     #region Manipulation
 
     private void Sort()
@@ -194,9 +151,40 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
 
     #endregion Manipulation
 
+    #region Queries
+    
+    IComponent? IComponentContainer.Get(Type type)
+    {
+        return _componentIndex.TryGetValue(type, out var value) ? value : null;
+    }
+
+    public T? Get<T>() where T : ASessionComponent
+    {
+        return _componentIndex.TryGetValue(typeof(T), out var value) ? (T)value : null;
+    }
+
+    public bool TryGet<T>(out T? component) where T : ASessionComponent
+    {
+        if (_componentIndex.TryGetValue(typeof(T), out var value))
+        {
+            component = (T)value;
+            return true;
+        }
+
+        component = null;
+        return false;
+    }
+
+    public bool TryGet(Type type, out ASessionComponent? component)
+    {
+        return _componentIndex.TryGetValue(type, out component);
+    }
+    
+    #endregion Queries
+
     #region Private
 
-    private void TryAddSpecializedComponent(AnEngineComponent component)
+    private void TryAddSpecializedComponent(ASessionComponent component)
     {
         if (component is IUpdatable updatable)
         {
@@ -214,22 +202,11 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
         }
     }
 
-    private void RaiseInitOnComponents()
-    {
-        int count = _components.Count;
-        for (int i = 0; i < count; i++)
-        {
-            var component = _components[i];
-            component.SetContainer(_engine);
-            component.RaiseInit();
-        }
-    }
-
     #endregion Private
 
     #region IEnumerable
 
-    IEnumerator<AnEngineComponent> IEnumerable<AnEngineComponent>.GetEnumerator()
+    public IEnumerator<ASessionComponent> GetEnumerator()
     {
         return _components.GetEnumerator();
     }

@@ -6,14 +6,14 @@ namespace RedHerring.Studio.Engine;
 
 public static class EngineBootstrap
 {
-    public static RedHerring.Engines.Engine Start(IView view)
+    public static Core.Engine Start(IView view)
     {
         var context = new StudioEngineContext
         {
             View = view,
         };
 
-        var engine = new Engines.Engine();
+        var engine = new Core.Engine();
         engine.Run(context);
         return engine;
     }

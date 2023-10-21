@@ -1,7 +1,7 @@
 ﻿using RedHerring.Render;
 using Silk.NET.Maths;
 
-namespace RedHerring.Engines.Components;
+namespace RedHerring.Core.Components;
 
 public sealed class GraphicsComponent : AnEngineComponent
 {

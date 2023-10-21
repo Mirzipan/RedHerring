@@ -1,13 +1,13 @@
 ﻿using RedHerring.Alexandria;
 using RedHerring.Alexandria.Components;
 using RedHerring.Alexandria.Disposables;
-using RedHerring.Engines.Components;
+using RedHerring.Core.Components;
 using RedHerring.Exceptions;
-using RedHerring.Games;
+using RedHerring.Game;
 using RedHerring.Infusion;
 using Silk.NET.Maths;
 
-namespace RedHerring.Engines;
+namespace RedHerring.Core;
 
 public sealed class Engine : AThingamabob, IComponentContainer
 {
@@ -15,7 +15,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
     public EngineComponentCollection Components { get; }
     public AnEngineContext Context { get; private set; } = null!;
     public GraphicsComponent? Renderer { get; private set; } = null!;
-    public Game? Game { get; private set; }
+    public Session? Session { get; private set; }
     public bool IsRunning { get; private set; }
     public bool IsExiting { get; private set; }
 
@@ -41,15 +41,15 @@ public sealed class Engine : AThingamabob, IComponentContainer
         _cronos = new Cronos();
     }
 
-    public void Run(Game game)
+    public void Run(ASessionContext session)
     {
         if (!IsRunning)
         {
             throw new EngineNotRunningException();
         }
-        
-        Game = game;
-        Game.Initialize(this);
+
+        Session = new Session(this, session);
+        Session.Initialize();
     }
 
     public void Run(AnEngineContext context)
@@ -104,7 +104,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
     public void Exit()
     {
         IsExiting = true;
-        Game?.Close();
+        Session?.Close();
         
         Components.Unload();
     }
@@ -141,7 +141,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
     private void Draw(GameTime time)
     {
         Components.Draw(time);
-        Game?.Draw(time);
+        Session?.Draw(time);
         
         Renderer!.Draw();
     }
@@ -149,7 +149,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
     private void Update(GameTime time)
     {
         Components.Update(time);
-        Game?.Update(time);
+        Session?.Update(time);
     }
 
     #endregion Private

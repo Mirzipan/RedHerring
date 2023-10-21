@@ -5,7 +5,7 @@ namespace RedHerring.Studio.Controls;
 
 public class EngineControl : SilkControl
 {
-    private static Engines.Engine _engine = null!;
+    private static Core.Engine _engine = null!;
     
     protected override void OnLoad()
     {

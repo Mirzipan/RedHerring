@@ -1,6 +1,6 @@
-﻿namespace RedHerring.Games;
+﻿namespace RedHerring.Game;
 
-public enum GamePhase
+public enum SessionPhase
 {
     Closed = 0,
     Initializing = 1,

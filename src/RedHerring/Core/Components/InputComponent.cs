@@ -5,7 +5,7 @@ using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Fingerprint.States;
 
-namespace RedHerring.Engines.Components;
+namespace RedHerring.Core.Components;
 
 public sealed class InputComponent : AnEngineComponent, IUpdatable
 {
