@@ -1,21 +1,21 @@
 ﻿using RedHerring.Alexandria;
 using RedHerring.Core;
-using RedHerring.Core.Components;
+using RedHerring.Core.Systems;
 using RedHerring.Fingerprint;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Infusion.Attributes;
 using RedHerring.Studio.Commands;
 
-namespace RedHerring.Studio.Engine.Components;
+namespace RedHerring.Studio.Engine.Systems;
 
 // TODO: Add this to engine context when creating editor window.
-public sealed class EditorComponent : AnEngineComponent, IUpdatable, IDrawable
+public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 {
     [Inject]
-    private InputComponent _inputComponent = null!;
+    private InputSystem _inputSystem = null!;
     [Inject]
-    private GraphicsComponent _graphicsComponent = null!;
+    private GraphicsSystem _graphicsSystem = null!;
 
     private InputReceiver _inputReceiver;
     
@@ -63,9 +63,9 @@ public sealed class EditorComponent : AnEngineComponent, IUpdatable, IDrawable
 
     private void InitInput()
     {
-        _inputComponent.Input.Bindings!.Add(new ShortcutBinding("undo", new KeyboardShortcut(Key.U)));
-        _inputComponent.Input.Bindings!.Add(new ShortcutBinding("redo", new KeyboardShortcut(Key.Z)));
-        _inputComponent.Input.Layers.Push(_inputReceiver);
+        _inputSystem.Input.Bindings!.Add(new ShortcutBinding("undo", new KeyboardShortcut(Key.U)));
+        _inputSystem.Input.Bindings!.Add(new ShortcutBinding("redo", new KeyboardShortcut(Key.Z)));
+        _inputSystem.Input.Layers.Push(_inputReceiver);
     }
 
     #endregion Private

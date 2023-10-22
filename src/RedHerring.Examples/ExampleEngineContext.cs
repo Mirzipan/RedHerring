@@ -1,5 +1,5 @@
 ﻿using RedHerring.Core;
-using RedHerring.Core.Components;
+using RedHerring.Core.Systems;
 using RedHerring.ImGui;
 
 namespace RedHerring.Examples;
@@ -8,9 +8,9 @@ public class ExampleEngineContext : AnEngineContext
 {
     public ExampleEngineContext()
     {
-        Components.Add(new ComponentReference(typeof(GraphicsComponent)));
-        Components.Add(new ComponentReference(typeof(InputComponent)));
-        Components.Add(new ComponentReference(typeof(ImGuiComponent)));
+        Systems.Add(new SystemReference(typeof(GraphicsSystem)));
+        Systems.Add(new SystemReference(typeof(InputSystem)));
+        Systems.Add(new SystemReference(typeof(ImGuiSystem)));
 
         UseSeparateRenderThread = true;
     }

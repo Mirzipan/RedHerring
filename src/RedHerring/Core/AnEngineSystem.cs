@@ -2,13 +2,13 @@
 
 namespace RedHerring.Core;
 
-public abstract class AnEngineComponent : AComponent<EngineComponentCollection>
+public abstract class AnEngineSystem : AComponent<EngineSystemCollection>
 {
-    private EngineComponentCollection _container = null!;
-    public override EngineComponentCollection Container => _container;
+    private EngineSystemCollection _container = null!;
+    public override EngineSystemCollection Container => _container;
     protected AnEngineContext Context => _container.Engine.Context;
 
-    internal void SetContainer(EngineComponentCollection container)
+    internal void SetContainer(EngineSystemCollection container)
     {
         _container = container;
     }

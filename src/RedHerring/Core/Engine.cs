@@ -1,7 +1,7 @@
 ﻿using RedHerring.Alexandria;
 using RedHerring.Alexandria.Components;
 using RedHerring.Alexandria.Disposables;
-using RedHerring.Core.Components;
+using RedHerring.Core.Systems;
 using RedHerring.Exceptions;
 using RedHerring.Game;
 using RedHerring.Infusion;
@@ -12,9 +12,9 @@ namespace RedHerring.Core;
 public sealed class Engine : AThingamabob, IComponentContainer
 {
     public InjectionContainer InjectionContainer { get; private set; } = null!;
-    public EngineComponentCollection Components { get; }
+    public EngineSystemCollection Systems { get; }
     public AnEngineContext Context { get; private set; } = null!;
-    public GraphicsComponent? Renderer { get; private set; } = null!;
+    public GraphicsSystem? Renderer { get; private set; } = null!;
     public Session? Session { get; private set; }
     public bool IsRunning { get; private set; }
     public bool IsExiting { get; private set; }
@@ -30,7 +30,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
 
     public Engine()
     {
-        Components = new EngineComponentCollection(this);
+        Systems = new EngineSystemCollection(this);
         
         IsRunning = false;
         IsExiting = false;
@@ -106,7 +106,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
         IsExiting = true;
         Session?.Close();
         
-        Components.Unload();
+        Systems.Unload();
     }
 
     #endregion Lifecycle
@@ -118,7 +118,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
         Renderer?.Resize(size);
     }
 
-    IComponent? IComponentContainer.Get(Type type) => ((IComponentContainer)Components).Get(type);
+    IComponent? IComponentContainer.Get(Type type) => ((IComponentContainer)Systems).Get(type);
 
     #endregion Public
 
@@ -126,29 +126,29 @@ public sealed class Engine : AThingamabob, IComponentContainer
 
     private void InitFromContext()
     {
-        Components.Init();
+        Systems.Init();
         
         var description = new ContainerDescription("Engine");
-        Components.InstallBindings(description);
+        Systems.InstallBindings(description);
         InjectionContainer = description.Build();
         InjectionContainer.DisposeWith(this);
         
-        Components.Load();
+        Systems.Load();
 
-        Renderer = Components.Get<GraphicsComponent>();
+        Renderer = Systems.Get<GraphicsSystem>();
     }
 
     private void Draw(GameTime time)
     {
         Renderer!.Draw();
         
-        Components.Draw(time);
+        Systems.Draw(time);
         Session?.Draw(time);
     }
     
     private void Update(GameTime time)
     {
-        Components.Update(time);
+        Systems.Update(time);
         Session?.Update(time);
     }
 

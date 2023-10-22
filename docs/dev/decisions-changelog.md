@@ -4,6 +4,11 @@
 
 This document tracks more or less important decisions about the engine, in order to allow easy referencing in the future.
 
+## [2023-10-22]
+
+### Engine Components / Systems
+Engine components renamed to engine systems, as they are conceptually very different from components in the session or on an entity.
+
 ## [2023-10-21]
 
 ### Game / Session

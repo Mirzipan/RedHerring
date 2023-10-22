@@ -1,6 +1,6 @@
-﻿namespace RedHerring.Core.Components;
+﻿namespace RedHerring.Core.Systems;
 
-public sealed class TimeComponent : AnEngineComponent
+public sealed class TimeSystem : AnEngineSystem
 {
     public float DefaultTimeScale { get; set; } = 1f;
     public float TimeScale { get; set; } = 1f;

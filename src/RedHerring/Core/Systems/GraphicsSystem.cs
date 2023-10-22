@@ -2,9 +2,9 @@
 using Silk.NET.Maths;
 using Veldrid;
 
-namespace RedHerring.Core.Components;
+namespace RedHerring.Core.Systems;
 
-public sealed class GraphicsComponent : AnEngineComponent
+public sealed class GraphicsSystem : AnEngineSystem
 {
     private Renderer _renderer = null!;
 

@@ -2,7 +2,7 @@
 using ImGuiNET;
 using RedHerring.Alexandria;
 using RedHerring.Core;
-using RedHerring.Core.Components;
+using RedHerring.Core.Systems;
 using RedHerring.Infusion.Attributes;
 using Veldrid;
 using Vortice.Mathematics;
@@ -10,7 +10,7 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.ImGui;
 
-public class ImGuiComponent : AnEngineComponent, IDrawable
+public class ImGuiSystem : AnEngineSystem, IDrawable
 {
     private const ImGuiWindowFlags BackgroundWindowFlags = ImGuiWindowFlags.NoSavedSettings 
                                                  | ImGuiWindowFlags.NoCollapse 
@@ -21,9 +21,9 @@ public class ImGuiComponent : AnEngineComponent, IDrawable
                                                  | ImGuiWindowFlags.NoBackground;
     
     [Inject]
-    private InputComponent _inputComponent = null!;
+    private InputSystem _inputSystem = null!;
     [Inject]
-    private GraphicsComponent _graphicsComponent = null!;
+    private GraphicsSystem _graphicsSystem = null!;
 
     private RedInputSnapshot _inputSnapshot = null!;
     
@@ -42,7 +42,7 @@ public class ImGuiComponent : AnEngineComponent, IDrawable
 
     protected override void Load()
     {
-        _inputSnapshot = new RedInputSnapshot(_inputComponent.Input);
+        _inputSnapshot = new RedInputSnapshot(_inputSystem.Input);
 
         LoadDefaultFontData();
         ResetRenderer();
@@ -88,8 +88,8 @@ public class ImGuiComponent : AnEngineComponent, IDrawable
 
     public void EndDraw()
     {
-        var device = _graphicsComponent.Device;
-        var cl = _graphicsComponent.CommandList;
+        var device = _graphicsSystem.Device;
+        var cl = _graphicsSystem.CommandList;
         
         _renderer?.Render(device, cl);
     }
@@ -110,8 +110,8 @@ public class ImGuiComponent : AnEngineComponent, IDrawable
 
         var size = Context.View.FramebufferSize;
         _renderer = new ImGuiRenderer(
-            _graphicsComponent.Device,
-            _graphicsComponent.Device.MainSwapchain.Framebuffer.OutputDescription,
+            _graphicsSystem.Device,
+            _graphicsSystem.Device.MainSwapchain.Framebuffer.OutputDescription,
             size.X,
             size.Y);
 
@@ -130,7 +130,7 @@ public class ImGuiComponent : AnEngineComponent, IDrawable
 
     private void DrawDeviceInfo()
     {
-        var device = _graphicsComponent.Device;
+        var device = _graphicsSystem.Device;
         
         Gui.Text("Device Info");
         AddRow("Name:", device.DeviceName);

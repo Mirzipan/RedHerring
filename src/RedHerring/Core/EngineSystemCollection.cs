@@ -8,10 +8,10 @@ using RedHerring.Infusion.Injectors;
 
 namespace RedHerring.Core;
 
-public sealed class EngineComponentCollection : IEngineComponentCollection
+public sealed class EngineSystemCollection : IEngineComponentCollection
 {
-    private readonly Dictionary<Type, AnEngineComponent> _componentIndex = new();
-    private readonly List<AnEngineComponent> _components = new();
+    private readonly Dictionary<Type, AnEngineSystem> _componentIndex = new();
+    private readonly List<AnEngineSystem> _components = new();
     private readonly Engine _engine;
     
     private readonly List<IUpdatable> _updatables = new();
@@ -25,23 +25,23 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
 
     #region Lifecycle
 
-    public EngineComponentCollection(Engine engine)
+    public EngineSystemCollection(Engine engine)
     {
         _engine = engine;
     }
 
     internal void Init()
     {
-        if (_engine.Context.Components.IsNullOrEmpty())
+        if (_engine.Context.Systems.IsNullOrEmpty())
         {
             return;
         }
 
-        int count = _engine.Context.Components.Count;
+        int count = _engine.Context.Systems.Count;
         for (int i = 0; i < count; i++)
         {
-            var component = _engine.Context.Components[i];
-            if (!component.Type.IsSubclassOf(typeof(AnEngineComponent)))
+            var component = _engine.Context.Systems[i];
+            if (!component.Type.IsSubclassOf(typeof(AnEngineSystem)))
             {
                 throw new TypeIsNotAnEngineComponentException(component.Type);
             }
@@ -52,7 +52,7 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
                 throw new NullReferenceException();
             }
 
-            var componentInstance = (instance as AnEngineComponent)!;
+            var componentInstance = (instance as AnEngineSystem)!;
             _components.Add(componentInstance);
             _componentIndex[component.Type] = componentInstance;
 
@@ -160,12 +160,12 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
         return _componentIndex.TryGetValue(type, out var value) ? value : null;
     }
 
-    public TEngineComponent? Get<TEngineComponent>() where TEngineComponent : AnEngineComponent
+    public TEngineComponent? Get<TEngineComponent>() where TEngineComponent : AnEngineSystem
     {
         return _componentIndex.TryGetValue(typeof(TEngineComponent), out var value) ? (TEngineComponent)value : null;
     }
 
-    public bool TryGet<TEngineComponent>(out TEngineComponent? component) where TEngineComponent : AnEngineComponent
+    public bool TryGet<TEngineComponent>(out TEngineComponent? component) where TEngineComponent : AnEngineSystem
     {
         if (_componentIndex.TryGetValue(typeof(TEngineComponent), out var value))
         {
@@ -177,7 +177,7 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
         return false;
     }
 
-    public bool TryGet(Type type, out AnEngineComponent? component)
+    public bool TryGet(Type type, out AnEngineSystem? component)
     {
         return _componentIndex.TryGetValue(type, out component);
     }
@@ -196,19 +196,19 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
 
     #region Private
 
-    private void TryAddSpecializedComponent(AnEngineComponent component)
+    private void TryAddSpecializedComponent(AnEngineSystem system)
     {
-        if (component is IUpdatable updatable)
+        if (system is IUpdatable updatable)
         {
             _updatables.Add(updatable);
         }
 
-        if (component is IDrawable drawable)
+        if (system is IDrawable drawable)
         {
             _drawables.Add(drawable);
         }
 
-        if (component is IBindingsInstaller installer)
+        if (system is IBindingsInstaller installer)
         {
             _installers.Add(installer);
         }
@@ -229,7 +229,7 @@ public sealed class EngineComponentCollection : IEngineComponentCollection
 
     #region IEnumerable
 
-    IEnumerator<AnEngineComponent> IEnumerable<AnEngineComponent>.GetEnumerator()
+    IEnumerator<AnEngineSystem> IEnumerable<AnEngineSystem>.GetEnumerator()
     {
         return _components.GetEnumerator();
     }
