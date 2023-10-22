@@ -9,6 +9,10 @@ This document tracks more or less important decisions about the engine, in order
 ### Engine Components / Systems
 Engine components renamed to engine systems, as they are conceptually very different from components in the session or on an entity.
 
+### Render Components / Features
+Render components renamed to features, because that's closer to their intended usage. 
+Expected features are debug, imgui, particles, meshes, etc.
+
 ## [2023-10-21]
 
 ### Game / Session

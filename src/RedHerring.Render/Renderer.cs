@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using RedHerring.Alexandria;
-using RedHerring.Render.Components;
+using RedHerring.Render.Features;
+using RedHerring.Render.Passes;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Extensions.Veldrid;
@@ -16,15 +17,13 @@ public class Renderer : AThingamabob
     private ResourceFactory _resourceFactory;
     private CommandList _commandList;
 
-    private RendererComponentCollection _components;
-    
-    // TODO graphics context
-    // TODO command list
-    // TODO graphics device
+    private RenderFeatureCollection _features;
 
-    public RendererComponentCollection Components => _components;
     public GraphicsDevice Device => _graphicsDevice;
     public CommandList CommandList => _commandList;
+    public RenderFeatureCollection Features => _features;
+    
+    // TODO graphics context
 
     #region Lifecycle
 
@@ -54,10 +53,15 @@ public class Renderer : AThingamabob
         _resourceFactory = _graphicsDevice.ResourceFactory;
         _commandList = _resourceFactory.CreateCommandList();
 
-        _components = new RendererComponentCollection();
+        _features = new RenderFeatureCollection();
         
-        var debug = new DebugRenderComponent(_graphicsDevice, _resourceFactory);
-        _components.Add(debug);
+        var debug = new DebugRenderFeature();
+        _features.Add(debug);
+    }
+
+    public void Init()
+    {
+        InitFeatures();
     }
 
     private void ThreadStart(object? obj)
@@ -85,7 +89,8 @@ public class Renderer : AThingamabob
 
     public void Draw()
     {
-        _components.Draw(_commandList);
+        _features.Update(_graphicsDevice, _commandList);
+        _features.Render(_graphicsDevice, _commandList, new RenderPass());
         
         // TODO ensure render targets and other magic
     }
@@ -105,7 +110,17 @@ public class Renderer : AThingamabob
     public void Resize(Vector2D<int> size)
     {
         _graphicsDevice.ResizeMainWindow((uint)size.X, (uint)size.Y);
+        _features.Resize(size);
     }
 
     #endregion Public
+
+    #region Private
+
+    private void InitFeatures()
+    {
+        _features.Init(_graphicsDevice, _commandList);
+    }
+
+    #endregion Private
 }
