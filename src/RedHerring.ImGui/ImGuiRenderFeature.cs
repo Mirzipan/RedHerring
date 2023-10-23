@@ -23,7 +23,7 @@ public class ImGuiRenderFeature : ARenderFeature
     private ImGuiRenderer? _renderer;
     private byte[] _openSansData = null!;
     private ImFontConfigPtr _openSansConfig;
-
+    
     public override int Priority { get; } = -1_000_000;
     public Vector2D<int> Size { get; set; }
 
@@ -40,13 +40,18 @@ public class ImGuiRenderFeature : ARenderFeature
     }
 
     public override void Render(GraphicsDevice device, CommandList commandList, RenderPass pass)
-    {        
+    {
         Gui.SetNextWindowPos(Vector2.Zero);
         Gui.SetNextWindowSize((Vector2)Size);
         Gui.Begin("Canvas", BackgroundWindowFlags);
         
         Gui.TextColored(Color3.AliceBlue.ToVector4(), "Debug");
         DrawDeviceInfo(device);
+
+        if (Gui.Button("Look ma', I'm a button!"))
+        {
+            Console.WriteLine("Look ma', I was clicked!");
+        }
         
         Gui.End();
         
@@ -78,12 +83,7 @@ public class ImGuiRenderFeature : ARenderFeature
     #region Public
 
     public void Update(GameTime time, InputSnapshot snapshot)
-    {
-        if (snapshot.MouseEvents.Count > 0)
-        {
-            Console.WriteLine($"Mouse events: {snapshot.MouseEvents.Count}");
-        }
-        
+    { 
         _renderer?.Update((float)time.Elapsed, snapshot);
     }
 
