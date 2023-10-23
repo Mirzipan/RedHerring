@@ -50,7 +50,7 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
     public void Draw(GameTime gameTime)
     {
-        Gui.ShowDemoWindow(); // imgui test window
+        Gui.ShowDemoWindow();
     }
 
     public void EndDraw()

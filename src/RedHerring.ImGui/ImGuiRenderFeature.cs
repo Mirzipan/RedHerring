@@ -43,15 +43,9 @@ public class ImGuiRenderFeature : ARenderFeature
     {
         Gui.SetNextWindowPos(Vector2.Zero);
         Gui.SetNextWindowSize((Vector2)Size);
-        Gui.Begin("Canvas", BackgroundWindowFlags);
+        Gui.Begin("Canvas", BackgroundWindowFlags | ImGuiWindowFlags.NoInputs);
         
-        Gui.TextColored(Color3.AliceBlue.ToVector4(), "Debug");
         DrawDeviceInfo(device);
-
-        if (Gui.Button("Look ma', I'm a button!"))
-        {
-            Console.WriteLine("Look ma', I was clicked!");
-        }
         
         Gui.End();
         
