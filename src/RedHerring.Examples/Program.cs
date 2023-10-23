@@ -100,12 +100,12 @@ internal class Program
 
     private static void OnUpdate(double time)
     {
-        _engine.Update();
+        _engine.Update(time);
     }
 
     private static void OnDraw(double time)
     {
-        _engine.Draw();
+        _engine.Draw(time);
     }
 
     private static void OnClose()

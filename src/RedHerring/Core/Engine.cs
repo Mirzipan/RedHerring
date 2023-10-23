@@ -69,7 +69,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
         IsRunning = true;
     }
 
-    public void Update()
+    public void Update(double delta)
     {
         if (IsExiting)
         {
@@ -82,7 +82,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
         Update(UpdateTime);
     }
 
-    public void Draw()
+    public void Draw(double delta)
     {
         if (IsExiting)
         {

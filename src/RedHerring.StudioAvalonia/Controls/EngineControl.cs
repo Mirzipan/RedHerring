@@ -21,12 +21,12 @@ public class EngineControl : SilkControl
 
     protected override void OnDraw(double delta)
     {
-        _engine.Draw();
+        _engine.Draw(delta);
     }
 
     protected override void OnUpdate(double delta)
     {
-        _engine.Update();
+        _engine.Update(delta);
     }
 
     protected override void OnResize(Vector2D<int> size)
