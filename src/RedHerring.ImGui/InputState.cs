@@ -32,11 +32,6 @@ internal class InputState : InputSnapshot
         // TODO: update key events
         _mouseEvents.Clear();
         CreateMouseEvents();
-
-        if (_mouseEvents.Count > 0)
-        {
-            Debugger.Break();
-        }
     }
     
     public bool IsMouseDown(VMouseButton button) => _input.IsButtonDown(Convert(button));

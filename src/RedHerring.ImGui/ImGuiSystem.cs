@@ -6,7 +6,7 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.ImGui;
 
-public class ImGuiSystem : AnEngineSystem, IDrawable
+public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
 {
     [Inject]
     private InputSystem _inputSystem = null!;
@@ -18,6 +18,9 @@ public class ImGuiSystem : AnEngineSystem, IDrawable
     
     public bool IsVisible => true;
     public int DrawOrder => 10_000_000;
+
+    public bool IsEnabled => true;
+    public int UpdateOrder => -10_000_000;
 
     #region Lifecycle
 
@@ -34,6 +37,11 @@ public class ImGuiSystem : AnEngineSystem, IDrawable
 
     protected override void Unload()
     {
+    }
+    public void Update(GameTime gameTime)
+    {
+        _inputSnapshot.Update();
+        _feature.Update(gameTime, _inputSnapshot);
     }
 
     #endregion Lifecycle
