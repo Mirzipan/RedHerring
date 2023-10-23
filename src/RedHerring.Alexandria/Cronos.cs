@@ -48,7 +48,7 @@ public class Cronos
     public void Reset()
     {
         _startTime = 0;
-        _stopwatch.Reset();
+        _stopwatch.Restart();
     }
 
     public void Resume()

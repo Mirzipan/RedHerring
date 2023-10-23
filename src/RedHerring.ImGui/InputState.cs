@@ -1,8 +1,6 @@
-﻿using System.Diagnostics;
-using System.Numerics;
+﻿using System.Numerics;
 using RedHerring.Fingerprint;
 using Veldrid;
-using Key = RedHerring.Fingerprint.Key;
 using MouseButton = RedHerring.Fingerprint.MouseButton;
 using VKey = Veldrid.Key;
 using VMouseButton = Veldrid.MouseButton;

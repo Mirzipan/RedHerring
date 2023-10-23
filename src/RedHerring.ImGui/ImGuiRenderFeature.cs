@@ -47,6 +47,7 @@ public class ImGuiRenderFeature : ARenderFeature
         
         Gui.TextColored(Color3.AliceBlue.ToVector4(), "Debug");
         DrawDeviceInfo(device);
+        
         Gui.End();
         
         _renderer?.Render(device, commandList);
@@ -78,7 +79,7 @@ public class ImGuiRenderFeature : ARenderFeature
 
     public void Update(GameTime time, InputSnapshot snapshot)
     {
-        _renderer?.Update(time.Elapsed, snapshot);
+        _renderer?.Update(time.Elapsed * 0.001f, snapshot);
     }
 
     #endregion Public
