@@ -8,9 +8,9 @@ public class ExampleEngineContext : AnEngineContext
 {
     public ExampleEngineContext()
     {
-        Systems.Add(new SystemReference(typeof(GraphicsSystem)));
-        Systems.Add(new SystemReference(typeof(InputSystem)));
-        Systems.Add(new SystemReference(typeof(ImGuiSystem)));
+        Systems.Add(SystemReference.Create<GraphicsSystem>());
+        Systems.Add(SystemReference.Create<InputSystem>());
+        Systems.Add(SystemReference.Create<ImGuiSystem>());
 
         UseSeparateRenderThread = true;
     }

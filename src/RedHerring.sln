@@ -18,13 +18,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Fingerprint", "R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Serialization", "RedHerring.Serialization\RedHerring.Serialization.csproj", "{F65A11E2-FEC6-4A21-8869-274F35E9E761}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Studio", "RedHerring.Studio\RedHerring.Studio.csproj", "{A0DBE91D-CD40-446D-8DDE-35E767BDB3BF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.StudioAvalonia", "RedHerring.StudioAvalonia\RedHerring.StudioAvalonia.csproj", "{A0DBE91D-CD40-446D-8DDE-35E767BDB3BF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Infusion", "RedHerring.Infusion\RedHerring.Infusion.csproj", "{B9A1CEEC-6733-4293-9EDC-F6A7673A8382}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Assets", "RedHerring.Assets\RedHerring.Assets.csproj", "{3E686ECC-95FA-4685-88D7-06E9AF1AA8A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.ImGui", "RedHerring.ImGui\RedHerring.ImGui.csproj", "{139AF41E-6E87-4750-921B-7D3D25473232}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Studio", "RedHerring.Studio\RedHerring.Studio.csproj", "{2C2D73CF-3898-4BE8-971A-76C9AA17974B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,5 +86,9 @@ Global
 		{139AF41E-6E87-4750-921B-7D3D25473232}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{139AF41E-6E87-4750-921B-7D3D25473232}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{139AF41E-6E87-4750-921B-7D3D25473232}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C2D73CF-3898-4BE8-971A-76C9AA17974B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C2D73CF-3898-4BE8-971A-76C9AA17974B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C2D73CF-3898-4BE8-971A-76C9AA17974B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C2D73CF-3898-4BE8-971A-76C9AA17974B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

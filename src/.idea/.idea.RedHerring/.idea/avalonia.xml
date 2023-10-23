@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="RedHerring.Studio/App.axaml" value="RedHerring.Studio/RedHerring.Studio.csproj" />
+        <entry key="RedHerring.Studio/Views/Windows/MainWindow.axaml" value="RedHerring.Studio/RedHerring.Studio.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

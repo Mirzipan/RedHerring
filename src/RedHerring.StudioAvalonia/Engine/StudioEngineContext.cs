@@ -8,9 +8,9 @@ public class StudioEngineContext : AnEngineContext
 {
     public StudioEngineContext()
     {
-        Systems.Add(new SystemReference(typeof(GraphicsSystem)));
-        Systems.Add(new SystemReference(typeof(InputSystem)));
-        Systems.Add(new SystemReference(typeof(EditorSystem)));
+        Systems.Add(SystemReference.Create<GraphicsSystem>());
+        Systems.Add(SystemReference.Create<InputSystem>());
+        Systems.Add(SystemReference.Create<EditorSystem>());
 
         UseSeparateRenderThread = true;
     }
