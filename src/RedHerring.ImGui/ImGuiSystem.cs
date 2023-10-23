@@ -38,6 +38,7 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
     protected override void Unload()
     {
     }
+    
     public void Update(GameTime gameTime)
     {
         _inputSnapshot.Update();
@@ -55,8 +56,6 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
 
     public void Draw(GameTime gameTime)
     {
-        _inputSnapshot.Update();
-        _feature.Update(gameTime, _inputSnapshot);
     }
 
     public void EndDraw()

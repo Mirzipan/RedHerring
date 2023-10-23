@@ -6,20 +6,20 @@
 public class GameTime
 {
     public long Total { get; private set; }
-    public long Elapsed { get; private set; }
+    public double Elapsed { get; private set; }
     public int FrameCount { get; private set; }
 
     public GameTime() : this(0, 0)
     {
     }
 
-    public GameTime(long total, long elapsed)
+    public GameTime(long total, double elapsed)
     {
         Total = total;
         Elapsed = elapsed;
     }
 
-    public void Update(long total, long elapsed, int frameCount)
+    public void Update(long total, double elapsed, int frameCount)
     {
         Total = total;
         Elapsed = elapsed;

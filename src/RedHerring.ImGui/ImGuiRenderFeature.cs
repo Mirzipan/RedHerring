@@ -79,7 +79,12 @@ public class ImGuiRenderFeature : ARenderFeature
 
     public void Update(GameTime time, InputSnapshot snapshot)
     {
-        _renderer?.Update(time.Elapsed * 0.001f, snapshot);
+        if (snapshot.MouseEvents.Count > 0)
+        {
+            Console.WriteLine($"Mouse events: {snapshot.MouseEvents.Count}");
+        }
+        
+        _renderer?.Update((float)time.Elapsed, snapshot);
     }
 
     #endregion Public

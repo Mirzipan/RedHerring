@@ -78,7 +78,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
 
         ++_updateCount;
         _cronos.Tick();
-        UpdateTime.Update(_cronos.TotalTime, _cronos.ElapsedTime, _updateCount);
+        UpdateTime.Update(_cronos.TotalTime, delta, _updateCount);
         Update(UpdateTime);
     }
 
