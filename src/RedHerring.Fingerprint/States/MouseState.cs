@@ -113,7 +113,6 @@ internal class MouseState : IMouseState, IInputSource, IDisposable
 
     #endregion Queries
 
-
     #region Private
 
     private static MouseButton ConvertButton(SilkButton button)
@@ -163,10 +162,10 @@ internal class MouseState : IMouseState, IInputSource, IDisposable
     private void OnMouseUp(IMouse mouse, SilkButton silkButton)
     {
         var button = ConvertButton(silkButton);
-        _pressed[(int)button] = true;
-        _down[(int)button] = true;
+        _down[(int)button] = false;
+        _released[(int)button] = true;
         
-        DebugPrint?.Invoke($"`{mouse.Name}` button `{button}` pressed.");
+        DebugPrint?.Invoke($"`{mouse.Name}` button `{button}` released.");
     }
 
     private void OnMouseScroll(IMouse mouse, ScrollWheel scrollDelta)

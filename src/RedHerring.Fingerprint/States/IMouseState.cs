@@ -12,4 +12,5 @@ public interface IMouseState : IInputState
     Vector2 Position { get; }
     Vector2 Delta { get; }
     Vector2 ScrollWheel { get; }
+    void GetButtonsDown(IList<MouseButton> buttons);
 }

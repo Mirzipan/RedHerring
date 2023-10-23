@@ -13,7 +13,7 @@ public class ImGuiSystem : AnEngineSystem, IDrawable
     [Inject]
     private GraphicsSystem _graphicsSystem = null!;
 
-    private GuiInputSnapshot _inputSnapshot = null!;
+    private InputState _inputSnapshot = null!;
     private ImGuiRenderFeature _feature = null!;
     
     public bool IsVisible => true;
@@ -27,7 +27,7 @@ public class ImGuiSystem : AnEngineSystem, IDrawable
 
     protected override void Load()
     {
-        _inputSnapshot = new GuiInputSnapshot(_inputSystem.Input);
+        _inputSnapshot = new InputState(_inputSystem.Input);
         _feature = new ImGuiRenderFeature();
         _graphicsSystem.RegisterFeature(_feature);
     }

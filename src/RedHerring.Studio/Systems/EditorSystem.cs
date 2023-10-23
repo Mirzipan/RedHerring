@@ -31,7 +31,7 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
     protected override void Init()
     {
         _inputReceiver = new InputReceiver("editor");
-        _inputReceiver.ConsumesAllInput = true;
+        _inputReceiver.ConsumesAllInput = false;
         
         _inputReceiver.Bind("undo", Undo);
         _inputReceiver.Bind("redo", Redo);
