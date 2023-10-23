@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using RedHerring.Alexandria.Masks;
 using RedHerring.Fingerprint;
 using Veldrid;
 using MouseButton = RedHerring.Fingerprint.MouseButton;
@@ -9,17 +10,21 @@ namespace RedHerring.ImGui;
 
 internal class InputState : InputSnapshot
 {
+    private static readonly List<MouseButton> _tmpButtons = new();
+    
     private IInput _input;
     private readonly List<KeyEvent> _keyEvents = new();
     private readonly List<MouseEvent> _mouseEvents = new();
     private readonly List<char> _keyCharPresses = new();
+
+    private BitMask8 _mouseButtons = new BitMask8(false);
 
     public IReadOnlyList<KeyEvent> KeyEvents => _keyEvents;
     public IReadOnlyList<MouseEvent> MouseEvents => _mouseEvents;
     public IReadOnlyList<char> KeyCharPresses => _keyCharPresses;
     public Vector2 MousePosition => _input.MousePosition;
     public float WheelDelta => _input.MouseWheelDelta;
-    
+
     public InputState(IInput input)
     {
         _input = input;
@@ -30,9 +35,11 @@ internal class InputState : InputSnapshot
         // TODO: update key events
         _mouseEvents.Clear();
         CreateMouseEvents();
+        
+        UpdateMouseButtons();
     }
-    
-    public bool IsMouseDown(VMouseButton button) => _input.IsButtonDown(Convert(button));
+
+    public bool IsMouseDown(VMouseButton button) => _mouseButtons[(int)button];
 
     private void CreateMouseEvents()
     {
@@ -41,7 +48,7 @@ internal class InputState : InputSnapshot
             return;
         }
         
-        const int maxButton = 11;
+        const int maxButton = (int)MouseButton.Button5;
         for (int i = 0; i <= maxButton; i++)
         {
             if (_input.Mouse.IsButtonPressed((MouseButton)i))
@@ -53,6 +60,23 @@ internal class InputState : InputSnapshot
             {
                 _mouseEvents.Add(new MouseEvent((VMouseButton)i, false));
             }
+        }
+    }
+
+    private void UpdateMouseButtons()
+    {
+        _mouseButtons = BitMask8.Empty;
+        _tmpButtons.Clear();
+
+        if (_input.Mouse is null)
+        {
+            return;
+        }
+
+        _input.Mouse.GetButtonsDown(_tmpButtons);
+        foreach (var button in _tmpButtons)
+        {
+            _mouseButtons[(int)button] = true;
         }
     }
     
