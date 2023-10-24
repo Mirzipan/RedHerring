@@ -6,6 +6,9 @@ using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Infusion.Attributes;
 using RedHerring.Studio.Commands;
+using RedHerring.Studio.UserInterface;
+using RedHerring.Studio.UserInterface.Dialogs;
+using Silk.NET.Maths;
 using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.Systems;
@@ -19,6 +22,10 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
     private InputReceiver _inputReceiver;
     
     private readonly CommandHistory _history = new CommandHistory();
+
+    private readonly MainMenu   _mainMenu   = new();
+    private readonly StatusBar  _statusBar  = new();
+    private readonly MessageBox _messageBox = new();
 
     public bool IsEnabled => true;
     public int UpdateOrder => int.MaxValue;
@@ -44,13 +51,16 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
     public void Update(GameTime gameTime)
     {
+        //Gui.ShowDemoWindow();
+        _mainMenu.Update();
+        _statusBar.Update();
+        _messageBox.Update();
     }
 
     public bool BeginDraw() => true;
 
     public void Draw(GameTime gameTime)
     {
-        Gui.ShowDemoWindow();
     }
 
     public void EndDraw()

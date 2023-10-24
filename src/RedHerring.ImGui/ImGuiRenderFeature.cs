@@ -41,13 +41,13 @@ public class ImGuiRenderFeature : ARenderFeature
 
     public override void Render(GraphicsDevice device, CommandList commandList, RenderPass pass)
     {
-        Gui.SetNextWindowPos(Vector2.Zero);
-        Gui.SetNextWindowSize((Vector2)Size);
-        Gui.Begin("Canvas", BackgroundWindowFlags | ImGuiWindowFlags.NoInputs);
-        
-        DrawDeviceInfo(device);
-        
-        Gui.End();
+        // Gui.SetNextWindowPos(Vector2.Zero);
+        // Gui.SetNextWindowSize((Vector2)Size);
+        // Gui.Begin("Canvas", BackgroundWindowFlags | ImGuiWindowFlags.NoInputs);
+        //
+        // DrawDeviceInfo(device);
+        //
+        // Gui.End();
         
         _renderer?.Render(device, commandList);
     }
