@@ -79,6 +79,7 @@ internal class Program
     static void OnLoad()
     {
         _engine = new Engine();
+        _engine.OnExit += OnEngineExit;
 
         _engineContext = new ExampleEngineContext
         {
@@ -111,6 +112,11 @@ internal class Program
     private static void OnClose()
     {
         _engine.Exit();
+    }
+
+    private static void OnEngineExit()
+    {
+        _window?.Close();
     }
 
     #endregion Bindings
