@@ -21,6 +21,8 @@ public sealed class Engine : AThingamabob, IComponentContainer
 
     public GameTime UpdateTime { get; }
     public GameTime DrawTime { get; }
+
+    public event Action? OnExit;
     
     private Cronos _cronos;
     private int _updateCount;
@@ -103,10 +105,17 @@ public sealed class Engine : AThingamabob, IComponentContainer
 
     public void Exit()
     {
+        if (IsExiting)
+        {
+            return;
+        }
+        
         IsExiting = true;
         Session?.Close();
         
         Systems.Unload();
+        
+        OnExit?.Invoke();
     }
 
     #endregion Lifecycle

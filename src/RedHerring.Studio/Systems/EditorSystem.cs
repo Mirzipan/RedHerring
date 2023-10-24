@@ -47,6 +47,8 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
     protected override void Load()
     {
         InitInput();
+
+        _mainMenu.OnExit = OnExitClicked;
     }
 
     public void Update(GameTime gameTime)
@@ -76,6 +78,11 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         _inputSystem.Input.Bindings!.Add(new ShortcutBinding("undo", new KeyboardShortcut(Key.U)));
         _inputSystem.Input.Bindings!.Add(new ShortcutBinding("redo", new KeyboardShortcut(Key.Z)));
         _inputSystem.Input.Layers.Push(_inputReceiver);
+    }
+
+    private void OnExitClicked()
+    {
+        Container.Engine.Exit();
     }
 
     #endregion Private

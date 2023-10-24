@@ -4,6 +4,8 @@ namespace RedHerring.Studio.UserInterface;
 
 public class MainMenu
 {
+	public Action? OnExit;
+	
 	public void Update()
 	{
 		if (Gui.BeginMainMenuBar())
@@ -18,7 +20,7 @@ public class MainMenu
 				Gui.MenuItem("Save",   "Ctrl+S");
 				Gui.MenuItem("Save As..");
 				Gui.Separator();
-				Gui.MenuItem("Exit");
+				ExitItem();
 				Gui.EndMenu();
 			}
 
@@ -30,6 +32,14 @@ public class MainMenu
 			}
 
 			Gui.EndMainMenuBar();
+		}
+	}
+
+	private void ExitItem()
+	{
+		if (Gui.MenuItem("Exit"))
+		{
+			OnExit?.Invoke();
 		}
 	}
 }
