@@ -4,6 +4,8 @@ namespace RedHerring.Studio.UserInterface;
 
 public class MainMenu
 {
+	public Action? OnUndo;
+	public Action? OnRedo;
 	public Action? OnExit;
 	
 	public void Update()
@@ -26,8 +28,7 @@ public class MainMenu
 
 			if (Gui.BeginMenu("Edit"))
 			{
-				Gui.MenuItem("Undo");
-				Gui.MenuItem("Redo");
+				UndoRedoItems();
 				Gui.EndMenu();
 			}
 
@@ -40,6 +41,19 @@ public class MainMenu
 		if (Gui.MenuItem("Exit"))
 		{
 			OnExit?.Invoke();
+		}
+	}
+
+	private void UndoRedoItems()
+	{
+		if (Gui.MenuItem("Undo"))
+		{
+			OnUndo?.Invoke();
+		}
+
+		if (Gui.MenuItem("Redo"))
+		{
+			OnRedo?.Invoke();
 		}
 	}
 }

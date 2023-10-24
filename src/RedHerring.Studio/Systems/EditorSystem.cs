@@ -8,7 +8,6 @@ using RedHerring.Infusion.Attributes;
 using RedHerring.Studio.Commands;
 using RedHerring.Studio.UserInterface;
 using RedHerring.Studio.UserInterface.Dialogs;
-using Silk.NET.Maths;
 using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.Systems;
@@ -48,6 +47,8 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
     {
         InitInput();
 
+        _mainMenu.OnUndo = _history.Undo;
+        _mainMenu.OnRedo = _history.Redo;
         _mainMenu.OnExit = OnExitClicked;
     }
 
