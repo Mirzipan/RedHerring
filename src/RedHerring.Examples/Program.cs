@@ -29,7 +29,7 @@ internal class Program
             Position = new Vector2D<int>(100, 100),
             Size = new Vector2D<int>(960, 540),
             API = _graphicsBackend.ToGraphicsAPI(),
-            VSync = false,
+            VSync = true,
             ShouldSwapAutomatically = false,
         };
         
