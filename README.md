@@ -5,6 +5,7 @@ Eventually, an engine may live here.
 ## Technology
 
 We are currently using these libraries to a greater or lesser degree:
-- AvaloniaUI
+- ImGuiNet
+- SDL2 (by proxy)
 - Silk.NET
 - Veldrid
