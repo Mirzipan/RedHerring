@@ -3,7 +3,7 @@ using RedHerring.Core.Systems;
 using RedHerring.ImGui;
 using RedHerring.Studio.Systems;
 
-namespace RedHerring.Examples;
+namespace RedHerring.Studio;
 
 public class StudioEngineContext : AnEngineContext
 {

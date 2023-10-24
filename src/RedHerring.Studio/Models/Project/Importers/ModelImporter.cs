@@ -1,4 +1,4 @@
-namespace RedHerring.Studio.Models;
+namespace RedHerring.Studio.Models.Project.Importers;
 
 public class ModelImporter : AbstractImporter
 {

@@ -1,6 +1,4 @@
-using System.Threading;
-
-namespace RedHerring.Studio.Models;
+namespace RedHerring.Studio.Models.TaskProcessor;
 
 public abstract class AbstractTask
 {

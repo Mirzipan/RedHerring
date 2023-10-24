@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Threading;
-
-namespace RedHerring.Studio.Models;
+namespace RedHerring.Studio.Models.TaskProcessor;
 
 public class TaskProcessor
 {

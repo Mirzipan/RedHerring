@@ -1,12 +1,10 @@
-using System;
 using System.ComponentModel;
-using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Migration;
+using RedHerring.Studio.Models.Project.FileSystem;
 
-namespace RedHerring.Studio.Models;
+namespace RedHerring.Studio.Models.Project;
 
 public sealed class ProjectModel : INotifyPropertyChanged
 {

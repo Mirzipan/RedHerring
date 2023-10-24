@@ -1,10 +1,7 @@
-using System;
-using System.IO;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 using Migration;
 
-namespace RedHerring.Studio.Models;
+namespace RedHerring.Studio.Models.Project.FileSystem;
 
 public sealed class FileNode : FileSystemNode
 {

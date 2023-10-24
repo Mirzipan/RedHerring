@@ -1,8 +1,6 @@
-using System;
-using System.Linq;
 using Assimp;
 
-namespace RedHerring.Studio.Models;
+namespace RedHerring.Studio.Models.Tests;
 
 public class ImporterTests
 {

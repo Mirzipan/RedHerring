@@ -1,6 +1,6 @@
 ﻿using RedHerring.Game;
 
-namespace RedHerring.Examples;
+namespace RedHerring.Studio;
 
 public class StudioSessionContext : ASessionContext
 {

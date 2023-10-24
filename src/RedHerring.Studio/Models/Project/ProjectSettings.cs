@@ -1,7 +1,6 @@
-using System;
 using Migration;
 
-namespace RedHerring.Studio.Models;
+namespace RedHerring.Studio.Models.Project;
 
 [Serializable, SerializedClassId("project-settings-class-id")]
 public class ProjectSettings

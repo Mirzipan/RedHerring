@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
 using OdinSerializer;
 
-namespace RedHerring.Studio.Models;
+namespace RedHerring.Studio.Models.Tests;
 
 [Serializable]
 public class TestClassA

@@ -1,12 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 using RedHerring.Core;
-using RedHerring.Game;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Extensions.Veldrid;
 using Veldrid;
 
-namespace RedHerring.Examples;
+namespace RedHerring.Studio;
 
 internal class Program
 {

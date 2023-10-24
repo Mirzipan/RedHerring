@@ -1,8 +1,7 @@
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using Migration;
 
-namespace RedHerring.Studio.Models;
+namespace RedHerring.Studio.Models.Project.FileSystem;
 
 public sealed class FolderNode : FileSystemNode
 {

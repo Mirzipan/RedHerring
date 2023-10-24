@@ -1,7 +1,6 @@
-using System;
 using Migration;
 
-namespace RedHerring.Studio.Models;
+namespace RedHerring.Studio.Models.Project.FileSystem;
 
 [Serializable, SerializedClassId("metadata-class-id")]
 public class Metadata

@@ -1,6 +1,4 @@
-using System;
-
-namespace RedHerring.Studio.Models;
+namespace RedHerring.Studio.Models.Project;
 
 [Serializable]
 public enum TargetPlatformEnum
