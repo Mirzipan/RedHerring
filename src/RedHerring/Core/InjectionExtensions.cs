@@ -7,7 +7,7 @@ public static class InjectionExtensions
 {
     public static ContainerDescription AddSystem(this ContainerDescription @this, AnEngineSystem system)
     {
-        var types = new List<Type> { typeof(AnEngineSystem) };
+        var types = new List<Type> { system.GetType(), typeof(AnEngineSystem) };
 
         if (system is IUpdatable)
         {
