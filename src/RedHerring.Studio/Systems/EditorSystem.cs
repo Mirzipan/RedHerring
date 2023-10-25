@@ -23,7 +23,7 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
     
     private readonly CommandHistory _history = new CommandHistory();
 
-    private readonly MainMenu    _mainMenu    = new();
+    private readonly Menu        _menu        = new();
     private readonly StatusBar   _statusBar   = new();
     private readonly MessageBox  _messageBox  = new();
     private readonly TestWindows _testWindows = new();
@@ -47,13 +47,16 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
     protected override void Load()
     {
+        ImGuiNET.ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+
         InitInput();
 
-        _mainMenu.OnUndo = _history.Undo;
-        _mainMenu.OnRedo = _history.Redo;
-        _mainMenu.OnExit = OnExitClicked;
+        _menu.AddItem("File/Exit",          OnExitClicked);
+        
+        _menu.AddItem("Edit/Undo",          _history.Undo);
+        _menu.AddItem("Edit/Redo",          _history.Redo);
 
-        ImGuiNET.ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+        _menu.AddItem("Debug/Modal window", () => Gui.OpenPopup("MessageBox"));
     }
 
     public void Update(GameTime gameTime)
@@ -62,7 +65,7 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         _testWindows.Update();
         
         //Gui.ShowDemoWindow();
-        _mainMenu.Update();
+        _menu.Update();
         _statusBar.Update();
         _messageBox.Update();
     }
