@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using RedHerring.Core;
 using RedHerring.Game;
+using RedHerring.Infusion;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Extensions.Veldrid;
@@ -11,8 +12,6 @@ namespace RedHerring.Examples;
 internal class Program
 {
     private static IWindow? _window;
-
-    private static ExampleEngineContext _engineContext = null!;
     private static Engine _engine = null!;
 
     private static ExampleSessionContext _sessionContext = null!;
@@ -81,12 +80,15 @@ internal class Program
         _engine = new Engine();
         _engine.OnExit += OnEngineExit;
 
-        _engineContext = new ExampleEngineContext
+        var context = new EngineContext
         {
+            Name = "Game Engine",
             View = _window!,
             GraphicsBackend = _graphicsBackend,
         };
-        _engine.Run(_engineContext);
+        context.InstallBindings(new List<IBindingsInstaller> { new ExampleInstaller() });
+        
+        _engine.Run(context);
 
         _sessionContext = new ExampleSessionContext();
         _engine.Run(_sessionContext);

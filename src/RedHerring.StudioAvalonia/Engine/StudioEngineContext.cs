@@ -4,7 +4,7 @@ using RedHerring.Studio.Engine.Systems;
 
 namespace RedHerring.Studio.Engine;
 
-public class StudioEngineContext : AnEngineContext
+public class StudioEngineContext : EngineContext
 {
     public StudioEngineContext()
     {

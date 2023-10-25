@@ -105,7 +105,7 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
     private void OnExitClicked()
     {
-        Container.Engine.Exit();
+        Context.Engine?.Exit();
     }
 
     #endregion Private

@@ -1,16 +1,15 @@
-﻿using RedHerring.Alexandria.Components;
+﻿using RedHerring.Alexandria;
 
 namespace RedHerring.Core;
 
-public abstract class AnEngineSystem : AComponent<EngineSystemCollection>
+public abstract class AnEngineSystem : AThingamabob
 {
-    private EngineSystemCollection _container = null!;
-    public override EngineSystemCollection Container => _container;
-    protected AnEngineContext Context => _container.Engine.Context;
+    private EngineContext _context = null!;
+    public EngineContext Context => _context;
 
-    internal void SetContainer(EngineSystemCollection container)
+    internal void SetContainer(EngineContext context)
     {
-        _container = container;
+        _context = context;
     }
     
     internal void RaiseInit()

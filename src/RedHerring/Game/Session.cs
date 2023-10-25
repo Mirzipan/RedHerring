@@ -70,7 +70,7 @@ public sealed class Session : AThingamabob, IEnumerable<ASessionComponent>
     {
         Components.Init();
         
-        var description = new ContainerDescription($"[Game] {Name}", _engine.InjectionContainer);
+        var description = new ContainerDescription($"[Game] {Name}", _engine.Context.Container);
         Components.InstallBindings(description);
         InjectionContainer = description.Build();
         InjectionContainer.DisposeWith(this);

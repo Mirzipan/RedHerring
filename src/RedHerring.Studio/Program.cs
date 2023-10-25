@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using RedHerring.Core;
+using RedHerring.Infusion;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Extensions.Veldrid;
@@ -11,8 +12,7 @@ internal class Program
 {
     private static IWindow? _window;
 
-    private static StudioEngineContext _engineContext = null!;
-    private static Engine              _engine        = null!;
+    private static Engine _engine = null!;
 
     private static StudioSessionContext _sessionContext = null!;
 
@@ -79,13 +79,16 @@ internal class Program
     {
         _engine = new Engine();
         _engine.OnExit += OnEngineExit;
-        
-        _engineContext = new StudioEngineContext
+
+        var context = new EngineContext
         {
+            Name = "Studio Engine",
             View = _window!,
             GraphicsBackend = _graphicsBackend,
+            UseSeparateRenderThread = true,
         };
-        _engine.Run(_engineContext);
+        context.InstallBindings(new List<IBindingsInstaller> { new StudioInstaller() });
+        _engine.Run(context);
 
         _sessionContext = new StudioSessionContext();
         _engine.Run(_sessionContext);

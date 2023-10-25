@@ -1,19 +1,14 @@
 ﻿using RedHerring.Alexandria;
-using RedHerring.Alexandria.Components;
-using RedHerring.Alexandria.Disposables;
 using RedHerring.Core.Systems;
 using RedHerring.Exceptions;
 using RedHerring.Game;
-using RedHerring.Infusion;
 using Silk.NET.Maths;
 
 namespace RedHerring.Core;
 
-public sealed class Engine : AThingamabob, IComponentContainer
+public sealed class Engine : AThingamabob
 {
-    public InjectionContainer InjectionContainer { get; private set; } = null!;
-    public EngineSystemCollection Systems { get; }
-    public AnEngineContext Context { get; private set; } = null!;
+    public EngineContext Context { get; private set; } = null!;
     public GraphicsSystem? Renderer { get; private set; } = null!;
     public Session? Session { get; private set; }
     public bool IsRunning { get; private set; }
@@ -32,8 +27,6 @@ public sealed class Engine : AThingamabob, IComponentContainer
 
     public Engine()
     {
-        Systems = new EngineSystemCollection(this);
-        
         IsRunning = false;
         IsExiting = false;
 
@@ -54,7 +47,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
         Session.Initialize();
     }
 
-    public void Run(AnEngineContext context)
+    public void Run(EngineContext context)
     {
         if (IsRunning)
         {
@@ -113,7 +106,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
         IsExiting = true;
         Session?.Close();
         
-        Systems.Unload();
+        Context.Unload();
         
         OnExit?.Invoke();
     }
@@ -127,29 +120,21 @@ public sealed class Engine : AThingamabob, IComponentContainer
         Renderer?.Resize(size);
     }
 
-    IComponent? IComponentContainer.Get(Type type) => ((IComponentContainer)Systems).Get(type);
-
     #endregion Public
 
     #region Private
 
     private void InitFromContext()
     {
-        Systems.Init();
-        
-        var description = new ContainerDescription("Engine");
-        Systems.InstallBindings(description);
-        InjectionContainer = description.Build();
-        InjectionContainer.DisposeWith(this);
-        
-        Systems.Load();
+        Context.Init(this);
+        Context.Load();
 
-        Renderer = Systems.Get<GraphicsSystem>();
+        Renderer = Context.Container.Resolve<GraphicsSystem>();
     }
 
     private void Draw(GameTime time)
     {
-        Systems.Draw(time);
+        Context.Draw(time);
         Session?.Draw(time);
         
         Renderer!.Draw();
@@ -157,7 +142,7 @@ public sealed class Engine : AThingamabob, IComponentContainer
     
     private void Update(GameTime time)
     {
-        Systems.Update(time);
+        Context.Update(time);
         Session?.Update(time);
     }
 
