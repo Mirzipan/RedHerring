@@ -11,7 +11,7 @@ public sealed class MenuLeafNode : AMenuNode
 
 	public override void Update()
 	{
-		if (Gui.MenuItem(Name))
+		if (Gui.MenuItem(Name, _shortcut, _isChecked?.Invoke() ?? false, _isEnabled?.Invoke() ?? true))
 		{
 			_onClick.Invoke();
 		}
