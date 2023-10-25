@@ -1,4 +1,5 @@
-﻿using RedHerring.Alexandria;
+﻿using ImGuiNET;
+using RedHerring.Alexandria;
 using RedHerring.Core;
 using RedHerring.Core.Systems;
 using RedHerring.Fingerprint;
@@ -22,9 +23,10 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
     
     private readonly CommandHistory _history = new CommandHistory();
 
-    private readonly MainMenu   _mainMenu   = new();
-    private readonly StatusBar  _statusBar  = new();
-    private readonly MessageBox _messageBox = new();
+    private readonly MainMenu    _mainMenu    = new();
+    private readonly StatusBar   _statusBar   = new();
+    private readonly MessageBox  _messageBox  = new();
+    private readonly TestWindows _testWindows = new();
 
     public bool IsEnabled => true;
     public int UpdateOrder => int.MaxValue;
@@ -50,10 +52,15 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         _mainMenu.OnUndo = _history.Undo;
         _mainMenu.OnRedo = _history.Redo;
         _mainMenu.OnExit = OnExitClicked;
+
+        ImGuiNET.ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
     }
 
     public void Update(GameTime gameTime)
     {
+        //Gui.DockSpaceOverViewport(Gui.GetMainViewport());
+        _testWindows.Update();
+        
         //Gui.ShowDemoWindow();
         _mainMenu.Update();
         _statusBar.Update();
