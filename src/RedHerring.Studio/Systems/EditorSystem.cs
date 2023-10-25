@@ -9,6 +9,7 @@ using RedHerring.Infusion.Attributes;
 using RedHerring.Studio.Commands;
 using RedHerring.Studio.UserInterface;
 using RedHerring.Studio.UserInterface.Dialogs;
+using NativeFileDialogSharp;
 using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.Systems;
@@ -51,7 +52,8 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
         InitInput();
 
-        _menu.AddItem("File/Exit",          OnExitClicked);
+        _menu.AddItem("File/Open..", OnOpenClicked);
+        _menu.AddItem("File/Exit", OnExitClicked);
         
         _menu.AddItem("Edit/Undo",          _history.Undo);
         _menu.AddItem("Edit/Redo",          _history.Redo);
@@ -89,6 +91,16 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         _inputSystem.Input.Bindings!.Add(new ShortcutBinding("undo", new KeyboardShortcut(Key.U)));
         _inputSystem.Input.Bindings!.Add(new ShortcutBinding("redo", new KeyboardShortcut(Key.Z)));
         _inputSystem.Input.Layers.Push(_inputReceiver);
+    }
+
+    private void OnOpenClicked()
+    {
+        DialogResult? result = Dialog.FolderPicker();
+
+        if(result.IsOk)
+        {
+            Console.WriteLine($"Picked folder: {result.Path}");
+        }
     }
 
     private void OnExitClicked()
