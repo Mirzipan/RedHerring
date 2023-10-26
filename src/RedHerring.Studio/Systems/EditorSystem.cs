@@ -10,6 +10,7 @@ using RedHerring.Studio.Commands;
 using RedHerring.Studio.UserInterface;
 using RedHerring.Studio.UserInterface.Dialogs;
 using NativeFileDialogSharp;
+using RedHerring.ImGui;
 using RedHerring.Studio.Models.Project;
 using RedHerring.Studio.Models.Tests;
 using RedHerring.Studio.TaskProcessor;
@@ -65,21 +66,12 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
         InitInput();
 
-        _menu.AddItem("File/Open project..", OnOpenProjectClicked);
-        _menu.AddItem("File/Exit", OnExitClicked);
-        
-        _menu.AddItem("Edit/Undo",          _history.Undo);
-        _menu.AddItem("Edit/Redo",          _history.Redo);
-
-        _menu.AddItem("Debug/Modal window", () => Gui.OpenPopup("MessageBox"));
-        _menu.AddItem("Debug/Task processor test", OnDebugTaskProcessorTestClicked);
-        _menu.AddItem("Debug/Serialization test", OnDebugSerializationTestClicked);
-        _menu.AddItem("Debug/Importer test", OnDebugImporterTestClicked);
+        InitMenu();
 
         // debug
         _activeTools.Add(new ToolProjectView(_projectModel));
     }
-    
+
     protected override void Unload()
     {
         _taskProcessor.Cancel();
@@ -146,6 +138,23 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         _inputSystem.Input.Bindings!.Add(new ShortcutBinding("undo", new KeyboardShortcut(Key.U)));
         _inputSystem.Input.Bindings!.Add(new ShortcutBinding("redo", new KeyboardShortcut(Key.Z)));
         _inputSystem.Input.Layers.Push(_inputReceiver);
+    }
+
+    private void InitMenu()
+    {
+        _menu.AddItem("File/Open project..", OnOpenProjectClicked);
+        _menu.AddItem("File/Settings/Theme/Embrace the Darkness", UITheme.EmbraceTheDarkness);
+        _menu.AddItem("File/Settings/Theme/Crimson Rivers", UITheme.CrimsonRivers);
+        _menu.AddItem("File/Settings/Theme/Bloodsucker", UITheme.Bloodsucker);
+        _menu.AddItem("File/Exit", OnExitClicked);
+
+        _menu.AddItem("Edit/Undo", _history.Undo);
+        _menu.AddItem("Edit/Redo", _history.Redo);
+
+        _menu.AddItem("Debug/Modal window", () => Gui.OpenPopup("MessageBox"));
+        _menu.AddItem("Debug/Task processor test", OnDebugTaskProcessorTestClicked);
+        _menu.AddItem("Debug/Serialization test", OnDebugSerializationTestClicked);
+        _menu.AddItem("Debug/Importer test", OnDebugImporterTestClicked);
     }
 
     #endregion Private
