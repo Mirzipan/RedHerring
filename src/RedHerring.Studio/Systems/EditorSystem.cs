@@ -11,6 +11,8 @@ using RedHerring.Studio.UserInterface;
 using RedHerring.Studio.UserInterface.Dialogs;
 using NativeFileDialogSharp;
 using RedHerring.Studio.Models.Project;
+using RedHerring.Studio.Models.Tests;
+using RedHerring.Studio.TaskProcessor;
 using RedHerring.Studio.Tools;
 using Gui = ImGuiNET.ImGui;
 
@@ -70,9 +72,17 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         _menu.AddItem("Edit/Redo",          _history.Redo);
 
         _menu.AddItem("Debug/Modal window", () => Gui.OpenPopup("MessageBox"));
+        _menu.AddItem("Debug/Task processor test", OnDebugTaskProcessorTestClicked);
+        _menu.AddItem("Debug/Serialization test", OnDebugSerializationTestClicked);
+        _menu.AddItem("Debug/Importer test", OnDebugImporterTestClicked);
 
         // debug
         _activeTools.Add(new ToolProjectView(_projectModel));
+    }
+    
+    protected override void Unload()
+    {
+        _taskProcessor.Cancel();
     }
 
     public void Update(GameTime gameTime)
@@ -80,7 +90,10 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         _dockSpace.Update();
         
         _menu.Update();
+        
+        UpdateStatusBarMessage();
         _statusBar.Update();
+
         _messageBox.Update();
 
         for(int i=0;i<_activeTools.Count;++i)
@@ -96,6 +109,24 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         //Gui.ShowDemoWindow();
     }
 
+    private void UpdateStatusBarMessage()
+    {
+        int workerThreadsCount = _taskProcessor.WorkerThreadsCount;
+        int remainingTasks     = _taskProcessor.GetRemainingTasks();
+        int availableThreads   = _taskProcessor.AvailableWorkerThreads;
+		
+        if (remainingTasks > 0)
+        {
+            _statusBar.Message = $"Processing {remainingTasks} tasks on {workerThreadsCount} threads.";
+        }
+        else
+        {
+            _statusBar.Message = $"Ready. {availableThreads} of {workerThreadsCount} threads available.";
+        }
+		
+        _statusBar.MessageColor = remainingTasks == 0 && availableThreads == workerThreadsCount ? StatusBar.Color.Info : StatusBar.Color.Warning;
+    }
+    
     public bool BeginDraw() => true;
 
     public void Draw(GameTime gameTime)
@@ -117,6 +148,9 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         _inputSystem.Input.Layers.Push(_inputReceiver);
     }
 
+    #endregion Private
+
+    #region Menu
     private async void OnOpenProjectClicked()
     {
         DialogResult result = Dialog.FolderPicker();
@@ -142,8 +176,25 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         Context.Engine?.Exit();
     }
 
-    #endregion Private
+    public void OnDebugTaskProcessorTestClicked()
+    {
+        for(int i=0;i <20;++i)
+        {
+            _taskProcessor.EnqueueTask(new TestTask(i), 0);
+        }
+    }
 
+    public void OnDebugSerializationTestClicked()
+    {
+        SerializationTests.Test();
+    }
+
+    public void OnDebugImporterTestClicked()
+    {
+        ImporterTests.Test();
+    }
+    #endregion
+    
     #region Input
 
     private void Undo(ref ActionEvent evt)
