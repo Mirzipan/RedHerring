@@ -1,7 +1,5 @@
 ﻿using System.Numerics;
 using ImGuiNET;
-using RedHerring.Alexandria.Extensions;
-using Silk.NET.Core.Native;
 using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface;

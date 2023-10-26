@@ -1,6 +1,6 @@
-namespace RedHerring.Studio.Models.TaskProcessor;
+namespace RedHerring.Studio.TaskProcessor;
 
-public class TestTask : AbstractTask
+public class TestTask : ATask
 {
 	private int _id;
 	

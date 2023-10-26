@@ -1,4 +1,4 @@
-namespace RedHerring.Studio.Models.TaskProcessor;
+namespace RedHerring.Studio.TaskProcessor;
 
 public class TaskProcessorDispatcher
 {

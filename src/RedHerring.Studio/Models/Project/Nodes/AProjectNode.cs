@@ -2,13 +2,13 @@ using Migration;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
 
-public abstract class FileSystemNode
+public abstract class AProjectNode
 {
 	public string    Name { get; set; }
 	public string    Path;
-	public Metadata? Meta;
+	public Metadata Meta = null!;
 
-	protected FileSystemNode(string name, string path)
+	protected AProjectNode(string name, string path)
 	{
 		Name = name;
 		Path = path;
@@ -21,21 +21,24 @@ public abstract class FileSystemNode
 		string metaPath = $"{Path}.meta";
 		
 		// read if possible
+		Metadata? meta = null;
 		if (File.Exists(metaPath))
 		{
 			byte[] json = await File.ReadAllBytesAsync(metaPath);
-			Meta = await MigrationSerializer.DeserializeAsync<Metadata, IMetadataMigratable>(null, json, SerializedDataFormat.JSON, migrationManager, true);
+			meta = await MigrationSerializer.DeserializeAsync<Metadata, IMetadataMigratable>(null, json, SerializedDataFormat.JSON, migrationManager, true, ProjectModel.Assembly);
 		}
 		
 		// write if needed
-		if(Meta == null || Meta.Hash == hash)
+		if(meta == null || meta.Hash != hash)
 		{
-			Meta ??= new Metadata();
-			Meta.UpdateGuid();
-			Meta.SetHash(hash);
+			meta ??= new Metadata();
+			meta.UpdateGuid();
+			meta.SetHash(hash);
 
-			byte[] json =  await MigrationSerializer.SerializeAsync(Meta, SerializedDataFormat.JSON, ProjectModel.Assembly);
+			byte[] json =  await MigrationSerializer.SerializeAsync(meta, SerializedDataFormat.JSON, ProjectModel.Assembly);
 			await File.WriteAllBytesAsync(metaPath, json);
 		}
+
+		Meta = meta;
 	}
 }

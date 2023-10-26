@@ -1,9 +1,9 @@
-namespace RedHerring.Studio.Models.TaskProcessor;
+namespace RedHerring.Studio.TaskProcessor;
 
 public class TaskProcessor
 {
-	private readonly PriorityQueue<AbstractTask, int> _tasks          = new();
-	private readonly Queue<AbstractTask>              _tasksToProcess = new();
+	private readonly PriorityQueue<ATask, int> _tasks          = new();
+	private readonly Queue<ATask>              _tasksToProcess = new();
 	
 	private readonly TaskProcessorDispatcher _dispatcher;
 
@@ -36,7 +36,7 @@ public class TaskProcessor
 		_dispatcher.Start();
 	}
 
-	public void EnqueueTask(AbstractTask task, int priority)
+	public void EnqueueTask(ATask task, int priority)
 	{
 		lock (_tasks)
 		{
@@ -72,7 +72,7 @@ public class TaskProcessor
 	public void ProcessTask()
 	{
 		// get task
-		AbstractTask task;
+		ATask task;
 		lock (_tasks)
 		{
 			task = _tasks.Dequeue();
@@ -92,7 +92,7 @@ public class TaskProcessor
 		OnChanged?.Invoke(this);
 	}
 	
-	public AbstractTask GetTaskToProcess()
+	public ATask GetTaskToProcess()
 	{
 		lock (_tasksToProcess)
 		{

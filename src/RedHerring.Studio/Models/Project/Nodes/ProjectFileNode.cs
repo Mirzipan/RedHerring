@@ -3,11 +3,11 @@ using Migration;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
 
-public sealed class FileNode : FileSystemNode
+public sealed class ProjectFileNode : AProjectNode
 {
 	private static readonly HashAlgorithm _hashAlgorithm = SHA1.Create();
 	
-	public FileNode(string name, string path) : base(name, path)
+	public ProjectFileNode(string name, string path) : base(name, path)
 	{
 	}
 
@@ -18,7 +18,6 @@ public sealed class FileNode : FileSystemNode
 		await using(FileStream file = new (Path, FileMode.Open))
 		{
 			hash = Convert.ToBase64String(await _hashAlgorithm.ComputeHashAsync(file));
-			await InitMeta(migrationManager, hash);
 		}
 		
 		// init meta

@@ -10,6 +10,8 @@ using RedHerring.Studio.Commands;
 using RedHerring.Studio.UserInterface;
 using RedHerring.Studio.UserInterface.Dialogs;
 using NativeFileDialogSharp;
+using RedHerring.Studio.Models.Project;
+using RedHerring.Studio.Tools;
 using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.Systems;
@@ -20,21 +22,30 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
     [Inject] private InputSystem    _inputSystem    = null!;
     [Inject] private GraphicsSystem _graphicsSystem = null!;
 
-    private InputReceiver _inputReceiver;
-    
-    private readonly CommandHistory _history = new CommandHistory();
-
-    private readonly Menu        _menu        = new();
-    private readonly StatusBar   _statusBar   = new();
-    private readonly MessageBox  _messageBox  = new();
-    private readonly TestWindows _testWindows = new();
-
     public bool IsEnabled => true;
     public int UpdateOrder => int.MaxValue;
 
     public bool IsVisible => true;
     public int DrawOrder => int.MaxValue;
 
+    private InputReceiver _inputReceiver;
+
+    private          ProjectModel   _projectModel = new();
+    private readonly CommandHistory _history      = new CommandHistory();
+
+    private const    int                         _threadsCount  = 4;
+    private readonly TaskProcessor.TaskProcessor _taskProcessor = new(_threadsCount);
+    public           TaskProcessor.TaskProcessor TaskProcessor => _taskProcessor;
+
+    private readonly List<ATool> _activeTools = new();
+    
+    #region User Interface
+    private readonly DockSpace  _dockSpace  = new();
+    private readonly Menu       _menu       = new();
+    private readonly StatusBar  _statusBar  = new();
+    private readonly MessageBox _messageBox = new();
+    #endregion
+    
     #region Lifecycle
 
     protected override void Init()
@@ -52,24 +63,37 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
         InitInput();
 
-        _menu.AddItem("File/Open..", OnOpenClicked);
+        _menu.AddItem("File/Open project..", OnOpenProjectClicked);
         _menu.AddItem("File/Exit", OnExitClicked);
         
         _menu.AddItem("Edit/Undo",          _history.Undo);
         _menu.AddItem("Edit/Redo",          _history.Redo);
 
         _menu.AddItem("Debug/Modal window", () => Gui.OpenPopup("MessageBox"));
+
+        // debug
+        _activeTools.Add(new ToolProjectView(_projectModel));
     }
 
     public void Update(GameTime gameTime)
     {
-        //Gui.DockSpaceOverViewport(Gui.GetMainViewport());
-        _testWindows.Update();
+        _dockSpace.Update();
         
-        //Gui.ShowDemoWindow();
         _menu.Update();
         _statusBar.Update();
         _messageBox.Update();
+
+        for(int i=0;i<_activeTools.Count;++i)
+        {
+            _activeTools[i].Update(out bool finished);
+            if (finished)
+            {
+                _activeTools.RemoveAt(i);
+                --i;
+            }
+        }
+
+        //Gui.ShowDemoWindow();
     }
 
     public bool BeginDraw() => true;
@@ -93,14 +117,24 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         _inputSystem.Input.Layers.Push(_inputReceiver);
     }
 
-    private void OnOpenClicked()
+    private async void OnOpenProjectClicked()
     {
-        DialogResult? result = Dialog.FolderPicker();
-
-        if(result.IsOk)
+        DialogResult result = Dialog.FolderPicker();
+        if(!result.IsOk)
         {
-            Console.WriteLine($"Picked folder: {result.Path}");
+            return;
         }
+
+        try
+        {
+            await _projectModel.Open(result.Path);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Exception: {e}");
+        }
+
+        //Console.WriteLine($"Picked folder: {result.Path}");
     }
 
     private void OnExitClicked()

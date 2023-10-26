@@ -3,11 +3,11 @@ using Migration;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
 
-public sealed class FolderNode : FileSystemNode
+public class ProjectFolderNode : AProjectNode
 {
-	public ObservableCollection<FileSystemNode> Children { get; init; } = new();
+	public ObservableCollection<AProjectNode> Children { get; init; } = new();
 	
-	public FolderNode(string name, string path) : base(name, path)
+	public ProjectFolderNode(string name, string path) : base(name, path)
 	{
 	}
 
@@ -15,7 +15,7 @@ public sealed class FolderNode : FileSystemNode
 	{
 		await InitMeta(migrationManager, null);
 		
-		foreach (FileSystemNode child in Children)
+		foreach (AProjectNode child in Children)
 		{
 			await child.InitMetaRecursive(migrationManager);
 		}

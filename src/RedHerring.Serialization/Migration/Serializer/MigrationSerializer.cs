@@ -58,6 +58,10 @@ namespace Migration
 				                                                           };
 
 				TDataMigratable migratable_data = SerializationUtility.DeserializeValue<TDataMigratable>(input, data_format.ToOdinDataFormat(), migration_deserialization_context);
+				if (migratable_data == null)
+				{
+					return default;
+				}
 
 				migration_manager.Migrate(migratable_data);
 					
