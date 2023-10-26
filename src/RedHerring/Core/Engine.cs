@@ -36,7 +36,7 @@ public sealed class Engine : AThingamabob
         _cronos = new Cronos();
     }
 
-    public void Run(ASessionContext session)
+    public void Run(SessionContext session)
     {
         if (!IsRunning)
         {

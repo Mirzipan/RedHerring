@@ -7,11 +7,8 @@ public abstract class AnEngineSystem : AThingamabob
     private EngineContext _context = null!;
     public EngineContext Context => _context;
 
-    internal void SetContainer(EngineContext context)
-    {
-        _context = context;
-    }
-    
+    internal void SetContext(EngineContext context) => _context = context;
+
     internal void RaiseInit()
     {
         Init();

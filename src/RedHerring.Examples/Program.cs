@@ -14,7 +14,7 @@ internal class Program
     private static IWindow? _window;
     private static Engine _engine = null!;
 
-    private static ExampleSessionContext _sessionContext = null!;
+    private static SessionContext _sessionContext = null!;
 
     private static GraphicsBackend _graphicsBackend;
 
@@ -80,17 +80,19 @@ internal class Program
         _engine = new Engine();
         _engine.OnExit += OnEngineExit;
 
-        var context = new EngineContext
+        var context = new EngineContext()
         {
             Name = "Game Engine",
             View = _window!,
             GraphicsBackend = _graphicsBackend,
         };
-        context.InstallBindings(new List<IBindingsInstaller> { new ExampleInstaller() });
+        context.InstallBindings(new List<IBindingsInstaller> { new ExampleEngineInstaller() });
         
         _engine.Run(context);
 
-        _sessionContext = new ExampleSessionContext();
+        _sessionContext = new SessionContext(_engine);
+        _sessionContext.InstallBindings(new List<IBindingsInstaller> { new ExampleSessionInstaller() });
+        
         _engine.Run(_sessionContext);
         
         _window!.IsVisible = true;

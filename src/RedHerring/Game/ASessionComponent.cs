@@ -1,24 +1,14 @@
 ﻿using RedHerring.Alexandria;
-using RedHerring.Alexandria.Components;
 
 namespace RedHerring.Game;
 
-public abstract class ASessionComponent : AComponent<SessionComponentCollection>, IEssence
+public abstract class ASessionComponent : AThingamabob
 {
-    private SessionComponentCollection _container = null!;
-    
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public Session Session => Container.Session;
-    public override SessionComponentCollection Container => _container;
+    private SessionContext _context = null!;
+    public SessionContext Context => _context;
 
-    internal virtual bool SetContainer(SessionComponentCollection container)
+    internal void SetContext(SessionContext context)
     {
-        if (Container == container)
-        {
-            return false;
-        }
-
-        _container = container;
-        return true;
+        _context = context;
     }
 }

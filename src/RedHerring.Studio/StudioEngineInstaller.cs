@@ -5,7 +5,7 @@ using RedHerring.Studio.Systems;
 
 namespace RedHerring.Studio;
 
-public class StudioInstaller : IBindingsInstaller
+public class StudioEngineInstaller : IBindingsInstaller
 {
 	public void InstallBindings(ContainerDescription description)
 	{

@@ -1,6 +1,8 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
+using RedHerring.Alexandria.Extensions.Collections;
 using RedHerring.Infusion.Delegates;
+using RedHerring.Infusion.Exceptions;
 
 namespace RedHerring.Infusion.Indexer;
 
@@ -9,13 +11,13 @@ internal static class ReflectionInfoConverter
     public static ConstructorDescription Constructor(Type type, ConstructorInfo constructor)
     {
         var param = constructor.GetParameters().Select(e => e.ParameterType).ToArray();
-        return new ConstructorDescription(TryCreateActivator(type, constructor), param);
+        return new ConstructorDescription(TryGetActivator(type, constructor), param);
     }
 
     public static MethodDescription Method(MethodInfo method)
     {
         var methodInfo = method;
-        var action = TryCreateMethod(method);
+        var action = TryGetMethod(method);
 
         if (action is null)
         {
@@ -28,17 +30,17 @@ internal static class ReflectionInfoConverter
     
     public static MemberDescription Field(Type type, FieldInfo field)
     {
-        return new MemberDescription(field.FieldType, TryCreateSetter(type, field)!);
+        return new MemberDescription(field.FieldType, GetSetter(type, field)!);
     }
 
     public static MemberDescription Property(Type type, PropertyInfo property)
     {
-        return new MemberDescription(property.PropertyType, TryCreateSetter(type, property)!);
+        return new MemberDescription(property.PropertyType, GetSetter(type, property)!);
     }
 
     #region Expressions
 
-    private static ObjectActivator? TryCreateActivator(Type type, ConstructorInfo constructor)
+    private static ObjectActivator? TryGetActivator(Type type, ConstructorInfo constructor)
     {
         if (type.ContainsGenericParameters)
         {
@@ -60,7 +62,7 @@ internal static class ReflectionInfoConverter
             .Compile();
     }
 
-    private static InjectMethod? TryCreateMethod(MethodInfo method)
+    private static InjectMethod? TryGetMethod(MethodInfo method)
     {
         if (method.DeclaringType!.ContainsGenericParameters)
         {
@@ -88,7 +90,7 @@ internal static class ReflectionInfoConverter
             .Compile();
     }
 
-    private static MemberSetter? TryCreateSetter(Type type, MemberInfo member)
+    private static MemberSetter GetSetter(Type type, MemberInfo member)
     {
         if (member is FieldInfo field)
         {
@@ -100,9 +102,8 @@ internal static class ReflectionInfoConverter
             return (target, value) => property.SetValue(target, value, null);
         }
 
-        return null;
+        throw new FailedToCreateMemberSetterException(type, member.Name);
     }
-    
 
     #endregion Expressions
 }

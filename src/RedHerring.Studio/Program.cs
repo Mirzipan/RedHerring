@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using RedHerring.Core;
+using RedHerring.Game;
 using RedHerring.Infusion;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
@@ -13,8 +14,7 @@ internal class Program
     private static IWindow? _window;
 
     private static Engine _engine = null!;
-
-    private static StudioSessionContext _sessionContext = null!;
+    private static SessionContext _sessionContext = null!;
 
     private static GraphicsBackend _graphicsBackend;
 
@@ -80,17 +80,17 @@ internal class Program
         _engine = new Engine();
         _engine.OnExit += OnEngineExit;
 
-        var context = new EngineContext
+        var context = new EngineContext()
         {
             Name = "Studio Engine",
             View = _window!,
             GraphicsBackend = _graphicsBackend,
             UseSeparateRenderThread = true,
         };
-        context.InstallBindings(new List<IBindingsInstaller> { new StudioInstaller() });
+        context.InstallBindings(new List<IBindingsInstaller> { new StudioEngineInstaller() });
         _engine.Run(context);
 
-        _sessionContext = new StudioSessionContext();
+        _sessionContext = new SessionContext(_engine);
         _engine.Run(_sessionContext);
         
         _window!.IsVisible = true;

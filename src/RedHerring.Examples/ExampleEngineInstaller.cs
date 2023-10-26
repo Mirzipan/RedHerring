@@ -4,7 +4,7 @@ using RedHerring.Infusion;
 
 namespace RedHerring.Examples;
 
-public class ExampleInstaller : IBindingsInstaller
+public class ExampleEngineInstaller : IBindingsInstaller
 {
     public void InstallBindings(ContainerDescription description)
     {

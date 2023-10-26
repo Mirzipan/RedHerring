@@ -16,8 +16,8 @@ public sealed class EngineContext : AThingamabob
     private readonly List<IUpdatable> _updatables = new();
     private readonly List<IDrawable> _drawables = new();
     
-    private readonly List<IUpdatable> _currentlyUpdatingComponents = new();
-    private readonly List<IDrawable> _currentlyDrawingComponents = new();
+    private readonly List<IUpdatable> _currentlyUpdatingSystems = new();
+    private readonly List<IDrawable> _currentlyDrawingSystems = new();
 
     private Engine? _engine;
     private InjectionContainer _container = null!;
@@ -33,6 +33,8 @@ public sealed class EngineContext : AThingamabob
     public void InstallBindings(List<IBindingsInstaller> installers)
     {
         var description = new ContainerDescription("Engine");
+        description.AddInstance(this);
+        
         foreach (var installer in installers)
         {
             installer.InstallBindings(description);
@@ -58,8 +60,8 @@ public sealed class EngineContext : AThingamabob
         int count = _systems.Count;
         for (int i = 0; i < count; i++)
         {
-            var component = _systems[i];
-            component.RaiseLoad();
+            var system = _systems[i];
+            system.RaiseLoad();
         }
     }
 
@@ -68,51 +70,51 @@ public sealed class EngineContext : AThingamabob
         int count = _systems.Count;
         for (int i = 0; i < count; i++)
         {
-            var component = _systems[i];
-            component.RaiseUnload();
+            var system = _systems[i];
+            system.RaiseUnload();
         }
     }
     
     internal void Update(GameTime gameTime)
     {
-        _currentlyUpdatingComponents.AddRange(_updatables);
+        _currentlyUpdatingSystems.AddRange(_updatables);
         
-        int count = _currentlyUpdatingComponents.Count;
+        int count = _currentlyUpdatingSystems.Count;
         for (int i = 0; i < count; i++)
         {
-            var component = _currentlyUpdatingComponents[i];
-            if (!component.IsEnabled)
+            var system = _currentlyUpdatingSystems[i];
+            if (!system.IsEnabled)
             {
                 continue;
             }
 
-            component.Update(gameTime);
+            system.Update(gameTime);
         }
         
-        _currentlyUpdatingComponents.Clear();
+        _currentlyUpdatingSystems.Clear();
     }
 
     internal void Draw(GameTime gameTime)
     {
-        _currentlyDrawingComponents.AddRange(_drawables);
+        _currentlyDrawingSystems.AddRange(_drawables);
         
-        int count = _currentlyDrawingComponents.Count;
+        int count = _currentlyDrawingSystems.Count;
         for (int i = 0; i < count; i++)
         {
-            var component = _currentlyDrawingComponents[i];
-            if (!component.IsVisible)
+            var system = _currentlyDrawingSystems[i];
+            if (!system.IsVisible)
             {
                 continue;
             }
             
-            if (component.BeginDraw())
+            if (system.BeginDraw())
             {
-                component.Draw(gameTime);
-                component.EndDraw();
+                system.Draw(gameTime);
+                system.EndDraw();
             }
         }
         
-        _currentlyDrawingComponents.Clear();
+        _currentlyDrawingSystems.Clear();
     }
 
     #endregion Lifecycle
@@ -136,7 +138,7 @@ public sealed class EngineContext : AThingamabob
         for (int i = 0; i < count; i++)
         {
             var system = _systems[i];
-            system.SetContainer(this);
+            system.SetContext(this);
             AttributeInjector.Inject(system, _container);
             system.RaiseInit();
             system.DisposeWith(this);
