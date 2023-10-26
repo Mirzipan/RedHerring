@@ -20,17 +20,17 @@ public sealed class Session : AThingamabob
         Context = context;
     }
 
-    public void Update(GameTime gameTime)
+    internal void Update(GameTime gameTime)
     {
         Context.Update(gameTime);
     }
 
-    public void Draw(GameTime gameTime)
+    internal void Draw(GameTime gameTime)
     {
         Context.Draw(gameTime);
     }
 
-    public void Initialize()
+    internal void Initialize()
     {
         Phase = SessionPhase.Initializing;
         
@@ -39,7 +39,7 @@ public sealed class Session : AThingamabob
         Phase = SessionPhase.Initialized;
     }
 
-    public void Close()
+    internal void Close()
     {
         Phase = SessionPhase.Closing;
         
