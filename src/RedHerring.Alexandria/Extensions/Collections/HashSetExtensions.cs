@@ -24,7 +24,7 @@ public static class HashSetExtensions
     /// <param name="items"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static HashSet<T> WithItems<T>(this HashSet<T> @this, params T[] items)
+    public static HashSet<T> WithItems<T>(this HashSet<T> @this, params T[]? items)
     {
         @this.AddRange(items);
         return @this;
@@ -37,7 +37,7 @@ public static class HashSetExtensions
     /// <param name="items"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static HashSet<T> WithItems<T>(this HashSet<T> @this, IEnumerable<T> items)
+    public static HashSet<T> WithItems<T>(this HashSet<T> @this, IEnumerable<T>? items)
     {
         @this.AddRange(items);
         return @this;
@@ -50,9 +50,9 @@ public static class HashSetExtensions
     /// <param name="source"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns>True if all values added were not yet present</returns>
-    public static bool AddRange<T>(this HashSet<T> @this, IEnumerable<T> source)
+    public static bool AddRange<T>(this HashSet<T> @this, IEnumerable<T>? source)
     {
-        if (source == null)
+        if (source is null)
         {
             return false;
         }
@@ -73,9 +73,9 @@ public static class HashSetExtensions
     /// <param name="source"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns>True if all values removed were present</returns>
-    public static bool RemoveRange<T>(this HashSet<T> @this, IEnumerable<T> source)
+    public static bool RemoveRange<T>(this HashSet<T> @this, IEnumerable<T>? source)
     {
-        if (source == null)
+        if (source is null)
         {
             return false;
         }

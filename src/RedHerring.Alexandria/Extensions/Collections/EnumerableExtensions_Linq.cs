@@ -182,24 +182,24 @@ public static partial class EnumerableExtensions
     /// <param name="selector">Transforms element into key</param>
     /// <typeparam name="TValue">Type of the enumerable element</typeparam>
     /// <typeparam name="TKey">Type used to determine the key value</typeparam>
-    public static TValue MinObject<TValue, TKey>(this IEnumerable<TValue> @this, Func<TValue, TKey> selector)
+    public static TValue? MinObject<TValue, TKey>(this IEnumerable<TValue?> @this, Func<TValue, TKey> selector)
         where TKey : IComparable<TKey>
     {
         bool isEmpty = true;
-        TValue minValue = default;
-        TKey minKey = default;
+        TValue? minValue = default;
+        TKey? minKey = default;
 
-        foreach (TValue item in @this)
+        foreach (TValue? item in @this)
         {
             if (isEmpty)
             {
                 minValue = item;
-                minKey = selector(minValue);
+                minKey = selector(minValue!);
                 isEmpty = false;
             }
             else
             {
-                TKey currentKey = selector(item);
+                TKey currentKey = selector(item!);
                 if (currentKey.CompareTo(minKey) >= 0)
                 {
                     continue;
@@ -226,24 +226,24 @@ public static partial class EnumerableExtensions
     /// <param name="selector">Transforms element into key</param>
     /// <typeparam name="TValue">Type of the enumerable element</typeparam>
     /// <typeparam name="TKey">Type used to determine the key value</typeparam>
-    public static TValue MaxObject<TValue, TKey>(this IEnumerable<TValue> @this, Func<TValue, TKey> selector)
+    public static TValue? MaxObject<TValue, TKey>(this IEnumerable<TValue?> @this, Func<TValue, TKey> selector)
         where TKey : IComparable<TKey>
     {
         bool isEmpty = true;
-        TValue maxValue = default;
-        TKey maxKey = default;
+        TValue? maxValue = default;
+        TKey? maxKey = default;
 
-        foreach (TValue item in @this)
+        foreach (TValue? item in @this)
         {
             if (isEmpty)
             {
                 maxValue = item;
-                maxKey = selector(maxValue);
+                maxKey = selector(maxValue!);
                 isEmpty = false;
             }
             else
             {
-                TKey currentKey = selector(item);
+                TKey currentKey = selector(item!);
                 if (currentKey.CompareTo(maxKey) <= 0)
                 {
                     continue;
@@ -270,7 +270,7 @@ public static partial class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     public static IEnumerable<T> Except<T>(this IEnumerable<T> @this, T valueToExclude) =>
-        @this.Where(e => !e.Equals(valueToExclude));
+        @this.Where(e => !e!.Equals(valueToExclude));
 
     /// <summary>
     /// Returns all non-null values of this enumerable.

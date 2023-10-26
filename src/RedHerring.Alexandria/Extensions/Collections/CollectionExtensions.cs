@@ -10,7 +10,7 @@ public static class CollectionExtensions
     /// <param name="this"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static ICollection<T> NullIfEmpty<T>(this ICollection<T> @this) => @this is null || @this.Count == 0 ? null : @this;
+    public static ICollection<T>? NullIfEmpty<T>(this ICollection<T>? @this) => @this is null || @this.Count == 0 ? null : @this;
 
     #endregion Queries
 }

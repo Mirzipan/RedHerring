@@ -30,7 +30,7 @@ public static class ListExtensions
     /// <param name="value">Value at the specified index, default value if index is out of bounds</param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static bool TryGetValue<T>(this IList<T> @this, int index, out T value)
+    public static bool TryGetValue<T>(this IList<T> @this, int index, out T? value)
     {
         if (!@this.IsIndexInRange(index))
         {
@@ -50,9 +50,9 @@ public static class ListExtensions
     /// <param name="default"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static T GetOrDefault<T>(this IList<T> @this, int index, T @default = default)
+    public static T GetOrDefault<T>(this IList<T> @this, int index, T? @default = default)
     {
-        return @this.IsIndexInRange(index) ? @this[index] : @default;
+        return (@this.IsIndexInRange(index) ? @this[index] : @default)!;
     }
 
     #endregion Queries

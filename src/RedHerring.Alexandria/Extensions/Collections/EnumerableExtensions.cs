@@ -65,7 +65,7 @@ public static partial class EnumerableExtensions
     /// <param name="this"></param>
     /// <typeparam name="TKey"></typeparam>
     /// <returns></returns>
-    public static IDictionary<TKey, int> ToCountDictionary<TKey>(this IEnumerable<TKey> @this)
+    public static IDictionary<TKey, int> ToCountDictionary<TKey>(this IEnumerable<TKey> @this) where TKey : notnull
     {
         return @this.GroupBy(e => e).ToDictionary(e => e.Key, e => e.Count());
     }
@@ -80,7 +80,7 @@ public static partial class EnumerableExtensions
     /// <typeparam name="TValue"></typeparam>
     /// <returns></returns>
     public static IDictionary<TKey, List<TValue>> ToDictionary<TKey, TValue>(
-        this IEnumerable<IGrouping<TKey, TValue>> @this)
+        this IEnumerable<IGrouping<TKey, TValue>> @this) where TKey : notnull
     {
         return @this.ToDictionary(e => e.Key, e => e.ToList());
     }

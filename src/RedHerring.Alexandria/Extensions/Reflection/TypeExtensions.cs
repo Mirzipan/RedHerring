@@ -11,7 +11,7 @@ public static class TypeExtensions
     /// <param name="baseType"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Type GetNestedType(this Type @this, Type baseType)
+    public static Type? GetNestedType(this Type @this, Type baseType)
     {
         return @this.GetNestedTypes().FirstOrDefault(baseType.IsAssignableFrom);
     }

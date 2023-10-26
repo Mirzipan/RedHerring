@@ -49,9 +49,9 @@ public static class QueueExtensions
     /// <param name="this"></param>
     /// <param name="source"></param>
     /// <typeparam name="T"></typeparam>
-    public static void EnqueueRange<T>(this Queue<T> @this, IEnumerable<T> source)
+    public static void EnqueueRange<T>(this Queue<T> @this, IEnumerable<T>? source)
     {
-        if (source == null)
+        if (source is null)
         {
             return;
         }

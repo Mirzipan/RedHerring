@@ -49,7 +49,7 @@ public class HashSetDictionary<TKey, TValue>: CollectionDictionary<TKey, HashSet
         return _pool.TryPop(out var result) ? result : new HashSet<TValue>(_comparer);
     }
 
-    protected override HashSet<TValue> CreateCollection(HashSet<TValue> source)
+    protected override HashSet<TValue> CreateCollection(HashSet<TValue>? source)
     {
         var collection = CreateCollection();
         collection.AddRange(source);

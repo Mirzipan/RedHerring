@@ -18,7 +18,7 @@ public static class ArrayExtensions
     /// <param name="this"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static T[] NullIfEmpty<T>(this T[] @this) => @this is null || @this.Length == 0 ? null : @this;
+    public static T[]? NullIfEmpty<T>(this T[]? @this) => @this is null || @this.Length == 0 ? null : @this;
 
     /// <summary>
     /// Gets the first index of the specified value.

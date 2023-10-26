@@ -22,7 +22,7 @@ public static class DictionaryExtensions
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     /// <returns></returns>
-    public static TValue GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> @this, TKey key, TValue @default)
+    public static TValue GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> @this, TKey key, TValue @default) where TKey : notnull
     {
         if (@this.TryGetValue(key, out var value))
         {
@@ -40,9 +40,9 @@ public static class DictionaryExtensions
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     /// <returns></returns>
-    public static TValue GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> @this, TKey key)
+    public static TValue? GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> @this, TKey key) where TKey : notnull
     {
-        return @this.GetValueOrDefault(key, default(TValue));
+        return @this!.GetValueOrDefault(key, default(TValue));
     }
 
     #endregion Queries

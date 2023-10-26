@@ -49,9 +49,9 @@ public static class StackExtensions
     /// <param name="this"></param>
     /// <param name="source"></param>
     /// <typeparam name="T"></typeparam>
-    public static void PushRange<T>(this Stack<T> @this, IEnumerable<T> source)
+    public static void PushRange<T>(this Stack<T> @this, IEnumerable<T>? source)
     {
-        if (source == null)
+        if (source is null)
         {
             return;
         }
