@@ -7,9 +7,9 @@ namespace RedHerring.Studio.Tools;
 
 public sealed class ToolProjectView : ATool
 {
-    private const ImGuiTreeNodeFlags _treeCommonFlags       = ImGuiTreeNodeFlags.SpanAvailWidth;
-    private const ImGuiTreeNodeFlags _treeInternalNodeFlags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick | _treeCommonFlags;
-    private const ImGuiTreeNodeFlags _treeLeafNodeFlags     = ImGuiTreeNodeFlags.Leaf        | ImGuiTreeNodeFlags.NoTreePushOnOpen  | _treeCommonFlags;
+    private const ImGuiTreeNodeFlags TreeCommonFlags       = ImGuiTreeNodeFlags.SpanAvailWidth;
+    private const ImGuiTreeNodeFlags TreeInternalNodeFlags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick | TreeCommonFlags;
+    private const ImGuiTreeNodeFlags TreeLeafNodeFlags     = ImGuiTreeNodeFlags.Leaf        | ImGuiTreeNodeFlags.NoTreePushOnOpen  | TreeCommonFlags;
     
 	private       bool               _isOpen        = true;
 
@@ -37,12 +37,12 @@ public sealed class ToolProjectView : ATool
 
     private void UpdateFolder(ProjectFolderNode? node)
     {
-        if (node == null)
+        if (node is null)
         {
             return;
         }
         
-        if (Gui.TreeNodeEx(node.Meta.Guid, _treeInternalNodeFlags, node.Name))
+        if (Gui.TreeNodeEx(node.Meta.Guid, TreeInternalNodeFlags, node.Name))
         {
             foreach (AProjectNode child in node.Children)
             {
@@ -62,7 +62,7 @@ public sealed class ToolProjectView : ATool
     
     private void UpdateFile(ProjectFileNode node)
     {
-        Gui.TreeNodeEx(node.Meta.Guid, _treeLeafNodeFlags, node.Name);
+        Gui.TreeNodeEx(node.Meta.Guid, TreeLeafNodeFlags, node.Name);
     }
 
 
