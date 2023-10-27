@@ -167,19 +167,8 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         {
             return;
         }
-
-        try
-        {
-            _studioModel.Console.Log($"Opening project from {result.Path}", ConsoleItemType.Info);
-            await _studioModel.Project.Open(result.Path);
-            _studioModel.Console.Log($"Project opened", ConsoleItemType.Success);
-        }
-        catch (Exception e)
-        {
-            _studioModel.Console.Log($"Exception: {e}", ConsoleItemType.Exception);
-        }
-
-        //Console.WriteLine($"Picked folder: {result.Path}");
+        
+        await _studioModel.OpenProject(result.Path);
     }
 
     private void OnExitClicked()

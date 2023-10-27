@@ -14,16 +14,21 @@ public sealed class ProjectModel
 	private ProjectFolderNode? _assetsFolder;
 	public  ProjectFolderNode? AssetsFolder => _assetsFolder;
 
+	public void Close()
+	{
+		_assetsFolder = null;
+	}
+	
 	public async Task Open(string projectPath)
 	{
 		string assetsPath = Path.Join(projectPath, _assetsFolderName);
-		_assetsFolder = new ProjectRootNode(_assetsFolderName, assetsPath);
+		ProjectFolderNode assetsFolder = new ProjectRootNode(_assetsFolderName, assetsPath);
 
 		if (!Directory.Exists(assetsPath))
 		{
 			// error
 			Console.WriteLine($"Assets folder not found on path {assetsPath}");
-			await _assetsFolder.InitMetaRecursive(_migrationManager); // create meta for at least root
+			await assetsFolder.InitMetaRecursive(_migrationManager); // create meta for at least root
 			return;
 		}
 		
@@ -31,14 +36,15 @@ public sealed class ProjectModel
 
 		try
 		{
-			RecursiveScan(assetsPath, _assetsFolder);
+			RecursiveScan(assetsPath, assetsFolder);
 		}
 		catch (Exception e)
 		{
 			Console.WriteLine($"Exception: {e}");
 		}
 
-		await _assetsFolder.InitMetaRecursive(_migrationManager);
+		await assetsFolder.InitMetaRecursive(_migrationManager);
+		_assetsFolder = assetsFolder;
 	}
 
 	private void RecursiveScan(string path, ProjectFolderNode root)
