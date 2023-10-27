@@ -30,7 +30,7 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
 
     protected override void Load()
     {
-        _inputSnapshot = new InputState(_inputSystem.Input);
+        _inputSnapshot = new InputState();
         _feature = new ImGuiRenderFeature();
         _graphicsSystem.RegisterFeature(_feature);
     }
@@ -41,7 +41,7 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
     
     public void Update(GameTime gameTime)
     {
-        _inputSnapshot.Update();
+        _inputSnapshot.Update(_inputSystem.Input);
         _feature.Update(gameTime, _inputSnapshot);
     }
 

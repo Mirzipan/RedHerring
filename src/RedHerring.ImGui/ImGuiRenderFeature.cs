@@ -1,11 +1,9 @@
-﻿using System.Numerics;
-using ImGuiNET;
+﻿using ImGuiNET;
 using RedHerring.Alexandria;
 using RedHerring.Render.Features;
 using RedHerring.Render.Passes;
 using Silk.NET.Maths;
 using Veldrid;
-using Vortice.Mathematics;
 using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.ImGui;

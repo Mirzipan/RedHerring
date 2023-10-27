@@ -15,6 +15,8 @@ internal class KeyboardState : IInputSource, IKeyboardState, IDisposable
     private readonly BitArray _down = new(BufferLength);
     private readonly BitArray _pressed = new(BufferLength);
     private readonly BitArray _released = new(BufferLength);
+
+    private List<char> _chars = new();
     
     private IKeyboard _keyboard;
 
@@ -31,12 +33,15 @@ internal class KeyboardState : IInputSource, IKeyboardState, IDisposable
         
         _keyboard.KeyDown += OnKeyDown;
         _keyboard.KeyUp += OnKeyUp;
+        _keyboard.KeyChar += OnChar;
     }
 
     public void Reset()
     {
         _pressed.SetAll(false);
         _released.SetAll(false);
+        
+        _chars.Clear();
     }
 
     public void Dispose()
@@ -57,20 +62,27 @@ internal class KeyboardState : IInputSource, IKeyboardState, IDisposable
     public bool IsKeyReleased(Key key) => _released.Get((int)key);
     public bool IsAnyKeyDown() => IsBufferEmpty();
     
-    public void GetKeysDown(IList<Key> keys)
+    public void GetKeysPressed(IList<Key> keys) => GetKeys(keys, _pressed);
+    
+    public void GetKeysDown(IList<Key> keys) => GetKeys(keys, _down);
+
+    public void GetKeysReleased(IList<Key> keys) => GetKeys(keys, _released);
+    public void GetChars(IList<char> chars) => _chars.ForEach(chars.Add);
+
+    #endregion Queries
+
+    #region Private
+
+    private void GetKeys(IList<Key> keys, BitArray array)
     {
         for (int i = 0; i < BufferLength; i++)
         {
-            if (_down[i])
+            if (array[i])
             {
                 keys.Add((Key)i);
             }
         }
     }
-
-    #endregion Queries
-
-    #region Private
 
     private static Key ConvertKey(SilkKey key)
     {
@@ -227,6 +239,11 @@ internal class KeyboardState : IInputSource, IKeyboardState, IDisposable
         _released[(int)key] = true;
         
         DebugPrint?.Invoke($"`{keyboard.Name}` key `{key}` released (keyCode = {keyCode}).");
+    }
+
+    private void OnChar(IKeyboard keyboard, char @char)
+    {
+        _chars.Add(@char);
     }
 
     #endregion Bindings
