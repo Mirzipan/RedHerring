@@ -10,8 +10,9 @@ public sealed class ToolProjectView : ATool
     private const ImGuiTreeNodeFlags TreeCommonFlags       = ImGuiTreeNodeFlags.SpanAvailWidth;
     private const ImGuiTreeNodeFlags TreeInternalNodeFlags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick | TreeCommonFlags;
     private const ImGuiTreeNodeFlags TreeLeafNodeFlags     = ImGuiTreeNodeFlags.Leaf        | ImGuiTreeNodeFlags.NoTreePushOnOpen  | TreeCommonFlags;
-    
-	private       bool               _isOpen        = true;
+
+    private static int _uniqueProjectIdGenerator = 0;
+    private        int _uniqueId                 = _uniqueProjectIdGenerator++;
 
     public ToolProjectView(ProjectModel projectModel) : base(projectModel)
     {
@@ -19,21 +20,22 @@ public sealed class ToolProjectView : ATool
     
 	public override void Update(out bool finished)
 	{
-		finished = false;
-
-		UpdateUI();
+		finished = UpdateUI();
 	}
 
-	private void UpdateUI()
-	{
-		if (Gui.Begin("Project view", ref _isOpen))
+	private bool UpdateUI()
+    {
+        bool isOpen = true;
+        if (Gui.Begin($"Project view##{_uniqueId}", ref isOpen))
         {
             //Tree();
             UpdateFolder(_projectModel.AssetsFolder);
 			
 			Gui.End();
 		}
-	}
+
+        return !isOpen;
+    }
 
     private void UpdateFolder(ProjectFolderNode? node)
     {

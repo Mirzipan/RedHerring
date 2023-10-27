@@ -139,27 +139,28 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         _inputSystem.Input.Bindings!.Add(new ShortcutBinding("redo", new KeyboardShortcut(Key.Z)));
         _inputSystem.Input.Layers.Push(_inputReceiver);
     }
+    #endregion Private
 
+    #region Menu
     private void InitMenu()
     {
-        _menu.AddItem("File/Open project..", OnOpenProjectClicked);
+        _menu.AddItem("File/Open project..",                      OnOpenProjectClicked);
         _menu.AddItem("File/Settings/Theme/Embrace the Darkness", UITheme.EmbraceTheDarkness);
-        _menu.AddItem("File/Settings/Theme/Crimson Rivers", UITheme.CrimsonRivers);
-        _menu.AddItem("File/Settings/Theme/Bloodsucker", UITheme.Bloodsucker);
-        _menu.AddItem("File/Exit", OnExitClicked);
+        _menu.AddItem("File/Settings/Theme/Crimson Rivers",       UITheme.CrimsonRivers);
+        _menu.AddItem("File/Settings/Theme/Bloodsucker",          UITheme.Bloodsucker);
+        _menu.AddItem("File/Exit",                                OnExitClicked);
 
         _menu.AddItem("Edit/Undo", _history.Undo);
         _menu.AddItem("Edit/Redo", _history.Redo);
 
-        _menu.AddItem("Debug/Modal window", () => Gui.OpenPopup("MessageBox"));
+        _menu.AddItem("View/Project..", OnViewProjectClicked);
+
+        _menu.AddItem("Debug/Modal window",        () => Gui.OpenPopup("MessageBox"));
         _menu.AddItem("Debug/Task processor test", OnDebugTaskProcessorTestClicked);
-        _menu.AddItem("Debug/Serialization test", OnDebugSerializationTestClicked);
-        _menu.AddItem("Debug/Importer test", OnDebugImporterTestClicked);
+        _menu.AddItem("Debug/Serialization test",  OnDebugSerializationTestClicked);
+        _menu.AddItem("Debug/Importer test",       OnDebugImporterTestClicked);
     }
-
-    #endregion Private
-
-    #region Menu
+    
     private async void OnOpenProjectClicked()
     {
         DialogResult result = Dialog.FolderPicker();
@@ -185,6 +186,11 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         Context.Engine?.Exit();
     }
 
+    private void OnViewProjectClicked()
+    {
+        _activeTools.Add(new ToolProjectView(_projectModel));
+    }
+    
     public void OnDebugTaskProcessorTestClicked()
     {
         for(int i=0;i <20;++i)
