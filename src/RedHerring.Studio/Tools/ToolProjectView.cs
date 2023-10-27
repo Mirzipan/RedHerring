@@ -79,10 +79,28 @@ public sealed class ToolProjectView : ATool
 
 		if (Gui.IsItemClicked() && !Gui.IsItemToggledOpen())
 		{
-			StudioModel.Selection.Flip(id);
+			HandleSelection(id);
 		}
 
 		return nodeExpanded;
+	}
+
+	private void HandleSelection(string id)
+	{
+		if(Gui.GetIO().KeyCtrl)
+		{
+			StudioModel.Selection.Flip(id);
+			return;
+		}
+
+		if (Gui.GetIO().KeyShift)
+		{
+			// TODO
+			return;
+		}
+
+		StudioModel.Selection.DeselectAll();
+		StudioModel.Selection.Select(id);
 	}
 
 

@@ -153,6 +153,7 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
         _menu.AddItem("View/Project", OnViewProjectClicked);
         _menu.AddItem("View/Console", OnViewConsoleClicked);
+        _menu.AddItem("View/Inspector", OnViewInspectorClicked);
 
         _menu.AddItem("Debug/Modal window",        () => Gui.OpenPopup("MessageBox"));
         _menu.AddItem("Debug/Task processor test", OnDebugTaskProcessorTestClicked);
@@ -186,6 +187,11 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         _activeTools.Add(new ToolConsole(_studioModel));
     }
 
+    private void OnViewInspectorClicked()
+    {
+        _activeTools.Add(new ToolInspector(_studioModel));
+    }
+    
     private void OnDebugTaskProcessorTestClicked()
     {
         for(int i=0;i <20;++i)
