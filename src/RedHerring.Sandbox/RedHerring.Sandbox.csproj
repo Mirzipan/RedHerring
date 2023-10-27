@@ -5,6 +5,7 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>RedHerring.Examples</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -18,6 +19,10 @@
       <ProjectReference Include="..\RedHerring.ImGui\RedHerring.ImGui.csproj" />
       <ProjectReference Include="..\RedHerring.Motive\RedHerring.Motive.csproj" />
       <ProjectReference Include="..\RedHerring\RedHerring.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Project\Assets\" />
     </ItemGroup>
 
 </Project>
