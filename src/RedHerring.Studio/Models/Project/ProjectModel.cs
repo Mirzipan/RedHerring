@@ -21,7 +21,9 @@ public sealed class ProjectModel
 
 		if (!Directory.Exists(assetsPath))
 		{
-			// this is error - TODO
+			// error
+			Console.WriteLine($"Assets folder not found on path {assetsPath}");
+			await _assetsFolder.InitMetaRecursive(_migrationManager); // create meta for at least root
 			return;
 		}
 		
