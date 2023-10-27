@@ -143,9 +143,9 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
     private void InitMenu()
     {
         _menu.AddItem("File/Open project..",                      OnOpenProjectClicked);
-        _menu.AddItem("File/Settings/Theme/Embrace the Darkness", UITheme.EmbraceTheDarkness);
-        _menu.AddItem("File/Settings/Theme/Crimson Rivers",       UITheme.CrimsonRivers);
-        _menu.AddItem("File/Settings/Theme/Bloodsucker",          UITheme.Bloodsucker);
+        _menu.AddItem("File/Settings/Theme/Embrace the Darkness", Theme.EmbraceTheDarkness);
+        _menu.AddItem("File/Settings/Theme/Crimson Rivers",       Theme.CrimsonRivers);
+        _menu.AddItem("File/Settings/Theme/Bloodsucker",          Theme.Bloodsucker);
         _menu.AddItem("File/Exit",                                OnExitClicked);
 
         _menu.AddItem("Edit/Undo", _history.Undo);

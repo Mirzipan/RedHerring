@@ -101,7 +101,7 @@ public class ImGuiRenderFeature : ARenderFeature
             size.Y);
 
         RecreateFont();
-        UITheme.CrimsonRivers();
+        Theme.EmbraceTheDarkness();
     }
     
     private void LoadDefaultFontData()
