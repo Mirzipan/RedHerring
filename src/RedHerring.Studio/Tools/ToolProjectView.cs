@@ -1,5 +1,5 @@
 ﻿using ImGuiNET;
-using RedHerring.Studio.Models.Project;
+using RedHerring.Studio.Models;
 using RedHerring.Studio.Models.Project.FileSystem;
 using Gui = ImGuiNET.ImGui;
 
@@ -10,11 +10,8 @@ public sealed class ToolProjectView : ATool
     private const ImGuiTreeNodeFlags TreeCommonFlags       = ImGuiTreeNodeFlags.SpanAvailWidth;
     private const ImGuiTreeNodeFlags TreeInternalNodeFlags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick | TreeCommonFlags;
     private const ImGuiTreeNodeFlags TreeLeafNodeFlags     = ImGuiTreeNodeFlags.Leaf        | ImGuiTreeNodeFlags.NoTreePushOnOpen  | TreeCommonFlags;
-
-    private static int _uniqueProjectIdGenerator = 0;
-    private        int _uniqueId                 = _uniqueProjectIdGenerator++;
-
-    public ToolProjectView(ProjectModel projectModel) : base(projectModel)
+    
+    public ToolProjectView(StudioModel studioModel) : base(studioModel)
     {
     }
     
@@ -26,10 +23,10 @@ public sealed class ToolProjectView : ATool
 	private bool UpdateUI()
     {
         bool isOpen = true;
-        if (Gui.Begin($"Project view##{_uniqueId}", ref isOpen))
+        if (Gui.Begin($"Project view##{UniqueId}", ref isOpen))
         {
             //Tree();
-            UpdateFolder(_projectModel.AssetsFolder);
+            UpdateFolder(StudioModel.Project.AssetsFolder);
 			
 			Gui.End();
 		}

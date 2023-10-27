@@ -1,15 +1,19 @@
 using RedHerring.Studio.Models.Project;
+using RedHerring.Studio.Models.ViewModels.Console;
 using RedHerring.Studio.TaskProcessor;
 
 namespace RedHerring.Studio.Models;
 
 // main model
-public class Model
+public class StudioModel
 {
 	private const int _threadsCount = 4;
 	
-	private ProjectModel _project = new();
-	public  ProjectModel Project => _project;
+	private readonly ProjectModel _project = new();
+	public           ProjectModel Project => _project;
+	
+	private readonly ConsoleViewModel _console = new();
+	public           ConsoleViewModel Console => _console;
 
 	private readonly TaskProcessor.TaskProcessor _taskProcessor = new(_threadsCount);
 	public           TaskProcessor.TaskProcessor TaskProcessor => _taskProcessor;

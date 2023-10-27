@@ -1,14 +1,17 @@
-﻿using RedHerring.Studio.Models.Project;
+﻿using RedHerring.Studio.Models;
 
 namespace RedHerring.Studio.Tools;
 
 public abstract class ATool
 {
-	protected ProjectModel _projectModel;
+	protected readonly StudioModel StudioModel;
 
-	protected ATool(ProjectModel projectModel)
+	private static     int _uniqueToolIdGenerator = 0;
+	protected readonly int UniqueId               = _uniqueToolIdGenerator++;
+	
+	protected ATool(StudioModel studioModel)
 	{
-		_projectModel = projectModel;
+		StudioModel = studioModel;
 	}
 	
 	public abstract void Update(out bool finished);

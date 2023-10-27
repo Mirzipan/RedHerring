@@ -6,6 +6,7 @@ namespace RedHerring.Studio.UserInterface;
 
 public class StatusBar
 {
+	// TODO - this is very similar to console - refactor
 	public enum Color
 	{
 		Info    = 0,

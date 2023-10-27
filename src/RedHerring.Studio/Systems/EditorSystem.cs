@@ -1,20 +1,22 @@
 ﻿using ImGuiNET;
+using NativeFileDialogSharp;
 using RedHerring.Alexandria;
 using RedHerring.Core;
 using RedHerring.Core.Systems;
 using RedHerring.Fingerprint;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
-using RedHerring.Infusion.Attributes;
-using RedHerring.Studio.Commands;
-using RedHerring.Studio.UserInterface;
-using RedHerring.Studio.UserInterface.Dialogs;
-using NativeFileDialogSharp;
 using RedHerring.ImGui;
-using RedHerring.Studio.Models.Project;
+using RedHerring.Infusion.Attributes;
+using RedHerring.Render.Models;
+using RedHerring.Studio.Commands;
+using RedHerring.Studio.Models;
 using RedHerring.Studio.Models.Tests;
+using RedHerring.Studio.Models.ViewModels.Console;
 using RedHerring.Studio.TaskProcessor;
 using RedHerring.Studio.Tools;
+using RedHerring.Studio.UserInterface;
+using RedHerring.Studio.UserInterface.Dialogs;
 using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.Systems;
@@ -33,12 +35,8 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
     private InputReceiver _inputReceiver;
 
-    private          ProjectModel   _projectModel = new();
+    private          StudioModel   _studioModel = new();
     private readonly CommandHistory _history      = new CommandHistory();
-
-    private const    int                         _threadsCount  = 4;
-    private readonly TaskProcessor.TaskProcessor _taskProcessor = new(_threadsCount);
-    public           TaskProcessor.TaskProcessor TaskProcessor => _taskProcessor;
 
     private readonly List<ATool> _activeTools = new();
     
@@ -62,19 +60,19 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
     protected override void Load()
     {
-        ImGuiNET.ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+        Gui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 
         InitInput();
 
         InitMenu();
 
         // debug
-        _activeTools.Add(new ToolProjectView(_projectModel));
+        _activeTools.Add(new ToolProjectView(_studioModel));
     }
 
     protected override void Unload()
     {
-        _taskProcessor.Cancel();
+        _studioModel.TaskProcessor.Cancel();
     }
 
     public void Update(GameTime gameTime)
@@ -103,9 +101,9 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
     private void UpdateStatusBarMessage()
     {
-        int workerThreadsCount = _taskProcessor.WorkerThreadsCount;
-        int remainingTasks     = _taskProcessor.GetRemainingTasks();
-        int availableThreads   = _taskProcessor.AvailableWorkerThreads;
+        int workerThreadsCount = _studioModel.TaskProcessor.WorkerThreadsCount;
+        int remainingTasks     = _studioModel.TaskProcessor.GetRemainingTasks();
+        int availableThreads   = _studioModel.TaskProcessor.AvailableWorkerThreads;
 		
         if (remainingTasks > 0)
         {
@@ -153,7 +151,8 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
         _menu.AddItem("Edit/Undo", _history.Undo);
         _menu.AddItem("Edit/Redo", _history.Redo);
 
-        _menu.AddItem("View/Project..", OnViewProjectClicked);
+        _menu.AddItem("View/Project", OnViewProjectClicked);
+        _menu.AddItem("View/Console", OnViewConsoleClicked);
 
         _menu.AddItem("Debug/Modal window",        () => Gui.OpenPopup("MessageBox"));
         _menu.AddItem("Debug/Task processor test", OnDebugTaskProcessorTestClicked);
@@ -171,11 +170,13 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
         try
         {
-            await _projectModel.Open(result.Path);
+            _studioModel.Console.Log($"Opening project from {result.Path}", ConsoleItemType.Info);
+            await _studioModel.Project.Open(result.Path);
+            _studioModel.Console.Log($"Project opened", ConsoleItemType.Success);
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Exception: {e}");
+            _studioModel.Console.Log($"Exception: {e}", ConsoleItemType.Exception);
         }
 
         //Console.WriteLine($"Picked folder: {result.Path}");
@@ -188,23 +189,28 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
     private void OnViewProjectClicked()
     {
-        _activeTools.Add(new ToolProjectView(_projectModel));
+        _activeTools.Add(new ToolProjectView(_studioModel));
     }
-    
-    public void OnDebugTaskProcessorTestClicked()
+
+    private void OnViewConsoleClicked()
+    {
+        _activeTools.Add(new ToolConsole(_studioModel));
+    }
+
+    private void OnDebugTaskProcessorTestClicked()
     {
         for(int i=0;i <20;++i)
         {
-            _taskProcessor.EnqueueTask(new TestTask(i), 0);
+            _studioModel.TaskProcessor.EnqueueTask(new TestTask(i), 0);
         }
     }
 
-    public void OnDebugSerializationTestClicked()
+    private void OnDebugSerializationTestClicked()
     {
         SerializationTests.Test();
     }
 
-    public void OnDebugImporterTestClicked()
+    private void OnDebugImporterTestClicked()
     {
         ImporterTests.Test();
     }
