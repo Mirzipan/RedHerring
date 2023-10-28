@@ -53,8 +53,9 @@ public class InputProcessor
             return false;
         }
 
-        foreach (var binding in bindings)
+        for (int i = 0; i < bindings.Count; i++)
         {
+            var binding = bindings[i];
             var state = GetShortcutState(binding.Shortcut!);
             if (state == InputState.Up)
             {
