@@ -34,8 +34,8 @@ public sealed class SessionContext : AThingamabob
 
         InstallBindings();
         
-        _updatables.AddRange(_container.ResolveAll<IUpdatable>());
-        _drawables.AddRange(_container.ResolveAll<IDrawable>());
+        _updatables.AddRange(_container.ResolveAll<IUpdatable>().Where(e => e is ASessionComponent));
+        _drawables.AddRange(_container.ResolveAll<IDrawable>().Where(e => e is ASessionComponent));
         _components.AddRange(_container.ResolveAll<ASessionComponent>());
         
         Sort();
