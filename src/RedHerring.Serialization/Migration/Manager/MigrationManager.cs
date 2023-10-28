@@ -48,6 +48,12 @@ namespace Migration
 			CreateTypesHash();
 		}
 
+		public T MigrateRoot<T>(T root)
+		{
+			Migrate(root);
+			return (T)MigrateValueToLatestVersion(root, root.GetType());
+		}
+
 		public void Migrate(object data)
 		{
 			Type data_type = data.GetType();

@@ -2,6 +2,11 @@
 Only major and minor versions are here.
 
 ------------------
+### Version v1.3.0
+#### Added
+- added support for root class migration
+
+------------------
 ### Version v1.2.0
 #### Added
 - platform specific api, now the migration is Unity independent

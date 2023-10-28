@@ -63,7 +63,7 @@ namespace Migration
 					return default;
 				}
 
-				migration_manager.Migrate(migratable_data);
+				migratable_data = migration_manager.MigrateRoot(migratable_data);
 					
 				SerializationContext migration_serialization_context = new SerializationContext
 				                                                       {
