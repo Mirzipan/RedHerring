@@ -10,6 +10,8 @@ public sealed class ToolProjectView : ATool
 	private const ImGuiTreeNodeFlags TreeCommonFlags       = ImGuiTreeNodeFlags.SpanAvailWidth;
 	private const ImGuiTreeNodeFlags TreeInternalNodeFlags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick | TreeCommonFlags;
 	private const ImGuiTreeNodeFlags TreeLeafNodeFlags     = ImGuiTreeNodeFlags.Leaf        | ImGuiTreeNodeFlags.NoTreePushOnOpen  | TreeCommonFlags;
+	
+	protected override string Name => "Project view";
     
 	public ToolProjectView(StudioModel studioModel) : base(studioModel)
 	{
@@ -23,7 +25,7 @@ public sealed class ToolProjectView : ATool
 	private bool UpdateUI()
 	{
 		bool isOpen = true;
-		if (Gui.Begin($"Project view##{UniqueId}", ref isOpen))
+		if (Gui.Begin(NameWithSalt, ref isOpen))
 		{
 			//Tree();
 			UpdateFolder(StudioModel.Project.AssetsFolder);

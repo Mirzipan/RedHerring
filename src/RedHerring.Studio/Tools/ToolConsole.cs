@@ -6,6 +6,8 @@ namespace RedHerring.Studio.Tools;
 
 public sealed class ToolConsole : ATool
 {
+	protected override string Name => "Console";
+
 	public ToolConsole(StudioModel studioModel) : base(studioModel)
 	{
 	}
@@ -18,7 +20,7 @@ public sealed class ToolConsole : ATool
 	private bool UpdateUI()
 	{
 		bool isOpen = true;
-		if (Gui.Begin($"Console##{UniqueId}", ref isOpen))
+		if (Gui.Begin(NameWithSalt, ref isOpen))
 		{
 			foreach(ConsoleItem item in StudioModel.Console.Items)
 			{

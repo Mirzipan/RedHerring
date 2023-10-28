@@ -8,9 +8,13 @@ public abstract class ATool
 
 	private static     int _uniqueToolIdGenerator = 0;
 	protected readonly int UniqueId               = _uniqueToolIdGenerator++;
+	protected readonly string NameWithSalt;
+	
+	protected abstract string Name { get; }
 	
 	protected ATool(StudioModel studioModel)
 	{
+		NameWithSalt = $"{Name}##{UniqueId}";
 		StudioModel = studioModel;
 	}
 	

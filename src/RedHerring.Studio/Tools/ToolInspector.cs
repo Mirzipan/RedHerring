@@ -5,6 +5,8 @@ namespace RedHerring.Studio.Tools;
 
 public sealed class ToolInspector : ATool
 {
+	protected override string Name => "Inspector";
+
 	public ToolInspector(StudioModel studioModel) : base(studioModel)
 	{
 	}
@@ -17,7 +19,7 @@ public sealed class ToolInspector : ATool
 	private bool UpdateUI()
 	{
 		bool isOpen = true;
-		if (Gui.Begin($"Inspector##{UniqueId}", ref isOpen))
+		if (Gui.Begin(NameWithSalt, ref isOpen))
 		{
 			Gui.End();
 		}
