@@ -67,7 +67,13 @@ internal class KeyboardState : IInputSource, IKeyboardState, IDisposable
     public void GetKeysDown(IList<Key> keys) => GetKeys(keys, _down);
 
     public void GetKeysReleased(IList<Key> keys) => GetKeys(keys, _released);
-    public void GetChars(IList<char> chars) => _chars.ForEach(chars.Add);
+    public void GetChars(IList<char> chars)
+    {
+        foreach (char @char in _chars)
+        {
+            chars.Add(@char);
+        }
+    }
 
     #endregion Queries
 

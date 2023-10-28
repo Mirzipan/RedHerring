@@ -48,26 +48,33 @@ internal class InputState : InputSnapshot
         var keyboard = input.Keyboard;
         if (keyboard is not null)
         {
-            CreateKeyEvents(keyboard);
+            CreatePressedKeyEvents(keyboard);
+            CreateReleasedKeyEvents(keyboard);
             UpdateChars(keyboard);
         }
     }
 
-    private void CreateKeyEvents(IKeyboardState keyboard)
-    {
-        var modifiers = Modifiers(keyboard);
-        AddKeyEvents(keyboard.GetKeysPressed, true, modifiers);
-        AddKeyEvents(keyboard.GetKeysReleased, false, modifiers);
-    }
-
-    private void AddKeyEvents(Action<List<Key>> getKeys, bool down, ModifierKeys modifierKeys)
+    private void CreatePressedKeyEvents(IKeyboardState keyboard)
     {
         TmpKeys.Clear();
-        getKeys(TmpKeys);
+        var modifiers = Modifiers(keyboard);
         
+        keyboard.GetKeysPressed(TmpKeys);
         foreach (var key in TmpKeys)
         {
-            _keyEvents.Add(new KeyEvent(Convert(key), down, modifierKeys));
+            _keyEvents.Add(new KeyEvent(Convert(key), true, modifiers));
+        }
+    }
+
+    private void CreateReleasedKeyEvents(IKeyboardState keyboard)
+    {
+        TmpKeys.Clear();
+        var modifiers = Modifiers(keyboard);
+        
+        keyboard.GetKeysReleased(TmpKeys);
+        foreach (var key in TmpKeys)
+        {
+            _keyEvents.Add(new KeyEvent(Convert(key), true, modifiers));
         }
     }
 
