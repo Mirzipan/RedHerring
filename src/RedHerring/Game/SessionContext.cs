@@ -33,15 +33,12 @@ public sealed class SessionContext : AThingamabob
         _session = session;
 
         InstallBindings();
-        
-        _updatables.AddRange(_container.ResolveAll<IUpdatable>().Where(e => e is ASessionComponent));
-        _drawables.AddRange(_container.ResolveAll<IDrawable>().Where(e => e is ASessionComponent));
-        _components.AddRange(_container.ResolveAll<ASessionComponent>());
+        ResolveComponents();
         
         Sort();
         RaiseInitOnComponents();
     }
-    
+
     internal void Update(GameTime gameTime)
     {
         _currentlyUpdatingComponents.AddRange(_updatables);
@@ -122,6 +119,30 @@ public sealed class SessionContext : AThingamabob
         }
 
         _container = description.Build();
+    }
+
+    private void ResolveComponents()
+    {
+        _components.AddRange(_container.ResolveAll<ASessionComponent>());
+        int count = _components.Count;
+        if (count == 0)
+        {
+            return;
+        }
+        
+        for (int i = 0; i < count; i++)
+        {
+            var component = _components[i];
+            if (component is IUpdatable updatable)
+            {
+                _updatables.Add(updatable);
+            }
+            
+            if (component is IDrawable drawable)
+            {
+                _drawables.Add(drawable);
+            }
+        }
     }
 
     private void Sort()

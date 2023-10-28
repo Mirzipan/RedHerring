@@ -40,10 +40,7 @@ public sealed class EngineContext : AThingamabob
         _engine = engine;
         
         InstallBindings();
-
-        _updatables.AddRange(_container.ResolveAll<IUpdatable>());
-        _drawables.AddRange(_container.ResolveAll<IDrawable>());
-        _systems.AddRange(_container.ResolveAll<AnEngineSystem>());
+        ResolveComponents();
         
         Sort();
         RaiseInitOnSystems();
@@ -168,6 +165,30 @@ public sealed class EngineContext : AThingamabob
         }
 
         _container = description.Build();
+    }
+
+    private void ResolveComponents()
+    {
+        _systems.AddRange(_container.ResolveAll<AnEngineSystem>());
+        int count = _systems.Count;
+        if (count == 0)
+        {
+            return;
+        }
+        
+        for (int i = 0; i < count; i++)
+        {
+            var system = _systems[i];
+            if (system is IUpdatable updatable)
+            {
+                _updatables.Add(updatable);
+            }
+            
+            if (system is IDrawable drawable)
+            {
+                _drawables.Add(drawable);
+            }
+        }
     }
 
     private void Sort()
