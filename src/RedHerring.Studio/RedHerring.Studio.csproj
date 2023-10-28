@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\RedHerring.Assets\RedHerring.Assets.csproj" />
+      <ProjectReference Include="..\RedHerring.Deduction\RedHerring.Deduction.csproj" />
       <ProjectReference Include="..\RedHerring.ImGui\RedHerring.ImGui.csproj" />
       <ProjectReference Include="..\RedHerring.Motive\RedHerring.Motive.csproj" />
       <ProjectReference Include="..\RedHerring.Serialization\RedHerring.Serialization.csproj" />

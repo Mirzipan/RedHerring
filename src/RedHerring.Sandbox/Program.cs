@@ -86,7 +86,8 @@ internal class Program
             View = _window!,
             GraphicsBackend = _graphicsBackend,
         };
-        context.InstallBindings(new List<IBindingsInstaller> { new ExampleEngineInstaller() });
+        context.AddAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+        context.AddInstaller(new ExampleEngineInstaller());
         
         _engine.Run(context);
 

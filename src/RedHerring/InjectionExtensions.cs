@@ -1,5 +1,6 @@
 ﻿using RedHerring.Alexandria;
 using RedHerring.Core;
+using RedHerring.Deduction;
 using RedHerring.Game;
 using RedHerring.Infusion;
 // ReSharper disable SuspiciousTypeConversion.Global
@@ -42,6 +43,39 @@ public static class InjectionExtensions
         }
         
         @this.AddInstance(component, types.ToArray());
+
+        return @this;
+    }
+    
+    public static ContainerDescription AddMetadata(this ContainerDescription @this, AssemblyCollection collection)
+    {
+        var meta = new MetadataDatabase(collection);
+        meta.Process();
+        @this.AddInstance(meta);
+
+        foreach (var indexer in meta.Indexers)
+        {
+            AddIndexer(@this, indexer);
+        }
+
+        return @this;
+    }
+    
+    public static ContainerDescription AddIndexer(this ContainerDescription @this, IIndexMetadata indexer)
+    {
+        var types = new List<Type> { indexer.GetType(), typeof(IIndexMetadata) };
+
+        if (indexer is IIndexAttributes)
+        {
+            types.Add(typeof(IIndexAttributes));
+        }
+
+        if (indexer is IIndexTypes)
+        {
+            types.Add(typeof(IIndexTypes));
+        }
+        
+        @this.AddInstance(indexer, types.ToArray());
 
         return @this;
     }

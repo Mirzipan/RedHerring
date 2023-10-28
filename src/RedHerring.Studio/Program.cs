@@ -80,14 +80,16 @@ internal class Program
         _engine = new Engine();
         _engine.OnExit += OnEngineExit;
 
-        var context = new EngineContext()
+        var context = new EngineContext
         {
             Name = "Studio Engine",
             View = _window!,
             GraphicsBackend = _graphicsBackend,
             UseSeparateRenderThread = true,
         };
-        context.InstallBindings(new List<IBindingsInstaller> { new StudioEngineInstaller() });
+        context.AddAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+        context.AddInstaller(new StudioEngineInstaller());
+        
         _engine.Run(context);
 
         _sessionContext = new SessionContext(_engine);

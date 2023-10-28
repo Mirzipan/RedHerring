@@ -86,7 +86,7 @@ public sealed class Engine : AThingamabob
         
         ++_frameCount;
         _cronos.Tick();
-        DrawTime.Update(_cronos.TotalTime, _cronos.ElapsedTime, _frameCount);
+        DrawTime.Update(_cronos.TotalTime, delta, _frameCount);
         
         bool isDrawing = Renderer?.BeginDraw() ?? false;
         if (isDrawing)

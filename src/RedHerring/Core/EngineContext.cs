@@ -1,5 +1,7 @@
-﻿using RedHerring.Alexandria;
+﻿using System.Reflection;
+using RedHerring.Alexandria;
 using RedHerring.Alexandria.Disposables;
+using RedHerring.Deduction;
 using RedHerring.Infusion;
 using RedHerring.Infusion.Injectors;
 using Silk.NET.Windowing;
@@ -19,6 +21,9 @@ public sealed class EngineContext : AThingamabob
     private readonly List<IUpdatable> _currentlyUpdatingSystems = new();
     private readonly List<IDrawable> _currentlyDrawingSystems = new();
 
+    private readonly AssemblyCollection _indexedAssemblies = new();
+    private readonly List<IBindingsInstaller> _installers = new();
+
     private Engine? _engine;
     private InjectionContainer _container = null!;
 
@@ -30,12 +35,15 @@ public sealed class EngineContext : AThingamabob
 
     #region Lifecycle
 
-    public void InstallBindings(List<IBindingsInstaller> installers)
+    internal void Init(Engine engine)
     {
+        _engine = engine;
+        
         var description = new ContainerDescription("Engine");
         description.AddInstance(this);
+        description.AddMetadata(_indexedAssemblies);
         
-        foreach (var installer in installers)
+        foreach (var installer in _installers)
         {
             installer.InstallBindings(description);
         }
@@ -45,12 +53,7 @@ public sealed class EngineContext : AThingamabob
         _updatables.AddRange(_container.ResolveAll<IUpdatable>());
         _drawables.AddRange(_container.ResolveAll<IDrawable>());
         _systems.AddRange(_container.ResolveAll<AnEngineSystem>());
-    }
-
-    public void Init(Engine engine)
-    {
-        _engine = engine;
-
+        
         Sort();
         RaiseInitOnSystems();
     }
@@ -118,6 +121,22 @@ public sealed class EngineContext : AThingamabob
     }
 
     #endregion Lifecycle
+
+    #region Manipulation
+
+    public void AddAssemblies(IEnumerable<Assembly> assemblies) => _indexedAssemblies.Add(assemblies);
+
+    public void AddAssemblies(params Assembly[] assemblies) => _indexedAssemblies.Add(assemblies);
+
+    public void AddAssembly(Assembly assembly) => _indexedAssemblies.Add(assembly);
+
+    public void AddInstallers(IEnumerable<IBindingsInstaller> installers) => _installers.AddRange(installers);
+
+    public void AddInstallers(params IBindingsInstaller[] installers) => _installers.AddRange(installers);
+
+    public void AddInstaller(IBindingsInstaller installer) => _installers.Add(installer);
+
+    #endregion Manipulation
     
     #region Private
 

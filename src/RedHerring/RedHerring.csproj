@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\RedHerring.Alexandria\RedHerring.Alexandria.csproj" />
+      <ProjectReference Include="..\RedHerring.Deduction\RedHerring.Deduction.csproj" />
       <ProjectReference Include="..\RedHerring.Fingerprint\RedHerring.Fingerprint.csproj" />
       <ProjectReference Include="..\RedHerring.Infusion\RedHerring.Infusion.csproj" />
       <ProjectReference Include="..\RedHerring.Motive\RedHerring.Motive.csproj" />
