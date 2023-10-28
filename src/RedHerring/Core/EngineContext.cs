@@ -39,17 +39,8 @@ public sealed class EngineContext : AThingamabob
     {
         _engine = engine;
         
-        var description = new ContainerDescription("Engine");
-        description.AddInstance(this);
-        description.AddMetadata(_indexedAssemblies);
-        
-        foreach (var installer in _installers)
-        {
-            installer.InstallBindings(description);
-        }
+        InstallBindings();
 
-        _container = description.Build();
-        
         _updatables.AddRange(_container.ResolveAll<IUpdatable>());
         _drawables.AddRange(_container.ResolveAll<IDrawable>());
         _systems.AddRange(_container.ResolveAll<AnEngineSystem>());
@@ -124,21 +115,60 @@ public sealed class EngineContext : AThingamabob
 
     #region Manipulation
 
-    public void AddAssemblies(IEnumerable<Assembly> assemblies) => _indexedAssemblies.Add(assemblies);
+    public EngineContext WithAssemblies(IEnumerable<Assembly> assemblies)
+    {
+        _indexedAssemblies.Add(assemblies);
+        return this;
+    }
 
-    public void AddAssemblies(params Assembly[] assemblies) => _indexedAssemblies.Add(assemblies);
+    public EngineContext WithAssemblies(params Assembly[] assemblies)
+    {
+        _indexedAssemblies.Add(assemblies);
+        return this;
+    }
 
-    public void AddAssembly(Assembly assembly) => _indexedAssemblies.Add(assembly);
+    public EngineContext WithAssembly(Assembly assembly)
+    {
+        _indexedAssemblies.Add(assembly);
+        return this;
+    }
 
-    public void AddInstallers(IEnumerable<IBindingsInstaller> installers) => _installers.AddRange(installers);
+    public EngineContext WithInstallers(IEnumerable<IBindingsInstaller> installers)
+    {
+        _installers.AddRange(installers);
+        return this;
+    }
 
-    public void AddInstallers(params IBindingsInstaller[] installers) => _installers.AddRange(installers);
+    public EngineContext WithInstallers(params IBindingsInstaller[] installers)
+    {
+        _installers.AddRange(installers);
+        return this;
+    }
 
-    public void AddInstaller(IBindingsInstaller installer) => _installers.Add(installer);
+    public EngineContext WithInstaller(IBindingsInstaller installer)
+    {
+        _installers.Add(installer);
+        return this;
+    }
 
     #endregion Manipulation
     
     #region Private
+
+    private void InstallBindings()
+    {
+        var description = new ContainerDescription("Engine");
+        description.AddInstance(this);
+        description.AddInstance(_engine!);
+        description.AddMetadata(_indexedAssemblies);
+
+        foreach (var installer in _installers)
+        {
+            installer.InstallBindings(description);
+        }
+
+        _container = description.Build();
+    }
 
     private void Sort()
     {

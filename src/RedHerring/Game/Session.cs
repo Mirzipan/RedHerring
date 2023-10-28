@@ -35,6 +35,7 @@ public sealed class Session : AThingamabob
         Phase = SessionPhase.Initializing;
         
         // TODO: loading magic
+        Context.Init(_engine, this);
 
         Phase = SessionPhase.Initialized;
     }

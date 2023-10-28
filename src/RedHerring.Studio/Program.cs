@@ -86,13 +86,10 @@ internal class Program
             View = _window!,
             GraphicsBackend = _graphicsBackend,
             UseSeparateRenderThread = true,
-        };
-        context.AddAssemblies(AppDomain.CurrentDomain.GetAssemblies());
-        context.AddInstaller(new StudioEngineInstaller());
-        
+        }.WithAssemblies(AppDomain.CurrentDomain.GetAssemblies()).WithInstaller(new StudioEngineInstaller());
         _engine.Run(context);
 
-        _sessionContext = new SessionContext(_engine);
+        _sessionContext = new SessionContext();
         _engine.Run(_sessionContext);
         
         _window!.IsVisible = true;

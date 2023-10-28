@@ -15,42 +15,29 @@ public sealed class SessionContext : AThingamabob
     private readonly List<IUpdatable> _currentlyUpdatingComponents = new();
     private readonly List<IDrawable> _currentlyDrawingComponents = new();
 
-    private Engine _engine;
+    private readonly List<IBindingsInstaller> _installers = new();
+
+    private Engine? _engine;
     private Session? _session;
     private InjectionContainer _container = null!;
 
-    public Engine Engine => _engine;
+    public Engine? Engine => _engine;
     public Session? Session => _session;
     public InjectionContainer Container => _container;
 
     #region Lifecycle
 
-    public SessionContext(Engine engine)
+    internal void Init(Engine engine, Session session)
     {
         _engine = engine;
-    }
+        _session = session;
 
-    public void InstallBindings(List<IBindingsInstaller> installers)
-    {
-        var description = new ContainerDescription("Session", _engine.Context.Container);
-        description.AddInstance(this);
-        
-        foreach (var installer in installers)
-        {
-            installer.InstallBindings(description);
-        }
-
-        _container = description.Build();
+        InstallBindings();
         
         _updatables.AddRange(_container.ResolveAll<IUpdatable>());
         _drawables.AddRange(_container.ResolveAll<IDrawable>());
         _components.AddRange(_container.ResolveAll<ASessionComponent>());
-    }
-
-    public void Init(Engine engine)
-    {
-        _engine = engine;
-
+        
         Sort();
         RaiseInitOnComponents();
     }
@@ -98,8 +85,44 @@ public sealed class SessionContext : AThingamabob
     }
 
     #endregion Lifecycle
+
+    #region Manipulation
+
+    public SessionContext WithInstallers(IEnumerable<IBindingsInstaller> installers)
+    {
+        _installers.AddRange(installers);
+        return this;
+    }
+
+    public SessionContext WithInstallers(params IBindingsInstaller[] installers)
+    {
+        _installers.AddRange(installers);
+        return this;
+    }
+
+    public SessionContext WithInstaller(IBindingsInstaller installer)
+    {
+        _installers.Add(installer);
+        return this;
+    }
+
+    #endregion Manipulation
     
     #region Private
+
+    private void InstallBindings()
+    {
+        var description = new ContainerDescription("Session", _engine!.Context.Container);
+        description.AddInstance(this);
+        description.AddInstance(_engine);
+        
+        foreach (var installer in _installers)
+        {
+            installer.InstallBindings(description);
+        }
+
+        _container = description.Build();
+    }
 
     private void Sort()
     {

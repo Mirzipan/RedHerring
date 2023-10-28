@@ -80,19 +80,16 @@ internal class Program
         _engine = new Engine();
         _engine.OnExit += OnEngineExit;
 
-        var context = new EngineContext()
+        var context = new EngineContext
         {
             Name = "Game Engine",
             View = _window!,
             GraphicsBackend = _graphicsBackend,
-        };
-        context.AddAssemblies(AppDomain.CurrentDomain.GetAssemblies());
-        context.AddInstaller(new ExampleEngineInstaller());
+        }.WithAssemblies(AppDomain.CurrentDomain.GetAssemblies()).WithInstaller(new ExampleEngineInstaller());
         
         _engine.Run(context);
 
-        _sessionContext = new SessionContext(_engine);
-        _sessionContext.InstallBindings(new List<IBindingsInstaller> { new ExampleSessionInstaller() });
+        _sessionContext = new SessionContext().WithInstaller(new ExampleSessionInstaller());
         
         _engine.Run(_sessionContext);
         
