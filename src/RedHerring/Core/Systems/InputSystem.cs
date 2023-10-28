@@ -75,9 +75,11 @@ public sealed class InputSystem : AnEngineSystem, IUpdatable
             return;
         }
         
-        var shortcut = new CompositeShortcut();
-        //shortcut.Add(new KeyboardShortcut(Key.ShiftLeft));
-        shortcut.Add(new KeyboardShortcut(Key.F12));
+        var shortcut = new CompositeShortcut
+        {
+            new KeyboardShortcut(Key.ShiftLeft),
+            new KeyboardShortcut(Key.F12),
+        };
         _input.Bindings.Add(new ShortcutBinding("dbg_draw", shortcut));
         
         _receiver.Bind("dbg_draw", InputState.Released, ToggleDebugDraw);
