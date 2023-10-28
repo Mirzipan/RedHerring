@@ -2,7 +2,7 @@
 
 namespace RedHerring.Game;
 
-public abstract class ASessionComponent : AThingamabob
+public abstract class ASessionComponent : ANamedDisposer
 {
     private SessionContext _context = null!;
     public SessionContext Context => _context;

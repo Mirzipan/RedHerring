@@ -12,7 +12,7 @@ namespace RedHerring.Core;
 /// <summary>
 /// Context used for running the engine.
 /// </summary>
-public sealed class EngineContext : AThingamabob
+public sealed class EngineContext : ANamedDisposer
 {
     private readonly List<AnEngineSystem> _systems = new();
     private readonly List<IUpdatable> _updatables = new();

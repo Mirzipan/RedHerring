@@ -3,7 +3,7 @@ using RedHerring.Core;
 
 namespace RedHerring.Game;
 
-public sealed class Session : AThingamabob
+public sealed class Session : ANamedDisposer
 {
     private Engine _engine;
     public Engine Engine => _engine;

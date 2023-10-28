@@ -9,7 +9,7 @@ using Veldrid;
 
 namespace RedHerring.Render;
 
-public class Renderer : AThingamabob
+public class Renderer : ANamedDisposer
 {
     public readonly Thread Thread;
     

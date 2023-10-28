@@ -6,7 +6,7 @@ using Silk.NET.Maths;
 
 namespace RedHerring.Core;
 
-public sealed class Engine : AThingamabob
+public sealed class Engine : ANamedDisposer
 {
     public EngineContext Context { get; private set; } = null!;
     public GraphicsSystem? Renderer { get; private set; } = null!;

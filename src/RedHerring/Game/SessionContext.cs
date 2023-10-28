@@ -6,7 +6,7 @@ using RedHerring.Infusion.Injectors;
 
 namespace RedHerring.Game;
 
-public sealed class SessionContext : AThingamabob
+public sealed class SessionContext : ANamedDisposer
 {
     private readonly List<ASessionComponent> _components = new();
     private readonly List<IUpdatable> _updatables = new();

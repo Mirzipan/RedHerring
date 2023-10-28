@@ -2,7 +2,7 @@
 
 namespace RedHerring.Core;
 
-public abstract class AnEngineSystem : AThingamabob
+public abstract class AnEngineSystem : ANamedDisposer
 {
     private EngineContext _context = null!;
     public EngineContext Context => _context;
