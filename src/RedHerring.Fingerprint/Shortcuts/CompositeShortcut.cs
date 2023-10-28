@@ -199,14 +199,13 @@ public class CompositeShortcut : Collection<IShortcut>, IShortcut
         for (int i = 0; i < Items.Count; i++)
         {
             var item = Items[i];
-            if (!item.IsDown(input))
-            {
-                return false;
-            }
-
             if (item.IsReleased(input))
             {
                 oneReleased = true;
+            }
+            else if (!item.IsDown(input))
+            {
+                return false;
             }
         }
 
