@@ -1,4 +1,6 @@
-﻿namespace RedHerring.Studio.UserInterface;
+﻿using RedHerring.Studio.UserInterface.Attributes;
+
+namespace RedHerring.Studio.UserInterface;
 
 public sealed class Inspector
 {
@@ -8,8 +10,8 @@ public sealed class Inspector
 	private static int _uniqueIdGenerator = 0;
 	private        int _uniqueId          = _uniqueIdGenerator++;
 	
-	private InspectorTest _test  = new();                                                                // TODO debug
-	private List<object>  _tests = new(){new InspectorTest2(1, 22, 333), new InspectorTest(4, 22, 333)}; // TODO debug
+	private InspectorTest _test  = new();                                            // TODO debug
+	private List<object>  _tests = new(){new InspectorTest2(), new InspectorTest()}; // TODO debug
 
 	public Inspector()
 	{
@@ -60,36 +62,25 @@ public sealed class Inspector
 
 public class InspectorTest
 {
-	public int SomeValue1;
-	public int SomeValue2;
-	public int SomeValue3;
+	public int SomeValue1 = 1;
+	public int SomeValue2 = 22;
+	public int SomeValue3 = 333;
+	public int SomeValue4 = 4444;
 	
 	public InspectorTestSubclass Subclass = new();
-	
-	public InspectorTest(int someValue1 = 1, int someValue2 = 22, int someValue3 = 333)
-	{
-		SomeValue1 = someValue1;
-		SomeValue2 = someValue2;
-		SomeValue3 = someValue3;
-	}
 }
 
 public class InspectorTest2
 {
-	public int SomeValue1;
-	public int SomeValue2;
-	public int SomeValue3;
-	public int SomeValue4;
-	
+	public int SomeValue1 = 5;
+	[ReadOnlyInInspector] public int SomeValue2 = 22;
+
 	public InspectorTestSubclass2 Subclass = new();
+
+	[ShowInInspector] private int SomeValue3 = 333;
+	[HideInInspector] public  int SomeValue4 = 4444;
 	
-	public InspectorTest2(int someValue1 = 1, int someValue2 = 22, int someValue3 = 333, int someValue4 = 4444)
-	{
-		SomeValue1 = someValue1;
-		SomeValue2 = someValue2;
-		SomeValue3 = someValue3;
-		SomeValue4 = someValue4;
-	}
+	public int SomeValue5 = 55555;
 }
 
 public class InspectorTestSubclass

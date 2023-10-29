@@ -117,7 +117,8 @@ public sealed class InspectorFoldoutControl : AnInspectorControl
 
 	private bool IsFieldVisible(FieldInfo field)
 	{
-		return field.IsPublic || field.GetCustomAttribute<ShowInInspectorAttribute>() != null;
+		return (field.IsPublic && field.GetCustomAttribute<HideInInspectorAttribute>() == null)
+		       || field.GetCustomAttribute<ShowInInspectorAttribute>() != null;
 	}
 	
 	private bool IsFieldReadOnly(FieldInfo field)
