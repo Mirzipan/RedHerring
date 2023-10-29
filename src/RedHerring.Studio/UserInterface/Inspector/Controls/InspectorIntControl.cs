@@ -51,7 +51,17 @@ public sealed class InspectorIntControl : AnInspectorControl
 
 		if(_multipleValues)
 		{
-			if (Gui.Button(_multipleValuesLabel))
+			if (_isReadOnly)
+			{
+				Gui.BeginDisabled();
+			}
+			bool buttonClicked = Gui.Button(_multipleValuesLabel);
+			if (_isReadOnly)
+			{
+				Gui.EndDisabled();
+			}
+
+			if (buttonClicked)
 			{
 				_multipleValues = _isReadOnly; // if any of controls is read only, values cannot be edited!
 				Gui.SetKeyboardFocusHere(0);   // focus next control = input
@@ -62,11 +72,17 @@ public sealed class InspectorIntControl : AnInspectorControl
 			}
 		}
 
+		if (_isReadOnly)
+		{
+			Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
+		}
+
 		ImGuiInputTextFlags flags = _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None;
 		Gui.InputInt(Id, ref _value, 0, 0, flags);
 
 		if (_isReadOnly)
 		{
+			Gui.PopStyleVar();
 			return; // don't even think about submitting value
 		}
 
@@ -86,7 +102,7 @@ public sealed class InspectorIntControl : AnInspectorControl
 		
 		if (inputSubmitted)
 		{
-			Console.WriteLine($"Value changed to {_value}");
+			Console.WriteLine($"Submitted value {_value}");
 			SetValue(_value);
 		}
 	}

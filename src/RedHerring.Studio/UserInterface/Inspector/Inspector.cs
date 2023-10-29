@@ -62,7 +62,7 @@ public sealed class Inspector
 
 public class InspectorTest
 {
-	public int SomeValue1 = 1;
+	[ReadOnlyInInspector] public int SomeValue1 = 1;
 	public int SomeValue2 = 22;
 	public int SomeValue3 = 333;
 	public int SomeValue4 = 4444;
