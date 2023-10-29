@@ -10,14 +10,6 @@ namespace RedHerring.ImGui;
 
 public class ImGuiRenderFeature : ARenderFeature
 {
-    private const ImGuiWindowFlags BackgroundWindowFlags = ImGuiWindowFlags.NoSavedSettings 
-                                                           | ImGuiWindowFlags.NoCollapse 
-                                                           | ImGuiWindowFlags.NoTitleBar 
-                                                           | ImGuiWindowFlags.NoResize 
-                                                           | ImGuiWindowFlags.NoScrollbar 
-                                                           | ImGuiWindowFlags.NoMove 
-                                                           | ImGuiWindowFlags.NoBackground;
-    
     private ImGuiRenderer? _renderer;
     private byte[] _openSansData = null!;
     private ImFontConfigPtr _openSansConfig;
@@ -39,14 +31,6 @@ public class ImGuiRenderFeature : ARenderFeature
 
     public override void Render(GraphicsDevice device, CommandList commandList, RenderPass pass)
     {
-        // Gui.SetNextWindowPos(Vector2.Zero);
-        // Gui.SetNextWindowSize((Vector2)Size);
-        // Gui.Begin("Canvas", BackgroundWindowFlags | ImGuiWindowFlags.NoInputs);
-        //
-        // DrawDeviceInfo(device);
-        //
-        // Gui.End();
-        
         _renderer?.Render(device, commandList);
     }
 
