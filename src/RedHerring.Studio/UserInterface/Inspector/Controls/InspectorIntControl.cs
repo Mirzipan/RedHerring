@@ -11,6 +11,7 @@ public sealed class InspectorIntControl : AnInspectorControl
 	private          bool    _multipleValues = false;
 	private readonly string? _multipleValuesLabel;
 	private          bool    _isReadOnly = false;
+	private          bool    _wasActive  = false;
 	
 	public InspectorIntControl(string id) : base(id)
 	{
@@ -28,7 +29,7 @@ public sealed class InspectorIntControl : AnInspectorControl
 		
 		_value          = sourceField.GetValue(source) as int? ?? 0;
 		_multipleValues = false;
-		_isReadOnly = sourceField.IsInitOnly || sourceField.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null;
+		_isReadOnly     = sourceField.IsInitOnly || sourceField.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null;
 	}
 
 	public override void AdaptToSource(object source, FieldInfo? sourceField = null)
@@ -53,12 +54,37 @@ public sealed class InspectorIntControl : AnInspectorControl
 			if (Gui.Button(_multipleValuesLabel))
 			{
 				_multipleValues = _isReadOnly; // if any of controls is read only, values cannot be edited!
+				Gui.SetKeyboardFocusHere(0);   // focus next control = input
 			}
-			return;
+			else
+			{
+				return;
+			}
 		}
 
-		ImGuiInputTextFlags flags = _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.EnterReturnsTrue;
-		if (Gui.InputInt(Id, ref _value, 0, 0, flags))
+		ImGuiInputTextFlags flags = _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None;
+		Gui.InputInt(Id, ref _value, 0, 0, flags);
+
+		if (_isReadOnly)
+		{
+			return; // don't even think about submitting value
+		}
+
+		// value submission
+		bool inputSubmitted = false;
+		
+		bool isActive = Gui.IsItemActive();
+		if(isActive && (Gui.IsKeyPressed(ImGuiKey.Enter) || Gui.IsKeyPressed(ImGuiKey.KeypadEnter)))
+		{
+			inputSubmitted = true; // submit on enter
+		}
+		else if(!isActive && _wasActive)
+		{
+			inputSubmitted = true; // submit on focus lost
+		}
+		_wasActive = isActive;
+		
+		if (inputSubmitted)
 		{
 			Console.WriteLine($"Value changed to {_value}");
 			SetValue(_value);
