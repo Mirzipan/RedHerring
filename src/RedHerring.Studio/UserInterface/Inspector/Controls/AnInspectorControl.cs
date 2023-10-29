@@ -17,13 +17,15 @@ public abstract class AnInspectorControl
 	public static readonly object UnboundValue   = new();
 	public static readonly object MultipleValues = new();
 
-	public readonly string                      Id;
-	public          string                      Label         = "";
-	public readonly List<InspectorValueBinding> ValueBindings = new();
+	protected readonly Inspector                   _inspector;
+	public readonly    string                      Id;
+	public             string                      Label         = "";
+	public readonly    List<InspectorValueBinding> ValueBindings = new();
 
-	protected AnInspectorControl(string id)
+	protected AnInspectorControl(Inspector inspector, string id)
 	{
-		Id = id;
+		_inspector = inspector;
+		Id         = id;
 	}
 
 	public virtual void InitFromSource(object source, FieldInfo? sourceField = null)
@@ -64,7 +66,6 @@ public abstract class AnInspectorControl
 	}
 
 	#region Value manipulation
-
 	protected object? GetValue()
 	{
 		if (ValueBindings.Count == 0 || ValueBindings[0].SourceField == null)
@@ -101,15 +102,48 @@ public abstract class AnInspectorControl
 
 	protected void SetValue(object value)
 	{
-		foreach (InspectorValueBinding binding in ValueBindings)
+		// create do action
+		Action @do = () =>
 		{
-			if (binding.SourceField == null)
+			foreach (InspectorValueBinding binding in ValueBindings)
+			{
+				if (binding.SourceField == null)
+				{
+					continue;
+				}
+
+				binding.SourceField.SetValue(binding.Source, value);
+			}
+		};
+
+		// store old values
+		object[] oldValues = new object[ValueBindings.Count];
+		for(int i=0;i<ValueBindings.Count; ++i)
+		{
+			if (ValueBindings[i].SourceField == null)
 			{
 				continue;
 			}
 
-			binding.SourceField.SetValue(binding.Source, value);
+			oldValues[i] = ValueBindings[i].SourceField.GetValue(ValueBindings[i].Source);
 		}
+		
+		// create undo action
+		Action undo = () =>
+		{
+			for(int i=0;i <ValueBindings.Count; ++i)
+			{
+				if (ValueBindings[i].SourceField == null)
+				{
+					continue;
+				}
+
+				ValueBindings[i].SourceField.SetValue(ValueBindings[i].Source, oldValues[i]);
+			}
+		};
+		
+		// create commands
+		_inspector.Commit(@do, undo);
 	}
 	#endregion
 }

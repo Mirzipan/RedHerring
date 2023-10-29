@@ -56,7 +56,7 @@ public sealed class CommandHistory
 
     private void RemoveAfter(int index)
     {
-        for (int i = _stack.Count - 1; i >= index; i--)
+        for (int i = _stack.Count - 1; i > index; i--)
         {
             _stack.RemoveAt(i);
         }

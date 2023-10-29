@@ -26,11 +26,12 @@ public class StatusBar
 
 	public void Update()
 	{
-		ImGuiStylePtr style        = Gui.GetStyle();
-		Vector2       viewportSize = Gui.GetMainViewport().Size;
+		ImGuiStylePtr style          = Gui.GetStyle();
+		Vector2       viewportSize   = Gui.GetMainViewport().Size;
+		float         statusBarSizeY = Gui.CalcTextSize("|j").Y * 2; // style.WindowMinSize.Y;
 		
-		Gui.SetNextWindowPos(new Vector2(0, viewportSize.Y - style.WindowMinSize.Y));
-		Gui.SetNextWindowSize(style.WindowMinSize with {X = viewportSize.X});
+		Gui.SetNextWindowPos(new Vector2(0, viewportSize.Y - statusBarSizeY));
+		Gui.SetNextWindowSize(new Vector2(viewportSize.X, statusBarSizeY));
 		
 		Gui.Begin("StatusBar",
 			ImGuiWindowFlags.NoCollapse            |

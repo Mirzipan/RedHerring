@@ -9,7 +9,7 @@ public sealed class InspectorFoldoutControl : AnInspectorControl
 {
 	private List<AnInspectorControl> _controls = new();
 
-	public InspectorFoldoutControl(string id) : base(id)
+	public InspectorFoldoutControl(Inspector inspector, string id) : base(inspector, id)
 	{
 	}
 	
@@ -43,7 +43,7 @@ public sealed class InspectorFoldoutControl : AnInspectorControl
 			
 			string fieldId = $"{Id}.{field.Name}";
 			
-			AnInspectorControl control = (AnInspectorControl) Activator.CreateInstance(controlType, fieldId)!;
+			AnInspectorControl control = (AnInspectorControl) Activator.CreateInstance(controlType, _inspector, fieldId)!;
 			_controls.Add(control);
 
 			control.InitFromSource(boundObject, field);
@@ -52,6 +52,7 @@ public sealed class InspectorFoldoutControl : AnInspectorControl
 
 	public override void AdaptToSource(object source, FieldInfo? sourceField = null)
 	{
+		// TODO - refactor, similar to InitFromSource
 		base.AdaptToSource(source, sourceField);
 		
 		object? boundObject = sourceField == null ? source : sourceField.GetValue(source);
@@ -119,10 +120,5 @@ public sealed class InspectorFoldoutControl : AnInspectorControl
 	{
 		return (field.IsPublic && field.GetCustomAttribute<HideInInspectorAttribute>() == null)
 		       || field.GetCustomAttribute<ShowInInspectorAttribute>() != null;
-	}
-	
-	private bool IsFieldReadOnly(FieldInfo field)
-	{
-		return field.IsInitOnly || field.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null;
 	}
 }

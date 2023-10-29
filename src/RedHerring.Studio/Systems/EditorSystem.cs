@@ -37,7 +37,7 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
     private InputReceiver _inputReceiver = null!;
 
 	private          StudioModel    _studioModel = new();
-	private readonly CommandHistory _history     = new CommandHistory();
+	private readonly CommandHistory _history     = new();
 
 	private readonly List<ATool> _activeTools = new();
     
@@ -190,7 +190,7 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
 	private void OnViewInspectorClicked()
 	{
-		_activeTools.Add(new ToolInspector(_studioModel));
+		_activeTools.Add(new ToolInspector(_studioModel, _history));
 	}
     
 	private void OnDebugTaskProcessorTestClicked()

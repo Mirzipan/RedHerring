@@ -13,7 +13,7 @@ public sealed class InspectorIntControl : AnInspectorControl
 	private          bool    _isReadOnly = false;
 	private          bool    _wasActive  = false;
 	
-	public InspectorIntControl(string id) : base(id)
+	public InspectorIntControl(Inspector inspector, string id) : base(inspector, id)
 	{
 		_multipleValuesLabel = "Multiple values" + Id;
 	}
@@ -46,16 +46,18 @@ public sealed class InspectorIntControl : AnInspectorControl
 
 	public override void Update()
 	{
+		Gui.AlignTextToFramePadding();
 		Gui.TextUnformatted(Label);
 		Gui.SameLine();
 
+		bool buttonClicked = false;
 		if(_multipleValues)
 		{
 			if (_isReadOnly)
 			{
 				Gui.BeginDisabled();
 			}
-			bool buttonClicked = Gui.Button(_multipleValuesLabel);
+			buttonClicked = Gui.Button(_multipleValuesLabel);
 			if (_isReadOnly)
 			{
 				Gui.EndDisabled();
@@ -79,17 +81,18 @@ public sealed class InspectorIntControl : AnInspectorControl
 
 		ImGuiInputTextFlags flags = _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None;
 		Gui.InputInt(Id, ref _value, 0, 0, flags);
+		bool isActive = buttonClicked || Gui.IsItemActive();
 
 		if (_isReadOnly)
 		{
 			Gui.PopStyleVar();
+			UpdateValue();
 			return; // don't even think about submitting value
 		}
 
 		// value submission
 		bool inputSubmitted = false;
 		
-		bool isActive = Gui.IsItemActive();
 		if(isActive && (Gui.IsKeyPressed(ImGuiKey.Enter) || Gui.IsKeyPressed(ImGuiKey.KeypadEnter)))
 		{
 			inputSubmitted = true; // submit on enter
@@ -102,8 +105,39 @@ public sealed class InspectorIntControl : AnInspectorControl
 		
 		if (inputSubmitted)
 		{
-			Console.WriteLine($"Submitted value {_value}");
-			SetValue(_value);
+			SubmitValue();
 		}
+		else if (!isActive)
+		{
+			UpdateValue();
+		}
+	}
+
+	private void UpdateValue()
+	{
+		if (_multipleValues)
+		{
+			return;
+		}
+
+		object? value = GetValue();
+		if (value == MultipleValues)
+		{
+			_multipleValues = true;
+			return;
+		}
+
+		if (value == UnboundValue)
+		{
+			return;
+		}
+
+		_value = (int)(value!);
+	}
+
+	private void SubmitValue()
+	{
+		Console.WriteLine($"Submitted value {_value}");
+		SetValue(_value);
 	}
 }
