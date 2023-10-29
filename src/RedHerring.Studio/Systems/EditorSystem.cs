@@ -30,10 +30,11 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 	public bool IsEnabled   => true;
 	public int  UpdateOrder => int.MaxValue;
 
-	public bool IsVisible => true;
-	public int  DrawOrder => int.MaxValue;
-
-	private InputReceiver _inputReceiver;
+    public bool IsVisible => true;
+    public int DrawOrder => int.MaxValue;
+    
+    [Inject]
+    private InputReceiver _inputReceiver = null!;
 
 	private          StudioModel    _studioModel = new();
 	private readonly CommandHistory _history     = new CommandHistory();
@@ -49,10 +50,10 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
     
 	#region Lifecycle
 
-	protected override void Init()
-	{
-		_inputReceiver                  = new InputReceiver("editor");
-		_inputReceiver.ConsumesAllInput = false;
+    protected override void Init()
+    {
+        _inputReceiver.Name = "editor";
+        _inputReceiver.ConsumesAllInput = false;
         
 		_inputReceiver.Bind("undo", Undo);
 		_inputReceiver.Bind("redo", Redo);
@@ -131,13 +132,13 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
 	#region Private
 
-	private void InitInput()
-	{
-		_inputSystem.Input.Bindings!.Add(new ShortcutBinding("undo", new KeyboardShortcut(Key.U)));
-		_inputSystem.Input.Bindings!.Add(new ShortcutBinding("redo", new KeyboardShortcut(Key.Z)));
-		_inputSystem.Input.Layers.Push(_inputReceiver);
-	}
-	#endregion Private
+    private void InitInput()
+    {
+        _inputSystem.AddBinding(new ShortcutBinding("undo", new KeyboardShortcut(Key.U)));
+        _inputSystem.AddBinding(new ShortcutBinding("redo", new KeyboardShortcut(Key.Z)));
+        _inputReceiver.Push();
+    }
+    #endregion Private
 
 	#region Menu
 	private void InitMenu()

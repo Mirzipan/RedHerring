@@ -10,14 +10,6 @@ namespace RedHerring.ImGui;
 
 public class ImGuiRenderFeature : ARenderFeature
 {
-    private const ImGuiWindowFlags BackgroundWindowFlags = ImGuiWindowFlags.NoSavedSettings 
-                                                           | ImGuiWindowFlags.NoCollapse 
-                                                           | ImGuiWindowFlags.NoTitleBar 
-                                                           | ImGuiWindowFlags.NoResize 
-                                                           | ImGuiWindowFlags.NoScrollbar 
-                                                           | ImGuiWindowFlags.NoMove 
-                                                           | ImGuiWindowFlags.NoBackground;
-    
     private ImGuiRenderer? _renderer;
     private byte[] _openSansData = null!;
     private ImFontConfigPtr _openSansConfig;
@@ -39,14 +31,6 @@ public class ImGuiRenderFeature : ARenderFeature
 
     public override void Render(GraphicsDevice device, CommandList commandList, RenderPass pass)
     {
-        // Gui.SetNextWindowPos(Vector2.Zero);
-        // Gui.SetNextWindowSize((Vector2)Size);
-        // Gui.Begin("Canvas", BackgroundWindowFlags | ImGuiWindowFlags.NoInputs);
-        //
-        // DrawDeviceInfo(device);
-        //
-        // Gui.End();
-        
         _renderer?.Render(device, commandList);
     }
 
@@ -67,7 +51,7 @@ public class ImGuiRenderFeature : ARenderFeature
             _renderer.Dispose();
         }
         
-        FontLoader.Unloaded(_openSansConfig);
+        //FontLoader.Unloaded(_openSansConfig);
     }
 
     #endregion Lifecycle
@@ -106,12 +90,13 @@ public class ImGuiRenderFeature : ARenderFeature
     
     private void LoadDefaultFontData()
     {
-        _openSansConfig = FontLoader.LoadFontData(Base64Font.OpenSans, out _openSansData);
+        //_openSansConfig = FontLoader.LoadFontData(Base64Font.OpenSans, out _openSansData);
     }
 
     private void RecreateFont()
     {
-        FontLoader.RecreateFont(_renderer!, _openSansData, _openSansConfig);
+        FontLoader.LoadFonts(_renderer!);
+        //FontLoader.RecreateFont(_renderer!, _openSansData, _openSansConfig);
     }
 
     #endregion Private

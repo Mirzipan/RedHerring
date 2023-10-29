@@ -4,12 +4,16 @@ using RedHerring.Fingerprint;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Fingerprint.States;
+using RedHerring.Infusion.Attributes;
 
 namespace RedHerring.Core.Systems;
 
 public sealed class InputSystem : AnEngineSystem, IUpdatable
 {
+    [Inject]
     private IInput _input = null!;
+    [Inject]
+    private InputReceiver _receiver = null!;
 
     public bool IsEnabled => true;
     public int UpdateOrder => -1_000_000;
@@ -18,14 +22,10 @@ public sealed class InputSystem : AnEngineSystem, IUpdatable
     public IKeyboardState? Keyboard => _input.Keyboard;
     public IMouseState? Mouse => _input.Mouse;
 
-    private InputReceiver _receiver = new InputReceiver("input_debug");
-
     #region Lifecycle
 
     protected override void Init()
     {
-        _input = new Input(Context.View);
-        
         AddDebugBindings();
     }
     public void Update(GameTime gameTime)
@@ -66,10 +66,33 @@ public sealed class InputSystem : AnEngineSystem, IUpdatable
 
     #endregion Queries
 
+    #region Manipulation
+
+    public bool AddBinding(ShortcutBinding binding)
+    {
+        if (_input.Bindings is null)
+        {
+            return false;
+        }
+        
+        _input.Bindings.Add(binding);
+        return true;
+    }
+
+    public bool AddBinding(string name, IShortcut shortcut)
+    {
+        var binding = new ShortcutBinding(name, shortcut);
+        return AddBinding(binding);
+    }
+
+    #endregion Manipulation
+
     #region Debug
 
     private void AddDebugBindings()
     {
+        _receiver.Name = "input_debug";
+            
         if (_input.Bindings is null)
         {
             return;
@@ -80,10 +103,10 @@ public sealed class InputSystem : AnEngineSystem, IUpdatable
             new KeyboardShortcut(Key.ShiftLeft),
             new KeyboardShortcut(Key.F12),
         };
-        _input.Bindings.Add(new ShortcutBinding("dbg_draw", shortcut));
+        AddBinding(new ShortcutBinding("dbg_draw", shortcut));
         
         _receiver.Bind("dbg_draw", InputState.Released, ToggleDebugDraw);
-        _input.Layers.Push(_receiver);
+        _receiver.Push();
     }
 
     private void ToggleDebugDraw(ref ActionEvent evt)
