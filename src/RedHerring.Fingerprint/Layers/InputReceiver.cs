@@ -1,4 +1,5 @@
 ﻿using RedHerring.Alexandria.Identifiers;
+using RedHerring.Infusion.Attributes;
 
 namespace RedHerring.Fingerprint.Layers;
 
@@ -6,22 +7,16 @@ public class InputReceiver
 {
     private readonly Dictionary<string, ActionBinding> _bindings = new();
 
-    public string Name { get; set; }
+    [Inject]
+    private readonly IInput _input = null!;
+    
+    public string? Name { get; set; }
     public OctoByte Layer { get; set; }
     public bool IsActive { get; internal set; }
     public bool ConsumesAllInput { get; set; }
 
     public event Action? Pushed;
     public event Action? Popped;
-
-    #region Lifecycle
-
-    public InputReceiver(string name)
-    {
-        Name = name;
-    }
-
-    #endregion Lifecycle
 
     #region Manipulation
 
@@ -48,6 +43,20 @@ public class InputReceiver
     }
 
     #endregion Queries
+
+    #region Public
+
+    public void Push()
+    {
+        _input.Layers.Push(this);
+    }
+
+    public void Pop()
+    {
+        _input.Layers.Pop(this);
+    }
+
+    #endregion Public
 
     #region Internal
 

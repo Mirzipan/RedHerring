@@ -1,6 +1,9 @@
 ﻿using RedHerring.Alexandria;
 using RedHerring.Core;
+using RedHerring.Core.Systems;
 using RedHerring.Deduction;
+using RedHerring.Fingerprint;
+using RedHerring.Fingerprint.Layers;
 using RedHerring.Game;
 using RedHerring.Infusion;
 // ReSharper disable SuspiciousTypeConversion.Global
@@ -44,6 +47,14 @@ public static class InjectionExtensions
         
         @this.AddInstance(component, types.ToArray());
 
+        return @this;
+    }
+
+    public static ContainerDescription AddInput(this ContainerDescription @this)
+    {
+        @this.AddSingleton(typeof(Input), typeof(Input), typeof(IInput));
+        @this.AddSingleton(typeof(InputReceiver));
+        @this.AddSystem(new InputSystem());
         return @this;
     }
     

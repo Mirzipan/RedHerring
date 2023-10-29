@@ -30,7 +30,7 @@ public partial class Input: IInput, IDisposable
 
     public ShortcutBindings? Bindings { get; set; }
     public InputLayers Layers { get; }
-    
+
     #region Lifecycle
 
     public Input(IView view)

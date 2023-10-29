@@ -158,6 +158,7 @@ public sealed class EngineContext : ANamedDisposer
         description.AddInstance(this);
         description.AddInstance(_engine!);
         description.AddMetadata(_indexedAssemblies);
+        description.AddInstance(View, typeof(IView));
 
         foreach (var installer in _installers)
         {
