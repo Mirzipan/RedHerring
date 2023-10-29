@@ -106,10 +106,12 @@ public sealed class InspectorFoldoutControl : AnInspectorControl
 	{
 		if (Gui.CollapsingHeader(Label, ImGuiTreeNodeFlags.DefaultOpen))
 		{
+			Gui.Indent();
 			foreach (AnInspectorControl control in _controls)
 			{
 				control.Update();
 			}
+			Gui.Unindent();
 		}
 	}
 

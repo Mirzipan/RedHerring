@@ -2,7 +2,7 @@
 
 public sealed class Inspector
 {
-	private readonly List<object>             _sources        = new();
+	private readonly List<object>             _sources = new();
 	private          InspectorFoldoutControl? _contentControl;
 
 	private static int _uniqueIdGenerator = 0;
@@ -49,7 +49,7 @@ public sealed class Inspector
 		_contentControl = new InspectorFoldoutControl(id);
 		_contentControl.InitFromSource(_sources[0]);
 		_contentControl.SetCustomLabel(_sources.Count == 1 ? "Editing 1 object" : $"Editing {_sources.Count} objects");
-		for(int i=1;i<_sources.Count;i++)
+		for(int i=1;i <_sources.Count;i++)
 		{
 			_contentControl.AdaptToSource(_sources[i]);
 		}
@@ -63,6 +63,8 @@ public class InspectorTest
 	public int SomeValue1;
 	public int SomeValue2;
 	public int SomeValue3;
+	
+	public InspectorTestSubclass Subclass = new();
 	
 	public InspectorTest(int someValue1 = 1, int someValue2 = 22, int someValue3 = 333)
 	{
@@ -79,6 +81,8 @@ public class InspectorTest2
 	public int SomeValue3;
 	public int SomeValue4;
 	
+	public InspectorTestSubclass2 Subclass = new();
+	
 	public InspectorTest2(int someValue1 = 1, int someValue2 = 22, int someValue3 = 333, int someValue4 = 4444)
 	{
 		SomeValue1 = someValue1;
@@ -88,3 +92,14 @@ public class InspectorTest2
 	}
 }
 
+public class InspectorTestSubclass
+{
+	public int SubValue1 = 111111;
+	public int SubValue2 = 222222;
+}
+
+public class InspectorTestSubclass2
+{
+	public int SubValue2 = 666666;
+	public int SubValue3 = 555555;
+}

@@ -7,9 +7,11 @@ public sealed class InspectorIntControl : AnInspectorControl
 {
 	private int  _value          = 0;
 	private bool _multipleValues = false;
+	private string? _multipleValuesLabel;
 	
 	public InspectorIntControl(string id) : base(id)
 	{
+		_multipleValuesLabel = "Multiple values" + Id;
 	}
 
 	public override void InitFromSource(object source, FieldInfo? sourceField = null)
@@ -21,8 +23,8 @@ public sealed class InspectorIntControl : AnInspectorControl
 			return;
 		}
 		
-		_value          = sourceField.GetValue(source) as int? ?? 0;
-		_multipleValues = false;
+		_value               = sourceField.GetValue(source) as int? ?? 0;
+		_multipleValues      = false;
 	}
 
 	public override void AdaptToSource(object    source, FieldInfo? sourceField = null)
@@ -38,7 +40,7 @@ public sealed class InspectorIntControl : AnInspectorControl
 
 		if(_multipleValues)
 		{
-			if (Gui.Button("Multiple values"))
+			if (Gui.Button(_multipleValuesLabel))
 			{
 				_multipleValues = false; // user clicked the button and overriden all values to the same from first binding
 			}
