@@ -67,7 +67,7 @@ public class ImGuiRenderFeature : ARenderFeature
             _renderer.Dispose();
         }
         
-        FontLoader.Unloaded(_openSansConfig);
+        //FontLoader.Unloaded(_openSansConfig);
     }
 
     #endregion Lifecycle
@@ -106,12 +106,13 @@ public class ImGuiRenderFeature : ARenderFeature
     
     private void LoadDefaultFontData()
     {
-        _openSansConfig = FontLoader.LoadFontData(Base64Font.OpenSans, out _openSansData);
+        //_openSansConfig = FontLoader.LoadFontData(Base64Font.OpenSans, out _openSansData);
     }
 
     private void RecreateFont()
     {
-        FontLoader.RecreateFont(_renderer!, _openSansData, _openSansConfig);
+        FontLoader.LoadFonts(_renderer!);
+        //FontLoader.RecreateFont(_renderer!, _openSansData, _openSansConfig);
     }
 
     #endregion Private
