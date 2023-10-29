@@ -3,17 +3,16 @@ using NativeFileDialogSharp;
 using RedHerring.Alexandria;
 using RedHerring.Core;
 using RedHerring.Core.Systems;
+using RedHerring.Deduction;
 using RedHerring.Fingerprint;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.ImGui;
 using RedHerring.Infusion.Attributes;
-using RedHerring.Render.Models;
 using RedHerring.Studio.Commands;
 using RedHerring.Studio.Models;
 using RedHerring.Studio.Models.Tests;
-using RedHerring.Studio.Models.ViewModels.Console;
-using RedHerring.Studio.TaskProcessor;
+using RedHerring.Studio.TaskProcessing;
 using RedHerring.Studio.Tools;
 using RedHerring.Studio.UserInterface;
 using RedHerring.Studio.UserInterface.Dialogs;
@@ -24,208 +23,209 @@ namespace RedHerring.Studio.Systems;
 // TODO: Add this to engine context when creating editor window.
 public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 {
-    [Inject] private InputSystem    _inputSystem    = null!;
-    [Inject] private GraphicsSystem _graphicsSystem = null!;
+	[Inject] private InputSystem      _inputSystem      = null!;
+	[Inject] private GraphicsSystem   _graphicsSystem   = null!;
+	[Inject] private MetadataDatabase _metadataDatabase = null!;
 
-    public bool IsEnabled => true;
-    public int UpdateOrder => int.MaxValue;
+	public bool IsEnabled   => true;
+	public int  UpdateOrder => int.MaxValue;
 
-    public bool IsVisible => true;
-    public int DrawOrder => int.MaxValue;
+	public bool IsVisible => true;
+	public int  DrawOrder => int.MaxValue;
 
-    private InputReceiver _inputReceiver;
+	private InputReceiver _inputReceiver;
 
-    private          StudioModel   _studioModel = new();
-    private readonly CommandHistory _history      = new CommandHistory();
+	private          StudioModel    _studioModel = new();
+	private readonly CommandHistory _history     = new CommandHistory();
 
-    private readonly List<ATool> _activeTools = new();
+	private readonly List<ATool> _activeTools = new();
     
-    #region User Interface
-    private readonly DockSpace  _dockSpace  = new();
-    private readonly Menu       _menu       = new();
-    private readonly StatusBar  _statusBar  = new();
-    private readonly MessageBox _messageBox = new();
-    #endregion
+	#region User Interface
+	private readonly DockSpace  _dockSpace  = new();
+	private readonly Menu       _menu       = new();
+	private readonly StatusBar  _statusBar  = new();
+	private readonly MessageBox _messageBox = new();
+	#endregion
     
-    #region Lifecycle
+	#region Lifecycle
 
-    protected override void Init()
-    {
-        _inputReceiver = new InputReceiver("editor");
-        _inputReceiver.ConsumesAllInput = false;
+	protected override void Init()
+	{
+		_inputReceiver                  = new InputReceiver("editor");
+		_inputReceiver.ConsumesAllInput = false;
         
-        _inputReceiver.Bind("undo", Undo);
-        _inputReceiver.Bind("redo", Redo);
-    }
+		_inputReceiver.Bind("undo", Undo);
+		_inputReceiver.Bind("redo", Redo);
+	}
 
-    protected override void Load()
-    {
-        Gui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+	protected override void Load()
+	{
+		Gui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 
-        InitInput();
+		InitInput();
 
-        InitMenu();
+		InitMenu();
 
-        // debug
-        _activeTools.Add(new ToolProjectView(_studioModel));
-    }
+		// debug
+		_activeTools.Add(new ToolProjectView(_studioModel));
+	}
 
-    protected override void Unload()
-    {
-        _studioModel.TaskProcessor.Cancel();
-    }
+	protected override void Unload()
+	{
+		_studioModel.Cancel(); // TODO - should we wait for cancellation of all threads?
+	}
 
-    public void Update(GameTime gameTime)
-    {
-        _dockSpace.Update();
+	public void Update(GameTime gameTime)
+	{
+		_dockSpace.Update();
         
-        _menu.Update();
+		_menu.Update();
         
-        UpdateStatusBarMessage();
-        _statusBar.Update();
+		UpdateStatusBarMessage();
+		_statusBar.Update();
 
-        _messageBox.Update();
+		_messageBox.Update();
 
-        for(int i=0;i<_activeTools.Count;++i)
-        {
-            _activeTools[i].Update(out bool finished);
-            if (finished)
-            {
-                _activeTools.RemoveAt(i);
-                --i;
-            }
-        }
+		for(int i=0;i <_activeTools.Count;++i)
+		{
+			_activeTools[i].Update(out bool finished);
+			if (finished)
+			{
+				_activeTools.RemoveAt(i);
+				--i;
+			}
+		}
 
-        //Gui.ShowDemoWindow();
-    }
+		//Gui.ShowDemoWindow();
+	}
 
-    private void UpdateStatusBarMessage()
-    {
-        int workerThreadsCount = _studioModel.TaskProcessor.WorkerThreadsCount;
-        int remainingTasks     = _studioModel.TaskProcessor.GetRemainingTasks();
-        int availableThreads   = _studioModel.TaskProcessor.AvailableWorkerThreads;
+	private void UpdateStatusBarMessage()
+	{
+		int workerThreadsCount = _studioModel.TaskProcessor.WorkerThreadsCount;
+		int remainingTasks     = _studioModel.TaskProcessor.GetRemainingTasks();
+		int availableThreads   = _studioModel.TaskProcessor.AvailableWorkerThreads;
 		
-        if (remainingTasks > 0)
-        {
-            _statusBar.Message = $"Processing {remainingTasks} tasks on {workerThreadsCount} threads.";
-        }
-        else
-        {
-            _statusBar.Message = $"Ready. {availableThreads} of {workerThreadsCount} threads available.";
-        }
+		if (remainingTasks > 0)
+		{
+			_statusBar.Message = $"Processing {remainingTasks} tasks on {workerThreadsCount} threads.";
+		}
+		else
+		{
+			_statusBar.Message = $"Ready. {availableThreads} of {workerThreadsCount} threads available.";
+		}
 		
-        _statusBar.MessageColor = remainingTasks == 0 && availableThreads == workerThreadsCount ? StatusBar.Color.Info : StatusBar.Color.Warning;
-    }
+		_statusBar.MessageColor = remainingTasks == 0 && availableThreads == workerThreadsCount ? StatusBar.Color.Info : StatusBar.Color.Warning;
+	}
     
-    public bool BeginDraw() => true;
+	public bool BeginDraw() => true;
 
-    public void Draw(GameTime gameTime)
-    {
-    }
+	public void Draw(GameTime gameTime)
+	{
+	}
 
-    public void EndDraw()
-    {
-    }
+	public void EndDraw()
+	{
+	}
 
-    #endregion Lifecycle
+	#endregion Lifecycle
 
-    #region Private
+	#region Private
 
-    private void InitInput()
-    {
-        _inputSystem.Input.Bindings!.Add(new ShortcutBinding("undo", new KeyboardShortcut(Key.U)));
-        _inputSystem.Input.Bindings!.Add(new ShortcutBinding("redo", new KeyboardShortcut(Key.Z)));
-        _inputSystem.Input.Layers.Push(_inputReceiver);
-    }
-    #endregion Private
+	private void InitInput()
+	{
+		_inputSystem.Input.Bindings!.Add(new ShortcutBinding("undo", new KeyboardShortcut(Key.U)));
+		_inputSystem.Input.Bindings!.Add(new ShortcutBinding("redo", new KeyboardShortcut(Key.Z)));
+		_inputSystem.Input.Layers.Push(_inputReceiver);
+	}
+	#endregion Private
 
-    #region Menu
-    private void InitMenu()
-    {
-        _menu.AddItem("File/Open project..",                      OnOpenProjectClicked);
-        _menu.AddItem("File/Settings/Theme/Embrace the Darkness", Theme.EmbraceTheDarkness);
-        _menu.AddItem("File/Settings/Theme/Crimson Rivers",       Theme.CrimsonRivers);
-        _menu.AddItem("File/Settings/Theme/Bloodsucker",          Theme.Bloodsucker);
-        _menu.AddItem("File/Exit",                                OnExitClicked);
+	#region Menu
+	private void InitMenu()
+	{
+		_menu.AddItem("File/Open project..",                      OnOpenProjectClicked);
+		_menu.AddItem("File/Settings/Theme/Embrace the Darkness", Theme.EmbraceTheDarkness);
+		_menu.AddItem("File/Settings/Theme/Crimson Rivers",       Theme.CrimsonRivers);
+		_menu.AddItem("File/Settings/Theme/Bloodsucker",          Theme.Bloodsucker);
+		_menu.AddItem("File/Exit",                                OnExitClicked);
 
-        _menu.AddItem("Edit/Undo", _history.Undo);
-        _menu.AddItem("Edit/Redo", _history.Redo);
+		_menu.AddItem("Edit/Undo", _history.Undo);
+		_menu.AddItem("Edit/Redo", _history.Redo);
 
-        _menu.AddItem("View/Project", OnViewProjectClicked);
-        _menu.AddItem("View/Console", OnViewConsoleClicked);
-        _menu.AddItem("View/Inspector", OnViewInspectorClicked);
+		_menu.AddItem("View/Project",   OnViewProjectClicked);
+		_menu.AddItem("View/Console",   OnViewConsoleClicked);
+		_menu.AddItem("View/Inspector", OnViewInspectorClicked);
 
-        _menu.AddItem("Debug/Modal window",        () => Gui.OpenPopup("MessageBox"));
-        _menu.AddItem("Debug/Task processor test", OnDebugTaskProcessorTestClicked);
-        _menu.AddItem("Debug/Serialization test",  OnDebugSerializationTestClicked);
-        _menu.AddItem("Debug/Importer test",       OnDebugImporterTestClicked);
-    }
+		_menu.AddItem("Debug/Modal window",        () => Gui.OpenPopup("MessageBox"));
+		_menu.AddItem("Debug/Task processor test", OnDebugTaskProcessorTestClicked);
+		_menu.AddItem("Debug/Serialization test",  OnDebugSerializationTestClicked);
+		_menu.AddItem("Debug/Importer test",       OnDebugImporterTestClicked);
+	}
     
-    private async void OnOpenProjectClicked()
-    {
-        DialogResult result = Dialog.FolderPicker();
-        if(!result.IsOk)
-        {
-            return;
-        }
+	private async void OnOpenProjectClicked()
+	{
+		DialogResult result = Dialog.FolderPicker();
+		if(!result.IsOk)
+		{
+			return;
+		}
         
-        await _studioModel.OpenProject(result.Path);
-    }
+		await _studioModel.OpenProject(result.Path);
+	}
 
-    private void OnExitClicked()
-    {
-        Context.Engine?.Exit();
-    }
+	private void OnExitClicked()
+	{
+		Context.Engine?.Exit();
+	}
 
-    private void OnViewProjectClicked()
-    {
-        _activeTools.Add(new ToolProjectView(_studioModel));
-    }
+	private void OnViewProjectClicked()
+	{
+		_activeTools.Add(new ToolProjectView(_studioModel));
+	}
 
-    private void OnViewConsoleClicked()
-    {
-        _activeTools.Add(new ToolConsole(_studioModel));
-    }
+	private void OnViewConsoleClicked()
+	{
+		_activeTools.Add(new ToolConsole(_studioModel));
+	}
 
-    private void OnViewInspectorClicked()
-    {
-        _activeTools.Add(new ToolInspector(_studioModel));
-    }
+	private void OnViewInspectorClicked()
+	{
+		_activeTools.Add(new ToolInspector(_studioModel));
+	}
     
-    private void OnDebugTaskProcessorTestClicked()
-    {
-        for(int i=0;i <20;++i)
-        {
-            _studioModel.TaskProcessor.EnqueueTask(new TestTask(i), 0);
-        }
-    }
+	private void OnDebugTaskProcessorTestClicked()
+	{
+		for(int i=0;i <20;++i)
+		{
+			_studioModel.TaskProcessor.EnqueueTask(new TestTask(i), 0);
+		}
+	}
 
-    private void OnDebugSerializationTestClicked()
-    {
-        SerializationTests.Test();
-    }
+	private void OnDebugSerializationTestClicked()
+	{
+		SerializationTests.Test();
+	}
 
-    private void OnDebugImporterTestClicked()
-    {
-        ImporterTests.Test();
-    }
-    #endregion
+	private void OnDebugImporterTestClicked()
+	{
+		ImporterTests.Test();
+	}
+	#endregion
     
-    #region Input
+	#region Input
 
-    private void Undo(ref ActionEvent evt)
-    {
-        evt.Consumed = true;
+	private void Undo(ref ActionEvent evt)
+	{
+		evt.Consumed = true;
         
-        _history.Undo();
-    }
+		_history.Undo();
+	}
 
-    private void Redo(ref ActionEvent evt)
-    {
-        evt.Consumed = true;
+	private void Redo(ref ActionEvent evt)
+	{
+		evt.Consumed = true;
         
-        _history.Redo();
-    }
+		_history.Redo();
+	}
 
-    #endregion Input
+	#endregion Input
 }

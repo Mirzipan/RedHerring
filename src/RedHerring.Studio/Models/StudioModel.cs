@@ -1,11 +1,12 @@
 using RedHerring.Studio.Models.Project;
+using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.ViewModels;
 using RedHerring.Studio.Models.ViewModels.Console;
-using RedHerring.Studio.TaskProcessor;
+using RedHerring.Studio.TaskProcessing;
 
 namespace RedHerring.Studio.Models;
 
-// main model
+// main studio model
 public class StudioModel
 {
 	private const int _threadsCount = 4;
@@ -20,11 +21,14 @@ public class StudioModel
 	private readonly SelectionViewModel _selection = new();
 	public SelectionViewModel Selection => _selection;
 
-	private readonly TaskProcessor.TaskProcessor _taskProcessor = new(_threadsCount);
-	public           TaskProcessor.TaskProcessor TaskProcessor => _taskProcessor;
+	private readonly TaskProcessor _taskProcessor = new(_threadsCount);
+	public           TaskProcessor TaskProcessor => _taskProcessor;
+	
+	private readonly Importer _importer = new();
 
-	public void Exit()
+	public void Cancel()
 	{
+		_importer.Cancel();
 		_taskProcessor.Cancel();
 	}
 
@@ -35,16 +39,21 @@ public class StudioModel
 		
 		try
 		{
-			Console.Log($"Opening project from {path}", ConsoleItemType.Info);
+			ConsoleViewModel.Log($"Opening project from {path}", ConsoleItemType.Info);
 			await Project.Open(path);
-			Console.Log($"Project opened", ConsoleItemType.Success);
+			ConsoleViewModel.Log($"Project opened", ConsoleItemType.Success);
 		}
 		catch (Exception e)
 		{
-			Console.Log($"Exception: {e}", ConsoleItemType.Exception);
+			ConsoleViewModel.Log($"Exception: {e}", ConsoleItemType.Exception);
 		}
 	}
-	
+
+	public void ReimportAll()
+	{
+		
+	}
+
 	public void RunTests()
 	{
 		for(int i=0;i <20;++i)

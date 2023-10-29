@@ -22,8 +22,9 @@ public sealed class ToolConsole : ATool
 		bool isOpen = true;
 		if (Gui.Begin(NameWithSalt, ref isOpen))
 		{
-			foreach(ConsoleItem item in StudioModel.Console.Items)
+			for(int i=0; i<StudioModel.Console.Count; ++i)
 			{
+				ConsoleItem item = StudioModel.Console[i];
 				Gui.TextColored(item.Type.ToColor(), item.Message);
 			}
 			

@@ -1,4 +1,4 @@
-namespace RedHerring.Studio.TaskProcessor;
+namespace RedHerring.Studio.TaskProcessing;
 
 public abstract class ATask
 {

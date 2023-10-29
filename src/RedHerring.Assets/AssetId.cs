@@ -30,6 +30,8 @@ public readonly record struct AssetId : IComparable<AssetId>
 
     public static explicit operator Guid(AssetId id) => id._guid;
 
+    public override string ToString() => _guid.ToString();
+    
     #endregion Conversion
 
     #region Comparison
@@ -37,8 +39,6 @@ public readonly record struct AssetId : IComparable<AssetId>
     public int CompareTo(AssetId other) => _guid.CompareTo(other._guid);
 
     public bool Equals(AssetId other) => _guid == other._guid;
-
-    public override string ToString() => _guid.ToString();
 
     #endregion Comparison
 }

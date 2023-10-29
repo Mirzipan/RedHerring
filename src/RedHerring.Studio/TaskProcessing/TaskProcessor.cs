@@ -1,4 +1,4 @@
-namespace RedHerring.Studio.TaskProcessor;
+namespace RedHerring.Studio.TaskProcessing;
 
 public class TaskProcessor
 {
@@ -9,8 +9,8 @@ public class TaskProcessor
 
 	private int _workerThreadsCount;
 	private int _availableWorkerThreads;
-	public  int WorkerThreadsCount => _workerThreadsCount;
-	public int AvailableWorkerThreads => _availableWorkerThreads;
+	public  int WorkerThreadsCount     => _workerThreadsCount;
+	public  int AvailableWorkerThreads => _availableWorkerThreads;
 
 	private readonly CancellationTokenSource _cancellationTokenSource = new();
 	private readonly EventWaitHandle         _workerWaitHandle        = new AutoResetEvent(false);

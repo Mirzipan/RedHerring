@@ -7,7 +7,7 @@ public abstract class ATool
 	protected readonly StudioModel StudioModel;
 
 	private static     int _uniqueToolIdGenerator = 0;
-	protected readonly int UniqueId               = _uniqueToolIdGenerator++;
+	private readonly int UniqueId               = _uniqueToolIdGenerator++;
 	protected readonly string NameWithSalt;
 	
 	protected abstract string Name { get; }

@@ -1,6 +1,7 @@
 using System.Reflection;
 using Migration;
 using RedHerring.Studio.Models.Project.FileSystem;
+using RedHerring.Studio.Models.Project.Importers;
 
 namespace RedHerring.Studio.Models.Project;
 
@@ -10,10 +11,11 @@ public sealed class ProjectModel
 
 	public static    Assembly         Assembly => typeof(ProjectModel).Assembly; 
 	private readonly MigrationManager _migrationManager = new(Assembly);
-	
+
 	private ProjectFolderNode? _assetsFolder;
 	public  ProjectFolderNode? AssetsFolder => _assetsFolder;
 
+	#region Open/close
 	public void Close()
 	{
 		_assetsFolder = null;
@@ -72,4 +74,9 @@ public sealed class ProjectModel
 			root.Children.Add(fileNode);
 		}
 	}
+	#endregion
+	
+	#region Import
+	
+	#endregion
 }

@@ -5,7 +5,7 @@ namespace RedHerring.Studio.Models.Project.Importers;
 [Serializable, SerializedClassId("scene-importer-id")]
 public sealed class SceneImporterSettings : AnImporterSettings
 {
-	public bool Tangents = false; // just for debug
+	public bool Tangents = false;
 	public List<bool> UVs = new();
 }
 
