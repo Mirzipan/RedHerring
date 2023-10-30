@@ -7,26 +7,21 @@ namespace RedHerring.ImGui;
 
 internal static class FontLoader
 {
-    public const string DefaultPath = "";
+    public const string DefaultPath = "Resources";
     public const string DefaultFontFile = "Roboto-Regular.ttf";
-    public const int Size = 18;
-    
-    public static unsafe ImFontConfigPtr LoadFontData(string base64data, out byte[] fontData)
-    {
-        fontData = Convert.FromBase64String(base64data);
+    public const int Size = 16;
 
-        ImFontConfig* imFontConfigPtr = ImGuiNative.ImFontConfig_ImFontConfig();
-        imFontConfigPtr->FontDataOwnedByAtlas = 0;
-        return new ImFontConfigPtr(imFontConfigPtr);
-    }
+    private static readonly int[] GlyphRange = { FontAwesome6.IconMin, FontAwesome6.IconMax, 0 };
+    private static readonly IntPtr GlyphRangePtr;
 
-    public static unsafe void RecreateFont(ImGuiRenderer renderer, byte[] fontData, ImFontConfigPtr configPtr)
+    private static readonly List<ImFontConfigPtr> Configs = new();
+
+    static unsafe FontLoader()
     {
-        fixed (byte* fontDataPtr = fontData)
+        fixed (int* ptr = GlyphRange)
         {
-            Gui.GetIO().Fonts.AddFontFromMemoryTTF((IntPtr)fontDataPtr, fontData.Length, 20, configPtr);
+            GlyphRangePtr = (IntPtr)ptr;
         }
-        renderer.RecreateFontDeviceTexture();
     }
 
     public static void Unload()
@@ -38,22 +33,31 @@ internal static class FontLoader
         Font.FASolid = null;
     }
 
-    public static unsafe void Unloaded(ImFontConfigPtr configPtr)
-    {
-        ImGuiNative.ImFontConfig_destroy(configPtr);
-    }
-
-    public static void LoadDefaultFont()
-    {
-        Gui.GetIO().Fonts.AddFontDefault();
-    }
-
     public static void LoadFonts(ImGuiRenderer renderer)
     {
-        //Gui.GetIO().Fonts.AddFontDefault();
         Font.Default = Gui.GetIO().Fonts.AddFontFromFileTTF(Path.Combine(DefaultPath, DefaultFontFile), Size);
-        Font.FARegular = Gui.GetIO().Fonts.AddFontFromFileTTF(Path.Combine(DefaultPath, FontAwesome6.FontIconFileNameFAR), Size);
-        Font.FASolid = Gui.GetIO().Fonts.AddFontFromFileTTF(Path.Combine(DefaultPath, FontAwesome6.FontIconFileNameFAS), Size);
+        
+        Font.FARegular = LoadFontAwesome(FontAwesome6.FontIconFileNameFAR);
+        Font.FASolid = LoadFontAwesome(FontAwesome6.FontIconFileNameFAS);
+        
         renderer.RecreateFontDeviceTexture();
+
+        Gui.GetIO().Fonts.AddFontDefault(Font.Default.ConfigData);
+    }
+    
+    // TODO: make work somehow
+    private static unsafe ImFontPtr LoadFontAwesome(string fileName)
+    {
+        ImFontConfig* imFontConfigPtr = ImGuiNative.ImFontConfig_ImFontConfig();
+        imFontConfigPtr->FontDataOwnedByAtlas = 0;
+        imFontConfigPtr->MergeMode = 1;
+        imFontConfigPtr->PixelSnapH = 1;
+        imFontConfigPtr->OversampleH = 3;
+        imFontConfigPtr->OversampleV = 3;
+        imFontConfigPtr->GlyphRanges = (ushort*)GlyphRangePtr;
+        var config = new ImFontConfigPtr(imFontConfigPtr);
+        Configs.Add(config);
+            
+        return Gui.GetIO().Fonts.AddFontFromFileTTF(Path.Combine(DefaultPath, fileName), Size, imFontConfigPtr, GlyphRangePtr);
     }
 }

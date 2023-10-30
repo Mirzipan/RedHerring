@@ -1,6 +1,9 @@
 ﻿using RedHerring.Alexandria;
 using RedHerring.Core;
 using RedHerring.Core.Systems;
+using RedHerring.Fingerprint;
+using RedHerring.Fingerprint.Layers;
+using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Infusion.Attributes;
 using Gui = ImGuiNET.ImGui;
 
@@ -13,7 +16,10 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
     [Inject]
     private GraphicsSystem _graphicsSystem = null!;
 
-    private InputState _inputSnapshot = null!;
+    [Inject]
+    private InputReceiver _receiver = null!;
+
+    private ImInputSnapshot _imInputSnapshot = null!;
     private ImGuiRenderFeature _feature = null!;
     
     public bool IsVisible => true;
@@ -22,15 +28,26 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
     public bool IsEnabled => true;
     public int UpdateOrder => -10_000_000;
 
+    private bool _debugDraw;
+
     #region Lifecycle
 
     protected override void Init()
     {
+        _imInputSnapshot = new ImInputSnapshot();
+        
+        var shortcut = new CompositeShortcut();
+        shortcut.Add(new KeyboardShortcut(Key.ShiftLeft));
+        shortcut.Add(new KeyboardShortcut(Key.F11));
+        _inputSystem.AddBinding("imgui_metrics", shortcut);
+        
+        _receiver.Name = "ImGui";
+        _receiver.Bind("imgui_metrics", InputState.Released, ToggleFontDebug);
+        _receiver.Push();
     }
 
     protected override void Load()
     {
-        _inputSnapshot = new InputState();
         _feature = new ImGuiRenderFeature();
         _graphicsSystem.RegisterFeature(_feature);
     }
@@ -41,8 +58,8 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
     
     public void Update(GameTime gameTime)
     {
-        _inputSnapshot.Update(_inputSystem.Input);
-        _feature.Update(gameTime, _inputSnapshot);
+        _imInputSnapshot.Update(_inputSystem.Input);
+        _feature.Update(gameTime, _imInputSnapshot);
     }
 
     #endregion Lifecycle
@@ -51,16 +68,33 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
 
     public bool BeginDraw()
     {
+        Gui.PushFont(Font.Default);
         return true;
     }
 
     public void Draw(GameTime gameTime)
     {
+        if (_debugDraw)
+        {
+            Gui.ShowMetricsWindow();
+        }
     }
 
     public void EndDraw()
     {
+        Gui.PopFont();
     }
 
     #endregion Drawable
+
+    #region Bindings
+    
+    private void ToggleFontDebug(ref ActionEvent evt)
+    {
+        evt.Consumed = true;
+
+        _debugDraw = !_debugDraw;
+    }
+
+    #endregion Bindings
 }

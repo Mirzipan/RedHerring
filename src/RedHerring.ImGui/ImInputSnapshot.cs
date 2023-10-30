@@ -10,7 +10,7 @@ using VMouseButton = Veldrid.MouseButton;
 
 namespace RedHerring.ImGui;
 
-internal class InputState : InputSnapshot
+internal class ImInputSnapshot : InputSnapshot
 {
     private static readonly List<MouseButton> TmpButtons = new();
     private static readonly List<Key> TmpKeys = new();
