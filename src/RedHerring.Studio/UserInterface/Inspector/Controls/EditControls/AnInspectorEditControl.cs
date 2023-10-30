@@ -48,7 +48,7 @@ public abstract class AnInspectorEditControl<T> : AnInspectorControl
 	{
 		if (_multipleValues)
 		{
-			return; // no value to update
+			return; // no value to update (note: even in this case we could try to update value and check if it's still multiple values)
 		}
 
 		object? value = GetValue();
