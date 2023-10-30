@@ -5,10 +5,12 @@ namespace RedHerring.Studio.UserInterface;
 public abstract class AnInspectorControl
 {
 	#region Control map
-	private static Dictionary<Type, Type> _fieldToControlMap
+	private static Dictionary<Type, Type> _fieldToControlMap // TODO - move to attribute attached to each control class
 		= new()
 		  {
-			  {typeof(int), typeof(InspectorIntControl)}
+			  {typeof(int), typeof(InspectorIntControl)},
+			  {typeof(float), typeof(InspectorFloatControl)},
+			  {typeof(string), typeof(InspectorStringControl)},
 		  };
 
 	private static readonly Type _classControl = typeof(InspectorFoldoutControl);
@@ -102,6 +104,7 @@ public abstract class AnInspectorControl
 
 	protected void SetValue(object? value)
 	{
+		Console.WriteLine($"Submitted value {value}");
 		_inspector.Commit(new InspectorModifyValueCommand(value, ValueBindings));
 	}
 	#endregion

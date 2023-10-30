@@ -49,14 +49,16 @@ public class InspectorTest
 	public                       int SomeValue2 = 22;
 	public                       int SomeValue3 = 333;
 	public                       int SomeValue4 = 4444;
+	public float FloatValue = 1.0f;
 	
 	public InspectorTestSubclass Subclass = new();
 }
 
 public class InspectorTestSubclass
 {
-	public int SubValue1 = 111111;
-	public int SubValue2 = 222222;
+	public int     SubValue1   = 111111;
+	public int     SubValue2   = 222222;
+	public string StringValue = "abc";
 }
 
 
@@ -71,11 +73,13 @@ public class InspectorTest2
 	[ShowInInspector] private int SomeValue3 = 333;
 	[HideInInspector] public  int SomeValue4 = 4444;
 	
-	public int SomeValue5 = 55555;
+	public int   SomeValue5 = 55555;
+	public float FloatValue = 1.0f;
 }
 
 public class InspectorTestSubclass2
 {
-	public int SubValue2 = 666666;
-	public int SubValue3 = 555555;
+	public int     SubValue2   = 666666;
+	public int     SubValue3   = 555555;
+	public string StringValue = "abc";
 }
