@@ -11,26 +11,19 @@ internal static class FontLoader
     public const string DefaultFontFile = "Roboto-Regular.ttf";
     public const int Size = 16;
 
-    private static readonly int[] GlyphRange = { FontAwesome6.IconMin, FontAwesome6.IconMax, 0 };
+    private static readonly ushort[] GlyphRange = { FontAwesome6.IconMin, FontAwesome6.IconMax, 0 };
     private static readonly IntPtr GlyphRangePtr;
-
-    private static readonly List<ImFontConfigPtr> Configs = new();
 
     static unsafe FontLoader()
     {
-        fixed (int* ptr = GlyphRange)
+        fixed (ushort* ptr = GlyphRange)
         {
             GlyphRangePtr = (IntPtr)ptr;
         }
     }
 
-    public static unsafe void Unload()
+    public static void Unload()
     {
-        foreach (var config in Configs)
-        {
-            ImGuiNative.ImFontConfig_destroy(config);
-        }
-        
         Gui.GetIO().Fonts.Clear();
         Font.Default = null;
         Font.FARegular = null;
@@ -59,18 +52,9 @@ internal static class FontLoader
         }
     }
 
-    // TODO: make work somehow
-    private static unsafe ImFontPtr LoadIcons(string fileName)
+    private static ImFontPtr LoadIcons(string fileName)
     {
-        ImFontConfig* imFontConfigPtr = ImGuiNative.ImFontConfig_ImFontConfig();
-        var config = new ImFontConfigPtr(imFontConfigPtr)
-        {
-            GlyphRanges = GlyphRangePtr,
-            MergeMode = true,
-            PixelSnapH = true,
-        };
-        Configs.Add(config);
-        
-        return Gui.GetIO().Fonts.AddFontFromFileTTF(Path.Combine(DefaultPath, fileName), Size, imFontConfigPtr, GlyphRangePtr);
+        string path = Path.Combine(DefaultPath, fileName);
+        return Gui.GetIO().Fonts.AddFontFromFileTTF(path, Size, default, GlyphRangePtr);
     }
 }
