@@ -24,8 +24,13 @@ internal static class FontLoader
         }
     }
 
-    public static void Unload()
+    public static unsafe void Unload()
     {
+        foreach (var config in Configs)
+        {
+            ImGuiNative.ImFontConfig_destroy(config);
+        }
+        
         Gui.GetIO().Fonts.Clear();
 
         Font.Default = null;
@@ -49,15 +54,14 @@ internal static class FontLoader
     private static unsafe ImFontPtr LoadFontAwesome(string fileName)
     {
         ImFontConfig* imFontConfigPtr = ImGuiNative.ImFontConfig_ImFontConfig();
-        imFontConfigPtr->FontDataOwnedByAtlas = 0;
-        imFontConfigPtr->MergeMode = 1;
-        imFontConfigPtr->PixelSnapH = 1;
-        imFontConfigPtr->OversampleH = 3;
-        imFontConfigPtr->OversampleV = 3;
-        imFontConfigPtr->GlyphRanges = (ushort*)GlyphRangePtr;
-        var config = new ImFontConfigPtr(imFontConfigPtr);
+        var config = new ImFontConfigPtr(imFontConfigPtr)
+        {
+            GlyphRanges = GlyphRangePtr,
+            MergeMode = true,
+            PixelSnapH = true,
+        };
         Configs.Add(config);
-            
+        
         return Gui.GetIO().Fonts.AddFontFromFileTTF(Path.Combine(DefaultPath, fileName), Size, imFontConfigPtr, GlyphRangePtr);
     }
 }
