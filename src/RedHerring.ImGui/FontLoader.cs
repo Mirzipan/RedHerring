@@ -32,6 +32,10 @@ internal static class FontLoader
     public static void Unload()
     {
         Gui.GetIO().Fonts.Clear();
+
+        Font.Default = null;
+        Font.FARegular = null;
+        Font.FASolid = null;
     }
 
     public static unsafe void Unloaded(ImFontConfigPtr configPtr)
@@ -47,9 +51,9 @@ internal static class FontLoader
     public static void LoadFonts(ImGuiRenderer renderer)
     {
         //Gui.GetIO().Fonts.AddFontDefault();
-        Gui.GetIO().Fonts.AddFontFromFileTTF(Path.Combine(DefaultPath, DefaultFontFile), Size);
-        Gui.GetIO().Fonts.AddFontFromFileTTF(Path.Combine(DefaultPath, FontAwesome6.FontIconFileNameFAR), Size);
-        Gui.GetIO().Fonts.AddFontFromFileTTF(Path.Combine(DefaultPath, FontAwesome6.FontIconFileNameFAS), Size);
+        Font.Default = Gui.GetIO().Fonts.AddFontFromFileTTF(Path.Combine(DefaultPath, DefaultFontFile), Size);
+        Font.FARegular = Gui.GetIO().Fonts.AddFontFromFileTTF(Path.Combine(DefaultPath, FontAwesome6.FontIconFileNameFAR), Size);
+        Font.FASolid = Gui.GetIO().Fonts.AddFontFromFileTTF(Path.Combine(DefaultPath, FontAwesome6.FontIconFileNameFAS), Size);
         renderer.RecreateFontDeviceTexture();
     }
 }
