@@ -1,5 +1,4 @@
 ﻿using RedHerring.Studio.Commands;
-using RedHerring.Studio.UserInterface.Attributes;
 
 namespace RedHerring.Studio.UserInterface;
 
@@ -37,9 +36,9 @@ public sealed class Inspector
 		_contentControl?.Update();
 	}
 
-	public void Commit(Action @do, Action undo)
+	public void Commit(ACommand command)
 	{
-		_commandHistory.Commit(new AnonymousCommand(@do, undo));
+		_commandHistory.Commit(command);
 	}
 
 	#region Private

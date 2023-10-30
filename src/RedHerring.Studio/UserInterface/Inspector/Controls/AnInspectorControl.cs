@@ -100,50 +100,9 @@ public abstract class AnInspectorControl
 		return value;
 	}
 
-	protected void SetValue(object value)
+	protected void SetValue(object? value)
 	{
-		// create do action
-		Action @do = () =>
-		{
-			foreach (InspectorValueBinding binding in ValueBindings)
-			{
-				if (binding.SourceField == null)
-				{
-					continue;
-				}
-
-				binding.SourceField.SetValue(binding.Source, value);
-			}
-		};
-
-		// store old values
-		object[] oldValues = new object[ValueBindings.Count];
-		for(int i=0;i<ValueBindings.Count; ++i)
-		{
-			if (ValueBindings[i].SourceField == null)
-			{
-				continue;
-			}
-
-			oldValues[i] = ValueBindings[i].SourceField.GetValue(ValueBindings[i].Source);
-		}
-		
-		// create undo action
-		Action undo = () =>
-		{
-			for(int i=0;i <ValueBindings.Count; ++i)
-			{
-				if (ValueBindings[i].SourceField == null)
-				{
-					continue;
-				}
-
-				ValueBindings[i].SourceField.SetValue(ValueBindings[i].Source, oldValues[i]);
-			}
-		};
-		
-		// create commands
-		_inspector.Commit(@do, undo);
+		_inspector.Commit(new InspectorModifyValueCommand(value, ValueBindings));
 	}
 	#endregion
 }
