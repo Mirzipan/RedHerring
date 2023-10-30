@@ -56,7 +56,7 @@ public class ImGuiRenderFeature : ARenderFeature
 
     public void Update(GameTime time, InputSnapshot snapshot)
     { 
-        _renderer?.Update((float)time.Elapsed, snapshot);
+        _renderer?.Update((float)time.Elapsed.TotalSeconds, snapshot);
     }
 
     #endregion Public

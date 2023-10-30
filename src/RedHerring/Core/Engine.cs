@@ -14,12 +14,13 @@ public sealed class Engine : ANamedDisposer
     public bool IsRunning { get; private set; }
     public bool IsExiting { get; private set; }
 
-    public GameTime UpdateTime { get; }
-    public GameTime DrawTime { get; }
+    public GameTime UpdateTime => _updateTimeTracker.Time;
+    public GameTime DrawTime => _drawTimeTracker.Time;
 
     public event Action? OnExit;
     
-    private Cronos _cronos;
+    private GameTimeTracker _updateTimeTracker;
+    private GameTimeTracker _drawTimeTracker;
     private int _updateCount;
     private int _frameCount;
     
@@ -30,10 +31,8 @@ public sealed class Engine : ANamedDisposer
         IsRunning = false;
         IsExiting = false;
 
-        UpdateTime = new GameTime();
-        DrawTime = new GameTime();
-
-        _cronos = new Cronos();
+        _updateTimeTracker = new GameTimeTracker();
+        _drawTimeTracker = new GameTimeTracker();
     }
 
     public void Run(SessionContext session)
@@ -55,7 +54,9 @@ public sealed class Engine : ANamedDisposer
         }
         
         Context = context;
-        _cronos.Reset();
+        _updateTimeTracker.Reset();
+        _drawTimeTracker.Reset();
+        
         _updateCount = 0;
         _frameCount = 0;
 
@@ -72,8 +73,7 @@ public sealed class Engine : ANamedDisposer
         }
 
         ++_updateCount;
-        _cronos.Tick();
-        UpdateTime.Update(_cronos.TotalTime, delta, _updateCount);
+        _updateTimeTracker.Update(TimeSpan.FromSeconds(delta));
         Update(UpdateTime);
     }
 
@@ -85,8 +85,7 @@ public sealed class Engine : ANamedDisposer
         }
         
         ++_frameCount;
-        _cronos.Tick();
-        DrawTime.Update(_cronos.TotalTime, delta, _frameCount);
+        _drawTimeTracker.Update(TimeSpan.FromSeconds(delta));
         
         bool isDrawing = Renderer?.BeginDraw() ?? false;
         if (isDrawing)
