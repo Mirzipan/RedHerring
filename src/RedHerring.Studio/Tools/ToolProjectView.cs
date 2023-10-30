@@ -1,4 +1,6 @@
-﻿using ImGuiNET;
+﻿using IconFonts;
+using ImGuiNET;
+using RedHerring.ImGui;
 using RedHerring.Studio.Models;
 using RedHerring.Studio.Models.Project.FileSystem;
 using Gui = ImGuiNET.ImGui;
@@ -43,6 +45,7 @@ public sealed class ToolProjectView : ATool
 			return;
 		}
 
+		Icon.Folder(node.Children.Count == 0);
 		bool nodeExpanded = UpdateNode(node, TreeInternalNodeFlags);
 
 		if (nodeExpanded)
@@ -65,6 +68,7 @@ public sealed class ToolProjectView : ATool
     
 	private void UpdateFile(ProjectFileNode node)
 	{
+		Icon.File(node.Path);
 		UpdateNode(node, TreeLeafNodeFlags);
 	}
 	
