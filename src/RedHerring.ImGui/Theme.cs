@@ -9,7 +9,7 @@ public static class Theme
     public static void EmbraceTheDarkness()
     {
         var style = Gui.GetStyle();
-
+        
         style.Alpha = 1.0f;
         style.DisabledAlpha = 1.0f;
         style.WindowPadding = new Vector2(12.0f, 12.0f);

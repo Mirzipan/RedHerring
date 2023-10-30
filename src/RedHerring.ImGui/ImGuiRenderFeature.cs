@@ -1,5 +1,4 @@
-﻿using ImGuiNET;
-using RedHerring.Alexandria;
+﻿using RedHerring.Alexandria;
 using RedHerring.Render.Features;
 using RedHerring.Render.Passes;
 using Silk.NET.Maths;
@@ -11,8 +10,6 @@ namespace RedHerring.ImGui;
 public class ImGuiRenderFeature : ARenderFeature
 {
     private ImGuiRenderer? _renderer;
-    private byte[] _openSansData = null!;
-    private ImFontConfigPtr _openSansConfig;
     
     public override int Priority { get; } = -1_000_000;
     public Vector2D<int> Size { get; set; }
@@ -21,7 +18,6 @@ public class ImGuiRenderFeature : ARenderFeature
 
     public override void Init(GraphicsDevice device, CommandList commandList)
     {
-        LoadDefaultFontData();
         ResetRenderer(device);
     }
 
@@ -85,18 +81,12 @@ public class ImGuiRenderFeature : ARenderFeature
             size.Y);
 
         RecreateFont();
-        Theme.EmbraceTheDarkness();
-    }
-    
-    private void LoadDefaultFontData()
-    {
-        //_openSansConfig = FontLoader.LoadFontData(Base64Font.OpenSans, out _openSansData);
+        Theme.CrimsonRivers();
     }
 
     private void RecreateFont()
     {
-        FontLoader.LoadFonts(_renderer!);
-        //FontLoader.RecreateFont(_renderer!, _openSansData, _openSansConfig);
+        FontLoader.Load(_renderer!);
     }
 
     #endregion Private

@@ -32,26 +32,35 @@ internal static class FontLoader
         }
         
         Gui.GetIO().Fonts.Clear();
-
         Font.Default = null;
         Font.FARegular = null;
         Font.FASolid = null;
     }
 
-    public static void LoadFonts(ImGuiRenderer renderer)
+    public static void Load(ImGuiRenderer renderer)
     {
-        Font.Default = Gui.GetIO().Fonts.AddFontFromFileTTF(Path.Combine(DefaultPath, DefaultFontFile), Size);
-        
-        Font.FARegular = LoadFontAwesome(FontAwesome6.FontIconFileNameFAR);
-        Font.FASolid = LoadFontAwesome(FontAwesome6.FontIconFileNameFAS);
+        Unload();
+        LoadDefault();
+
+        Font.FARegular = LoadIcons(FontAwesome6.FontIconFileNameFAR);
+        Font.FASolid = LoadIcons(FontAwesome6.FontIconFileNameFAS);
         
         renderer.RecreateFontDeviceTexture();
 
         Gui.GetIO().Fonts.AddFontDefault(Font.Default.ConfigData);
     }
-    
+
+    private static void LoadDefault()
+    {
+        Font.Default = Gui.GetIO().Fonts.AddFontFromFileTTF(Path.Combine(DefaultPath, DefaultFontFile), Size);
+        if (!Font.Default.IsLoaded())
+        {
+            Font.Default = Gui.GetIO().Fonts.AddFontDefault();
+        }
+    }
+
     // TODO: make work somehow
-    private static unsafe ImFontPtr LoadFontAwesome(string fileName)
+    private static unsafe ImFontPtr LoadIcons(string fileName)
     {
         ImFontConfig* imFontConfigPtr = ImGuiNative.ImFontConfig_ImFontConfig();
         var config = new ImFontConfigPtr(imFontConfigPtr)

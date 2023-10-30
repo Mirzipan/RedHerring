@@ -68,7 +68,6 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
 
     public bool BeginDraw()
     {
-        Gui.PushFont(Font.Default);
         return true;
     }
 
@@ -82,7 +81,6 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
 
     public void EndDraw()
     {
-        Gui.PopFont();
     }
 
     #endregion Drawable
