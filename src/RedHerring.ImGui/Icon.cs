@@ -7,7 +7,7 @@ public static class Icon
 {
     private static readonly List<string> ImageFiles = new()
     {
-        ".png", ".jpg", ".jpeg",
+        ".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".tif",
     };
     private static readonly List<string> SoundFiles = new()
     {
@@ -16,9 +16,9 @@ public static class Icon
     
     public static void Folder(bool isEmpty)
     {
-        PushFont(Font.FASolid);
+        PushFont(isEmpty ? Font.FARegular : Font.FASolid);
         SetNextItemWidth(30);
-        Text(isEmpty ? FontAwesome6.FolderOpen : FontAwesome6.FolderClosed);
+        Text(FontAwesome6.Folder);
         PopFont();
         
         SameLine();
@@ -46,11 +46,12 @@ public static class Icon
         {
             return FontAwesome6.FileAudio;
         }
-
+        
         return extension switch
         {
-            ".pdf" => FontAwesome6.FilePdf,
             ".cs" => FontAwesome6.FileCode,
+            ".csv" => FontAwesome6.FileCsv,
+            ".pdf" => FontAwesome6.FilePdf,
             _ => FontAwesome6.File,
         };
     }
