@@ -1,4 +1,5 @@
 using RedHerring.Studio.Models.Project;
+using RedHerring.Studio.Models.Project.Assets;
 using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.ViewModels;
 using RedHerring.Studio.Models.ViewModels.Console;

@@ -1,4 +1,5 @@
-﻿using RedHerring.Studio.Models.ViewModels.Console;
+﻿using RedHerring.Studio.Models.Project.Assets;
+using RedHerring.Studio.Models.ViewModels.Console;
 
 namespace RedHerring.Studio.Models.Project.Importers;
 
@@ -35,20 +36,20 @@ public sealed class ImporterIOThread
 
 			// try to read
 			{
-				ImporterData? data = _importer.GetDataToRead();
-				if (data != null)
+				Importer.ImportEntry? data = _importer.GetDataToRead();
+				if (data is not null)
 				{
-					Read(data);
-					_importer.AddDataToProcess(data);
+					Read(data.Value);
+					_importer.AddDataToProcess(data.Value);
 				}
 			}
 			
 			// try to write
 			{
-				ImporterData? data = _importer.GetDataToRead();
+				Importer.ImportEntry? data = _importer.GetDataToRead();
 				if (data != null)
 				{
-					Write(data);
+					//Write(data);
 				}
 			}
 
@@ -58,33 +59,33 @@ public sealed class ImporterIOThread
 		// _import.IOThreadExited();
 	}
 
-	private void Read(ImporterData data)
+	private void Read(Importer.ImportEntry data)
 	{
 		try
 		{
-			byte[] bytes = File.ReadAllBytes(data.InputFileNode.Path);
-			
-			data.OutputDataItems.Add(
-				new ImporterDataItem(bytes, data.InputFileNode.Name, ImporterOutputFormat.Raw)
-			);
+			string extension = Path.GetExtension(data.FileNode.Path);
+			var importer = _importer.Find(extension);
+			using var stream = File.OpenRead(data.FileNode.Path);
+			data.Output = importer.Import(stream);
+			data.OutputType = data.Output!.GetType();
 		}
 		catch (Exception e)
 		{
-			ConsoleViewModel.Log($"Failed to read file {data.InputFileNode.Path}: {e.Message}", ConsoleItemType.Error);
+			ConsoleViewModel.Log($"Failed to read file {data.FileNode.Path}: {e.Message}", ConsoleItemType.Error);
 		}
 	}
 
-	private void Write(ImporterData data)
+	private void Write(Importer.ImportEntry data)
 	{
-		foreach (ImporterDataItem dataItem in data.OutputDataItems)
-		{
-			if (!dataItem.ShouldBeExported)
-			{
-				continue;
-			}
-			
-			// TODO - write file by type
-			//???
-		}
+		// foreach (ImporterDataItem dataItem in data.OutputDataItems)
+		// {
+		// 	if (!dataItem.ShouldBeExported)
+		// 	{
+		// 		continue;
+		// 	}
+		// 	
+		// 	// TODO - write file by type
+		// 	//???
+		// }
 	}
 }
