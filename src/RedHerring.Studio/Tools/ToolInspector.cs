@@ -1,6 +1,5 @@
 ﻿using RedHerring.Studio.Commands;
 using RedHerring.Studio.Models;
-using RedHerring.Studio.Systems;
 using RedHerring.Studio.UserInterface;
 using RedHerring.Studio.UserInterface.Attributes;
 using Gui = ImGuiNET.ImGui;

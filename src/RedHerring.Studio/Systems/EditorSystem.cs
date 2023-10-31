@@ -42,10 +42,11 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 	private readonly List<ATool> _activeTools = new();
     
 	#region User Interface
-	private readonly DockSpace  _dockSpace  = new();
-	private readonly Menu       _menu       = new();
-	private readonly StatusBar  _statusBar  = new();
-	private readonly MessageBox _messageBox = new();
+	private readonly DockSpace     _dockSpace     = new();
+	private readonly Menu          _menu          = new();
+	private readonly StatusBar     _statusBar     = new();
+	private readonly OptionsDialog _optionsDialog = new();
+	private readonly MessageBox    _messageBox    = new();
 	#endregion
     
 	#region Lifecycle
@@ -85,6 +86,7 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 		UpdateStatusBarMessage();
 		_statusBar.Update();
 
+		_optionsDialog.Update();
 		_messageBox.Update();
 
 		for(int i=0;i <_activeTools.Count;++i)
@@ -149,8 +151,9 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 		_menu.AddItem("File/Settings/Theme/Bloodsucker",          Theme.Bloodsucker);
 		_menu.AddItem("File/Exit",                                OnExitClicked);
 
-		_menu.AddItem("Edit/Undo", _history.Undo);
-		_menu.AddItem("Edit/Redo", _history.Redo);
+		_menu.AddItem("Edit/Undo",    _history.Undo);
+		_menu.AddItem("Edit/Redo",    _history.Redo);
+		_menu.AddItem("Edit/Options", OnEditOptionsClicked);
 
 		_menu.AddItem("View/Project",   OnViewProjectClicked);
 		_menu.AddItem("View/Console",   OnViewConsoleClicked);
@@ -161,7 +164,7 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 		_menu.AddItem("Debug/Serialization test",  OnDebugSerializationTestClicked);
 		_menu.AddItem("Debug/Importer test",       OnDebugImporterTestClicked);
 	}
-    
+
 	private async void OnOpenProjectClicked()
 	{
 		DialogResult result = Dialog.FolderPicker();
@@ -178,6 +181,11 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 		Context.Engine?.Exit();
 	}
 
+	private void OnEditOptionsClicked()
+	{
+		Gui.OpenPopup("Options");
+	}
+	
 	private void OnViewProjectClicked()
 	{
 		_activeTools.Add(new ToolProjectView(_studioModel));
@@ -192,7 +200,7 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 	{
 		_activeTools.Add(new ToolInspector(_studioModel, _history));
 	}
-    
+
 	private void OnDebugTaskProcessorTestClicked()
 	{
 		for(int i=0;i <20;++i)
