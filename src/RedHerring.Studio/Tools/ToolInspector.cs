@@ -45,11 +45,12 @@ public sealed class ToolInspector : ATool
 //=======================================================================================================
 public class InspectorTest
 {
-	[ReadOnlyInInspector] public int SomeValue1 = 1;
-	public                       int SomeValue2 = 22;
-	public                       int SomeValue3 = 333;
-	public                       int SomeValue4 = 4444;
-	public float FloatValue = 1.0f;
+	[ReadOnlyInInspector] public int   SomeValue1 = 1;
+	public                       int   SomeValue2 = 22;
+	public                       int   SomeValue3 = 333;
+	public                       int   SomeValue4 = 4444;
+	public                       float FloatValue = 1.0f;
+	public bool  BoolValue  = true;
 	
 	public InspectorTestSubclass Subclass = new();
 }
@@ -75,6 +76,7 @@ public class InspectorTest2
 	
 	public int   SomeValue5 = 55555;
 	public float FloatValue = 1.0f;
+	public bool  BoolValue  = true;
 }
 
 public class InspectorTestSubclass2

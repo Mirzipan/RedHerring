@@ -11,6 +11,7 @@ public abstract class AnInspectorControl
 			  {typeof(int), typeof(InspectorIntControl)},
 			  {typeof(float), typeof(InspectorFloatControl)},
 			  {typeof(string), typeof(InspectorStringControl)},
+			  {typeof(bool), typeof(InspectorBoolControl)},
 		  };
 
 	private static readonly Type _classControl = typeof(InspectorFoldoutControl);
