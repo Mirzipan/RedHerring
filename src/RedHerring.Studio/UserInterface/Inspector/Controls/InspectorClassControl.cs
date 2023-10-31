@@ -5,11 +5,11 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface;
 
-public sealed class InspectorFoldoutControl : AnInspectorControl
+public sealed class InspectorClassControl : AnInspectorControl
 {
 	private List<AnInspectorControl> _controls = new();
 
-	public InspectorFoldoutControl(Inspector inspector, string id) : base(inspector, id)
+	public InspectorClassControl(Inspector inspector, string id) : base(inspector, id)
 	{
 	}
 	
@@ -85,11 +85,20 @@ public sealed class InspectorFoldoutControl : AnInspectorControl
 			int controlIndex = _controls.FindIndex(x => x.Id == fieldId);
 			if(controlIndex == -1)
 			{
-				// control not found => it's not common for all sources => skip
-				continue;
+				continue; // control not found => it's not common for all sources => skip
+			}
+
+			AnInspectorControl control = _controls[controlIndex];
+			if(control.ValueBindings[0].SourceField?.FieldType != field.FieldType)
+			{
+				// control type doesn't match, there is an exception for classes
+				if (control is not InspectorClassControl || !field.FieldType.IsClass)
+				{
+					continue; // control type does not match => it's not common for all sources => skip
+				}
 			}
 			
-			_controls[controlIndex].AdaptToSource(boundObject, field);
+			control.AdaptToSource(boundObject, field);
 			commonControls[controlIndex] = true;
 		}
 		

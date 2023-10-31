@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using RedHerring.Studio.Tools;
 using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface;

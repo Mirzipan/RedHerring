@@ -5,7 +5,7 @@ namespace RedHerring.Studio.UserInterface;
 public sealed class Inspector
 {
 	private readonly List<object>             _sources = new();
-	private          InspectorFoldoutControl? _contentControl;
+	private          InspectorClassControl? _contentControl;
 
 	private static int _uniqueIdGenerator = 0;
 	private        int _uniqueId          = _uniqueIdGenerator++;
@@ -52,9 +52,9 @@ public sealed class Inspector
 
 		string id = $"##{_uniqueId.ToString()}";
 		
-		_contentControl = new InspectorFoldoutControl(this, id);
+		_contentControl = new InspectorClassControl(this, id);
 		_contentControl.InitFromSource(_sources[0]);
-		_contentControl.SetCustomLabel(_sources.Count == 1 ? "Editing 1 object" : $"Editing {_sources.Count} objects");
+		_contentControl.SetCustomLabel(_sources.Count == 1 ? "Editing 1 object" : $"Editing {_sources.Count} objects"); // TODO - custom label
 		for(int i=1;i <_sources.Count;i++)
 		{
 			_contentControl.AdaptToSource(_sources[i]);

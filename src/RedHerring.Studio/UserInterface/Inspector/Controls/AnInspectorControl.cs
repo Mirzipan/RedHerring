@@ -14,7 +14,7 @@ public abstract class AnInspectorControl
 			  {typeof(bool), typeof(InspectorBoolControl)},
 		  };
 
-	private static readonly Type _classControl = typeof(InspectorFoldoutControl);
+	private static readonly Type _classControl = typeof(InspectorClassControl);
 	private static readonly Type _enumControl = typeof(InspectorEnumControl);
 	#endregion
 
