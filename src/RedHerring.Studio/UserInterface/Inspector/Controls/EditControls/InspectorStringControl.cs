@@ -11,10 +11,8 @@ public sealed class InspectorStringControl : AnInspectorSingleInputControl<strin
 	{
 	}
 
-	protected override void GuiInputControl()
+	protected override void InputControl()
 	{
-		string? localValue = Value;
-		Gui.InputText(Id, ref localValue, MaxLength, _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None);
-		Value = localValue;
+		Gui.InputText(Id, ref Value, MaxLength, _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None);
 	}
 }

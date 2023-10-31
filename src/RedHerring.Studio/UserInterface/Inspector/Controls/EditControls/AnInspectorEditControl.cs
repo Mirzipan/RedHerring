@@ -8,13 +8,8 @@ namespace RedHerring.Studio.UserInterface;
 public abstract class AnInspectorEditControl<T> : AnInspectorControl
 {
 	private const string MultipleValuesButtonLabel = "Edit multiple";
-	
-	private object? _value;
-	protected T? Value
-	{
-		get => _value is T tValue ? tValue : default;
-		set => _value = value;
-	}
+
+	protected T? Value;
 	
 	protected        bool    _multipleValues = false;
 	private readonly string? _multipleValuesLabel;
@@ -32,7 +27,7 @@ public abstract class AnInspectorEditControl<T> : AnInspectorControl
 
 		_multipleValues = false;
 		_isReadOnly     = sourceField != null && (sourceField.IsInitOnly || sourceField.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null);
-		_value          = sourceField?.GetValue(source);
+		Value          = (T?)sourceField?.GetValue(source);
 	}
 
 	public override void AdaptToSource(object source, FieldInfo? sourceField = null)
@@ -63,14 +58,14 @@ public abstract class AnInspectorEditControl<T> : AnInspectorControl
 			return; // no value to update
 		}
 
-		_value = value;
+		Value = (T?)value;
 	}
 
 	protected void SubmitOrUpdateValue(bool submitted, bool controlIsActive)
 	{
 		if (submitted)
 		{
-			SetValue(_value);
+			SetValue(Value);
 			return;
 		}
 
@@ -90,7 +85,7 @@ public abstract class AnInspectorEditControl<T> : AnInspectorControl
 		return buttonClicked;
 	}
 
-	protected void GuiBeginReadOnlyStyle()
+	protected void BeginReadOnlyStyle()
 	{
 		if (_isReadOnly)
 		{
@@ -98,7 +93,7 @@ public abstract class AnInspectorEditControl<T> : AnInspectorControl
 		}
 	}
 
-	protected void GuiEndReadOnlyStyle()
+	protected void EndReadOnlyStyle()
 	{
 		if (_isReadOnly)
 		{

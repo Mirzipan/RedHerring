@@ -9,10 +9,8 @@ public sealed class InspectorIntControl : AnInspectorSingleInputControl<int>
 	{
 	}
 
-	protected override void GuiInputControl()
+	protected override void InputControl()
 	{
-		int localValue = Value;
-		Gui.InputInt(Id, ref localValue, 0, 0, _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None);
-		Value = localValue;
+		Gui.InputInt(Id, ref Value, 0, 0, _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None);
 	}
 }

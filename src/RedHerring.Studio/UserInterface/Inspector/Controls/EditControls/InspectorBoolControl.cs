@@ -9,13 +9,11 @@ public class InspectorBoolControl : AnInspectorSingleInputControl<bool>
 	{
 	}
 
-	protected override void GuiInputControl()
+	protected override void InputControl()
 	{
 		Gui.BeginDisabled(_isReadOnly);
 		
-		bool localValue = Value;
-		Gui.Checkbox(Id, ref localValue);
-		Value = localValue;
+		Gui.Checkbox(Id, ref Value);
 
 		Gui.EndDisabled();
 	}

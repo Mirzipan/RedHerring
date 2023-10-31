@@ -27,12 +27,12 @@ public abstract class AnInspectorSingleInputControl<T> : AnInspectorEditControl<
 			Gui.SetKeyboardFocusHere(); // focus next control
 		}
 
-		GuiBeginReadOnlyStyle();
-		GuiInputControl();
-		GuiEndReadOnlyStyle();
+		BeginReadOnlyStyle();
+		InputControl();
+		EndReadOnlyStyle();
 
 		SubmitOrUpdateValue(Gui.IsItemDeactivatedAfterEdit(), isItemActive || Gui.IsItemActive());
 	}
 
-	protected abstract void GuiInputControl();
+	protected abstract void InputControl();
 }

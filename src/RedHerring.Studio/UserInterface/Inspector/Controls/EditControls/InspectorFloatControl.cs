@@ -9,10 +9,8 @@ public sealed class InspectorFloatControl : AnInspectorSingleInputControl<float>
 	{
 	}
 
-	protected override void GuiInputControl()
+	protected override void InputControl()
 	{
-		float localValue = Value;
-		Gui.InputFloat(Id, ref localValue, 0.0f, 0.0f, "%.3f", _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None);
-		Value = localValue;
+		Gui.InputFloat(Id, ref Value, 0.0f, 0.0f, "%.3f", _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None);
 	}
 }
