@@ -15,6 +15,7 @@ public abstract class AnInspectorControl
 		  };
 
 	private static readonly Type _classControl = typeof(InspectorFoldoutControl);
+	private static readonly Type _enumControl = typeof(InspectorEnumControl);
 	#endregion
 
 	public static readonly object UnboundValue   = new();
@@ -58,6 +59,11 @@ public abstract class AnInspectorControl
 		if (_fieldToControlMap.TryGetValue(fieldType, out Type? type))
 		{
 			return type;
+		}
+
+		if (fieldType.IsEnum)
+		{
+			return _enumControl;
 		}
 
 		if (fieldType.IsClass)

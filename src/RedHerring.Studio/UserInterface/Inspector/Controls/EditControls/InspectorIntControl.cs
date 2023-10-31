@@ -9,8 +9,9 @@ public sealed class InspectorIntControl : AnInspectorSingleInputControl<int>
 	{
 	}
 
-	protected override void InputControl()
+	protected override bool InputControl()
 	{
 		Gui.InputInt(Id, ref Value, 0, 0, _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None);
+		return Gui.IsItemDeactivatedAfterEdit();
 	}
 }

@@ -28,11 +28,12 @@ public abstract class AnInspectorSingleInputControl<T> : AnInspectorEditControl<
 		}
 
 		BeginReadOnlyStyle();
-		InputControl();
+		bool submit = InputControl();
 		EndReadOnlyStyle();
 
-		SubmitOrUpdateValue(Gui.IsItemDeactivatedAfterEdit(), isItemActive || Gui.IsItemActive());
+		SubmitOrUpdateValue(submit, isItemActive || Gui.IsItemActive());
 	}
 
-	protected abstract void InputControl();
+	// create single input control, returns true if value was submitted (not after every change!)
+	protected abstract bool InputControl();
 }

@@ -11,8 +11,9 @@ public sealed class InspectorStringControl : AnInspectorSingleInputControl<strin
 	{
 	}
 
-	protected override void InputControl()
+	protected override bool InputControl()
 	{
 		Gui.InputText(Id, ref Value, MaxLength, _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None);
+		return Gui.IsItemDeactivatedAfterEdit();
 	}
 }

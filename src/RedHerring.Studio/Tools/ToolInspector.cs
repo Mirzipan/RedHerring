@@ -43,6 +43,15 @@ public sealed class ToolInspector : ATool
 //=======================================================================================================
 // tests
 //=======================================================================================================
+public enum TestEnum
+{
+	Abc,
+	Def,
+	Ghi,
+	Jkl,
+	Mno
+}
+
 public class InspectorTest
 {
 	[ReadOnlyInInspector] public int   SomeValue1 = 1;
@@ -50,7 +59,8 @@ public class InspectorTest
 	public                       int   SomeValue3 = 333;
 	public                       int   SomeValue4 = 4444;
 	public                       float FloatValue = 1.0f;
-	public bool  BoolValue  = true;
+	public                       bool  BoolValue  = true;
+	public                       TestEnum EnumValue = TestEnum.Def;
 	
 	public InspectorTestSubclass Subclass = new();
 }
@@ -74,9 +84,11 @@ public class InspectorTest2
 	[ShowInInspector] private int SomeValue3 = 333;
 	[HideInInspector] public  int SomeValue4 = 4444;
 	
-	public int   SomeValue5 = 55555;
-	public float FloatValue = 1.0f;
-	public bool  BoolValue  = true;
+	public int      SomeValue5 = 55555;
+	public float    FloatValue = 1.0f;
+	public bool     BoolValue  = true;
+
+	public TestEnum EnumValue  = TestEnum.Def;
 }
 
 public class InspectorTestSubclass2
