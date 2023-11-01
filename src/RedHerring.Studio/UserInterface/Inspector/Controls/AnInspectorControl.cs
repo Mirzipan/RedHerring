@@ -23,7 +23,7 @@ public abstract class AnInspectorControl
 
 	protected readonly Inspector                   _inspector;
 	public readonly    string                      Id;
-	public             string                      Label         = "";
+	public             string?                     Label         = null;
 	public readonly    List<InspectorValueBinding> ValueBindings = new();
 
 	protected AnInspectorControl(Inspector inspector, string id)
@@ -49,7 +49,7 @@ public abstract class AnInspectorControl
 
 	public abstract void Update();
 
-	public void SetCustomLabel(string label)
+	public void SetCustomLabel(string? label)
 	{
 		Label = label;
 	}

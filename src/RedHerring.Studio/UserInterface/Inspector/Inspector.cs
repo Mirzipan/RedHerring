@@ -54,7 +54,7 @@ public sealed class Inspector
 		
 		_contentControl = new InspectorClassControl(this, id);
 		_contentControl.InitFromSource(_sources[0]);
-		_contentControl.SetCustomLabel(_sources.Count == 1 ? "Editing 1 object" : $"Editing {_sources.Count} objects"); // TODO - custom label
+		_contentControl.SetCustomLabel(null);
 		for(int i=1;i <_sources.Count;i++)
 		{
 			_contentControl.AdaptToSource(_sources[i]);

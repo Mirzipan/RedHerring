@@ -114,6 +114,15 @@ public sealed class InspectorClassControl : AnInspectorControl
 
 	public override void Update()
 	{
+		if (Label == null)
+		{
+			foreach (AnInspectorControl control in _controls)
+			{
+				control.Update();
+			}
+			return;
+		}
+
 		if (Gui.CollapsingHeader(Label, ImGuiTreeNodeFlags.DefaultOpen))
 		{
 			Gui.Indent();
