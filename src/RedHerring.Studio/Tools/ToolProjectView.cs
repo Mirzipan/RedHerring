@@ -19,6 +19,10 @@ public sealed class ToolProjectView : ATool
 	{
 	}
     
+	public ToolProjectView(StudioModel studioModel, int uniqueId) : base(studioModel, uniqueId)
+	{
+	}
+
 	public override void Update(out bool finished)
 	{
 		finished = UpdateUI();

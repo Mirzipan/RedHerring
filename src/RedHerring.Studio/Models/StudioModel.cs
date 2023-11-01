@@ -1,3 +1,5 @@
+using System.Reflection;
+using Migration;
 using RedHerring.Studio.Models.Project;
 using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.ViewModels;
@@ -11,11 +13,17 @@ public class StudioModel
 {
 	private const int _threadsCount = 4;
 	
-	private readonly ProjectModel _project = new();
+	public static    Assembly         Assembly => typeof(StudioModel).Assembly; 
+	private readonly MigrationManager _migrationManager = new(Assembly);
+	
+	private readonly ProjectModel _project;
 	public           ProjectModel Project => _project;
 
-	public readonly StudioSettings  StudioSettings = new();
-	public readonly ProjectSettings ProjectSettings = new();
+	private StudioSettings  _studioSettings = new();
+	public  StudioSettings  StudioSettings => _studioSettings;
+	
+	private ProjectSettings _projectSettings = new();
+	public  ProjectSettings ProjectSettings => _projectSettings;
 	
 	// view models
 	private readonly ConsoleViewModel _console = new();
@@ -28,6 +36,11 @@ public class StudioModel
 	public           TaskProcessor TaskProcessor => _taskProcessor;
 	
 	private readonly Importer _importer = new();
+
+	public StudioModel()
+	{
+		_project = new ProjectModel(_migrationManager);
+	}
 
 	public void Cancel()
 	{
@@ -63,5 +76,19 @@ public class StudioModel
 		{
 			_taskProcessor.EnqueueTask(new TestTask(i), 0);
 		}
+	}
+
+	public async Task SaveStudioSettings()
+	{
+		byte[] json = await MigrationSerializer.SerializeAsync(StudioSettings, SerializedDataFormat.JSON, Assembly);
+		Directory.CreateDirectory(Path.GetDirectoryName(StudioSettings.SettingsPath)!);
+		await File.WriteAllBytesAsync(StudioSettings.SettingsPath, json);
+	}
+
+	public async Task LoadStudioSettings()
+	{
+		byte[] json = await File.ReadAllBytesAsync(StudioSettings.SettingsPath);
+		StudioSettings settings = await MigrationSerializer.DeserializeAsync<StudioSettings, IStudioSettingsMigratable>(_migrationManager.TypesHash, json, SerializedDataFormat.JSON, _migrationManager, false, Assembly);
+		_studioSettings = settings;
 	}
 }

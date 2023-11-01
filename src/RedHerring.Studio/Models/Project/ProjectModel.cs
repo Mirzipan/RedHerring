@@ -9,12 +9,16 @@ public sealed class ProjectModel
 {
 	private const string _assetsFolderName = "Assets";
 
-	public static    Assembly         Assembly => typeof(ProjectModel).Assembly; 
-	private readonly MigrationManager _migrationManager = new(Assembly);
-
+	private readonly MigrationManager _migrationManager;
+	
 	private ProjectFolderNode? _assetsFolder;
 	public  ProjectFolderNode? AssetsFolder => _assetsFolder;
 
+	public ProjectModel(MigrationManager migrationManager)
+	{
+		_migrationManager = migrationManager;
+	}
+	
 	#region Open/close
 	public void Close()
 	{

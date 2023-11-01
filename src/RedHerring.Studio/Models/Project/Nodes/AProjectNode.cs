@@ -25,7 +25,7 @@ public abstract class AProjectNode
 		if (File.Exists(metaPath))
 		{
 			byte[] json = await File.ReadAllBytesAsync(metaPath);
-			meta = await MigrationSerializer.DeserializeAsync<Metadata, IMetadataMigratable>(null, json, SerializedDataFormat.JSON, migrationManager, true, ProjectModel.Assembly);
+			meta = await MigrationSerializer.DeserializeAsync<Metadata, IMetadataMigratable>(null, json, SerializedDataFormat.JSON, migrationManager, true, StudioModel.Assembly);
 		}
 		
 		// write if needed
@@ -35,7 +35,7 @@ public abstract class AProjectNode
 			meta.UpdateGuid();
 			meta.SetHash(hash);
 
-			byte[] json =  await MigrationSerializer.SerializeAsync(meta, SerializedDataFormat.JSON, ProjectModel.Assembly);
+			byte[] json =  await MigrationSerializer.SerializeAsync(meta, SerializedDataFormat.JSON, StudioModel.Assembly);
 			await File.WriteAllBytesAsync(metaPath, json);
 		}
 

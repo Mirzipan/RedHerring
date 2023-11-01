@@ -1,4 +1,5 @@
 ﻿using Migration;
+using RedHerring.Studio.Tools;
 using RedHerring.Studio.UserInterface.Attributes;
 
 namespace RedHerring.Studio.Models;
@@ -7,11 +8,16 @@ namespace RedHerring.Studio.Models;
 public sealed class StudioSettings
 {
 	[NonSerialized] public static string? HomeDirectory = (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
-		? Environment.GetEnvironmentVariable("HOME")
-		: Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%"); // TODO - not good, application path needed
+		? (Environment.GetEnvironmentVariable("XDG_CONFIG_HOME") ?? "~/Library/Application Support")
+		: Environment.ExpandEnvironmentVariables("%APPDATA%");
 	
-	[NonSerialized] public readonly string SettingsPath = Path.Join(HomeDirectory, "RedHerring", "options.json");
-	public          int    WorkerThreadsCount;
+	public string SettingsPath => Path.Join(HomeDirectory, "RedHerring", "options.json");
+
+	public                   int     WorkerThreadsCount = 4;
+	[HideInInspector] public string? UiLayout;
+	
+	[HideInInspector] public int          ToolUniqueIdGeneratorState;
+	[HideInInspector] public List<ToolId> OpenedToolWindows = new(); 
 }
 
 #region Migration
@@ -23,5 +29,7 @@ public interface IStudioSettingsMigratable
 [Serializable, LatestVersion(typeof(StudioSettings))]
 public class StudioSettings_000 : IStudioSettingsMigratable
 {
+	public int     WorkerThreadsCount;
+	public string? UiLayout;
 }
 #endregion

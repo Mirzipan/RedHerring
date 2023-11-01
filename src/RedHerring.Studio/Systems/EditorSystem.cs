@@ -61,14 +61,16 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 		_inputReceiver.Bind("redo", Redo);
 	}
 
-	protected override void Load()
+	protected override async void Load()
 	{
 		Gui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 
 		InitInput();
-
 		InitMenu();
 
+		_studioModel.LoadStudioSettings().GetAwaiter().GetResult(); // TODO - async
+		Gui.LoadIniSettingsFromMemory(_studioModel.StudioSettings.UiLayout);
+		
 		// debug
 		_activeTools.Add(new ToolProjectView(_studioModel));
 		_projectSettings = new SettingsDialog("Project settings", _history, _studioModel.ProjectSettings);
@@ -77,6 +79,9 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
 	protected override void Unload()
 	{
+		_studioModel.StudioSettings.UiLayout = Gui.SaveIniSettingsToMemory();
+		_studioModel.SaveStudioSettings().GetAwaiter().GetResult(); // TODO - async
+		
 		_studioModel.Cancel(); // TODO - should we wait for cancellation of all threads?
 	}
 

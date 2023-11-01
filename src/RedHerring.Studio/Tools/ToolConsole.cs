@@ -12,6 +12,10 @@ public sealed class ToolConsole : ATool
 	{
 	}
 
+	public ToolConsole(StudioModel studioModel, int uniqueId) : base(studioModel, uniqueId)
+	{
+	}
+
 	public override void Update(out bool finished)
 	{
 		finished = UpdateUI();

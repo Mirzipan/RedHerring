@@ -19,6 +19,12 @@ public sealed class ToolInspector : ATool
 		_inspector.Init(_tests);
 	}
 
+	public ToolInspector(StudioModel studioModel, CommandHistory commandHistory, int uniqueId) : base(studioModel, uniqueId)
+	{
+		_inspector = new Inspector(commandHistory);
+		_inspector.Init(_tests);
+	}
+	
 	public override void Update(out bool finished)
 	{
 		finished = UpdateUI();
