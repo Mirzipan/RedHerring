@@ -67,7 +67,7 @@ public sealed class Engine : ANamedDisposer
 
     public void Update(double delta)
     {
-        if (IsExiting)
+        if (!IsRunning || IsExiting)
         {
             return;
         }
@@ -79,7 +79,7 @@ public sealed class Engine : ANamedDisposer
 
     public void Draw(double delta)
     {
-        if (IsExiting)
+        if (!IsRunning || IsExiting)
         {
             return;
         }
@@ -123,7 +123,7 @@ public sealed class Engine : ANamedDisposer
 
     #region Private
 
-    private async Task InitFromContext()
+    private async Task InitFromContext(CancellationToken cancellationToken = default)
     {
         Context.Init(this);
         await Context.Load();
