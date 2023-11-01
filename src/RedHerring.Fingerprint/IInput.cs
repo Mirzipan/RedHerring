@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using RedHerring.Fingerprint.Events;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Fingerprint.States;
@@ -22,6 +23,12 @@ public interface IInput
     float MouseWheelDelta { get; }
     ShortcutBindings? Bindings { get; set; }
     InputLayers Layers { get; }
+
+    event Action<KeyEvent> KeyEvent;
+    event Action<MouseButtonEvent> MouseButtonEvent;
+    event Action<MouseAxisEvent> MouseAxisEvent;
+    event Action<GamepadButtonEvent> GamepadButtonEvent;
+    event Action<GamepadAxisEvent> GamepadAxisEvent;
 
     bool IsKeyUp(Key key);
     bool IsKeyPressed(Key key);
