@@ -1,4 +1,5 @@
-﻿using RedHerring.Fingerprint.Layers;
+﻿using RedHerring.Fingerprint.Events;
+using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Fingerprint.States;
 using Silk.NET.Input;
@@ -30,6 +31,12 @@ public partial class Input: IInput, IDisposable
 
     public ShortcutBindings? Bindings { get; set; }
     public InputLayers Layers { get; }
+    
+    public event Action<KeyEvent>? KeyEvent;
+    public event Action<MouseButtonEvent>? MouseButtonEvent;
+    public event Action<MouseAxisEvent>? MouseAxisEvent;
+    public event Action<GamepadButtonEvent>? GamepadButtonEvent;
+    public event Action<GamepadAxisEvent>? GamepadAxisEvent;
 
     #region Lifecycle
 

@@ -2,6 +2,7 @@
 using RedHerring.Core;
 using RedHerring.Core.Systems;
 using RedHerring.Fingerprint;
+using RedHerring.Fingerprint.Events;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Infusion.Attributes;
@@ -35,15 +36,9 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
     protected override void Init()
     {
         _imInputSnapshot = new ImInputSnapshot();
-        
-        var shortcut = new CompositeShortcut();
-        shortcut.Add(new KeyboardShortcut(Key.ShiftLeft));
-        shortcut.Add(new KeyboardShortcut(Key.F11));
-        _inputSystem.AddBinding("imgui_metrics", shortcut);
-        
-        _receiver.Name = "ImGui";
-        _receiver.Bind("imgui_metrics", InputState.Released, ToggleFontDebug);
-        _receiver.Push();
+
+        CreateShortcuts();
+        SubscribeToInput();
     }
 
     protected override ValueTask<int> Load()
@@ -55,6 +50,7 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
 
     protected override ValueTask<int> Unload()
     {
+        UnsubscribeFromInput();
         return ValueTask.FromResult(0);
     }
     
@@ -87,6 +83,40 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
 
     #endregion Drawable
 
+    #region Private
+
+    private void SubscribeToInput()
+    {
+        _inputSystem.Input.KeyEvent += OnKeyEvent;
+        _inputSystem.Input.MouseButtonEvent += OnMouseButtonEvent;
+        _inputSystem.Input.MouseAxisEvent += OnMouseAxisEvent;
+        _inputSystem.Input.GamepadButtonEvent += OnGamepadButtonEvent;
+        _inputSystem.Input.GamepadAxisEvent += OnGamepadAxisEvent;
+    }
+
+    private void UnsubscribeFromInput()
+    {
+        _inputSystem.Input.KeyEvent -= OnKeyEvent;
+        _inputSystem.Input.MouseButtonEvent -= OnMouseButtonEvent;
+        _inputSystem.Input.MouseAxisEvent -= OnMouseAxisEvent;
+        _inputSystem.Input.GamepadButtonEvent -= OnGamepadButtonEvent;
+        _inputSystem.Input.GamepadAxisEvent -= OnGamepadAxisEvent;
+    }
+    
+    private void CreateShortcuts()
+    {
+        var shortcut = new CompositeShortcut();
+        shortcut.Add(new KeyboardShortcut(Key.ShiftLeft));
+        shortcut.Add(new KeyboardShortcut(Key.F11));
+        _inputSystem.AddBinding("imgui_metrics", shortcut);
+
+        _receiver.Name = "ImGui";
+        _receiver.Bind("imgui_metrics", InputState.Released, ToggleFontDebug);
+        _receiver.Push();
+    }
+
+    #endregion Private
+
     #region Bindings
     
     private void ToggleFontDebug(ref ActionEvent evt)
@@ -94,6 +124,69 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
         evt.Consumed = true;
 
         _debugDraw = !_debugDraw;
+    }
+
+    private void OnKeyEvent(KeyEvent evt)
+    {
+        Gui.GetIO().AddKeyEvent(Convert.ToImGuiKey(evt.Key), evt.IsDown);
+    }
+
+    private void OnMouseButtonEvent(MouseButtonEvent evt)
+    {
+        Gui.GetIO().AddMouseButtonEvent((int)evt.Button,  evt.IsDown);
+    }
+
+    private void OnMouseAxisEvent(MouseAxisEvent evt)
+    {
+        switch (evt.Axis)
+        {
+            case MouseAxis.None:
+                break;
+            case MouseAxis.Horizontal:
+                break;
+            case MouseAxis.Vertical:
+                break;
+            case MouseAxis.HorizontalDelta:
+                break;
+            case MouseAxis.VerticalDelta:
+                break;
+            case MouseAxis.Wheel:
+                break;
+            case MouseAxis.WheelUp:
+                break;
+            case MouseAxis.WheelDown:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private void OnGamepadButtonEvent(GamepadButtonEvent evt)
+    {
+        Gui.GetIO().AddKeyEvent(Convert.ToImGuiKey(evt.Button),  evt.IsDown);
+    }
+
+    private void OnGamepadAxisEvent(GamepadAxisEvent evt)
+    {
+        switch (evt.Axis)
+        {
+            case GamepadAxis.None:
+                break;
+            case GamepadAxis.LeftX:
+                break;
+            case GamepadAxis.LeftY:
+                break;
+            case GamepadAxis.RightX:
+                break;
+            case GamepadAxis.RightY:
+                break;
+            case GamepadAxis.TriggerLeft:
+                break;
+            case GamepadAxis.TriggerRight:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     #endregion Bindings
