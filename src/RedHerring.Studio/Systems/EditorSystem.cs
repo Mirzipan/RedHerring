@@ -20,7 +20,6 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.Systems;
 
-// TODO: Add this to engine context when creating editor window.
 public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 {
 	[Inject] private InputSystem      _inputSystem      = null!;
