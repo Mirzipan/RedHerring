@@ -42,11 +42,12 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 	private readonly List<ATool> _activeTools = new();
     
 	#region User Interface
-	private readonly DockSpace     _dockSpace     = new();
-	private readonly Menu          _menu          = new();
-	private readonly StatusBar     _statusBar     = new();
-	private readonly OptionsDialog _optionsDialog = new();
-	private readonly MessageBox    _messageBox    = new();
+	private readonly DockSpace      _dockSpace       = new();
+	private readonly Menu           _menu            = new();
+	private readonly StatusBar      _statusBar       = new();
+	private          SettingsDialog _projectSettings = null!;
+	private          SettingsDialog _studioSettings = null!;
+	private readonly MessageBox     _messageBox      = new();
 	#endregion
     
 	#region Lifecycle
@@ -70,6 +71,8 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
 		// debug
 		_activeTools.Add(new ToolProjectView(_studioModel));
+		_projectSettings = new SettingsDialog("Project settings", _history, _studioModel.ProjectSettings);
+		_studioSettings = new SettingsDialog("Studio settings", _history, _studioModel.StudioSettings);
 	}
 
 	protected override void Unload()
@@ -86,7 +89,8 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 		UpdateStatusBarMessage();
 		_statusBar.Update();
 
-		_optionsDialog.Update();
+		_projectSettings.Update();
+		_studioSettings.Update();
 		_messageBox.Update();
 
 		for(int i=0;i <_activeTools.Count;++i)
@@ -151,9 +155,10 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 		_menu.AddItem("File/Settings/Theme/Bloodsucker",          Theme.Bloodsucker);
 		_menu.AddItem("File/Exit",                                OnExitClicked);
 
-		_menu.AddItem("Edit/Undo",    _history.Undo);
-		_menu.AddItem("Edit/Redo",    _history.Redo);
-		_menu.AddItem("Edit/Options", OnEditOptionsClicked);
+		_menu.AddItem("Edit/Undo",               _history.Undo);
+		_menu.AddItem("Edit/Redo",               _history.Redo);
+		_menu.AddItem("Edit/Project settings..", OnEditProjectSettingsClicked);
+		_menu.AddItem("Edit/Studio settings..", OnEditStudioSettingsClicked);
 
 		_menu.AddItem("View/Project",   OnViewProjectClicked);
 		_menu.AddItem("View/Console",   OnViewConsoleClicked);
@@ -181,9 +186,14 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 		Context.Engine?.Exit();
 	}
 
-	private void OnEditOptionsClicked()
+	private void OnEditProjectSettingsClicked()
 	{
-		Gui.OpenPopup("Options");
+		_projectSettings.Open();
+	}
+
+	private void OnEditStudioSettingsClicked()
+	{
+		_studioSettings.Open();
 	}
 	
 	private void OnViewProjectClicked()

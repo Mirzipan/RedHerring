@@ -13,6 +13,9 @@ public class StudioModel
 	
 	private readonly ProjectModel _project = new();
 	public           ProjectModel Project => _project;
+
+	public readonly StudioSettings  StudioSettings = new();
+	public readonly ProjectSettings ProjectSettings = new();
 	
 	// view models
 	private readonly ConsoleViewModel _console = new();
