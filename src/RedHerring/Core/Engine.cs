@@ -95,7 +95,7 @@ public sealed class Engine : ANamedDisposer
         }
     }
 
-    public void Exit()
+    public async void Exit()
     {
         if (IsExiting)
         {
@@ -105,7 +105,7 @@ public sealed class Engine : ANamedDisposer
         IsExiting = true;
         Session?.Close();
         
-        Context.Unload();
+        await Context.Unload();
         
         OnExit?.Invoke();
     }
@@ -123,10 +123,10 @@ public sealed class Engine : ANamedDisposer
 
     #region Private
 
-    private void InitFromContext()
+    private async void InitFromContext()
     {
         Context.Init(this);
-        Context.Load();
+        await Context.Load();
 
         Renderer = Context.Container.Resolve<GraphicsSystem>();
     }

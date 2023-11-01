@@ -46,24 +46,28 @@ public sealed class EngineContext : ANamedDisposer
         RaiseInitOnSystems();
     }
 
-    internal void Load()
+    internal async ValueTask<int> Load()
     {
         int count = _systems.Count;
         for (int i = 0; i < count; i++)
         {
             var system = _systems[i];
-            system.RaiseLoad();
+            await system.RaiseLoad();
         }
+
+        return 0;
     }
 
-    internal void Unload()
+    internal async ValueTask<int> Unload()
     {
         int count = _systems.Count;
         for (int i = 0; i < count; i++)
         {
             var system = _systems[i];
-            system.RaiseUnload();
+            await system.RaiseUnload();
         }
+
+        return 0;
     }
     
     internal void Update(GameTime gameTime)

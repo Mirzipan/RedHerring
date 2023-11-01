@@ -46,14 +46,16 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
         _receiver.Push();
     }
 
-    protected override void Load()
+    protected override ValueTask<int> Load()
     {
         _feature = new ImGuiRenderFeature();
         _graphicsSystem.RegisterFeature(_feature);
+        return ValueTask.FromResult(0);
     }
 
-    protected override void Unload()
+    protected override ValueTask<int> Unload()
     {
+        return ValueTask.FromResult(0);
     }
     
     public void Update(GameTime gameTime)
