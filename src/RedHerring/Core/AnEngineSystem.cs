@@ -14,14 +14,14 @@ public abstract class AnEngineSystem : ANamedDisposer
         Init();
     }
 
-    internal void RaiseLoad()
+    internal async ValueTask<int> RaiseLoad()
     {
-        Load();
+        return await Load();
     }
 
-    internal void RaiseUnload()
+    internal async ValueTask<int> RaiseUnload()
     {
-        Unload();
+        return await Unload();
     }
 
     /// <summary>
@@ -32,16 +32,16 @@ public abstract class AnEngineSystem : ANamedDisposer
     /// <summary>
     /// Called during engine startup, after initialization.
     /// </summary>
-    protected virtual void Load()
+    protected virtual ValueTask<int> Load()
     {
-        
+        return ValueTask.FromResult(0);
     }
 
     /// <summary>
     /// Called when engine is shutting down.
     /// </summary>
-    protected virtual void Unload()
+    protected virtual ValueTask<int> Unload()
     {
-        
+        return ValueTask.FromResult(0);
     }
 }

@@ -13,10 +13,11 @@ public sealed class GraphicsSystem : AnEngineSystem
         _renderer = new Renderer(Context.View, Context.GraphicsBackend, Context.UseSeparateRenderThread);
     }
 
-    protected override void Load()
+    protected override ValueTask<int> Load()
     {
         _renderer.Init();
         _renderer.Resize(Context.View.Size);
+        return ValueTask.FromResult(0);
     }
 
     public bool BeginDraw() => _renderer.BeginDraw();
