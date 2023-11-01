@@ -60,7 +60,7 @@ public sealed class Engine : ANamedDisposer
         _updateCount = 0;
         _frameCount = 0;
 
-        InitFromContext();
+        InitFromContext().GetAwaiter().GetResult();
         
         IsRunning = true;
     }
@@ -123,7 +123,7 @@ public sealed class Engine : ANamedDisposer
 
     #region Private
 
-    private async void InitFromContext()
+    private async Task InitFromContext()
     {
         Context.Init(this);
         await Context.Load();

@@ -61,30 +61,30 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 		_inputReceiver.Bind("redo", Redo);
 	}
 
-	protected override ValueTask<int> Load()
+	protected override async ValueTask<int> Load()
 	{
 		Gui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 
 		InitInput();
 		InitMenu();
 
-		_studioModel.LoadStudioSettings().GetAwaiter().GetResult(); // TODO - async
+		await _studioModel.LoadStudioSettings(); // TODO - async
 		Gui.LoadIniSettingsFromMemory(_studioModel.StudioSettings.UiLayout);
 		
 		// debug
 		_activeTools.Add(new ToolProjectView(_studioModel));
 		_projectSettings = new SettingsDialog("Project settings", _history, _studioModel.ProjectSettings);
 		_studioSettings = new SettingsDialog("Studio settings", _history, _studioModel.StudioSettings);
-		return ValueTask.FromResult(0);
+		return 0;
 	}
 
-	protected override ValueTask<int> Unload()
+	protected override async ValueTask<int> Unload()
 	{
 		_studioModel.StudioSettings.UiLayout = Gui.SaveIniSettingsToMemory();
-		_studioModel.SaveStudioSettings().GetAwaiter().GetResult(); // TODO - async
+		await _studioModel.SaveStudioSettings(); // TODO - async
 		
 		_studioModel.Cancel(); // TODO - should we wait for cancellation of all threads?
-		return ValueTask.FromResult(0);
+		return 0;
 	}
 
 	public void Update(GameTime gameTime)
