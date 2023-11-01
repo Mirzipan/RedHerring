@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using RedHerring.Alexandria.Extensions;
 
 namespace RedHerring.Studio.UserInterface;
 
@@ -38,7 +39,7 @@ public abstract class AnInspectorControl
 	{
 		if (sourceField != null)
 		{
-			Label   = sourceField.Name;
+			Label   = sourceField.Name.PrettyCamelCase();
 			LabelId = Label + Id;
 		}
 
