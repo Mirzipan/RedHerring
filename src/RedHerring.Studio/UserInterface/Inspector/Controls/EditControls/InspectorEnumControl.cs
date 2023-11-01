@@ -20,7 +20,7 @@ public class InspectorEnumControl : AnInspectorSingleInputControl<Enum>
 	protected override bool InputControl()
 	{
 		int localValue = Convert.ToInt32(Value!);
-		bool submit = Gui.Combo(Id, ref localValue, _items, _items.Length);
+		bool submit = Gui.Combo(LabelId, ref localValue, _items, _items.Length);
 		Value = (Enum?)Enum.ToObject(Value!.GetType(), localValue);
 		
 		return submit;

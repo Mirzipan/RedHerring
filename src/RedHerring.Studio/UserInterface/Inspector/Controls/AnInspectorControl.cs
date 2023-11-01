@@ -24,19 +24,22 @@ public abstract class AnInspectorControl
 	protected readonly Inspector                   _inspector;
 	public readonly    string                      Id;
 	public             string?                     Label         = null;
+	public             string                      LabelId       = null!;
 	public readonly    List<InspectorValueBinding> ValueBindings = new();
 
 	protected AnInspectorControl(Inspector inspector, string id)
 	{
 		_inspector = inspector;
 		Id         = id;
+		LabelId    = id;
 	}
 
 	public virtual void InitFromSource(object source, FieldInfo? sourceField = null)
 	{
 		if (sourceField != null)
 		{
-			Label = sourceField.Name;
+			Label   = sourceField.Name;
+			LabelId = Label + Id;
 		}
 
 		ValueBindings.Add(new InspectorValueBinding(source, sourceField));
@@ -51,7 +54,8 @@ public abstract class AnInspectorControl
 
 	public void SetCustomLabel(string? label)
 	{
-		Label = label;
+		Label   = label;
+		LabelId = label == null ? Id : label + Id;
 	}
 
 	protected Type? FieldToControl(Type fieldType)
@@ -89,7 +93,7 @@ public abstract class AnInspectorControl
 			{
 				return UnboundValue;
 			}
-
+ 
 			object? otherValue = ValueBindings[1].SourceField.GetValue(ValueBindings[1].Source);
 			if (otherValue == null)
 			{

@@ -82,6 +82,9 @@ public abstract class AnInspectorEditControl<T> : AnInspectorControl
 		Gui.BeginDisabled(_isReadOnly);
 		bool buttonClicked = Gui.Button(_multipleValuesLabel);
 		Gui.EndDisabled();
+		Gui.SameLine();
+		Gui.AlignTextToFramePadding();
+		Gui.Text(Label);
 		return buttonClicked;
 	}
 

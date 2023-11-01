@@ -10,10 +10,6 @@ public abstract class AnInspectorSingleInputControl<T> : AnInspectorEditControl<
 
 	public sealed override void Update()
 	{
-		Gui.AlignTextToFramePadding();
-		Gui.TextUnformatted(Label);
-		Gui.SameLine();
-
 		bool isItemActive = false;
 		if(_multipleValues)
 		{

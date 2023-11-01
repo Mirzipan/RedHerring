@@ -13,7 +13,7 @@ public sealed class InspectorStringControl : AnInspectorSingleInputControl<strin
 
 	protected override bool InputControl()
 	{
-		Gui.InputText(Id, ref Value, MaxLength, _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None);
+		Gui.InputText(LabelId, ref Value, MaxLength, _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None);
 		return Gui.IsItemDeactivatedAfterEdit();
 	}
 }

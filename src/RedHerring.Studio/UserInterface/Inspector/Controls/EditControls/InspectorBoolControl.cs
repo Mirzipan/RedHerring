@@ -12,7 +12,7 @@ public class InspectorBoolControl : AnInspectorSingleInputControl<bool>
 	protected override bool InputControl()
 	{
 		Gui.BeginDisabled(_isReadOnly);
-		bool submit = Gui.Checkbox(Id, ref Value);
+		bool submit = Gui.Checkbox(LabelId, ref Value);
 		Gui.EndDisabled();
 
 		return submit;
