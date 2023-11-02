@@ -67,9 +67,12 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 		InitInput();
 		InitMenu();
 
-		await _studioModel.LoadStudioSettings(); // TODO - async
-		Gui.LoadIniSettingsFromMemory(_studioModel.StudioSettings.UiLayout);
-		
+		await _studioModel.LoadStudioSettings();
+		if (_studioModel.StudioSettings.UiLayout != null)
+		{
+			Gui.LoadIniSettingsFromMemory(_studioModel.StudioSettings.UiLayout);
+		}
+
 		// debug
 		_activeTools.Add(new ToolProjectView(_studioModel));
 		_projectSettings = new SettingsDialog("Project settings", _history, _studioModel.ProjectSettings);

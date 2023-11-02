@@ -87,6 +87,11 @@ public class StudioModel
 
 	public async Task LoadStudioSettings()
 	{
+		if(!File.Exists(StudioSettings.SettingsPath))
+		{
+			return;
+		}
+		
 		byte[] json = await File.ReadAllBytesAsync(StudioSettings.SettingsPath);
 		StudioSettings settings = await MigrationSerializer.DeserializeAsync<StudioSettings, IStudioSettingsMigratable>(_migrationManager.TypesHash, json, SerializedDataFormat.JSON, _migrationManager, false, Assembly);
 		_studioSettings = settings;
