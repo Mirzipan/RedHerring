@@ -38,7 +38,7 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
         _imInputSnapshot = new ImInputSnapshot();
 
         CreateShortcuts();
-        SubscribeToInput();
+        // SubscribeToInput();
     }
 
     protected override ValueTask<int> Load()
@@ -50,7 +50,7 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
 
     protected override ValueTask<int> Unload()
     {
-        UnsubscribeFromInput();
+        // UnsubscribeFromInput();
         return ValueTask.FromResult(0);
     }
     
@@ -87,22 +87,24 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
 
     private void SubscribeToInput()
     {
-        _inputSystem.Input.KeyEvent += OnKeyEvent;
-        _inputSystem.Input.MouseButtonEvent += OnMouseButtonEvent;
-        _inputSystem.Input.MouseAxisEvent += OnMouseAxisEvent;
-        _inputSystem.Input.GamepadButtonEvent += OnGamepadButtonEvent;
-        _inputSystem.Input.GamepadAxisEvent += OnGamepadAxisEvent;
+        _inputSystem.Input.KeyChange += OnKeyChange;
+        _inputSystem.Input.KeyChar += OnKeyChar;
+        _inputSystem.Input.MouseButtonChange += OnMouseButtonChange;
+        _inputSystem.Input.MouseAxisMove += OnMouseAxisMove;
+        _inputSystem.Input.GamepadButtonChange += OnGamepadButtonChange;
+        _inputSystem.Input.GamepadAxisMove += OnGamepadAxisMove;
     }
 
     private void UnsubscribeFromInput()
     {
-        _inputSystem.Input.KeyEvent -= OnKeyEvent;
-        _inputSystem.Input.MouseButtonEvent -= OnMouseButtonEvent;
-        _inputSystem.Input.MouseAxisEvent -= OnMouseAxisEvent;
-        _inputSystem.Input.GamepadButtonEvent -= OnGamepadButtonEvent;
-        _inputSystem.Input.GamepadAxisEvent -= OnGamepadAxisEvent;
+        _inputSystem.Input.KeyChange -= OnKeyChange;
+        _inputSystem.Input.KeyChar -= OnKeyChar;
+        _inputSystem.Input.MouseButtonChange -= OnMouseButtonChange;
+        _inputSystem.Input.MouseAxisMove -= OnMouseAxisMove;
+        _inputSystem.Input.GamepadButtonChange -= OnGamepadButtonChange;
+        _inputSystem.Input.GamepadAxisMove -= OnGamepadAxisMove;
     }
-    
+
     private void CreateShortcuts()
     {
         var shortcut = new CompositeShortcut();
@@ -126,31 +128,42 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
         _debugDraw = !_debugDraw;
     }
 
-    private void OnKeyEvent(KeyChanged evt)
+    private void OnKeyChange(KeyChanged evt)
     {
         Gui.GetIO().AddKeyEvent(Convert.ToImGuiKey(evt.Key), evt.IsDown);
     }
 
-    private void OnMouseButtonEvent(MouseButtonChanged evt)
+    private void OnKeyChar(char @char)
+    {
+        Gui.GetIO().AddInputCharacter(@char);
+    }
+
+    private void OnMouseButtonChange(MouseButtonChanged evt)
     {
         Gui.GetIO().AddMouseButtonEvent((int)evt.Button,  evt.IsDown);
     }
 
-    private void OnMouseAxisEvent(MouseAxisMoved evt)
+    private void OnMouseAxisMove(MouseAxisMoved evt)
     {
+        var position = _inputSystem.Input.MousePosition;
+        float delta = _inputSystem.Input.MouseWheelDelta;
+        
         switch (evt.Axis)
         {
             case MouseAxis.None:
                 break;
             case MouseAxis.Horizontal:
+                Gui.GetIO().AddMousePosEvent(position.X, position.Y);
                 break;
             case MouseAxis.Vertical:
+                Gui.GetIO().AddMousePosEvent(position.X, position.Y);
                 break;
             case MouseAxis.HorizontalDelta:
                 break;
             case MouseAxis.VerticalDelta:
                 break;
             case MouseAxis.Wheel:
+                Gui.GetIO().AddMouseWheelEvent(0, delta);
                 break;
             case MouseAxis.WheelUp:
                 break;
@@ -161,12 +174,12 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
         }
     }
 
-    private void OnGamepadButtonEvent(GamepadButtonChanged evt)
+    private void OnGamepadButtonChange(GamepadButtonChanged evt)
     {
         Gui.GetIO().AddKeyEvent(Convert.ToImGuiKey(evt.Button),  evt.IsDown);
     }
 
-    private void OnGamepadAxisEvent(GamepadAxisMoved evt)
+    private void OnGamepadAxisMove(GamepadAxisMoved evt)
     {
         switch (evt.Axis)
         {

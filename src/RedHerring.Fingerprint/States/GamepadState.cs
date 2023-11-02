@@ -1,5 +1,7 @@
 ﻿using System.Numerics;
+using RedHerring.Alexandria.Extensions;
 using RedHerring.Alexandria.Masks;
+using RedHerring.Fingerprint.Events;
 using Silk.NET.Input;
 using SilkButton = Silk.NET.Input.ButtonName;
 
@@ -28,6 +30,9 @@ public class GamepadState : IDisposable
     public Vector2 RightThumb => _rightThumb;
     public float LeftTrigger => _leftTrigger;
     public float RightTrigger => _rightTrigger;
+
+    public event Action<GamepadButtonChanged>? ButtonChange;
+    public event Action<GamepadAxisMoved>? AxisMove;
 
     #region Lifecycle
 
@@ -130,6 +135,8 @@ public class GamepadState : IDisposable
         _pressed[(int)button] = true;
         _down[(int)button] = true;
         
+        ButtonChange.SafeInvoke(new GamepadButtonChanged(button, Modifiers.None, true));
+        
         DebugPrint?.Invoke($"`{gamepad}` button `{button}` pressed.");
     }
 
@@ -138,6 +145,8 @@ public class GamepadState : IDisposable
         var button = ConvertButton(buttonState.Name);
         _pressed[(int)button] = true;
         _down[(int)button] = true;
+        
+        ButtonChange.SafeInvoke(new GamepadButtonChanged(button, Modifiers.None, false));
         
         DebugPrint?.Invoke($"`{gamepad}` button `{button}` released.");
     }
@@ -151,11 +160,17 @@ public class GamepadState : IDisposable
                 thumbName = "Left thumbstick";
                 _leftThumb.X = thumbstick.X;
                 _leftThumb.Y = thumbstick.Y;
+        
+                AxisMove.SafeInvoke(new GamepadAxisMoved(GamepadAxis.LeftX, _leftThumb.X));
+                AxisMove.SafeInvoke(new GamepadAxisMoved(GamepadAxis.LeftY, _leftThumb.Y));
                 break;
             case 1:
                 thumbName = "Right thumbstick";
                 _rightThumb.X = thumbstick.X;
                 _rightThumb.Y = thumbstick.Y;
+                
+                AxisMove.SafeInvoke(new GamepadAxisMoved(GamepadAxis.RightX, _rightThumb.X));
+                AxisMove.SafeInvoke(new GamepadAxisMoved(GamepadAxis.RightY, _rightThumb.Y));
                 break;
         }
 
@@ -176,6 +191,8 @@ public class GamepadState : IDisposable
                 _rightTrigger = trigger.Position;
                 break;
         }
+        
+        AxisMove.SafeInvoke(new GamepadAxisMoved(axis, trigger.Position));
 
         DebugPrint?.Invoke($"`{gamepad}` `{axis}` moved to `{trigger.Position}`.");
     }

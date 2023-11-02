@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Runtime.CompilerServices;
 using RedHerring.Alexandria.Extensions;
 using RedHerring.Fingerprint.Events;
 using Silk.NET.Input;
@@ -25,9 +24,10 @@ public class KeyboardState : IDisposable
     private IKeyboard _device;
     public IKeyboard Device => _device;
     public string Name => _device.Name;
-    public Modifiers Modifiers;
+    public Modifiers Modifiers => _modifiers;
 
     public event Action<KeyChanged>? KeyChange;
+    public event Action<char>? KeyChar;
 
     #region Lifecycle
 
@@ -299,6 +299,8 @@ public class KeyboardState : IDisposable
     private void OnChar(IKeyboard keyboard, char @char)
     {
         _chars.Add(@char);
+        
+        KeyChar.SafeInvoke(@char);
     }
 
     #endregion Bindings

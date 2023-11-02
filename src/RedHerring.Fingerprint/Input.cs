@@ -1,4 +1,5 @@
-﻿using RedHerring.Fingerprint.Events;
+﻿using RedHerring.Alexandria.Extensions;
+using RedHerring.Fingerprint.Events;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Fingerprint.States;
@@ -32,11 +33,12 @@ public partial class Input: IInput, IDisposable
     public ShortcutBindings? Bindings { get; set; }
     public InputLayers Layers { get; }
     
-    public event Action<KeyChanged>? KeyEvent;
-    public event Action<MouseButtonChanged>? MouseButtonEvent;
-    public event Action<MouseAxisMoved>? MouseAxisEvent;
-    public event Action<GamepadButtonChanged>? GamepadButtonEvent;
-    public event Action<GamepadAxisMoved>? GamepadAxisEvent;
+    public event Action<KeyChanged>? KeyChange;
+    public event Action<char>? KeyChar;
+    public event Action<MouseButtonChanged>? MouseButtonChange;
+    public event Action<MouseAxisMoved>? MouseAxisMove;
+    public event Action<GamepadButtonChanged>? GamepadButtonChange;
+    public event Action<GamepadAxisMoved>? GamepadAxisMove;
 
     #region Lifecycle
 
@@ -111,12 +113,19 @@ public partial class Input: IInput, IDisposable
             return;
         }
 
-        _keyboardState?.Dispose();
-        _keyboardState = null;
+        if (_keyboardState is not null)
+        {
+            _keyboardState.KeyChange -= OnKeyChanged;
+            _keyboardState.KeyChar -= OnKeyChar;
+            _keyboardState.Dispose();
+            _keyboardState = null;
+        }
 
         if (keyboard is not null)
         {
             _keyboardState = new KeyboardState(keyboard);
+            _keyboardState.KeyChange += OnKeyChanged;
+            _keyboardState.KeyChar += OnKeyChar;
         }
     }
 
@@ -127,12 +136,19 @@ public partial class Input: IInput, IDisposable
             return;
         }
 
-        _mouseState?.Dispose();
-        _mouseState = null;
+        if (_mouseState is not null)
+        {
+            _mouseState.ButtonChange -= OnMouseButtonChanged;
+            _mouseState.AxisMove -= OnMouseAxisMoved;
+            _mouseState.Dispose();
+            _mouseState = null;
+        }
 
         if (mouse is not null)
         {
             _mouseState = new MouseState(mouse);
+            _mouseState.ButtonChange += OnMouseButtonChanged;
+            _mouseState.AxisMove += OnMouseAxisMoved;
         }
     }
 
@@ -143,12 +159,19 @@ public partial class Input: IInput, IDisposable
             return;
         }
 
-        _gamepadState?.Dispose();
-        _gamepadState = null;
-
+        if (_gamepadState is not null)
+        {
+            _gamepadState.ButtonChange -= OnGamepadButtonChanged;
+            _gamepadState.AxisMove -= OnGamepadAxisMoved;
+            _gamepadState.Dispose();
+            _gamepadState = null;
+        }
+        
         if (gamepad is not null)
         {
             _gamepadState = new GamepadState(gamepad);
+            _gamepadState.ButtonChange += OnGamepadButtonChanged;
+            _gamepadState.AxisMove += OnGamepadAxisMoved;
         }
     }
 
@@ -197,6 +220,36 @@ public partial class Input: IInput, IDisposable
                 FindGamepad(isConnected ? gamepad : null);
                 return;
         }
+    }
+
+    private void OnKeyChanged(KeyChanged evt)
+    {
+        KeyChange.SafeInvoke(evt);
+    }
+
+    private void OnKeyChar(char @char)
+    {
+        KeyChar.SafeInvoke(@char);
+    }
+
+    private void OnMouseButtonChanged(MouseButtonChanged evt)
+    {
+        MouseButtonChange.SafeInvoke(evt with { Modifiers = _keyboardState?.Modifiers ?? Modifiers.None });
+    }
+
+    private void OnMouseAxisMoved(MouseAxisMoved evt)
+    {
+        MouseAxisMove.SafeInvoke(evt);
+    }
+
+    private void OnGamepadButtonChanged(GamepadButtonChanged evt)
+    {
+        GamepadButtonChange.SafeInvoke(evt with { Modifiers = _keyboardState?.Modifiers ?? Modifiers.None });
+    }
+
+    private void OnGamepadAxisMoved(GamepadAxisMoved evt)
+    {
+        GamepadAxisMove.SafeInvoke(evt);
     }
 
     #endregion Bindings
