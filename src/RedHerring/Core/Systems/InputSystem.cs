@@ -79,7 +79,7 @@ public sealed class InputSystem : AnEngineSystem, IUpdatable
         return true;
     }
 
-    public bool AddBinding(string name, IShortcut shortcut)
+    public bool AddBinding(string name, Shortcut shortcut)
     {
         var binding = new ShortcutBinding(name, shortcut);
         return AddBinding(binding);

@@ -1,18 +1,21 @@
 ﻿namespace RedHerring.Fingerprint.Shortcuts;
 
-public class MouseAxisShortcut : AShortcut
+public sealed class MouseAxisShortcut : Shortcut
 {
-    public MouseAxisShortcut(MouseAxis axis) : base(InputSource.MouseAxis, (int)axis)
-    {
-    }
+    private InputCode _code;
+    public MouseAxis Axis => _code.MouseAxis;
+    
+    public MouseAxisShortcut(MouseAxis axis) => _code = new InputCode(axis);
 
-    public override float GetValue(Input input) => input.Axis(Code.MouseAxis);
+    public void InputCodes(IList<InputCode> result) => result.Add(_code);
 
-    public override bool IsUp(Input input) => false;
+    public float Value(Input input) => input.Axis(_code.MouseAxis);
 
-    public override bool IsPressed(Input input) => false;
+    public bool IsUp(Input input) => false;
 
-    public override bool IsDown(Input input) => false;
+    public bool IsPressed(Input input) => false;
 
-    public override bool IsReleased(Input input) => false;
+    public bool IsDown(Input input) => false;
+
+    public bool IsReleased(Input input) => false;
 }

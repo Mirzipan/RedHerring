@@ -6,14 +6,14 @@ public class ShortcutBinding
     {
     }
 
-    public ShortcutBinding(string? name, IShortcut? shortcut = null)
+    public ShortcutBinding(string? name, Shortcut? shortcut = null)
     {
         Name = name;
         Shortcut = shortcut;
     }
 
     public string? Name { get; set; }
-    public IShortcut? Shortcut { get; set; }
+    public Shortcut? Shortcut { get; set; }
 
-    public float GetValue(Input input) => Shortcut?.GetValue(input) ?? 0f;
+    public float GetValue(Input input) => Shortcut?.Value(input) ?? 0f;
 }

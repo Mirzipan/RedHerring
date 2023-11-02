@@ -1,18 +1,27 @@
 ﻿namespace RedHerring.Fingerprint.Shortcuts;
 
-public class GamepadAxisShortcut : AShortcut
+public sealed class GamepadAxisShortcut : Shortcut
 {
-    public GamepadAxisShortcut(GamepadAxis axis) : base(InputSource.GamepadAxis, (int)axis)
+    private InputCode _code;
+    public GamepadAxis Axis => _code.GamepadAxis;
+
+    public GamepadAxisShortcut(GamepadAxis axis)
     {
+        _code = new InputCode(axis);
     }
 
-    public override float GetValue(Input input) => input.Axis(Code.GamepadAxis);
+    public void InputCodes(IList<InputCode> result)
+    {
+        result.Add(_code);
+    }
 
-    public override bool IsUp(Input input) => false;
+    public float Value(Input input) => input.Axis(_code.GamepadAxis);
 
-    public override bool IsPressed(Input input) => false;
+    public bool IsUp(Input input) => false;
 
-    public override bool IsDown(Input input) => false;
+    public bool IsPressed(Input input) => false;
 
-    public override bool IsReleased(Input input) => false;
+    public bool IsDown(Input input) => false;
+
+    public bool IsReleased(Input input) => false;
 }

@@ -1,18 +1,21 @@
 ﻿namespace RedHerring.Fingerprint.Shortcuts;
 
-public class GamepadButtonShortcut : AShortcut
+public sealed class GamepadButtonShortcut : Shortcut
 {
-    public GamepadButtonShortcut(GamepadButton button) : base(InputSource.GamepadButton, (int)button)
-    {
-    }
+    private InputCode _code;
+    public GamepadButton Button => _code.GamepadButton;
     
-    public override float GetValue(Input input) => IsDown(input) ? 1f : 0f;
+    public GamepadButtonShortcut(GamepadButton button) => _code = new InputCode(button);
 
-    public override bool IsUp(Input input) => input.IsButtonUp(Code.GamepadButton);
+    public void InputCodes(IList<InputCode> result) => result.Add(_code);
 
-    public override bool IsPressed(Input input) => input.IsButtonPressed(Code.GamepadButton);
+    public float Value(Input input) => IsDown(input) ? 1f : 0f;
 
-    public override bool IsDown(Input input) => input.IsButtonDown(Code.GamepadButton);
+    public bool IsUp(Input input) => input.IsButtonUp(_code.GamepadButton);
 
-    public override bool IsReleased(Input input) => input.IsButtonReleased(Code.GamepadButton);
+    public bool IsPressed(Input input) => input.IsButtonPressed(_code.GamepadButton);
+
+    public bool IsDown(Input input) => input.IsButtonDown(_code.GamepadButton);
+
+    public bool IsReleased(Input input) => input.IsButtonReleased(_code.GamepadButton);
 }

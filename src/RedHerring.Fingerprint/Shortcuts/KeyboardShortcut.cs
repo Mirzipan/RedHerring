@@ -1,18 +1,21 @@
 ﻿namespace RedHerring.Fingerprint.Shortcuts;
 
-public class KeyboardShortcut : AShortcut
+public sealed class KeyboardShortcut : Shortcut
 {
-    public KeyboardShortcut(Key key) : base(InputSource.Keyboard, (int)key)
-    {
-    }
+    private InputCode _code;
+    public Key Key => _code.Key;
+    
+    public KeyboardShortcut(Key key) => _code = new InputCode(key);
 
-    public override float GetValue(Input input) => IsDown(input) ? 1f : 0f;
+    public void InputCodes(IList<InputCode> result) => result.Add(_code);
 
-    public override bool IsUp(Input input) => input.IsKeyUp(Code.Key);
+    public float Value(Input input) => IsDown(input) ? 1f : 0f;
 
-    public override bool IsPressed(Input input) => input.IsKeyPressed(Code.Key);
+    public bool IsUp(Input input) => input.IsKeyUp(_code.Key);
 
-    public override bool IsDown(Input input) => input.IsKeyDown(Code.Key);
+    public bool IsPressed(Input input) => input.IsKeyPressed(_code.Key);
 
-    public override bool IsReleased(Input input) => input.IsKeyReleased(Code.Key);
+    public bool IsDown(Input input) => input.IsKeyDown(_code.Key);
+
+    public bool IsReleased(Input input) => input.IsKeyReleased(_code.Key);
 }

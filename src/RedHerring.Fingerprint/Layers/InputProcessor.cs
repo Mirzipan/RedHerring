@@ -16,7 +16,7 @@ public class InputProcessor
     private readonly List<UnconsumedInput> _unconsumed = new();
     private readonly List<TriggeredInput> _queue = new();
 
-    private readonly Dictionary<IShortcut, InputState> _triggeredShortcuts = new();
+    private readonly Dictionary<Shortcut, InputState> _triggeredShortcuts = new();
 
     private readonly Input _input;
     private readonly InputLayers _layers;
@@ -68,7 +68,7 @@ public class InputProcessor
         foreach (var pair in _triggeredShortcuts)
         {
             var actions = bindings.ActionsForShortcut(pair.Key);
-            QueueInput(actions!, pair.Value, pair.Key.GetValue(_input));
+            QueueInput(actions!, pair.Value, pair.Key.Value(_input));
             foreach (string action in actions!)
             {
                 _actionsState.Add(action, pair.Value);
@@ -79,7 +79,7 @@ public class InputProcessor
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private InputState GetShortcutState(IShortcut shortcut)
+    private InputState GetShortcutState(Shortcut shortcut)
     {
         if (shortcut.IsPressed(_input))
         {

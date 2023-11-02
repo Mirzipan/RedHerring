@@ -5,9 +5,9 @@ namespace RedHerring.Fingerprint.Shortcuts;
 public class ShortcutBindings : Collection<ShortcutBinding>
 {
     private readonly Dictionary<string, List<ShortcutBinding>> _actionsToShortcuts = new();
-    private readonly Dictionary<IShortcut, HashSet<string>> _shortcutsToActions = new();
+    private readonly Dictionary<Shortcut, HashSet<string>> _shortcutsToActions = new();
 
-    public IReadOnlyCollection<string>? ActionsForShortcut(IShortcut shortcut)
+    public IReadOnlyCollection<string>? ActionsForShortcut(Shortcut shortcut)
     {
         return _shortcutsToActions.TryGetValue(shortcut, out var actions) ? actions : null;
     }

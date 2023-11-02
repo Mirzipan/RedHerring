@@ -3,7 +3,7 @@ using RedHerring.Alexandria.Extensions;
 
 namespace RedHerring.Fingerprint.Shortcuts;
 
-public class CompositeShortcut : Collection<IShortcut>, IShortcut
+public class CompositeShortcut : Collection<Shortcut>, Shortcut
 {
     public CompositeShortcutEvaluation Evaluation;
     
@@ -12,7 +12,7 @@ public class CompositeShortcut : Collection<IShortcut>, IShortcut
         Evaluation = evaluation;
     }
 
-    protected override void InsertItem(int index, IShortcut? item)
+    protected override void InsertItem(int index, Shortcut? item)
     {
         if (item is null)
         {
@@ -25,7 +25,7 @@ public class CompositeShortcut : Collection<IShortcut>, IShortcut
         }
     }
 
-    protected override void SetItem(int index, IShortcut? item)
+    protected override void SetItem(int index, Shortcut? item)
     {
         if (item is null)
         {
@@ -38,26 +38,26 @@ public class CompositeShortcut : Collection<IShortcut>, IShortcut
         }
     }
 
-    public static CompositeShortcut operator +(CompositeShortcut lhs, IShortcut rhs)
+    public static CompositeShortcut operator +(CompositeShortcut lhs, Shortcut rhs)
     {
         lhs.Add(rhs);
         return lhs;
     }
 
-    public void GetInputCodes(IList<InputCode> result)
+    public void InputCodes(IList<InputCode> result)
     {
         foreach (var entry in this)
         {
-            entry.GetInputCodes(result);
+            entry.InputCodes(result);
         }
     }
 
-    public float GetValue(Input input)
+    public float Value(Input input)
     {
         return Evaluation switch
         {
-            CompositeShortcutEvaluation.Conjunction => GetConjunctValue(input),
-            CompositeShortcutEvaluation.Disjunction => GetDisjunctValue(input),
+            CompositeShortcutEvaluation.Conjunction => ConjunctValue(input),
+            CompositeShortcutEvaluation.Disjunction => DisjunctValue(input),
             _ => 0f,
         };
     }
@@ -110,12 +110,12 @@ public class CompositeShortcut : Collection<IShortcut>, IShortcut
         };
     }
 
-    private float GetConjunctValue(Input input)
+    private float ConjunctValue(Input input)
     {
         float result = 0f;
         foreach (var entry in Items)
         {
-            float value = entry.GetValue(input);
+            float value = entry.Value(input);
             if (value.Approximately(0f))
             {
                 return 0f;
@@ -127,12 +127,12 @@ public class CompositeShortcut : Collection<IShortcut>, IShortcut
         return result;
     }
 
-    private float GetDisjunctValue(Input input)
+    private float DisjunctValue(Input input)
     {
         float result = 0f;
         foreach (var entry in Items)
         {
-            float value = entry.GetValue(input);
+            float value = entry.Value(input);
             if (!value.Approximately(0f))
             {
                 result = value;

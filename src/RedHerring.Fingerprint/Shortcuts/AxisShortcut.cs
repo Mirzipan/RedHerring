@@ -1,30 +1,30 @@
 ﻿namespace RedHerring.Fingerprint.Shortcuts;
 
-public class AxisShortcut : IShortcut
+public class AxisShortcut : Shortcut
 {
     public AxisShortcut() : this (new CompositeShortcut(), new CompositeShortcut())
     {
     }
 
-    public AxisShortcut(IShortcut? negativeShortcut, IShortcut? positiveShortcut)
+    public AxisShortcut(Shortcut? negativeShortcut, Shortcut? positiveShortcut)
     {
         NegativeShortcut = negativeShortcut;
         PositiveShortcut = positiveShortcut;
     }
     
-    public IShortcut? NegativeShortcut { get; set; }
-    public IShortcut? PositiveShortcut { get; set; }
+    public Shortcut? NegativeShortcut { get; set; }
+    public Shortcut? PositiveShortcut { get; set; }
 
-    public void GetInputCodes(IList<InputCode> result)
+    public void InputCodes(IList<InputCode> result)
     {
-        NegativeShortcut?.GetInputCodes(result);
-        PositiveShortcut?.GetInputCodes(result);
+        NegativeShortcut?.InputCodes(result);
+        PositiveShortcut?.InputCodes(result);
     }
 
-    public float GetValue(Input input)
+    public float Value(Input input)
     {
-        float negative = NegativeShortcut?.GetValue(input) ?? 0f;
-        float positive = PositiveShortcut?.GetValue(input) ?? 0f;
+        float negative = NegativeShortcut?.Value(input) ?? 0f;
+        float positive = PositiveShortcut?.Value(input) ?? 0f;
         return positive - negative;
     }
 

@@ -1,18 +1,21 @@
 ﻿namespace RedHerring.Fingerprint.Shortcuts;
 
-public class MouseButtonShortcut : AShortcut
+public sealed class MouseButtonShortcut : Shortcut
 {
-    public MouseButtonShortcut(MouseButton button) : base(InputSource.MouseButton, (int)button)
-    {
-    }
+    private InputCode _code;
+    public MouseButton Button => _code.MouseButton;
+    
+    public MouseButtonShortcut(MouseButton button) => _code = new InputCode(button);
 
-    public override float GetValue(Input input) => IsDown(input) ? 1f : 0f;
+    public void InputCodes(IList<InputCode> result) => result.Add(_code);
 
-    public override bool IsUp(Input input) => input.IsButtonUp(Code.MouseButton);
+    public float Value(Input input) => IsDown(input) ? 1f : 0f;
 
-    public override bool IsPressed(Input input) => input.IsButtonPressed(Code.MouseButton);
+    public bool IsUp(Input input) => input.IsButtonUp(_code.MouseButton);
 
-    public override bool IsDown(Input input) => input.IsButtonDown(Code.MouseButton);
+    public bool IsPressed(Input input) => input.IsButtonPressed(_code.MouseButton);
 
-    public override bool IsReleased(Input input) => input.IsButtonReleased(Code.MouseButton);
+    public bool IsDown(Input input) => input.IsButtonDown(_code.MouseButton);
+
+    public bool IsReleased(Input input) => input.IsButtonReleased(_code.MouseButton);
 }
