@@ -4,7 +4,7 @@ using RedHerring.Fingerprint.States;
 
 namespace RedHerring.Fingerprint.Layers;
 
-public class InputProcessor
+internal class InputProcessor
 {
     private record struct TriggeredInput(InputState State, float Value)
     {

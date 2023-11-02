@@ -59,7 +59,7 @@ internal class ImInputSnapshot : InputSnapshot
         TmpKeys.Clear();
         var modifiers = Modifiers(keyboard);
         
-        keyboard.GetKeysPressed(TmpKeys);
+        keyboard.KeysPressed(TmpKeys);
         foreach (var key in TmpKeys)
         {
             _keyEvents.Add(new KeyEvent(Convert(key), true, modifiers));
@@ -71,7 +71,7 @@ internal class ImInputSnapshot : InputSnapshot
         TmpKeys.Clear();
         var modifiers = Modifiers(keyboard);
         
-        keyboard.GetKeysReleased(TmpKeys);
+        keyboard.KeysReleased(TmpKeys);
         foreach (var key in TmpKeys)
         {
             _keyEvents.Add(new KeyEvent(Convert(key), true, modifiers));
@@ -80,7 +80,7 @@ internal class ImInputSnapshot : InputSnapshot
 
     private void UpdateChars(KeyboardState keyboard)
     {
-        keyboard.GetChars(_keyCharPresses);
+        keyboard.Chars(_keyCharPresses);
     }
 
     private ModifierKeys Modifiers(KeyboardState keyboard)

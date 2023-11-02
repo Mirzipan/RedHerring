@@ -126,17 +126,17 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
         _debugDraw = !_debugDraw;
     }
 
-    private void OnKeyEvent(KeyEvent evt)
+    private void OnKeyEvent(KeyChanged evt)
     {
         Gui.GetIO().AddKeyEvent(Convert.ToImGuiKey(evt.Key), evt.IsDown);
     }
 
-    private void OnMouseButtonEvent(MouseButtonEvent evt)
+    private void OnMouseButtonEvent(MouseButtonChanged evt)
     {
         Gui.GetIO().AddMouseButtonEvent((int)evt.Button,  evt.IsDown);
     }
 
-    private void OnMouseAxisEvent(MouseAxisEvent evt)
+    private void OnMouseAxisEvent(MouseAxisMoved evt)
     {
         switch (evt.Axis)
         {
@@ -161,12 +161,12 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
         }
     }
 
-    private void OnGamepadButtonEvent(GamepadButtonEvent evt)
+    private void OnGamepadButtonEvent(GamepadButtonChanged evt)
     {
         Gui.GetIO().AddKeyEvent(Convert.ToImGuiKey(evt.Button),  evt.IsDown);
     }
 
-    private void OnGamepadAxisEvent(GamepadAxisEvent evt)
+    private void OnGamepadAxisEvent(GamepadAxisMoved evt)
     {
         switch (evt.Axis)
         {

@@ -7,5 +7,5 @@ public enum Modifiers
     Alt = 1 << 0,
     Control = 1 << 1,
     Shift = 1 << 2,
-    Meta = 1 << 3,
+    Super = 1 << 3,
 }

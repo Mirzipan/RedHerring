@@ -1,4 +1,7 @@
 ﻿using System.Collections;
+using System.Runtime.CompilerServices;
+using RedHerring.Alexandria.Extensions;
+using RedHerring.Fingerprint.Events;
 using Silk.NET.Input;
 using SilkKey = Silk.NET.Input.Key;
 
@@ -15,12 +18,16 @@ public class KeyboardState : IDisposable
     private readonly BitArray _down = new(BufferLength);
     private readonly BitArray _pressed = new(BufferLength);
     private readonly BitArray _released = new(BufferLength);
+    private Modifiers _modifiers = Modifiers.None;
 
     private List<char> _chars = new();
 
     private IKeyboard _device;
     public IKeyboard Device => _device;
     public string Name => _device.Name;
+    public Modifiers Modifiers;
+
+    public event Action<KeyChanged>? KeyChange;
 
     #region Lifecycle
 
@@ -59,12 +66,13 @@ public class KeyboardState : IDisposable
     public bool IsKeyReleased(Key key) => _released.Get((int)key);
     public bool IsAnyKeyDown() => IsBufferEmpty();
     
-    public void GetKeysPressed(IList<Key> keys) => GetKeys(keys, _pressed);
+    public void KeysPressed(IList<Key> keys) => Keys(keys, _pressed);
     
-    public void GetKeysDown(IList<Key> keys) => GetKeys(keys, _down);
+    public void KeysDown(IList<Key> keys) => Keys(keys, _down);
 
-    public void GetKeysReleased(IList<Key> keys) => GetKeys(keys, _released);
-    public void GetChars(IList<char> chars)
+    public void KeysReleased(IList<Key> keys) => Keys(keys, _released);
+    
+    public void Chars(IList<char> chars)
     {
         foreach (char @char in _chars)
         {
@@ -76,7 +84,7 @@ public class KeyboardState : IDisposable
 
     #region Private
 
-    private void GetKeys(IList<Key> keys, BitArray array)
+    private void Keys(IList<Key> keys, BitArray array)
     {
         for (int i = 0; i < BufferLength; i++)
         {
@@ -231,6 +239,28 @@ public class KeyboardState : IDisposable
         var key = ConvertKey(silkKey);
         _pressed[(int)key] = true;
         _down[(int)key] = true;
+
+        if (key is Key.AltLeft or Key.AltRight)
+        {
+            _modifiers |= Modifiers.Alt;
+        }
+
+        if (key is Key.ControlLeft or Key.ControlRight)
+        {
+            _modifiers |= Modifiers.Control;
+        }
+
+        if (key is Key.ShiftLeft or Key.ShiftRight)
+        {
+            _modifiers |= Modifiers.Shift;
+        }
+
+        if (key is Key.SuperLeft or Key.SuperRight)
+        {
+            _modifiers |= Modifiers.Super;
+        }
+        
+        KeyChange.SafeInvoke(new KeyChanged(key, _modifiers, true));
         
         DebugPrint?.Invoke($"`{keyboard.Name}` key `{key}` pressed (keyCode = {keyCode}).");
     }
@@ -240,6 +270,28 @@ public class KeyboardState : IDisposable
         var key = ConvertKey(silkKey);
         _down[(int)key] = false;
         _released[(int)key] = true;
+        
+        if (key is Key.AltLeft or Key.AltRight)
+        {
+            _modifiers &= ~Modifiers.Alt;
+        }
+
+        if (key is Key.ControlLeft or Key.ControlRight)
+        {
+            _modifiers &= ~Modifiers.Control;
+        }
+
+        if (key is Key.ShiftLeft or Key.ShiftRight)
+        {
+            _modifiers &= ~Modifiers.Shift;
+        }
+
+        if (key is Key.SuperLeft or Key.SuperRight)
+        {
+            _modifiers &= ~Modifiers.Super;
+        }
+        
+        KeyChange.SafeInvoke(new KeyChanged(key, _modifiers, false));
         
         DebugPrint?.Invoke($"`{keyboard.Name}` key `{key}` released (keyCode = {keyCode}).");
     }

@@ -32,11 +32,11 @@ public partial class Input: IInput, IDisposable
     public ShortcutBindings? Bindings { get; set; }
     public InputLayers Layers { get; }
     
-    public event Action<KeyEvent>? KeyEvent;
-    public event Action<MouseButtonEvent>? MouseButtonEvent;
-    public event Action<MouseAxisEvent>? MouseAxisEvent;
-    public event Action<GamepadButtonEvent>? GamepadButtonEvent;
-    public event Action<GamepadAxisEvent>? GamepadAxisEvent;
+    public event Action<KeyChanged>? KeyEvent;
+    public event Action<MouseButtonChanged>? MouseButtonEvent;
+    public event Action<MouseAxisMoved>? MouseAxisEvent;
+    public event Action<GamepadButtonChanged>? GamepadButtonEvent;
+    public event Action<GamepadAxisMoved>? GamepadAxisEvent;
 
     #region Lifecycle
 

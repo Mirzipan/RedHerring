@@ -11,7 +11,7 @@ public partial class Input
     public bool IsKeyDown(Key key) => _keyboardState?.IsKeyDown(key) ?? false;
     public bool IsKeyReleased(Key key) => _keyboardState?.IsKeyReleased(key) ?? false;
     public bool IsAnyKeyDown() => _keyboardState?.IsAnyKeyDown() ?? false;
-    public void KeysDown(IList<Key> keys) => _keyboardState?.GetKeysDown(keys);
+    public void KeysDown(IList<Key> keys) => _keyboardState?.KeysDown(keys);
     public bool IsButtonUp(MouseButton button) => _mouseState?.IsButtonUp(button) ?? true;
     public bool IsButtonPressed(MouseButton button) => _mouseState?.IsButtonPressed(button) ?? false;
     public bool IsButtonDown(MouseButton button) => _mouseState?.IsButtonDown(button) ?? false;
