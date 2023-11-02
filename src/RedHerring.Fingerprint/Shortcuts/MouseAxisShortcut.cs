@@ -6,7 +6,7 @@ public class MouseAxisShortcut : AShortcut
     {
     }
 
-    public override float GetValue(Input input) => input.GetAxis(Code.MouseAxis);
+    public override float GetValue(Input input) => input.Axis(Code.MouseAxis);
 
     public override bool IsUp(Input input) => false;
 

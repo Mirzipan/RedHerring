@@ -13,10 +13,10 @@ public interface IInput
     void EnableDebug();
     void DisableDebug();
     
-    IKeyboardState? Keyboard { get; }
-    IMouseState? Mouse { get; }
-    IGamepadState? Gamepad { get; }
-    IActionState Actions { get; }
+    KeyboardState? Keyboard { get; }
+    MouseState? Mouse { get; }
+    GamepadState? Gamepad { get; }
+    ActionsState Actions { get; }
     
     Vector2 MousePosition { get; }
     Vector2 MouseDelta { get; }
@@ -35,29 +35,29 @@ public interface IInput
     bool IsKeyDown(Key key);
     bool IsKeyReleased(Key key);
     bool IsAnyKeyDown();
-    void GetKeysDown(IList<Key> keys);
+    void KeysDown(IList<Key> keys);
     
     bool IsButtonUp(MouseButton button);
     bool IsButtonPressed(MouseButton button);
     bool IsButtonDown(MouseButton button);
     bool IsButtonReleased(MouseButton button);
     bool IsAnyMouseButtonDown();
-    void GetButtonsDown(IList<MouseButton> buttons);
+    void ButtonsDown(IList<MouseButton> buttons);
     bool IsMouseMoved(MouseAxis axis);
-    float GetAxis(MouseAxis axis);
+    float Axis(MouseAxis axis);
     
     bool IsButtonUp(GamepadButton button);
     bool IsButtonPressed(GamepadButton button);
     bool IsButtonDown(GamepadButton button);
     bool IsButtonReleased(GamepadButton button);
     bool IsAnyGamepadButtonDown();
-    void GetButtonsDown(IList<GamepadButton> buttons);
-    float GetAxis(GamepadAxis axis);
+    void ButtonsDown(IList<GamepadButton> buttons);
+    float Axis(GamepadAxis axis);
 
     bool IsActionUp(string action);
     bool IsActionPressed(string action);
     bool IsActionDown(string action);
     bool IsActionReleased(string action);
     bool IsAnyActionDown();
-    void GetActionsDown(IList<string> actions);
+    void ActionsDown(IList<string> actions);
 }

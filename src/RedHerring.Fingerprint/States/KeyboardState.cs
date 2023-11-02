@@ -4,7 +4,7 @@ using SilkKey = Silk.NET.Input.Key;
 
 namespace RedHerring.Fingerprint.States;
 
-internal class KeyboardState : IInputSource, IKeyboardState, IDisposable
+public class KeyboardState : IDisposable
 {
     private const int BufferLength = 512;
     private const int BitsPerByte = 8;
@@ -17,23 +17,20 @@ internal class KeyboardState : IInputSource, IKeyboardState, IDisposable
     private readonly BitArray _released = new(BufferLength);
 
     private List<char> _chars = new();
-    
-    private IKeyboard _keyboard;
 
-    public string Name => _keyboard.Name;
-    public int Priority { get; set; }
-    IInputDevice IInputSource.Device => _keyboard;
-    public IKeyboard Device => _keyboard;
+    private IKeyboard _device;
+    public IKeyboard Device => _device;
+    public string Name => _device.Name;
 
     #region Lifecycle
 
-    public KeyboardState(IKeyboard keyboard)
+    internal KeyboardState(IKeyboard device)
     {
-        _keyboard = keyboard;
+        _device = device;
         
-        _keyboard.KeyDown += OnKeyDown;
-        _keyboard.KeyUp += OnKeyUp;
-        _keyboard.KeyChar += OnChar;
+        _device.KeyDown += OnKeyDown;
+        _device.KeyUp += OnKeyUp;
+        _device.KeyChar += OnChar;
     }
 
     public void Reset()
@@ -46,10 +43,10 @@ internal class KeyboardState : IInputSource, IKeyboardState, IDisposable
 
     public void Dispose()
     {
-        _keyboard.KeyDown -= OnKeyDown;
-        _keyboard.KeyUp -= OnKeyUp;
+        _device.KeyDown -= OnKeyDown;
+        _device.KeyUp -= OnKeyUp;
 
-        _keyboard = null!;
+        _device = null!;
     }
 
     #endregion Lifecycle

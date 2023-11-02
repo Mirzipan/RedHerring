@@ -5,7 +5,7 @@ using SilkButton = Silk.NET.Input.ButtonName;
 
 namespace RedHerring.Fingerprint.States;
 
-public class GamepadState : IGamepadState, IInputSource, IDisposable
+public class GamepadState : IDisposable
 {
     internal static Action<string>? DebugPrint;
     
@@ -21,19 +21,17 @@ public class GamepadState : IGamepadState, IInputSource, IDisposable
     private float _leftTrigger;
     private float _rightTrigger;
     
+    public IGamepad Gamepad => _gamepad;
     public string Name => _gamepad.Name;
-    public IInputDevice Device => _gamepad;
 
     public Vector2 LeftThumb => _leftThumb;
     public Vector2 RightThumb => _rightThumb;
     public float LeftTrigger => _leftTrigger;
     public float RightTrigger => _rightTrigger;
 
-    public int Priority { get; set; }
-
     #region Lifecycle
 
-    public GamepadState(IGamepad gamepad)
+    internal GamepadState(IGamepad gamepad)
     {
         _gamepad = gamepad;
         
@@ -68,7 +66,7 @@ public class GamepadState : IGamepadState, IInputSource, IDisposable
     public bool IsButtonDown(GamepadButton button) => _down.Get((int)button);
     public bool IsButtonReleased(GamepadButton button) => _released.Get((int)button);
     public bool IsAnyButtonDown() => _down != BitMask16.Empty;
-    public void GetButtonsDown(IList<GamepadButton> buttons)
+    public void ButtonsDown(IList<GamepadButton> buttons)
     {
         for (int i = 0; i < BitMask16.Count; i++)
         {
@@ -79,7 +77,7 @@ public class GamepadState : IGamepadState, IInputSource, IDisposable
         }
     }
     
-    public float GetAxis(GamepadAxis axis)
+    public float Axis(GamepadAxis axis)
     {
         return axis switch
         {

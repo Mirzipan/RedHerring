@@ -24,10 +24,10 @@ public partial class Input: IInput, IDisposable
 
     public bool IsDebugging => _isDebugging;
 
-    public IKeyboardState? Keyboard => _keyboardState;
-    public IMouseState? Mouse => _mouseState;
-    public IGamepadState? Gamepad => _gamepadState;
-    public IActionState Actions => _actionsState;
+    public KeyboardState? Keyboard => _keyboardState;
+    public MouseState? Mouse => _mouseState;
+    public GamepadState? Gamepad => _gamepadState;
+    public ActionsState Actions => _actionsState;
 
     public ShortcutBindings? Bindings { get; set; }
     public InputLayers Layers { get; }
@@ -48,7 +48,7 @@ public partial class Input: IInput, IDisposable
         _inputContext.ConnectionChanged += OnConnectionChanged;
 
         Layers = new InputLayers();
-        _actionsState = new ActionsState("actions");
+        _actionsState = new ActionsState();
         _processor = new InputProcessor(this, _actionsState);
 
         Bindings = new ShortcutBindings();
@@ -122,7 +122,7 @@ public partial class Input: IInput, IDisposable
 
     private void SetMouse(IMouse? mouse)
     {
-        if (_mouseState?.Device == mouse && mouse is not null)
+        if (_mouseState?.Mouse == mouse && mouse is not null)
         {
             return;
         }
@@ -138,7 +138,7 @@ public partial class Input: IInput, IDisposable
 
     private void SetGamepad(IGamepad? gamepad)
     {
-        if (_gamepadState?.Device == gamepad && gamepad is not null)
+        if (_gamepadState?.Gamepad == gamepad && gamepad is not null)
         {
             return;
         }

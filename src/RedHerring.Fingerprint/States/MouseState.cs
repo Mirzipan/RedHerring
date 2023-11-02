@@ -5,7 +5,7 @@ using SilkButton = Silk.NET.Input.MouseButton;
 
 namespace RedHerring.Fingerprint.States;
 
-internal class MouseState : IMouseState, IInputSource, IDisposable
+public class MouseState : IDisposable
 {
     internal static Action<string>? DebugPrint;
     
@@ -23,12 +23,12 @@ internal class MouseState : IMouseState, IInputSource, IDisposable
 
     private IMouse _mouse;
 
+    public IMouse Mouse => _mouse;
     public string Name => _mouse.Name;
-    public IInputDevice Device => _mouse;
 
     public int Priority { get; set; }
 
-    public MouseState(IMouse mouse)
+    internal MouseState(IMouse mouse)
     {
         _mouse = mouse;
         
@@ -42,7 +42,7 @@ internal class MouseState : IMouseState, IInputSource, IDisposable
         _mouse.Scroll += OnMouseScroll;
     }
     
-    public void Reset()
+    internal void Reset()
     {
         _pressed.Set(false);
         _released.Set(false);
@@ -50,7 +50,7 @@ internal class MouseState : IMouseState, IInputSource, IDisposable
         _delta = Vector2.Zero;
         _scrollWheel = Vector2.Zero;
     }
-    
+
     public void Dispose()
     {
         _mouse.MouseMove -= OnMouseMove;
@@ -68,7 +68,7 @@ internal class MouseState : IMouseState, IInputSource, IDisposable
     public bool IsButtonDown(MouseButton button) => _down.Get((int)button);
     public bool IsButtonReleased(MouseButton button) => _released.Get((int)button);
     public bool IsAnyButtonDown() => _down != BitMask16.Empty;
-    public void GetButtonsDown(IList<MouseButton> buttons)
+    public void ButtonsDown(IList<MouseButton> buttons)
     {
         for (int i = 0; i < BitMask16.Count; i++)
         {
@@ -95,7 +95,7 @@ internal class MouseState : IMouseState, IInputSource, IDisposable
         };
     }
 
-    public float GetAxis(MouseAxis axis)
+    public float Axis(MouseAxis axis)
     {
         return axis switch {
             MouseAxis.None => 0,

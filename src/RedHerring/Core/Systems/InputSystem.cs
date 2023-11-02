@@ -19,8 +19,8 @@ public sealed class InputSystem : AnEngineSystem, IUpdatable
     public int UpdateOrder => -1_000_000;
 
     public IInput Input => _input;
-    public IKeyboardState? Keyboard => _input.Keyboard;
-    public IMouseState? Mouse => _input.Mouse;
+    public KeyboardState? Keyboard => _input.Keyboard;
+    public MouseState? Mouse => _input.Mouse;
 
     #region Lifecycle
 
@@ -42,16 +42,16 @@ public sealed class InputSystem : AnEngineSystem, IUpdatable
     public bool IsKeyDown(Key key) => _input.IsKeyDown(key);
     public bool IsKeyReleased(Key key) => _input.IsKeyReleased(key);
     public bool IsAnyKeyDown() => _input.IsAnyKeyDown();
-    public void GetKeysDown(IList<Key> keys) => _input.GetKeysDown(keys);
+    public void GetKeysDown(IList<Key> keys) => _input.KeysDown(keys);
     
     public bool IsButtonUp(MouseButton button) => _input.IsButtonUp(button);
     public bool IsButtonPressed(MouseButton button) => _input.IsButtonPressed(button);
     public bool IsButtonDown(MouseButton button) => _input.IsButtonDown(button);
     public bool IsButtonReleased(MouseButton button) => _input.IsButtonReleased(button);
     public bool IsAnyMouseButtonDown() => _input.IsAnyMouseButtonDown();
-    public void GetButtonsDown(IList<MouseButton> buttons) => _input.GetButtonsDown(buttons);
+    public void GetButtonsDown(IList<MouseButton> buttons) => _input.ButtonsDown(buttons);
     public bool IsMouseMoved(MouseAxis axis) => _input.IsMouseMoved(axis);
-    public float GetAxis(MouseAxis axis) => _input.GetAxis(axis);
+    public float GetAxis(MouseAxis axis) => _input.Axis(axis);
     public Vector2 MousePosition => _input.MousePosition;
     public Vector2 MouseDelta => _input.MouseDelta;
     public float MouseWheelDelta => _input.MouseWheelDelta;
@@ -61,8 +61,8 @@ public sealed class InputSystem : AnEngineSystem, IUpdatable
     public bool IsButtonDown(GamepadButton button) => _input.IsButtonDown(button);
     public bool IsButtonReleased(GamepadButton button) => _input.IsButtonReleased(button);
     public bool IsAnyButtonDown() => _input.IsAnyGamepadButtonDown();
-    public void GetButtonsDown(IList<GamepadButton> buttons) => _input.GetButtonsDown(buttons);
-    public float GetAxis(GamepadAxis axis) => _input.GetAxis(axis);
+    public void GetButtonsDown(IList<GamepadButton> buttons) => _input.ButtonsDown(buttons);
+    public float GetAxis(GamepadAxis axis) => _input.Axis(axis);
 
     #endregion Queries
 

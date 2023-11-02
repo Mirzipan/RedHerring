@@ -1,17 +1,13 @@
 ﻿namespace RedHerring.Fingerprint.States;
 
-public class ActionsState : IActionState
+public class ActionsState
 {
     private readonly Dictionary<string, InputState> _states = new();
 
-    public string Name { get; }
-    public int Priority { get; set; }
-
-    public ActionsState(string name)
+    internal ActionsState()
     {
-        Name = name;
     }
-
+    
     public void Reset()
     {
         _states.Clear();
@@ -38,7 +34,7 @@ public class ActionsState : IActionState
 
     public bool IsAnyActionDown() => _states.Count > 0;
 
-    public void GetActionsDown(IList<string> actions)
+    public void ActionsDown(IList<string> actions)
     {
         foreach (var pair in _states)
         {

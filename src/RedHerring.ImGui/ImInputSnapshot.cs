@@ -54,7 +54,7 @@ internal class ImInputSnapshot : InputSnapshot
         }
     }
 
-    private void CreatePressedKeyEvents(IKeyboardState keyboard)
+    private void CreatePressedKeyEvents(KeyboardState keyboard)
     {
         TmpKeys.Clear();
         var modifiers = Modifiers(keyboard);
@@ -66,7 +66,7 @@ internal class ImInputSnapshot : InputSnapshot
         }
     }
 
-    private void CreateReleasedKeyEvents(IKeyboardState keyboard)
+    private void CreateReleasedKeyEvents(KeyboardState keyboard)
     {
         TmpKeys.Clear();
         var modifiers = Modifiers(keyboard);
@@ -78,12 +78,12 @@ internal class ImInputSnapshot : InputSnapshot
         }
     }
 
-    private void UpdateChars(IKeyboardState keyboard)
+    private void UpdateChars(KeyboardState keyboard)
     {
         keyboard.GetChars(_keyCharPresses);
     }
 
-    private ModifierKeys Modifiers(IKeyboardState keyboard)
+    private ModifierKeys Modifiers(KeyboardState keyboard)
     {
         var result = ModifierKeys.None;
 
@@ -128,7 +128,7 @@ internal class ImInputSnapshot : InputSnapshot
         }
     }
 
-    private void CreateMouseEvents(IMouseState mouse)
+    private void CreateMouseEvents(MouseState mouse)
     {
         const int maxButton = (int)MouseButton.Button5;
         for (int i = 0; i <= maxButton; i++)
@@ -145,11 +145,11 @@ internal class ImInputSnapshot : InputSnapshot
         }
     }
 
-    private void UpdateMouseButtons(IMouseState mouse)
+    private void UpdateMouseButtons(MouseState mouse)
     {
         TmpButtons.Clear();
 
-        mouse.GetButtonsDown(TmpButtons);
+        mouse.ButtonsDown(TmpButtons);
         foreach (var button in TmpButtons)
         {
             _mouseButtons[(int)button] = true;

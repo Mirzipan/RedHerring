@@ -6,7 +6,7 @@ public class GamepadAxisShortcut : AShortcut
     {
     }
 
-    public override float GetValue(Input input) => input.GetAxis(Code.GamepadAxis);
+    public override float GetValue(Input input) => input.Axis(Code.GamepadAxis);
 
     public override bool IsUp(Input input) => false;
 
