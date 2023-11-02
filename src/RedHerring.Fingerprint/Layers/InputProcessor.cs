@@ -124,28 +124,7 @@ internal class InputProcessor
                 continue;
             }
 
-            foreach (var entry in _unconsumed)
-            {
-                var shortcut = _queue[entry.Index];
-                if (shortcut.Consumed)
-                {
-                    continue;
-                }
-
-                if (!receiver.TryGetBinding(entry.Name, out var binding) || (binding.State & shortcut.State) == 0)
-                {
-                    continue;
-                }
-
-                var actionEvent = new ActionEvent(entry.Name, shortcut.State, shortcut.Value);
-                binding.Handler(ref actionEvent);
-                if (actionEvent.Consumed)
-                {
-                    shortcut.Consumed = true;
-                    _queue[entry.Index] = shortcut;
-                }
-            }
-
+            ConsumeInput(receiver);
             if (receiver.ConsumesAllInput)
             {
                 goto clear;
@@ -155,6 +134,32 @@ internal class InputProcessor
         clear:
         _unconsumed.Clear();
         _queue.Clear();
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ConsumeInput(InputReceiver receiver)
+    {
+        foreach (var entry in _unconsumed)
+        {
+            var shortcut = _queue[entry.Index];
+            if (shortcut.Consumed)
+            {
+                continue;
+            }
+
+            if (!receiver.TryGetBinding(entry.Name, out var binding) || (binding.State & shortcut.State) == 0)
+            {
+                continue;
+            }
+
+            var actionEvent = new ActionEvent(entry.Name, shortcut.State, shortcut.Value);
+            binding.Handler(ref actionEvent);
+            if (actionEvent.Consumed)
+            {
+                shortcut.Consumed = true;
+                _queue[entry.Index] = shortcut;
+            }
+        }
     }
 
     #endregion Private
