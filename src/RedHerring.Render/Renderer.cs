@@ -100,6 +100,7 @@ public class Renderer : ANamedDisposer
         _commandList.End();
         
         _graphicsDevice.SubmitCommands(_commandList);
+        _graphicsDevice.WaitForIdle();
         _graphicsDevice.SwapBuffers();
     }
 
