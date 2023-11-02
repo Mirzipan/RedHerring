@@ -11,14 +11,14 @@ namespace RedHerring.Core.Systems;
 public sealed class InputSystem : AnEngineSystem, IUpdatable
 {
     [Inject]
-    private IInput _input = null!;
+    private Input _input = null!;
     [Inject]
     private InputReceiver _receiver = null!;
 
     public bool IsEnabled => true;
     public int UpdateOrder => -1_000_000;
 
-    public IInput Input => _input;
+    public Input Input => _input;
     public KeyboardState? Keyboard => _input.Keyboard;
     public MouseState? Mouse => _input.Mouse;
 

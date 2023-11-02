@@ -52,7 +52,7 @@ public static class InjectionExtensions
 
     public static ContainerDescription AddInput(this ContainerDescription @this)
     {
-        @this.AddSingleton(typeof(Input), typeof(Input), typeof(IInput));
+        @this.AddSingleton(typeof(SilkInput), typeof(SilkInput), typeof(Input));
         @this.AddSingleton(typeof(InputReceiver));
         @this.AddSystem(new InputSystem());
         return @this;

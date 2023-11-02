@@ -8,7 +8,7 @@ public class InputReceiver
     private readonly Dictionary<string, ActionBinding> _bindings = new();
 
     [Inject]
-    private readonly IInput _input = null!;
+    private readonly Input _input = null!;
     
     public string? Name { get; set; }
     public OctoByte Layer { get; set; }

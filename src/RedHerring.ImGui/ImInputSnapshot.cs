@@ -30,7 +30,7 @@ internal class ImInputSnapshot : InputSnapshot
     public Vector2 MousePosition => _mousePosition;
     public float WheelDelta => _wheelDelta;
 
-    public void Update(IInput input)
+    public void Update(Input input)
     {
         UpdateMouse(input);
         UpdateKeyboard(input);
@@ -40,7 +40,7 @@ internal class ImInputSnapshot : InputSnapshot
 
     #region Keyboard
 
-    private void UpdateKeyboard(IInput input)
+    private void UpdateKeyboard(Input input)
     {
         _keyEvents.Clear();
         _keyCharPresses.Clear();
@@ -114,7 +114,7 @@ internal class ImInputSnapshot : InputSnapshot
 
     #region Mouse
 
-    private void UpdateMouse(IInput input)
+    private void UpdateMouse(Input input)
     {
         _mouseEvents.Clear();
         _mouseButtons = BitMask8.Empty;
@@ -156,7 +156,7 @@ internal class ImInputSnapshot : InputSnapshot
         }
     }
 
-    private void UpdateMouseDeltas(IInput input)
+    private void UpdateMouseDeltas(Input input)
     {
         _mousePosition = input.MousePosition;
         _wheelDelta = input.MouseWheelDelta;

@@ -2,7 +2,7 @@
 
 namespace RedHerring.Fingerprint;
 
-public partial class Input
+public partial class SilkInput
 {
     #region Queries
 
