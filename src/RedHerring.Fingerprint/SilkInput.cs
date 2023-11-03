@@ -33,13 +33,6 @@ public partial class SilkInput: Input, IDisposable
     public ShortcutBindings? Bindings { get; set; }
     public InputLayers Layers { get; }
     
-    public event Action<KeyChanged>? KeyChange;
-    public event Action<char>? KeyChar;
-    public event Action<MouseButtonChanged>? MouseButtonChange;
-    public event Action<MouseAxisMoved>? MouseAxisMove;
-    public event Action<GamepadButtonChanged>? GamepadButtonChange;
-    public event Action<GamepadAxisMoved>? GamepadAxisMove;
-
     #region Lifecycle
 
     public SilkInput(IView view)
@@ -115,8 +108,6 @@ public partial class SilkInput: Input, IDisposable
 
         if (_keyboardState is not null)
         {
-            _keyboardState.KeyChange -= OnKeyChanged;
-            _keyboardState.KeyChar -= OnKeyChar;
             _keyboardState.Dispose();
             _keyboardState = null;
         }
@@ -124,8 +115,6 @@ public partial class SilkInput: Input, IDisposable
         if (keyboard is not null)
         {
             _keyboardState = new KeyboardState(keyboard);
-            _keyboardState.KeyChange += OnKeyChanged;
-            _keyboardState.KeyChar += OnKeyChar;
         }
     }
 
@@ -138,8 +127,6 @@ public partial class SilkInput: Input, IDisposable
 
         if (_mouseState is not null)
         {
-            _mouseState.ButtonChange -= OnMouseButtonChanged;
-            _mouseState.AxisMove -= OnMouseAxisMoved;
             _mouseState.Dispose();
             _mouseState = null;
         }
@@ -147,8 +134,6 @@ public partial class SilkInput: Input, IDisposable
         if (mouse is not null)
         {
             _mouseState = new MouseState(mouse);
-            _mouseState.ButtonChange += OnMouseButtonChanged;
-            _mouseState.AxisMove += OnMouseAxisMoved;
         }
     }
 
@@ -161,8 +146,6 @@ public partial class SilkInput: Input, IDisposable
 
         if (_gamepadState is not null)
         {
-            _gamepadState.ButtonChange -= OnGamepadButtonChanged;
-            _gamepadState.AxisMove -= OnGamepadAxisMoved;
             _gamepadState.Dispose();
             _gamepadState = null;
         }
@@ -170,8 +153,6 @@ public partial class SilkInput: Input, IDisposable
         if (gamepad is not null)
         {
             _gamepadState = new GamepadState(gamepad);
-            _gamepadState.ButtonChange += OnGamepadButtonChanged;
-            _gamepadState.AxisMove += OnGamepadAxisMoved;
         }
     }
 
@@ -220,36 +201,6 @@ public partial class SilkInput: Input, IDisposable
                 FindGamepad(isConnected ? gamepad : null);
                 return;
         }
-    }
-
-    private void OnKeyChanged(KeyChanged evt)
-    {
-        KeyChange.SafeInvoke(evt);
-    }
-
-    private void OnKeyChar(char @char)
-    {
-        KeyChar.SafeInvoke(@char);
-    }
-
-    private void OnMouseButtonChanged(MouseButtonChanged evt)
-    {
-        MouseButtonChange.SafeInvoke(evt with { Modifiers = _keyboardState?.Modifiers ?? Modifiers.None });
-    }
-
-    private void OnMouseAxisMoved(MouseAxisMoved evt)
-    {
-        MouseAxisMove.SafeInvoke(evt);
-    }
-
-    private void OnGamepadButtonChanged(GamepadButtonChanged evt)
-    {
-        GamepadButtonChange.SafeInvoke(evt with { Modifiers = _keyboardState?.Modifiers ?? Modifiers.None });
-    }
-
-    private void OnGamepadAxisMoved(GamepadAxisMoved evt)
-    {
-        GamepadAxisMove.SafeInvoke(evt);
     }
 
     #endregion Bindings

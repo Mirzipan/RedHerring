@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using RedHerring.Fingerprint.Events;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Fingerprint.States;
@@ -30,12 +29,7 @@ public sealed class NullInput : Input
     public float MouseWheelDelta => 0f;
     public ShortcutBindings? Bindings { get; set; }
     public InputLayers Layers => _layers;
-    public event Action<KeyChanged>? KeyChange;
-    public event Action<char>? KeyChar;
-    public event Action<MouseButtonChanged>? MouseButtonChange;
-    public event Action<MouseAxisMoved>? MouseAxisMove;
-    public event Action<GamepadButtonChanged>? GamepadButtonChange;
-    public event Action<GamepadAxisMoved>? GamepadAxisMove;
+    
     public bool IsKeyUp(Key key) => true;
     public bool IsKeyPressed(Key key) => false;
     public bool IsKeyDown(Key key) => false;

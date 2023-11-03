@@ -13,7 +13,6 @@ namespace RedHerring.ImGui;
 internal class ImInputSnapshot : InputSnapshot
 {
     private static readonly List<MouseButton> TmpButtons = new();
-    private static readonly List<Key> TmpKeys = new();
     
     private readonly List<KeyEvent> _keyEvents = new();
     private readonly List<MouseEvent> _mouseEvents = new();
@@ -32,82 +31,46 @@ internal class ImInputSnapshot : InputSnapshot
 
     public void Update(Input input)
     {
+        Clear();
+        
         UpdateMouse(input);
         UpdateKeyboard(input);
     }
 
     public bool IsMouseDown(VMouseButton button) => _mouseButtons[(int)button];
 
+    private void Clear()
+    {
+        _keyEvents.Clear();
+        _keyCharPresses.Clear();
+        
+        _mouseEvents.Clear();
+        _mouseButtons = BitMask8.Empty;
+    }
+
     #region Keyboard
 
     private void UpdateKeyboard(Input input)
     {
-        _keyEvents.Clear();
-        _keyCharPresses.Clear();
-
         var keyboard = input.Keyboard;
         if (keyboard is not null)
         {
-            CreatePressedKeyEvents(keyboard);
-            CreateReleasedKeyEvents(keyboard);
-            UpdateChars(keyboard);
+            AppendKeyEvents(keyboard);
+            AppendCharacters(keyboard);
         }
     }
 
-    private void CreatePressedKeyEvents(KeyboardState keyboard)
+    private void AppendKeyEvents(KeyboardState keyboard)
     {
-        TmpKeys.Clear();
-        var modifiers = Modifiers(keyboard);
-        
-        keyboard.KeysPressed(TmpKeys);
-        foreach (var key in TmpKeys)
+        foreach (var evt in keyboard.KeysChanged)
         {
-            _keyEvents.Add(new KeyEvent(Convert(key), true, modifiers));
+            _keyEvents.Add(new KeyEvent(Convert(evt.Key), evt.IsDown, (ModifierKeys)evt.Modifiers));
         }
     }
 
-    private void CreateReleasedKeyEvents(KeyboardState keyboard)
-    {
-        TmpKeys.Clear();
-        var modifiers = Modifiers(keyboard);
-        
-        keyboard.KeysReleased(TmpKeys);
-        foreach (var key in TmpKeys)
-        {
-            _keyEvents.Add(new KeyEvent(Convert(key), true, modifiers));
-        }
-    }
-
-    private void UpdateChars(KeyboardState keyboard)
+    private void AppendCharacters(KeyboardState keyboard)
     {
         keyboard.Chars(_keyCharPresses);
-    }
-
-    private ModifierKeys Modifiers(KeyboardState keyboard)
-    {
-        var result = ModifierKeys.None;
-
-        if (keyboard.IsKeyDown(Key.ShiftLeft) || keyboard.IsKeyDown(Key.ShiftRight))
-        {
-            result |= ModifierKeys.Shift;
-        }
-
-        if (keyboard.IsKeyDown(Key.ControlLeft) || keyboard.IsKeyDown(Key.ControlRight))
-        {
-            result |= ModifierKeys.Control;
-        }
-
-        if (keyboard.IsKeyDown(Key.AltLeft) || keyboard.IsKeyDown(Key.AltRight))
-        {
-            result |= ModifierKeys.Alt;
-        }
-
-        if (keyboard.IsKeyDown(Key.SuperLeft) || keyboard.IsKeyDown(Key.SuperRight))
-        {
-            result |= ModifierKeys.Gui;
-        }
-
-        return result;
     }
 
     #endregion Keyboard
@@ -116,32 +79,20 @@ internal class ImInputSnapshot : InputSnapshot
 
     private void UpdateMouse(Input input)
     {
-        _mouseEvents.Clear();
-        _mouseButtons = BitMask8.Empty;
-
         var mouse = input.Mouse;
         if (mouse is not null)
         {
-            CreateMouseEvents(mouse);
+            AppendMouseEvents(mouse);
             UpdateMouseButtons(mouse);
             UpdateMouseDeltas(input);
         }
     }
 
-    private void CreateMouseEvents(MouseState mouse)
+    private void AppendMouseEvents(MouseState mouse)
     {
-        const int maxButton = (int)MouseButton.Button5;
-        for (int i = 0; i <= maxButton; i++)
+        foreach (var evt in mouse.ButtonsChanged)
         {
-            if (mouse.IsButtonPressed((MouseButton)i))
-            {
-                _mouseEvents.Add(new MouseEvent((VMouseButton)i, true));
-            }
-
-            if (mouse.IsButtonReleased((MouseButton)i))
-            {
-                _mouseEvents.Add(new MouseEvent((VMouseButton)i, false));
-            }
+            _mouseEvents.Add(new MouseEvent(Convert(evt.Button), evt.IsDown));
         }
     }
 
@@ -303,25 +254,23 @@ internal class ImInputSnapshot : InputSnapshot
         };
     }
 
-    private static MouseButton Convert(VMouseButton button)
+    private static VMouseButton Convert(MouseButton button)
     {
         return button switch
         {
-            VMouseButton.Left => MouseButton.Left,
-            VMouseButton.Middle => MouseButton.Middle,
-            VMouseButton.Right => MouseButton.Right,
-            VMouseButton.Button1 => MouseButton.Button4,
-            VMouseButton.Button2 => MouseButton.Button5,
-            VMouseButton.Button3 => MouseButton.Button6,
-            VMouseButton.Button4 => MouseButton.Button7,
-            VMouseButton.Button5 => MouseButton.Button8,
-            VMouseButton.Button6 => MouseButton.Button9,
-            VMouseButton.Button7 => MouseButton.Button10,
-            VMouseButton.Button8 => MouseButton.Button11,
-            VMouseButton.Button9 => MouseButton.Button12,
-            VMouseButton.LastButton => MouseButton.Button12,
-            _ => MouseButton.Unknown,
+            MouseButton.Left => VMouseButton.Left,
+            MouseButton.Middle => VMouseButton.Middle,
+            MouseButton.Right => VMouseButton.Right,
+            MouseButton.Button4 => VMouseButton.Button1,
+            MouseButton.Button5 => VMouseButton.Button2,
+            MouseButton.Button6 => VMouseButton.Button3,
+            MouseButton.Button7 => VMouseButton.Button4,
+            MouseButton.Button8 => VMouseButton.Button5,
+            MouseButton.Button9 => VMouseButton.Button6,
+            MouseButton.Button10 => VMouseButton.Button7,
+            MouseButton.Button11 => VMouseButton.Button8,
+            MouseButton.Button12 => VMouseButton.Button9,
+            _ => VMouseButton.Left,
         };
     }
-
 }

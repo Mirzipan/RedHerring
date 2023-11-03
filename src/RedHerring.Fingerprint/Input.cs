@@ -24,13 +24,6 @@ public interface Input
     ShortcutBindings? Bindings { get; set; }
     InputLayers Layers { get; }
 
-    event Action<KeyChanged> KeyChange;
-    event Action<char> KeyChar;
-    event Action<MouseButtonChanged> MouseButtonChange;
-    event Action<MouseAxisMoved> MouseAxisMove;
-    event Action<GamepadButtonChanged> GamepadButtonChange;
-    event Action<GamepadAxisMoved> GamepadAxisMove;
-
     bool IsKeyUp(Key key);
     bool IsKeyPressed(Key key);
     bool IsKeyDown(Key key);

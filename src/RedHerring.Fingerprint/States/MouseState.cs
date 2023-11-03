@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using RedHerring.Alexandria.Extensions;
 using RedHerring.Alexandria.Masks;
 using RedHerring.Fingerprint.Events;
 using Silk.NET.Input;
@@ -24,12 +23,11 @@ public class MouseState : IDisposable
     public Vector2 ScrollWheel => _scrollWheel;
 
     private IMouse _mouse;
+    private List<MouseButtonChanged> _buttonsChanged = new();
 
     public IMouse Mouse => _mouse;
     public string Name => _mouse.Name;
-
-    public event Action<MouseButtonChanged>? ButtonChange;
-    public event Action<MouseAxisMoved>? AxisMove;
+    public IEnumerable<MouseButtonChanged> ButtonsChanged => _buttonsChanged;
 
     #region Lifecycle
 
@@ -51,6 +49,7 @@ public class MouseState : IDisposable
     {
         _pressed.Set(false);
         _released.Set(false);
+        _buttonsChanged.Clear();
         
         _delta = Vector2.Zero;
         _scrollWheel = Vector2.Zero;
@@ -154,11 +153,6 @@ public class MouseState : IDisposable
         _delta += delta;
         _position = position;
         
-        AxisMove.SafeInvoke(new MouseAxisMoved(MouseAxis.Horizontal, _position.X));
-        AxisMove.SafeInvoke(new MouseAxisMoved(MouseAxis.Vertical, _position.Y));
-        AxisMove.SafeInvoke(new MouseAxisMoved(MouseAxis.HorizontalDelta, _position.X));
-        AxisMove.SafeInvoke(new MouseAxisMoved(MouseAxis.VerticalDelta, _position.Y));
-        
         DebugPrint?.Invoke($"`{mouse.Name}` moved to `{position}`.");
     }
 
@@ -168,7 +162,7 @@ public class MouseState : IDisposable
         _pressed[(int)button] = true;
         _down[(int)button] = true;
         
-        ButtonChange.SafeInvoke(new MouseButtonChanged(button, Modifiers.None, true));
+        _buttonsChanged.Add(new MouseButtonChanged(button, Modifiers.None, true));
             
         DebugPrint?.Invoke($"`{mouse.Name}` button `{button}` pressed.");
     }
@@ -179,7 +173,7 @@ public class MouseState : IDisposable
         _down[(int)button] = false;
         _released[(int)button] = true;
         
-        ButtonChange.SafeInvoke(new MouseButtonChanged(button, Modifiers.None, false));
+        _buttonsChanged.Add(new MouseButtonChanged(button, Modifiers.None, false));
         
         DebugPrint?.Invoke($"`{mouse.Name}` button `{button}` released.");
     }
@@ -187,8 +181,6 @@ public class MouseState : IDisposable
     private void OnMouseScroll(IMouse mouse, ScrollWheel scrollDelta)
     {
         _scrollWheel = new Vector2(scrollDelta.X, scrollDelta.Y);
-        
-        AxisMove.SafeInvoke(new MouseAxisMoved(MouseAxis.Wheel, _scrollWheel.Y));
         
         DebugPrint?.Invoke($"`{mouse.Name}` scrolled by `{scrollDelta}`.");
     }

@@ -2,7 +2,6 @@
 using RedHerring.Core;
 using RedHerring.Core.Systems;
 using RedHerring.Fingerprint;
-using RedHerring.Fingerprint.Events;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Infusion.Attributes;
@@ -85,26 +84,6 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
 
     #region Private
 
-    private void SubscribeToInput()
-    {
-        _inputSystem.Input.KeyChange += OnKeyChange;
-        _inputSystem.Input.KeyChar += OnKeyChar;
-        _inputSystem.Input.MouseButtonChange += OnMouseButtonChange;
-        _inputSystem.Input.MouseAxisMove += OnMouseAxisMove;
-        _inputSystem.Input.GamepadButtonChange += OnGamepadButtonChange;
-        _inputSystem.Input.GamepadAxisMove += OnGamepadAxisMove;
-    }
-
-    private void UnsubscribeFromInput()
-    {
-        _inputSystem.Input.KeyChange -= OnKeyChange;
-        _inputSystem.Input.KeyChar -= OnKeyChar;
-        _inputSystem.Input.MouseButtonChange -= OnMouseButtonChange;
-        _inputSystem.Input.MouseAxisMove -= OnMouseAxisMove;
-        _inputSystem.Input.GamepadButtonChange -= OnGamepadButtonChange;
-        _inputSystem.Input.GamepadAxisMove -= OnGamepadAxisMove;
-    }
-
     private void CreateShortcuts()
     {
         var shortcut = new CompositeShortcut();
@@ -126,80 +105,6 @@ public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
         evt.Consumed = true;
 
         _debugDraw = !_debugDraw;
-    }
-
-    private void OnKeyChange(KeyChanged evt)
-    {
-        Gui.GetIO().AddKeyEvent(Convert.ToImGuiKey(evt.Key), evt.IsDown);
-    }
-
-    private void OnKeyChar(char @char)
-    {
-        Gui.GetIO().AddInputCharacter(@char);
-    }
-
-    private void OnMouseButtonChange(MouseButtonChanged evt)
-    {
-        Gui.GetIO().AddMouseButtonEvent((int)evt.Button,  evt.IsDown);
-    }
-
-    private void OnMouseAxisMove(MouseAxisMoved evt)
-    {
-        var position = _inputSystem.Input.MousePosition;
-        float delta = _inputSystem.Input.MouseWheelDelta;
-        
-        switch (evt.Axis)
-        {
-            case MouseAxis.None:
-                break;
-            case MouseAxis.Horizontal:
-                Gui.GetIO().AddMousePosEvent(position.X, position.Y);
-                break;
-            case MouseAxis.Vertical:
-                Gui.GetIO().AddMousePosEvent(position.X, position.Y);
-                break;
-            case MouseAxis.HorizontalDelta:
-                break;
-            case MouseAxis.VerticalDelta:
-                break;
-            case MouseAxis.Wheel:
-                Gui.GetIO().AddMouseWheelEvent(0, delta);
-                break;
-            case MouseAxis.WheelUp:
-                break;
-            case MouseAxis.WheelDown:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
-
-    private void OnGamepadButtonChange(GamepadButtonChanged evt)
-    {
-        Gui.GetIO().AddKeyEvent(Convert.ToImGuiKey(evt.Button),  evt.IsDown);
-    }
-
-    private void OnGamepadAxisMove(GamepadAxisMoved evt)
-    {
-        switch (evt.Axis)
-        {
-            case GamepadAxis.None:
-                break;
-            case GamepadAxis.LeftX:
-                break;
-            case GamepadAxis.LeftY:
-                break;
-            case GamepadAxis.RightX:
-                break;
-            case GamepadAxis.RightY:
-                break;
-            case GamepadAxis.TriggerLeft:
-                break;
-            case GamepadAxis.TriggerRight:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
     }
 
     #endregion Bindings

@@ -20,14 +20,14 @@ public class KeyboardState : IDisposable
     private Modifiers _modifiers = Modifiers.None;
 
     private List<char> _chars = new();
+    private List<KeyChanged> _keysChanged = new();
 
     private IKeyboard _device;
     public IKeyboard Device => _device;
     public string Name => _device.Name;
     public Modifiers Modifiers => _modifiers;
 
-    public event Action<KeyChanged>? KeyChange;
-    public event Action<char>? KeyChar;
+    public IEnumerable<KeyChanged> KeysChanged => _keysChanged;
 
     #region Lifecycle
 
@@ -44,6 +44,7 @@ public class KeyboardState : IDisposable
     {
         _pressed.SetAll(false);
         _released.SetAll(false);
+        _keysChanged.Clear();
         
         _chars.Clear();
     }
@@ -260,7 +261,7 @@ public class KeyboardState : IDisposable
             _modifiers |= Modifiers.Super;
         }
         
-        KeyChange.SafeInvoke(new KeyChanged(key, _modifiers, true));
+        _keysChanged.Add(new KeyChanged(key, _modifiers, true));
         
         DebugPrint?.Invoke($"`{keyboard.Name}` key `{key}` pressed (keyCode = {keyCode}).");
     }
@@ -291,7 +292,7 @@ public class KeyboardState : IDisposable
             _modifiers &= ~Modifiers.Super;
         }
         
-        KeyChange.SafeInvoke(new KeyChanged(key, _modifiers, false));
+        _keysChanged.Add(new KeyChanged(key, _modifiers, false));
         
         DebugPrint?.Invoke($"`{keyboard.Name}` key `{key}` released (keyCode = {keyCode}).");
     }
@@ -299,8 +300,6 @@ public class KeyboardState : IDisposable
     private void OnChar(IKeyboard keyboard, char @char)
     {
         _chars.Add(@char);
-        
-        KeyChar.SafeInvoke(@char);
     }
 
     #endregion Bindings
