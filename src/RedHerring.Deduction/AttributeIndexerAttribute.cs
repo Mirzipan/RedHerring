@@ -4,4 +4,9 @@
 public class AttributeIndexerAttribute : Attribute
 {
     public Type AttributeType { get; }
+
+    public AttributeIndexerAttribute(Type attributeType)
+    {
+        AttributeType = attributeType;
+    }
 }
