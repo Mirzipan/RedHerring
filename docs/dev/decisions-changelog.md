@@ -4,6 +4,26 @@
 
 This document tracks more or less important decisions about the engine, in order to allow easy referencing in the future.
 
+## [2023-11-03]
+
+### Input De-abstraction
+*Decided by: Mirzipan*
+
+Input was using too many abstractions, either via interfaces or abstract classes.
+This was entirely unnecessary, because we can already create a custom input interface implementation.
+This means no one will feasibly need to implement custom keyboard state, or any other states.
+Now there is no more abstract shortcut class, interfaces for device states.
+
+### Interface Renames
+*Decided by: Mirzipan*
+
+Interfaces in input no longer use the `I` prefix.
+There is no reason why any method that uses abstracted types should know whether it's an abstract class or an interface.
+This also forces better naming on derived types.
+For example, there is no longer `IInput interface` and `Input class`, instead there is `Input interface` and `SilkInput class`.
+This way, it clearly communicates what it represent, because just `Input` isn't specific enough.
+So far it seems that readability was not hurt by these changes.
+
 ## [2023-10-24]
 
 ### Component Containers and Contexts
