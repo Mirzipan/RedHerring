@@ -1,27 +1,28 @@
-﻿using RedHerring.Studio.Commands;
-using RedHerring.Studio.Models;
+﻿using RedHerring.Studio.Models;
 using RedHerring.Studio.UserInterface;
 using RedHerring.Studio.UserInterface.Attributes;
 using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.Tools;
 
+[Tool(ToolName)]
 public sealed class ToolInspector : ATool
 {
-	protected override string    Name => "Inspector";
+	public const       string    ToolName = "Inspector";
+	protected override string    Name => ToolName;
 	private readonly   Inspector _inspector;
 
 	private List<object>  _tests = new(){new InspectorTest2(), new InspectorTest()}; // TODO debug
-	
-	public ToolInspector(StudioModel studioModel, CommandHistory commandHistory) : base(studioModel)
+
+	public ToolInspector(StudioModel studioModel) : base(studioModel)
 	{
-		_inspector = new Inspector(commandHistory);
+		_inspector = new Inspector(studioModel.CommandHistory);
 		_inspector.Init(_tests);
 	}
 
-	public ToolInspector(StudioModel studioModel, CommandHistory commandHistory, int uniqueId) : base(studioModel, uniqueId)
+	public ToolInspector(StudioModel studioModel, int uniqueId) : base(studioModel, uniqueId)
 	{
-		_inspector = new Inspector(commandHistory);
+		_inspector = new Inspector(studioModel.CommandHistory);
 		_inspector.Init(_tests);
 	}
 	

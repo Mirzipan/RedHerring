@@ -11,7 +11,7 @@ public static class InjectionExtensions
         return @this.AddSystem(new ImGuiSystem());
     }
 
-    public static ContainerDescription AddEditor(this ContainerDescription @this)
+    public static ContainerDescription AddStudio(this ContainerDescription @this)
     {
         return @this.AddSystem(new StudioSystem());
     }

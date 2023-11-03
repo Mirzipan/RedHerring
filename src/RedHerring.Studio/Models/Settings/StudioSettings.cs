@@ -17,7 +17,13 @@ public sealed class StudioSettings
 	[HideInInspector] public string? UiLayout;
 	
 	[HideInInspector] public int          ToolUniqueIdGeneratorState;
-	[HideInInspector] public List<ToolId> OpenedToolWindows = new(); 
+	[HideInInspector] public List<ToolId> ActiveToolWindows = new();
+
+	public void StoreToolWindows(int uniqueIdGeneratorState, List<ToolId> openedToolWindows)
+	{
+		ToolUniqueIdGeneratorState = uniqueIdGeneratorState;
+		ActiveToolWindows          = openedToolWindows;
+	}
 }
 
 #region Migration
@@ -29,7 +35,9 @@ public interface IStudioSettingsMigratable
 [Serializable, LatestVersion(typeof(StudioSettings))]
 public class StudioSettings_000 : IStudioSettingsMigratable
 {
-	public int     WorkerThreadsCount;
-	public string? UiLayout;
+	public int          WorkerThreadsCount;
+	public string?      UiLayout;
+	public int          ToolUniqueIdGeneratorState;
+	public List<ToolId> ActiveToolWindows;
 }
 #endregion

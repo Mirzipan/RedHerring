@@ -8,6 +8,6 @@ public class StudioEngineInstaller : IBindingsInstaller
 	public void InstallBindings(ContainerDescription description)
 	{
 		description.AddGraphics().AddInput().AddImGui();
-		description.AddEditor();
+		description.AddStudio();
 	}
 }

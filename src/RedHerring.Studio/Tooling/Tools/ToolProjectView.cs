@@ -7,13 +7,16 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.Tools;
 
+[Tool(ToolName)]
 public sealed class ToolProjectView : ATool
 {
+	public const string ToolName = "Project view";
+	
 	private const ImGuiTreeNodeFlags TreeCommonFlags       = ImGuiTreeNodeFlags.SpanAvailWidth;
 	private const ImGuiTreeNodeFlags TreeInternalNodeFlags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick | TreeCommonFlags;
 	private const ImGuiTreeNodeFlags TreeLeafNodeFlags     = ImGuiTreeNodeFlags.Leaf        | ImGuiTreeNodeFlags.NoTreePushOnOpen  | TreeCommonFlags;
 	
-	protected override string Name => "Project view";
+	protected override string Name => ToolName;
     
 	public ToolProjectView(StudioModel studioModel) : base(studioModel)
 	{

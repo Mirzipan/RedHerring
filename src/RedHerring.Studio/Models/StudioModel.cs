@@ -1,5 +1,6 @@
 using System.Reflection;
 using Migration;
+using RedHerring.Studio.Commands;
 using RedHerring.Studio.Models.Project;
 using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.ViewModels;
@@ -24,6 +25,9 @@ public class StudioModel
 	
 	private ProjectSettings _projectSettings = new();
 	public  ProjectSettings ProjectSettings => _projectSettings;
+
+	private CommandHistory _commandHistory = new();
+	public  CommandHistory CommandHistory => _commandHistory;
 	
 	// view models
 	private readonly ConsoleViewModel _console = new();
@@ -78,14 +82,14 @@ public class StudioModel
 		}
 	}
 
-	public async Task SaveStudioSettings()
+	public async Task SaveStudioSettingsAsync()
 	{
 		byte[] json = await MigrationSerializer.SerializeAsync(StudioSettings, SerializedDataFormat.JSON, Assembly);
 		Directory.CreateDirectory(Path.GetDirectoryName(StudioSettings.SettingsPath)!);
 		await File.WriteAllBytesAsync(StudioSettings.SettingsPath, json);
 	}
 
-	public async Task LoadStudioSettings()
+	public async Task LoadStudioSettingsAsync()
 	{
 		if(!File.Exists(StudioSettings.SettingsPath))
 		{

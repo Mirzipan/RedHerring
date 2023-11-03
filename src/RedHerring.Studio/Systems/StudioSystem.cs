@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using NativeFileDialogSharp;
 using RedHerring.Alexandria;
+using RedHerring.Alexandria.Extensions;
 using RedHerring.Core;
 using RedHerring.Core.Systems;
 using RedHerring.Deduction;
@@ -9,7 +10,6 @@ using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.ImGui;
 using RedHerring.Infusion.Attributes;
-using RedHerring.Studio.Commands;
 using RedHerring.Studio.Models;
 using RedHerring.Studio.Models.Tests;
 using RedHerring.Studio.TaskProcessing;
@@ -29,32 +29,31 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 	public bool IsEnabled   => true;
 	public int  UpdateOrder => int.MaxValue;
 
-    public bool IsVisible => true;
-    public int DrawOrder => int.MaxValue;
+	public bool IsVisible => true;
+	public int  DrawOrder => int.MaxValue;
     
-    [Inject]
-    private InputReceiver _inputReceiver = null!;
+	[Inject]
+	private InputReceiver _inputReceiver = null!;
 
-	private          StudioModel    _studioModel = new();
-	private readonly CommandHistory _history     = new();
+	private StudioModel _studioModel = new();
 
-	private readonly List<ATool> _activeTools = new();
-    
+	[Inject] private ToolManager _toolManager;
+	
 	#region User Interface
 	private readonly DockSpace      _dockSpace       = new();
 	private readonly Menu           _menu            = new();
 	private readonly StatusBar      _statusBar       = new();
 	private          SettingsDialog _projectSettings = null!;
-	private          SettingsDialog _studioSettings = null!;
+	private          SettingsDialog _studioSettings  = null!;
 	private readonly MessageBox     _messageBox      = new();
 	#endregion
     
 	#region Lifecycle
 
-    protected override void Init()
-    {
-        _inputReceiver.Name = "studio";
-        _inputReceiver.ConsumesAllInput = false;
+	protected override void Init()
+	{
+		_inputReceiver.Name             = "studio";
+		_inputReceiver.ConsumesAllInput = false;
         
 		_inputReceiver.Bind("undo", Undo);
 		_inputReceiver.Bind("redo", Redo);
@@ -64,26 +63,23 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 	{
 		Gui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 
+		// inits
 		InitInput();
 		InitMenu();
+		_toolManager.Init(_studioModel);
 
-		await _studioModel.LoadStudioSettings();
-		if (_studioModel.StudioSettings.UiLayout != null)
-		{
-			Gui.LoadIniSettingsFromMemory(_studioModel.StudioSettings.UiLayout);
-		}
-
+		// load settings and restore state
+		await LoadSettingsAsync();
+		
 		// debug
-		_activeTools.Add(new ToolProjectView(_studioModel));
-		_projectSettings = new SettingsDialog("Project settings", _history, _studioModel.ProjectSettings);
-		_studioSettings = new SettingsDialog("Studio settings", _history, _studioModel.StudioSettings);
+		_projectSettings = new SettingsDialog("Project settings", _studioModel.CommandHistory, _studioModel.ProjectSettings);
+		_studioSettings  = new SettingsDialog("Studio settings",  _studioModel.CommandHistory, _studioModel.StudioSettings);
 		return 0;
 	}
 
 	protected override async ValueTask<int> Unload()
 	{
-		_studioModel.StudioSettings.UiLayout = Gui.SaveIniSettingsToMemory();
-		await _studioModel.SaveStudioSettings(); // TODO - async
+		await SaveSettingsAsync();
 		
 		_studioModel.Cancel(); // TODO - should we wait for cancellation of all threads?
 		return 0;
@@ -102,15 +98,7 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 		_studioSettings.Update();
 		_messageBox.Update();
 
-		for(int i=0;i <_activeTools.Count;++i)
-		{
-			_activeTools[i].Update(out bool finished);
-			if (finished)
-			{
-				_activeTools.RemoveAt(i);
-				--i;
-			}
-		}
+		_toolManager.Update();
 
 		//Gui.ShowDemoWindow();
 	}
@@ -147,13 +135,13 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 
 	#region Private
 
-    private void InitInput()
-    {
-        _inputSystem.AddBinding(new ShortcutBinding("undo", new KeyboardShortcut(Key.U)));
-        _inputSystem.AddBinding(new ShortcutBinding("redo", new KeyboardShortcut(Key.Z)));
-        _inputReceiver.Push();
-    }
-    #endregion Private
+	private void InitInput()
+	{
+		_inputSystem.AddBinding(new ShortcutBinding("undo", new KeyboardShortcut(Key.U)));
+		_inputSystem.AddBinding(new ShortcutBinding("redo", new KeyboardShortcut(Key.Z)));
+		_inputReceiver.Push();
+	}
+	#endregion Private
 
 	#region Menu
 	private void InitMenu()
@@ -164,10 +152,10 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 		_menu.AddItem("File/Settings/Theme/Bloodsucker",          Theme.Bloodsucker);
 		_menu.AddItem("File/Exit",                                OnExitClicked);
 
-		_menu.AddItem("Edit/Undo",               _history.Undo);
-		_menu.AddItem("Edit/Redo",               _history.Redo);
+		_menu.AddItem("Edit/Undo",               _studioModel.CommandHistory.Undo);
+		_menu.AddItem("Edit/Redo",               _studioModel.CommandHistory.Redo);
 		_menu.AddItem("Edit/Project settings..", OnEditProjectSettingsClicked);
-		_menu.AddItem("Edit/Studio settings..", OnEditStudioSettingsClicked);
+		_menu.AddItem("Edit/Studio settings..",  OnEditStudioSettingsClicked);
 
 		_menu.AddItem("View/Project",   OnViewProjectClicked);
 		_menu.AddItem("View/Console",   OnViewConsoleClicked);
@@ -207,17 +195,17 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 	
 	private void OnViewProjectClicked()
 	{
-		_activeTools.Add(new ToolProjectView(_studioModel));
+		_toolManager.Activate(ToolProjectView.ToolName);
 	}
 
 	private void OnViewConsoleClicked()
 	{
-		_activeTools.Add(new ToolConsole(_studioModel));
+		_toolManager.Activate(ToolConsole.ToolName);
 	}
 
 	private void OnViewInspectorClicked()
 	{
-		_activeTools.Add(new ToolInspector(_studioModel, _history));
+		_toolManager.Activate(ToolInspector.ToolName);
 	}
 
 	private void OnDebugTaskProcessorTestClicked()
@@ -245,15 +233,38 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 	{
 		evt.Consumed = true;
         
-		_history.Undo();
+		_studioModel.CommandHistory.Undo();
 	}
 
 	private void Redo(ref ActionEvent evt)
 	{
 		evt.Consumed = true;
         
-		_history.Redo();
+		_studioModel.CommandHistory.Redo();
 	}
 
 	#endregion Input
+	
+	#region Settings
+	private async Task SaveSettingsAsync()
+	{
+		_studioModel.StudioSettings.StoreToolWindows(ATool.UniqueToolIdGeneratorState, _toolManager.ExportActiveTools());
+		
+		_studioModel.StudioSettings.UiLayout = Gui.SaveIniSettingsToMemory();
+		await _studioModel.SaveStudioSettingsAsync();
+	}
+
+	private async Task LoadSettingsAsync()
+	{
+		await _studioModel.LoadStudioSettingsAsync();
+
+		ATool.SetUniqueIdGenerator(_studioModel.StudioSettings.ToolUniqueIdGeneratorState);
+		_toolManager.ImportActiveTools(_studioModel.StudioSettings.ActiveToolWindows);
+		
+		if (_studioModel.StudioSettings.UiLayout != null)
+		{
+			Gui.LoadIniSettingsFromMemory(_studioModel.StudioSettings.UiLayout);
+		}
+	}
+	#endregion
 }
