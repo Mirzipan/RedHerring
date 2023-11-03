@@ -146,11 +146,8 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 	#region Menu
 	private void InitMenu()
 	{
-		_menu.AddItem("File/Open project..",                      OnOpenProjectClicked);
-		_menu.AddItem("File/Settings/Theme/Embrace the Darkness", Theme.EmbraceTheDarkness);
-		_menu.AddItem("File/Settings/Theme/Crimson Rivers",       Theme.CrimsonRivers);
-		_menu.AddItem("File/Settings/Theme/Bloodsucker",          Theme.Bloodsucker);
-		_menu.AddItem("File/Exit",                                OnExitClicked);
+		_menu.AddItem("File/Open project..", OnOpenProjectClicked);
+		_menu.AddItem("File/Exit",           OnExitClicked);
 
 		_menu.AddItem("Edit/Undo",               _studioModel.CommandHistory.Undo);
 		_menu.AddItem("Edit/Redo",               _studioModel.CommandHistory.Redo);
@@ -265,6 +262,8 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 		{
 			Gui.LoadIniSettingsFromMemory(_studioModel.StudioSettings.UiLayout);
 		}
+
+		_studioModel.StudioSettings.ApplyTheme();
 	}
 	#endregion
 }

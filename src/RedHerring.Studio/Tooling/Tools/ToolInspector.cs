@@ -12,7 +12,7 @@ public sealed class ToolInspector : ATool
 	protected override string    Name => ToolName;
 	private readonly   Inspector _inspector;
 
-	private List<object>  _tests = new(){new InspectorTest2(), new InspectorTest()}; // TODO debug
+	private List<object> _tests = new(){new InspectorTest2(), new InspectorTest()}; // TODO debug
 
 	public ToolInspector(StudioModel studioModel) : base(studioModel)
 	{
@@ -60,21 +60,25 @@ public enum TestEnum
 
 public class InspectorTest
 {
-	[ReadOnlyInInspector] public int   SomeValue1 = 1;
-	public                       int   SomeValue2 = 22;
-	public                       int   SomeValue3 = 333;
-	public                       int   SomeValue4 = 4444;
-	public                       float FloatValue = 1.0f;
-	public                       bool  BoolValue  = true;
-	public                       TestEnum EnumValue = TestEnum.Def;
+	[ReadOnlyInInspector] public int      SomeValue1 = 1;
+	public                       int      SomeValue2 = 22;
+	public                       int      SomeValue3 = 333;
+	public                       int      SomeValue4 = 4444;
+	public                       float    FloatValue = 1.0f;
+	public                       bool     BoolValue  = true;
+	public                       TestEnum EnumValue  = TestEnum.Def;
 	
 	public InspectorTestSubclass Subclass = new();
+
+	[ValueDropdown("DropdownSource")] public int      DropdownInt    = 1;
+	[ValueDropdown("DropdownSource")] public string   DropdownString = "pear";
+	[HideInInspector]                 public string[] DropdownSource = {"apple", "pear", "orange", "banana"};
 }
 
 public class InspectorTestSubclass
 {
-	public int     SubValue1   = 111111;
-	public int     SubValue2   = 222222;
+	public int    SubValue1   = 111111;
+	public int    SubValue2   = 222222;
 	public string StringValue = "abc";
 }
 
@@ -90,16 +94,20 @@ public class InspectorTest2
 	[ShowInInspector] private int SomeValue3 = 333;
 	[HideInInspector] public  int SomeValue4 = 4444;
 	
-	public int      SomeValue5 = 55555;
-	public float    FloatValue = 1.0f;
-	public bool     BoolValue  = true;
+	public int   SomeValue5 = 55555;
+	public float FloatValue = 1.0f;
+	public bool  BoolValue  = true;
 
-	public TestEnum EnumValue  = TestEnum.Def;
+	public TestEnum EnumValue = TestEnum.Abc;
+
+	[ValueDropdown("DropdownSource")] public int      DropdownInt    = 1;
+	[ValueDropdown("DropdownSource")] public string   DropdownString = "pear";
+	[HideInInspector]                 public string[] DropdownSource = {"apple", "pear", "orange", "banana"};
 }
 
 public class InspectorTestSubclass2
 {
-	public int     SubValue2   = 666666;
-	public int     SubValue3   = 555555;
+	public int    SubValue2   = 666666;
+	public int    SubValue3   = 555555;
 	public string StringValue = "abc";
 }

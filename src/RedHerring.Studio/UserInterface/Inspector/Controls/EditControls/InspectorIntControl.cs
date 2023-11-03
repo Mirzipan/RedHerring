@@ -9,8 +9,13 @@ public sealed class InspectorIntControl : AnInspectorSingleInputControl<int>
 	{
 	}
 
-	protected override bool InputControl()
+	protected override bool InputControl(bool makeItemActive)
 	{
+		if (makeItemActive)
+		{
+			Gui.SetKeyboardFocusHere();
+		}
+
 		Gui.InputInt(LabelId, ref Value, 0, 0, _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None);
 		return Gui.IsItemDeactivatedAfterEdit();
 	}

@@ -11,18 +11,18 @@ public class InspectorEnumControl : AnInspectorSingleInputControl<Enum>
 	{
 	}
 
-	public override void InitFromSource(object source, FieldInfo? sourceField = null)
+	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
 	{
-		base.InitFromSource(source, sourceField);
+		base.InitFromSource(sourceOwner, source, sourceField);
 		_items = Enum.GetNames(Value!.GetType());
 	}
 	
-	protected override bool InputControl()
+	protected override bool InputControl(bool makeItemActive)
 	{
 		int localValue = Convert.ToInt32(Value!);
 		bool submit = Gui.Combo(LabelId, ref localValue, _items, _items.Length);
 		Value = (Enum?)Enum.ToObject(Value!.GetType(), localValue);
 		
-		return submit;
+		return submit || makeItemActive;
 	}
 }

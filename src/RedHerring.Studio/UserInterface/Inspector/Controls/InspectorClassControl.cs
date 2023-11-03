@@ -13,9 +13,9 @@ public sealed class InspectorClassControl : AnInspectorControl
 	{
 	}
 	
-	public override void InitFromSource(object source, FieldInfo? sourceField = null)
+	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
 	{
-		base.InitFromSource(source, sourceField);
+		base.InitFromSource(sourceOwner, source, sourceField);
 
 		object? boundObject = sourceField == null ? source : sourceField.GetValue(source);
 		if (boundObject == null)
@@ -35,7 +35,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 				continue;
 			}
 			
-			Type? controlType = FieldToControl(field.FieldType);
+			Type? controlType = FieldToControl(field);
 			if (controlType == null)
 			{
 				continue; // unsupported
@@ -46,14 +46,14 @@ public sealed class InspectorClassControl : AnInspectorControl
 			AnInspectorControl control = (AnInspectorControl) Activator.CreateInstance(controlType, _inspector, fieldId)!;
 			_controls.Add(control);
 
-			control.InitFromSource(boundObject, field);
+			control.InitFromSource(source, boundObject, field);
 		}
 	}
 
-	public override void AdaptToSource(object source, FieldInfo? sourceField = null)
+	public override void AdaptToSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
 	{
 		// TODO - refactor, similar to InitFromSource
-		base.AdaptToSource(source, sourceField);
+		base.AdaptToSource(sourceOwner, source, sourceField);
 		
 		object? boundObject = sourceField == null ? source : sourceField.GetValue(source);
 		if (boundObject == null)
@@ -65,7 +65,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 		//Type sourceType = sourceField != null ? sourceField.FieldType : source.GetType();
 
 		bool[] commonControls = new bool[_controls.Count];
-		
+
 		FieldInfo[] fields = sourceType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 		foreach (FieldInfo field in fields)
 		{
@@ -74,7 +74,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 				continue;
 			}
 			
-			Type? controlType = FieldToControl(field.FieldType);
+			Type? controlType = FieldToControl(field);
 			if (controlType == null)
 			{
 				continue; // unsupported
@@ -88,8 +88,14 @@ public sealed class InspectorClassControl : AnInspectorControl
 				continue; // control not found => it's not common for all sources => skip
 			}
 
-			AnInspectorControl control = _controls[controlIndex];
-			if(control.ValueBindings[0].SourceField?.FieldType != field.FieldType)
+			AnInspectorControl control          = _controls[controlIndex];
+			FieldInfo?         firstSourceField = control.ValueBindings[0].SourceField;
+			if (firstSourceField == null)
+			{
+				continue;
+			}
+
+			if(firstSourceField.FieldType != field.FieldType)
 			{
 				// control type doesn't match, there is an exception for classes
 				if (control is not InspectorClassControl || !field.FieldType.IsClass)
@@ -97,8 +103,13 @@ public sealed class InspectorClassControl : AnInspectorControl
 					continue; // control type does not match => it's not common for all sources => skip
 				}
 			}
-			
-			control.AdaptToSource(boundObject, field);
+
+			if(!firstSourceField.GetCustomAttributes().SequenceEqual(field.GetCustomAttributes()))
+			{
+				continue; // attributes don't match => it's not common for all sources => skip
+			}
+
+			control.AdaptToSource(sourceOwner, boundObject, field);
 			commonControls[controlIndex] = true;
 		}
 		

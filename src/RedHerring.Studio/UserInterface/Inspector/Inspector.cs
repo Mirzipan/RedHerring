@@ -53,11 +53,11 @@ public sealed class Inspector
 		string id = $"##{_uniqueId.ToString()}";
 		
 		_contentControl = new InspectorClassControl(this, id);
-		_contentControl.InitFromSource(_sources[0]);
+		_contentControl.InitFromSource(null, _sources[0]);
 		_contentControl.SetCustomLabel(null);
 		for(int i=1;i <_sources.Count;i++)
 		{
-			_contentControl.AdaptToSource(_sources[i]);
+			_contentControl.AdaptToSource(null, _sources[i]);
 		}
 	}
 	#endregion

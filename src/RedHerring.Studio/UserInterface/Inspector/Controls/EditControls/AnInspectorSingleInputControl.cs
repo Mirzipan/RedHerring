@@ -20,16 +20,15 @@ public abstract class AnInspectorSingleInputControl<T> : AnInspectorEditControl<
 
 			_multipleValues = false;
 			isItemActive    = true;
-			Gui.SetKeyboardFocusHere(); // focus next control
 		}
 
 		BeginReadOnlyStyle();
-		bool submit = InputControl();
+		bool submit = InputControl(isItemActive);
 		EndReadOnlyStyle();
 
 		SubmitOrUpdateValue(submit, isItemActive || Gui.IsItemActive());
 	}
 
 	// create single input control, returns true if value was submitted (not after every change!)
-	protected abstract bool InputControl();
+	protected abstract bool InputControl(bool makeItemActive);
 }

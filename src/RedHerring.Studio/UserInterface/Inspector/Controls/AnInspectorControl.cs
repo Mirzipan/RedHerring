@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using RedHerring.Alexandria.Extensions;
+using RedHerring.Studio.UserInterface.Attributes;
 
 namespace RedHerring.Studio.UserInterface;
 
@@ -15,8 +16,10 @@ public abstract class AnInspectorControl
 			  {typeof(bool), typeof(InspectorBoolControl)},
 		  };
 
-	private static readonly Type _classControl = typeof(InspectorClassControl);
-	private static readonly Type _enumControl = typeof(InspectorEnumControl);
+	private static readonly Type _classControl            = typeof(InspectorClassControl);
+	private static readonly Type _enumControl             = typeof(InspectorEnumControl);
+	private static readonly Type _valueDropdownIntControl = typeof(InspectorValueDropdownIntControl);
+	private static readonly Type _valueDropdownStringControl = typeof(InspectorValueDropdownStringControl);
 	#endregion
 
 	public static readonly object UnboundValue   = new();
@@ -35,7 +38,7 @@ public abstract class AnInspectorControl
 		LabelId    = id;
 	}
 
-	public virtual void InitFromSource(object source, FieldInfo? sourceField = null)
+	public virtual void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
 	{
 		if (sourceField != null)
 		{
@@ -43,12 +46,12 @@ public abstract class AnInspectorControl
 			LabelId = Label + Id;
 		}
 
-		ValueBindings.Add(new InspectorValueBinding(source, sourceField));
+		ValueBindings.Add(new InspectorValueBinding(source, sourceField, GetOnCommitValue(sourceOwner, sourceField)));
 	}
 
-	public virtual void AdaptToSource(object source, FieldInfo? sourceField = null)
+	public virtual void AdaptToSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
 	{
-		ValueBindings.Add(new InspectorValueBinding(source, sourceField));
+		ValueBindings.Add(new InspectorValueBinding(source, sourceField, GetOnCommitValue(sourceOwner, sourceField)));
 	}
 
 	public abstract void Update();
@@ -59,8 +62,27 @@ public abstract class AnInspectorControl
 		LabelId = label == null ? Id : label + Id;
 	}
 
-	protected Type? FieldToControl(Type fieldType)
+	protected Type? FieldToControl(FieldInfo fieldInfo)
 	{
+		Type fieldType = fieldInfo.FieldType;
+		
+		// by attribute
+		if(fieldInfo.GetCustomAttribute<ValueDropdownAttribute>() != null)
+		{
+			if (fieldType == typeof(int))
+			{
+				return _valueDropdownIntControl;
+			}
+
+			if (fieldType == typeof(string))
+			{
+				return _valueDropdownStringControl;
+			}
+
+			return null;
+		}
+		
+		// by type
 		if (_fieldToControlMap.TryGetValue(fieldType, out Type? type))
 		{
 			return type;
@@ -77,6 +99,28 @@ public abstract class AnInspectorControl
 		}
 
 		return null;
+	}
+
+	private Action? GetOnCommitValue(object? sourceOwner, FieldInfo? sourceField)
+	{
+		if (sourceOwner == null || sourceField == null)
+		{
+			return null;
+		}
+
+		OnCommitValueAttribute? onCommitValueAttribute = sourceField.GetCustomAttribute<OnCommitValueAttribute>();
+		if (onCommitValueAttribute == null)
+		{
+			return null;
+		}
+
+		MethodInfo? onCommitMethod = sourceOwner.GetType().GetMethod(onCommitValueAttribute.MethodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+		if (onCommitMethod == null)
+		{
+			return null;
+		}
+
+		return () => onCommitMethod.Invoke(sourceOwner, null);
 	}
 
 	#region Value manipulation
@@ -118,6 +162,11 @@ public abstract class AnInspectorControl
 	{
 		Console.WriteLine($"Submitted value {value}");
 		_inspector.Commit(new InspectorModifyValueCommand(value, ValueBindings));
+
+		foreach (InspectorValueBinding valueBinding in ValueBindings)
+		{
+			valueBinding.OnCommitValue?.Invoke();
+		}
 	}
 	#endregion
 }
