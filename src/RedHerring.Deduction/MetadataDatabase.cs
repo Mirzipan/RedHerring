@@ -44,6 +44,20 @@ public sealed class MetadataDatabase : IDisposable
 
     #endregion Lifecycle
 
+    #region Queries
+
+    public bool IndexerByType<T>(out IIndexMetadata? indexer) where T : IIndexMetadata
+    {
+        return IndexerByType(typeof(T), out indexer);
+    }
+
+    public bool IndexerByType(Type type, out IIndexMetadata? indexer)
+    {
+        return _indexersByType.TryGetValue(type, out indexer);
+    }
+
+    #endregion Queries
+
     #region Private
 
     private void GatherIndexers()
