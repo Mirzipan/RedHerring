@@ -13,6 +13,6 @@ public static class InjectionExtensions
 
     public static ContainerDescription AddEditor(this ContainerDescription @this)
     {
-        return @this.AddSystem(new EditorSystem());
+        return @this.AddSystem(new StudioSystem());
     }
 }

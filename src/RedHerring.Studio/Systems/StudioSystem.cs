@@ -20,7 +20,7 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.Systems;
 
-public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
+public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 {
 	[Inject] private InputSystem      _inputSystem      = null!;
 	[Inject] private GraphicsSystem   _graphicsSystem   = null!;
@@ -53,7 +53,7 @@ public sealed class EditorSystem : AnEngineSystem, IUpdatable, IDrawable
 
     protected override void Init()
     {
-        _inputReceiver.Name = "editor";
+        _inputReceiver.Name = "studio";
         _inputReceiver.ConsumesAllInput = false;
         
 		_inputReceiver.Bind("undo", Undo);
