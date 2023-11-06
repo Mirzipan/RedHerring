@@ -10,7 +10,7 @@ public sealed class GraphicsSystem : AnEngineSystem
     
     protected override void Init()
     {
-        _renderer = new Renderer(Context.View, Context.GraphicsBackend, Context.UseSeparateRenderThread);
+        _renderer = new UniversalRenderer(Context.View, Context.GraphicsBackend, Context.UseSeparateRenderThread);
     }
 
     protected override ValueTask<int> Load()
@@ -27,8 +27,6 @@ public sealed class GraphicsSystem : AnEngineSystem
 
     public void RegisterFeature(ARenderFeature feature)
     {
-        _renderer.Features.Add(feature);
-        feature.Init(_renderer.Device, _renderer.CommandList);
-        feature.Resize(Context.View.Size);
+        _renderer.AddFeature(feature);
     }
 }

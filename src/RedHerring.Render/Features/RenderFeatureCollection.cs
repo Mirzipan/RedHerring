@@ -101,7 +101,7 @@ public class RenderFeatureCollection : IComponentContainer, IDisposable
 
     #region Manipulation
 
-    public TComponent Add<TComponent>(TComponent component) where TComponent : ARenderFeature
+    internal TComponent Add<TComponent>(TComponent component) where TComponent : ARenderFeature
     {
         AddInternal(component);
         return component;
