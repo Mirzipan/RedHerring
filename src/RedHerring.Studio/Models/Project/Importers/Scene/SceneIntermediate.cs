@@ -1,6 +1,6 @@
 ﻿namespace RedHerring.Studio.Models.Project.Importers;
 
-public interface Importer
+public class SceneIntermediate
 {
-    object? Import(Stream stream);
+    
 }

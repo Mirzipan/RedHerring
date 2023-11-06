@@ -2,6 +2,7 @@ using System.Reflection;
 using Migration;
 using RedHerring.Studio.Commands;
 using RedHerring.Studio.Models.Project;
+using RedHerring.Studio.Models.Project.Assets;
 using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.ViewModels;
 using RedHerring.Studio.Models.ViewModels.Console;
@@ -39,7 +40,7 @@ public class StudioModel
 	private readonly TaskProcessor _taskProcessor = new(_threadsCount);
 	public           TaskProcessor TaskProcessor => _taskProcessor;
 	
-	private readonly Importer _importer = new();
+	private readonly ContentPipeline _contentPipeline = new();
 
 	public StudioModel()
 	{
@@ -48,7 +49,7 @@ public class StudioModel
 
 	public void Cancel()
 	{
-		_importer.Cancel();
+		_contentPipeline.Cancel();
 		_taskProcessor.Cancel();
 	}
 
