@@ -25,11 +25,11 @@ public class StudioModel
 	private readonly TaskProcessor _taskProcessor = new(_threadsCount);
 	public           TaskProcessor TaskProcessor => _taskProcessor;
 	
-	private readonly Importer _importer = new();
+	private readonly ContentPipeline _contentPipeline = new();
 
 	public void Cancel()
 	{
-		_importer.Cancel();
+		_contentPipeline.Cancel();
 		_taskProcessor.Cancel();
 	}
 

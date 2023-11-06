@@ -3,7 +3,7 @@
 /// <summary>
 /// Default importer that can import any file as a byte array.
 /// </summary>
-internal sealed class DataImporter : AnImporter<byte[]>
+internal sealed class DataImporter : AssetImporter<byte[]>
 {
     public override byte[] Import(Stream stream)
     {

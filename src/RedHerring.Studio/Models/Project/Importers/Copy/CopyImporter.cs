@@ -2,7 +2,7 @@
 
 // fallback importer if no other importer is found
 [Importer]
-public sealed class CopyImporter : AnImporter<CopyIntermediate>
+public sealed class CopyImporter : AssetImporter<CopyIntermediate>
 {
 	public override CopyIntermediate Import(Stream stream)
 	{
