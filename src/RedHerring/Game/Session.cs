@@ -1,4 +1,5 @@
 ﻿using RedHerring.Alexandria;
+using RedHerring.Alexandria.Disposables;
 using RedHerring.Core;
 
 namespace RedHerring.Game;
@@ -36,6 +37,7 @@ public sealed class Session : ANamedDisposer
         
         // TODO: loading magic
         Context.Init(_engine, this);
+        Context.DisposeWith(this);
 
         Phase = SessionPhase.Initialized;
     }

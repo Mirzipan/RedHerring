@@ -8,9 +8,16 @@ namespace RedHerring.Core;
 
 public sealed class Engine : ANamedDisposer
 {
+    private Session? _session;
+    
+    private GameTimeTracker _updateTimeTracker;
+    private GameTimeTracker _drawTimeTracker;
+    private int _updateCount;
+    private int _frameCount;
+    
     public EngineContext Context { get; private set; } = null!;
     public Renderer Renderer { get; private set; } = null!;
-    public Session? Session { get; private set; }
+    public Session? Session => _session;
     public bool IsRunning { get; private set; }
     public bool IsExiting { get; private set; }
 
@@ -18,11 +25,6 @@ public sealed class Engine : ANamedDisposer
     public GameTime DrawTime => _drawTimeTracker.Time;
 
     public event Action? OnExit;
-    
-    private GameTimeTracker _updateTimeTracker;
-    private GameTimeTracker _drawTimeTracker;
-    private int _updateCount;
-    private int _frameCount;
     
     #region Lifecycle
 
@@ -42,8 +44,13 @@ public sealed class Engine : ANamedDisposer
             throw new EngineNotRunningException();
         }
 
-        Session = new Session(this, session);
-        Session.Initialize();
+        if (_session is not null)
+        {
+            CloseSession(ref _session);
+        }
+
+        _session = new Session(this, session);
+        _session.Initialize();
     }
 
     public void Run(EngineContext context)
@@ -93,6 +100,21 @@ public sealed class Engine : ANamedDisposer
             Draw(DrawTime);
             Renderer.EndDraw();
         }
+    }
+
+    public void Close(Session session)
+    {
+        CloseSession(ref session!);
+    }
+
+    public void Close(SessionContext context)
+    {
+        if (context.Session != Session)
+        {
+            return;
+        }
+        
+        CloseSession(ref _session);
     }
 
     public async void Exit()
@@ -150,6 +172,13 @@ public sealed class Engine : ANamedDisposer
     {
         Context.Update(time);
         Session?.Update(time);
+    }
+
+    private void CloseSession(ref Session? session)
+    {
+        session?.Close();
+        session?.Dispose();
+        session = null;
     }
 
     #endregion Private
