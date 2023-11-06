@@ -6,7 +6,7 @@ namespace RedHerring.Core.Systems;
 
 public sealed class GraphicsSystem : AnEngineSystem
 {
-    [Inject]
+    [Infuse]
     private Renderer _renderer = null!;
     
     protected override void Init()

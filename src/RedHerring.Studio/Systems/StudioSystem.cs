@@ -22,9 +22,9 @@ namespace RedHerring.Studio.Systems;
 
 public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 {
-	[Inject] private InputSystem      _inputSystem      = null!;
-	[Inject] private GraphicsSystem   _graphicsSystem   = null!;
-	[Inject] private MetadataDatabase _metadataDatabase = null!;
+	[Infuse] private InputSystem      _inputSystem      = null!;
+	[Infuse] private GraphicsSystem   _graphicsSystem   = null!;
+	[Infuse] private MetadataDatabase _metadataDatabase = null!;
 
 	public bool IsEnabled   => true;
 	public int  UpdateOrder => int.MaxValue;
@@ -32,12 +32,12 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 	public bool IsVisible => true;
 	public int  DrawOrder => int.MaxValue;
     
-	[Inject]
+	[Infuse]
 	private InputReceiver _inputReceiver = null!;
 
 	private StudioModel _studioModel = new();
 
-	[Inject] private ToolManager _toolManager;
+	[Infuse] private ToolManager _toolManager;
 	
 	#region User Interface
 	private readonly DockSpace      _dockSpace       = new();

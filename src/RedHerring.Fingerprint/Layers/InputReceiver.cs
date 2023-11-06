@@ -7,7 +7,7 @@ public class InputReceiver
 {
     private readonly Dictionary<string, ActionBinding> _bindings = new();
 
-    [Inject]
+    [Infuse]
     private readonly Input _input = null!;
     
     public string? Name { get; set; }

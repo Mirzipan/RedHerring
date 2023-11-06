@@ -5,7 +5,7 @@ namespace RedHerring.Infusion.Indexer;
 
 internal sealed class TypeDescription
 {
-    private static readonly Type InjectAttributeType = typeof(InjectAttribute);
+    private static readonly Type InjectAttributeType = typeof(InfuseAttribute);
     private const BindingFlags Flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
     public readonly ConstructorDescription[] Constructors;
@@ -48,7 +48,7 @@ internal sealed class TypeDescription
 
         foreach (var member in members)
         {
-            var attribute = member.GetCustomAttribute<InjectAttribute>();
+            var attribute = member.GetCustomAttribute<InfuseAttribute>();
             if (attribute == null)
             {
                 continue;
@@ -79,7 +79,7 @@ internal sealed class TypeDescription
             
         foreach (var method in methods)
         {
-            var attribute = method.GetCustomAttribute<InjectAttribute>();
+            var attribute = method.GetCustomAttribute<InfuseAttribute>();
             if (attribute == null)
             {
                 continue;

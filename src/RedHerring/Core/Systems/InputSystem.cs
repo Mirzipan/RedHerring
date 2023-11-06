@@ -10,9 +10,9 @@ namespace RedHerring.Core.Systems;
 
 public sealed class InputSystem : AnEngineSystem, IUpdatable
 {
-    [Inject]
+    [Infuse]
     private Input _input = null!;
-    [Inject]
+    [Infuse]
     private InputReceiver _receiver = null!;
 
     public bool IsEnabled => true;

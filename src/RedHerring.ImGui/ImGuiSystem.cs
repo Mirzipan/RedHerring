@@ -11,12 +11,12 @@ namespace RedHerring.ImGui;
 
 public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
 {
-    [Inject]
+    [Infuse]
     private InputSystem _inputSystem = null!;
-    [Inject]
+    [Infuse]
     private GraphicsSystem _graphicsSystem = null!;
 
-    [Inject]
+    [Infuse]
     private InputReceiver _receiver = null!;
 
     private ImInputSnapshot _imInputSnapshot = null!;
