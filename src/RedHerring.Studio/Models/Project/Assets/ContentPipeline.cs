@@ -31,7 +31,7 @@ public sealed class ContentPipeline
 		_importerIOWaitHandle.Set();
 	}
 	
-	public Importer Find(string extension) => _importerRegistry.Find(extension);
+	public Importer Find(string extension) => _importerRegistry.GetImporter(extension);
 
 	public Processor Find(Type input, Type output) => _processorRegistry.Find(input, output);
 	

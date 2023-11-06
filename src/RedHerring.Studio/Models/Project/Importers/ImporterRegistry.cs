@@ -1,81 +1,30 @@
-﻿namespace RedHerring.Studio.Models.Project.Importers;
+﻿using RedHerring.Deduction;
 
-public sealed class ImporterRegistry
+namespace RedHerring.Studio.Models.Project.Importers;
+
+[AttributeIndexer(typeof(ImporterAttribute))]
+public sealed class ImporterRegistry : IIndexAttributes
 {
-	private static readonly Type GenericImporterType = typeof(AssetImporter<>);
+	private Dictionary<string, Importer> _importers        = new();
+	private Importer                     _fallbackImporter = new CopyImporter();
 
-	private readonly record struct Entry(Importer Importer, Type OutputType);
-	
-	private Dictionary<string, List<Importer>> _importers         = new();
-	private List<Importer>                     _fallbackImporters = new() {new CopyImporter()};
-
-	private Dictionary<string, Entry> _byExtension = new();
-
-	public ImporterRegistry()
+	public Importer GetImporter(string extension)
 	{
-		
-		// TODO DEBUG - this will be replaced by attribute scan
-		SceneImporter sceneImporter = new();
-		_importers.Add("fbx", new List<Importer>{sceneImporter});
-		_importers.Add("obj", new List<Importer>{sceneImporter});
-	}
-	
-	public List<Importer> GetImporters(string extension)
-	{
-		if (_importers.TryGetValue(extension, out List<Importer>? importers))
+		if (_importers.TryGetValue(extension, out Importer? importer))
 		{
-			return importers;
+			return importer;
 		}
 
-		return _fallbackImporters;
+		return _fallbackImporter;
 	}
 
-	public void Register<T>(T importer, params string[] extensions) where T : Importer
+	public void Index(Attribute attribute, Type type)
 	{
-		var type = typeof(T);
-		var baseType = GetGenericImporterType(type);
-		if (baseType is null)
+		ImporterAttribute importerAttribute = (ImporterAttribute) attribute;
+		Importer          importer          = (Importer) Activator.CreateInstance(type)!;
+		foreach (var extension in importerAttribute.Extensions)
 		{
-			return;
+			_importers.Add(extension, importer);
 		}
-
-		foreach (string extension in extensions)
-		{
-			if (_importers.ContainsKey(extension))
-			{
-				// TODO: log?
-			}
-
-			_byExtension[extension] = new Entry(importer, baseType!.GetGenericArguments()[0]);
-		}
-	}
-
-	public void Unregister(string extension) => _byExtension.Remove(extension);
-
-	public Importer Find(string extension)
-	{
-		return Find(extension, out _);
-	}
-
-	public Importer Find(string extension, out Type? outputType)
-	{
-		outputType = _byExtension.TryGetValue(extension, out var entry) ? entry.OutputType : null;
-		return entry.Importer;
-	}
-
-	private static Type? GetGenericImporterType(Type type)
-	{
-		Type? current = type;
-		while (current is not null)
-		{
-			if (current.IsGenericType && current.GetGenericTypeDefinition() == GenericImporterType)
-			{
-				return current;
-			}
-
-			current = current.BaseType;
-		}
-
-		return null;
 	}
 }
