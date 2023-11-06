@@ -1,13 +1,12 @@
-﻿using System.Runtime.InteropServices;
-using RedHerring.Core;
+﻿using RedHerring.Core;
 using RedHerring.Game;
-using RedHerring.Infusion;
+using RedHerring.Render;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Extensions.Veldrid;
 using Veldrid;
 
-namespace RedHerring.Examples;
+namespace RedHerring.Sandbox;
 
 internal class Program
 {
@@ -47,28 +46,7 @@ internal class Program
 
     private static void Init()
     {
-        _graphicsBackend = GetPreferredBackend();
-    }
-
-    private static GraphicsBackend GetPreferredBackend()
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            return GraphicsDevice.IsBackendSupported(GraphicsBackend.Vulkan)
-                ? GraphicsBackend.Vulkan
-                : GraphicsBackend.Direct3D11;
-        }
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            return GraphicsDevice.IsBackendSupported(GraphicsBackend.Metal)
-                ? GraphicsBackend.Metal
-                : GraphicsBackend.OpenGL;
-        }
-
-        return GraphicsDevice.IsBackendSupported(GraphicsBackend.Vulkan)
-            ? GraphicsBackend.Vulkan
-            : GraphicsBackend.OpenGL;
+        _graphicsBackend = RenderInstaller.PreferredBackend();
     }
 
     #endregion Private
@@ -80,16 +58,22 @@ internal class Program
         _engine = new Engine();
         _engine.OnExit += OnEngineExit;
 
+        var render = new RenderInstaller(_window!)
+        {
+            Backend = _graphicsBackend,
+            UseSeparateRenderThread = true,
+        };
+        var engine = new SandboxEngineInstaller();
+        
         var context = new EngineContext
         {
             Name = "Game Engine",
             View = _window!,
-            GraphicsBackend = _graphicsBackend,
-        }.WithAssemblies(AppDomain.CurrentDomain.GetAssemblies()).WithInstaller(new ExampleEngineInstaller());
+        }.WithAssemblies(AppDomain.CurrentDomain.GetAssemblies()).WithInstaller(render).WithInstaller(engine);
         
         _engine.Run(context);
 
-        _sessionContext = new SessionContext().WithInstaller(new ExampleSessionInstaller());
+        _sessionContext = new SessionContext().WithInstaller(new SandboxSessionInstaller());
         
         _engine.Run(_sessionContext);
         

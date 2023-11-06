@@ -2,9 +2,9 @@
 using RedHerring.ImGui;
 using RedHerring.Infusion;
 
-namespace RedHerring.Examples;
+namespace RedHerring.Sandbox;
 
-public class ExampleEngineInstaller : IBindingsInstaller
+public class SandboxEngineInstaller : IBindingsInstaller
 {
     public void InstallBindings(ContainerDescription description)
     {

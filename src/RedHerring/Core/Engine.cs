@@ -1,7 +1,7 @@
 ﻿using RedHerring.Alexandria;
-using RedHerring.Core.Systems;
 using RedHerring.Exceptions;
 using RedHerring.Game;
+using RedHerring.Render;
 using Silk.NET.Maths;
 
 namespace RedHerring.Core;
@@ -9,7 +9,7 @@ namespace RedHerring.Core;
 public sealed class Engine : ANamedDisposer
 {
     public EngineContext Context { get; private set; } = null!;
-    public GraphicsSystem? Renderer { get; private set; } = null!;
+    public Renderer Renderer { get; private set; } = null!;
     public Session? Session { get; private set; }
     public bool IsRunning { get; private set; }
     public bool IsExiting { get; private set; }
@@ -87,11 +87,11 @@ public sealed class Engine : ANamedDisposer
         ++_frameCount;
         _drawTimeTracker.Update(TimeSpan.FromSeconds(delta));
         
-        bool isDrawing = Renderer?.BeginDraw() ?? false;
+        bool isDrawing = Renderer.BeginDraw();
         if (isDrawing)
         {
             Draw(DrawTime);
-            Renderer!.EndDraw();
+            Renderer.EndDraw();
         }
     }
 
@@ -128,7 +128,14 @@ public sealed class Engine : ANamedDisposer
         Context.Init(this);
         await Context.Load();
 
-        Renderer = Context.Container.Resolve<GraphicsSystem>();
+        if (Context.Container.HasBinding<Renderer>())
+        {
+            Renderer = Context.Container.Resolve<Renderer>();
+        }
+        else
+        {
+            Renderer = new NullRenderer();
+        }
     }
 
     private void Draw(GameTime time)

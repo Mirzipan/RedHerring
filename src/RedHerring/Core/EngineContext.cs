@@ -5,7 +5,6 @@ using RedHerring.Deduction;
 using RedHerring.Infusion;
 using RedHerring.Infusion.Injectors;
 using Silk.NET.Windowing;
-using Veldrid;
 
 namespace RedHerring.Core;
 
@@ -30,8 +29,6 @@ public sealed class EngineContext : ANamedDisposer
     public Engine? Engine => _engine;
     public InjectionContainer Container => _container;
     public IView View { get; set; } = null!;
-    public GraphicsBackend GraphicsBackend { get; set; }
-    public bool UseSeparateRenderThread { get; set; }
 
     #region Lifecycle
 

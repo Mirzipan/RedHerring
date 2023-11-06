@@ -1,9 +1,9 @@
 ﻿using RedHerring.Game.Components;
 using RedHerring.Infusion;
 
-namespace RedHerring.Examples;
+namespace RedHerring.Sandbox;
 
-public class ExampleSessionInstaller : IBindingsInstaller
+public class SandboxSessionInstaller : IBindingsInstaller
 {
     public void InstallBindings(ContainerDescription description)
     {
