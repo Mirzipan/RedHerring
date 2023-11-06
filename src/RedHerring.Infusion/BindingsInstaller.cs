@@ -1,6 +1,6 @@
 ﻿namespace RedHerring.Infusion;
 
-public interface IBindingsInstaller
+public interface BindingsInstaller
 {
     void InstallBindings(ContainerDescription description);
 }

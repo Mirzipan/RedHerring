@@ -15,7 +15,7 @@ public sealed class SessionContext : ANamedDisposer
     private readonly List<IUpdatable> _currentlyUpdatingComponents = new();
     private readonly List<IDrawable> _currentlyDrawingComponents = new();
 
-    private readonly List<IBindingsInstaller> _installers = new();
+    private readonly List<BindingsInstaller> _installers = new();
 
     private Engine? _engine;
     private Session? _session;
@@ -85,19 +85,19 @@ public sealed class SessionContext : ANamedDisposer
 
     #region Manipulation
 
-    public SessionContext WithInstallers(IEnumerable<IBindingsInstaller> installers)
+    public SessionContext WithInstallers(IEnumerable<BindingsInstaller> installers)
     {
         _installers.AddRange(installers);
         return this;
     }
 
-    public SessionContext WithInstallers(params IBindingsInstaller[] installers)
+    public SessionContext WithInstallers(params BindingsInstaller[] installers)
     {
         _installers.AddRange(installers);
         return this;
     }
 
-    public SessionContext WithInstaller(IBindingsInstaller installer)
+    public SessionContext WithInstaller(BindingsInstaller installer)
     {
         _installers.Add(installer);
         return this;

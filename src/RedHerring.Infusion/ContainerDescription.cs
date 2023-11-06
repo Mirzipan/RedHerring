@@ -68,9 +68,9 @@ public sealed class ContainerDescription
     
     #region Private
 
-    private void Build(out IDisposable disposable, out ListDictionary<Type, AResolver> resolvers)
+    private void Build(out IDisposable disposable, out ListDictionary<Type, Resolver> resolvers)
     {
-        resolvers = new ListDictionary<Type, AResolver>();
+        resolvers = new ListDictionary<Type, Resolver>();
         var disposer = new CompositeDisposable();
         disposable = disposer;
         
@@ -93,7 +93,7 @@ public sealed class ContainerDescription
         }
     }
     
-    private ContainerDescription Add(Type concrete, Type[] contracts, Func<AResolver> resolverFactory)
+    private ContainerDescription Add(Type concrete, Type[] contracts, Func<Resolver> resolverFactory)
     {
         ValidateContracts(concrete, contracts);
         var resolver = resolverFactory.Invoke();

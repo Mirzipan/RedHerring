@@ -2,7 +2,7 @@
 
 namespace RedHerring.Infusion.Resolvers;
 
-internal sealed class TransientResolver : AResolver
+internal sealed class TransientResolver : Resolver
 {
     public TransientResolver(Type contract)
     {

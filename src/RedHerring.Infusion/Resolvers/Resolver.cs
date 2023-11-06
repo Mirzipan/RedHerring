@@ -2,7 +2,7 @@
 
 namespace RedHerring.Infusion.Resolvers;
 
-public abstract class AResolver : ANamedDisposer
+public abstract class Resolver : ANamedDisposer
 {
     public Type Contract { get; protected set; }
     

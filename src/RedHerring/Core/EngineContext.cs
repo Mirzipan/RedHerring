@@ -21,7 +21,7 @@ public sealed class EngineContext : ANamedDisposer
     private readonly List<IDrawable> _currentlyDrawingSystems = new();
 
     private readonly AssemblyCollection _indexedAssemblies = new();
-    private readonly List<IBindingsInstaller> _installers = new();
+    private readonly List<BindingsInstaller> _installers = new();
 
     private Engine? _engine;
     private InjectionContainer _container = null!;
@@ -131,19 +131,19 @@ public sealed class EngineContext : ANamedDisposer
         return this;
     }
 
-    public EngineContext WithInstallers(IEnumerable<IBindingsInstaller> installers)
+    public EngineContext WithInstallers(IEnumerable<BindingsInstaller> installers)
     {
         _installers.AddRange(installers);
         return this;
     }
 
-    public EngineContext WithInstallers(params IBindingsInstaller[] installers)
+    public EngineContext WithInstallers(params BindingsInstaller[] installers)
     {
         _installers.AddRange(installers);
         return this;
     }
 
-    public EngineContext WithInstaller(IBindingsInstaller installer)
+    public EngineContext WithInstaller(BindingsInstaller installer)
     {
         _installers.Add(installer);
         return this;

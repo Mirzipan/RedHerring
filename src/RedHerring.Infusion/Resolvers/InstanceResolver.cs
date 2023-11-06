@@ -2,7 +2,7 @@
 
 namespace RedHerring.Infusion.Resolvers;
 
-internal sealed class InstanceResolver : AResolver
+internal sealed class InstanceResolver : Resolver
 {
     private readonly object _instance;
 

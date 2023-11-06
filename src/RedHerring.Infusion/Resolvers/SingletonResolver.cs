@@ -2,7 +2,7 @@
 
 namespace RedHerring.Infusion.Resolvers;
 
-internal sealed class SingletonResolver : AResolver
+internal sealed class SingletonResolver : Resolver
 {
     private object? _instance;
     

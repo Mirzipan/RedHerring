@@ -3,7 +3,7 @@ using RedHerring.Infusion;
 
 namespace RedHerring.Sandbox;
 
-public class SandboxSessionInstaller : IBindingsInstaller
+public class SandboxSessionInstaller : BindingsInstaller
 {
     public void InstallBindings(ContainerDescription description)
     {

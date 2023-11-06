@@ -5,7 +5,7 @@ using Veldrid;
 
 namespace RedHerring.Render;
 
-public class RenderInstaller : IBindingsInstaller
+public class RenderInstaller : BindingsInstaller
 {
     private IView _view;
     public GraphicsBackend Backend;

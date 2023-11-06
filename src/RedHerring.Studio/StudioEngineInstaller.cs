@@ -3,7 +3,7 @@ using RedHerring.Infusion;
 
 namespace RedHerring.Studio;
 
-public class StudioEngineInstaller : IBindingsInstaller
+public class StudioEngineInstaller : BindingsInstaller
 {
 	public void InstallBindings(ContainerDescription description)
 	{

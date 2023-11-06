@@ -10,11 +10,11 @@ public sealed class InjectionContainer : ANamedDisposer
 {
     internal InjectionContainer? Parent { get; private set; }
     internal List<InjectionContainer> Children { get; } = new();
-    internal ListDictionary<Type, AResolver> ResolversByContract;
+    internal ListDictionary<Type, Resolver> ResolversByContract;
 
     #region Lifecycle
 
-    internal InjectionContainer(string name, ListDictionary<Type, AResolver> resolvers, IDisposable disposable) : base(name)
+    internal InjectionContainer(string name, ListDictionary<Type, Resolver> resolvers, IDisposable disposable) : base(name)
     {
         ResolversByContract = resolvers;
         disposable.DisposeWith(this);
@@ -85,7 +85,7 @@ public sealed class InjectionContainer : ANamedDisposer
         ResolversByContract.Add(typeof(InjectionContainer), new InstanceResolver(this));
     }
 
-    private IEnumerable<AResolver>? Resolvers(Type type)
+    private IEnumerable<Resolver>? Resolvers(Type type)
     {
         return ResolversByContract.TryGet(type, out var result) ? result : null;
     }
