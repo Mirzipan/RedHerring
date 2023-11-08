@@ -50,7 +50,7 @@ public sealed class ProjectModel
 
 		try
 		{
-			RecursiveScan(assetsPath, assetsFolder);
+			RecursiveScan(assetsPath, "", assetsFolder);
 		}
 		catch (Exception e)
 		{
@@ -61,16 +61,17 @@ public sealed class ProjectModel
 		_assetsFolder = assetsFolder;
 	}
 
-	private void RecursiveScan(string path, ProjectFolderNode root)
+	private void RecursiveScan(string path, string relativePath, ProjectFolderNode root)
 	{
 		// scan directories
 		foreach (string directoryPath in Directory.EnumerateDirectories(path))
 		{
-			string            directory  = Path.GetFileName(directoryPath);
-			ProjectFolderNode folderNode = new(directory, directoryPath);
+			string            directory             = Path.GetFileName(directoryPath);
+			string            relativeDirectoryPath = Path.Combine(relativePath, directory);
+			ProjectFolderNode folderNode            = new(directory, directoryPath, relativeDirectoryPath);
 			root.Children.Add(folderNode);
 			
-			RecursiveScan(directoryPath, folderNode);
+			RecursiveScan(directoryPath, relativeDirectoryPath, folderNode);
 		}
 
 		// scan files except meta
@@ -82,7 +83,8 @@ public sealed class ProjectModel
 				continue;
 			}
 
-			ProjectFileNode fileNode = new(fileName, filePath);
+			string          relativeFilePath = Path.Combine(relativePath, fileName);
+			ProjectFileNode fileNode         = new(fileName, filePath, relativeFilePath);
 			root.Children.Add(fileNode);
 		}
 	}

@@ -70,6 +70,9 @@ public sealed class ImporterThread
 			return;
 		}
 
+		// resources path
+		string resourcePath = Path.Combine(_studioModel.Project.ProjectSettings.AbsoluteResourcesPath, node.RelativePath);
+		
 		// process
 		List<ImporterProcessor> processors = _registry.GetProcessors(intermediate.GetType());
 		foreach (ImporterProcessor processor in processors)
@@ -79,7 +82,7 @@ public sealed class ImporterThread
 				return;
 			}
 
-			processor.Process(intermediate, node.Meta.ImporterSettings);
+			processor.Process(intermediate, node.Meta.ImporterSettings, resourcePath);
 		}
 	}
 }

@@ -2,5 +2,5 @@
 
 public interface ImporterProcessor
 {
-	void Process(object? intermediate, ImporterSettings settings);
+	void Process(object? intermediate, ImporterSettings settings, string resourcePath);
 }

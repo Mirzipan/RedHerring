@@ -7,7 +7,7 @@ public sealed class ProjectFileNode : AProjectNode
 {
 	private static readonly HashAlgorithm _hashAlgorithm = SHA1.Create();
 	
-	public ProjectFileNode(string name, string path) : base(name, path)
+	public ProjectFileNode(string name, string path, string relativePath) : base(name, path, relativePath)
 	{
 	}
 

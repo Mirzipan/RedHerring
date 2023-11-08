@@ -6,14 +6,16 @@ public abstract class AProjectNode
 {
 	public          string   Name { get; set; }
 	public readonly string   Path;
+	public readonly string   RelativePath; // relative path inside Assets directory
 	public          Metadata Meta = null!;
 	
 	public string Extension => System.IO.Path.GetExtension(Path).ToLower();	// cache if needed
 
-	protected AProjectNode(string name, string path)
+	protected AProjectNode(string name, string path, string relativePath)
 	{
-		Name = name;
-		Path = path;
+		Name         = name;
+		Path         = path;
+		RelativePath = relativePath;
 	}
 
 	public abstract Task InitMetaRecursive(MigrationManager migrationManager);

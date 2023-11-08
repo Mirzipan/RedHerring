@@ -3,8 +3,16 @@
 [ImporterProcessor(typeof(SceneIntermediate))]
 public sealed class SceneMeshImporterProcessor : AssetImporterProcessor<SceneIntermediate, SceneImporterSettings>
 {
-	protected override void Process(SceneIntermediate? intermediate, SceneImporterSettings settings)
+	protected override void Process(SceneIntermediate? intermediate, SceneImporterSettings settings, string resourcePath)
 	{
-		Console.WriteLine("SceneIntermediate");
+		if (intermediate == null)
+		{
+			return;
+		}
+
+		
+		
+		//Directory.CreateDirectory(resourcePath);
+		//File.WriteAllBytes(resourcePath, intermediate.Data);
 	}
 }

@@ -7,7 +7,7 @@ public class ProjectFolderNode : AProjectNode
 {
 	public ObservableCollection<AProjectNode> Children { get; init; } = new();
 	
-	public ProjectFolderNode(string name, string path) : base(name, path)
+	public ProjectFolderNode(string name, string path, string relativePath) : base(name, path, relativePath)
 	{
 	}
 

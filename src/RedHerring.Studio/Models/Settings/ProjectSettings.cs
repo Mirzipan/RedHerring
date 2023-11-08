@@ -13,6 +13,10 @@ public sealed class ProjectSettings
 
 	[NonSerialized] private string? _relativeResourcesPath;
 	public                  string  RelativeResourcesPath => _relativeResourcesPath ??= "Resources_" + TargetPlatform;
+
+	[NonSerialized] private string? _absoluteResourcesPath;
+	public                  string  AbsoluteResourcesPath => _absoluteResourcesPath ??= Path.Combine(GameFolderPath, RelativeResourcesPath);
+
 }
 
 #region Migration
