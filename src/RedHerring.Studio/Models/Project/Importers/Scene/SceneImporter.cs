@@ -11,7 +11,10 @@ public class SceneImporter : AssetImporter<SceneIntermediate, SceneImporterSetti
 		AssimpContext context = new();
 		context.SetConfig(new NormalSmoothingAngleConfig(66.0f)); // just for testing
 
-		Scene scene = context.ImportFileFromStream(stream, PostProcessSteps.Triangulate);
+		Scene scene = context.ImportFileFromStream(stream,
+			PostProcessSteps.Triangulate
+		);
+		
 		return new SceneIntermediate(scene);
 	}
 }
