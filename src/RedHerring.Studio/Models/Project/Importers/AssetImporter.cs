@@ -4,5 +4,5 @@ public abstract class AssetImporter<TIntermediate, TSettings> : Importer where T
 {
 	object? Importer.Import(Stream stream, ImporterSettings settings) => Import(stream, (TSettings)settings);
 
-	public abstract TIntermediate? Import(Stream stream, TSettings settings);
+	protected abstract TIntermediate? Import(Stream stream, TSettings settings);
 }

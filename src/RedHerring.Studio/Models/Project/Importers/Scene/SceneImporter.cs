@@ -1,10 +1,17 @@
+using Assimp;
+using Assimp.Configs;
+
 namespace RedHerring.Studio.Models.Project.Importers;
 
-[Importer("fbx", "obj")]
+[Importer(".fbx", ".obj")]
 public class SceneImporter : AssetImporter<SceneIntermediate, SceneImporterSettings>
 {
-	public override SceneIntermediate Import(Stream stream, SceneImporterSettings settings)
+	protected override SceneIntermediate Import(Stream stream, SceneImporterSettings settings)
 	{
-		return new SceneIntermediate();
+		AssimpContext context = new();
+		context.SetConfig(new NormalSmoothingAngleConfig(66.0f)); // just for testing
+
+		Scene scene = context.ImportFileFromStream(stream, PostProcessSteps.Triangulate);
+		return new SceneIntermediate(scene);
 	}
 }

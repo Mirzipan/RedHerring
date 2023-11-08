@@ -28,6 +28,7 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 	[Infuse] private GraphicsSystem   _graphicsSystem   = null!;
 	[Infuse] private MetadataDatabase _metadataDatabase = null!;
 	[Infuse] private ToolManager      _toolManager;
+	[Infuse] private ImporterRegistry _importerRegistry = null!;
 
 	public bool IsEnabled   => true;
 	public int  UpdateOrder => int.MaxValue;
@@ -66,7 +67,7 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 		InitInput();
 		InitMenu();
 		_toolManager.Init(_studioModel);
-		_importerThread = new ImporterThread(_studioModel);
+		_importerThread = new ImporterThread(_studioModel, _importerRegistry);
 
 		// load settings and restore state
 		await LoadSettingsAsync();

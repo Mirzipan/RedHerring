@@ -7,7 +7,5 @@ public class CopyIntermediate
 	public CopyIntermediate(byte[] data)
 	{
 		Data = data;
-		
-		Console.WriteLine("CopyIntermediate data size: " + data.Length);
 	}
 }

@@ -8,7 +8,7 @@ public abstract class AProjectNode
 	public readonly string   Path;
 	public          Metadata Meta = null!;
 	
-	public string Extension => System.IO.Path.GetExtension(Path);
+	public string Extension => System.IO.Path.GetExtension(Path).ToLower();	// cache if needed
 
 	protected AProjectNode(string name, string path)
 	{

@@ -1,6 +1,6 @@
 ﻿namespace RedHerring.Deduction;
 
-[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+[AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
 public class AttributeIndexerAttribute : Attribute
 {
     public Type AttributeType { get; }

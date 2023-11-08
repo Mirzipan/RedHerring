@@ -8,12 +8,13 @@ public sealed class ImporterThread
 {
 	private readonly CancellationTokenSource _cancellationTokenSource = new();
 	private readonly EventWaitHandle         _waitHandle              = new AutoResetEvent(false);
-	private readonly ImporterRegistry        _importerRegistry        = new();
 	private readonly StudioModel             _studioModel;
+	private readonly ImporterRegistry        _registry;
 	
-	public ImporterThread(StudioModel studioModel)
+	public ImporterThread(StudioModel studioModel, ImporterRegistry registry)
 	{
 		_studioModel = studioModel;
+		_registry    = registry;
 		Start();
 	}
 
@@ -60,9 +61,23 @@ public sealed class ImporterThread
 			return;
 		}
 
-		Importer importer = _importerRegistry.GetImporter(node.Extension);
+		Importer importer = _registry.GetImporter(node.Extension);
 		
 		using Stream stream = File.OpenRead(node.Path);
-		importer.Import(stream, node.Meta.ImporterSettings);
+		object? intermediate = importer.Import(stream, node.Meta.ImporterSettings);
+
+		if (intermediate != null)
+		{
+			List<ImporterProcessor> processors = _registry.GetProcessors(intermediate.GetType());
+			foreach (ImporterProcessor processor in processors)
+			{
+				if (_cancellationTokenSource.IsCancellationRequested)
+				{
+					return;
+				}
+
+				processor.Process(intermediate, node.Meta.ImporterSettings);
+			}
+		}
 	}
 }
