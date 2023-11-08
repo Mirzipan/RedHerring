@@ -21,9 +21,6 @@ public class StudioModel
 
 	private StudioSettings  _studioSettings = new();
 	public  StudioSettings  StudioSettings => _studioSettings;
-	
-	private ProjectSettings _projectSettings = new();
-	public  ProjectSettings ProjectSettings => _projectSettings;
 
 	private CommandHistory _commandHistory = new();
 	public  CommandHistory CommandHistory => _commandHistory;
@@ -46,6 +43,7 @@ public class StudioModel
 	public void Cancel()
 	{
 		_taskProcessor.Cancel();
+		Project.Close();
 	}
 
 	public async Task OpenProject(string path)

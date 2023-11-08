@@ -61,23 +61,25 @@ public sealed class ImporterThread
 			return;
 		}
 
+		// import
 		Importer importer = _registry.GetImporter(node.Extension);
-		
 		using Stream stream = File.OpenRead(node.Path);
 		object? intermediate = importer.Import(stream, node.Meta.ImporterSettings);
-
-		if (intermediate != null)
+		if (intermediate == null)
 		{
-			List<ImporterProcessor> processors = _registry.GetProcessors(intermediate.GetType());
-			foreach (ImporterProcessor processor in processors)
-			{
-				if (_cancellationTokenSource.IsCancellationRequested)
-				{
-					return;
-				}
+			return;
+		}
 
-				processor.Process(intermediate, node.Meta.ImporterSettings);
+		// process
+		List<ImporterProcessor> processors = _registry.GetProcessors(intermediate.GetType());
+		foreach (ImporterProcessor processor in processors)
+		{
+			if (_cancellationTokenSource.IsCancellationRequested)
+			{
+				return;
 			}
+
+			processor.Process(intermediate, node.Meta.ImporterSettings);
 		}
 	}
 }

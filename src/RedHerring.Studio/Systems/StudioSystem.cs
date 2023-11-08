@@ -73,7 +73,7 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 		await LoadSettingsAsync();
 		
 		// debug
-		_projectSettings = new SettingsDialog("Project settings", _studioModel.CommandHistory, _studioModel.ProjectSettings);
+		_projectSettings = new SettingsDialog("Project settings", _studioModel.CommandHistory, _studioModel.Project.ProjectSettings);
 		_studioSettings  = new SettingsDialog("Studio settings",  _studioModel.CommandHistory, _studioModel.StudioSettings);
 
 		// start thread

@@ -7,9 +7,12 @@ namespace RedHerring.Studio.Models;
 [Serializable, SerializedClassId("project-settings-class-id")]
 public sealed class ProjectSettings
 {
-	[ReadOnlyInInspector] public string GameFolderPath = "here will be readonly path";
+	[ReadOnlyInInspector, NonSerialized] public string GameFolderPath = "[here will be path to game folder]";
 
 	public TargetPlatformEnum TargetPlatform = TargetPlatformEnum.PC;
+
+	[NonSerialized] private string? _relativeResourcesPath;
+	public                  string  RelativeResourcesPath => _relativeResourcesPath ??= "Resources_" + TargetPlatform;
 }
 
 #region Migration
@@ -21,5 +24,6 @@ public interface IProjectSettingsMigratable
 [Serializable, LatestVersion(typeof(ProjectSettings))]
 public class ProjectSettings_000 : IProjectSettingsMigratable
 {
+	public TargetPlatformEnum TargetPlatform;
 }
 #endregion

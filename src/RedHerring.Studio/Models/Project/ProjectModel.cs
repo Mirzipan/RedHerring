@@ -1,19 +1,24 @@
 using System.Reflection;
 using Migration;
 using RedHerring.Studio.Models.Project.FileSystem;
-using RedHerring.Studio.Models.Project.Importers;
 
 namespace RedHerring.Studio.Models.Project;
 
 public sealed class ProjectModel
 {
 	private const string _assetsFolderName = "Assets";
+	private const string _settingsFileName = "Project.json";
+
+	public static Assembly Assembly => typeof(ProjectModel).Assembly; 
 
 	private readonly MigrationManager _migrationManager;
 	
 	private ProjectFolderNode? _assetsFolder;
 	public  ProjectFolderNode? AssetsFolder => _assetsFolder;
 
+	private ProjectSettings? _projectSettings;
+	public  ProjectSettings ProjectSettings => _projectSettings!;
+	
 	public ProjectModel(MigrationManager migrationManager)
 	{
 		_migrationManager = migrationManager;
@@ -22,12 +27,15 @@ public sealed class ProjectModel
 	#region Open/close
 	public void Close()
 	{
+		SaveSettings();
 		_assetsFolder = null;
 	}
 	
 	public async Task Open(string projectPath)
 	{
-		string assetsPath = Path.Join(projectPath, _assetsFolderName);
+		LoadSettings(projectPath);
+		
+		string            assetsPath   = Path.Join(projectPath, _assetsFolderName);
 		ProjectFolderNode assetsFolder = new ProjectRootNode(_assetsFolderName, assetsPath);
 
 		if (!Directory.Exists(assetsPath))
@@ -58,7 +66,7 @@ public sealed class ProjectModel
 		// scan directories
 		foreach (string directoryPath in Directory.EnumerateDirectories(path))
 		{
-			string     directory  = Path.GetFileName(directoryPath);
+			string            directory  = Path.GetFileName(directoryPath);
 			ProjectFolderNode folderNode = new(directory, directoryPath);
 			root.Children.Add(folderNode);
 			
@@ -82,5 +90,37 @@ public sealed class ProjectModel
 	
 	#region Import
 	
+	#endregion
+	
+	#region Settings
+	public void SaveSettings()
+	{
+		if (_projectSettings == null)
+		{
+			return;
+		}
+
+		byte[] json = MigrationSerializer.SerializeAsync(_projectSettings, SerializedDataFormat.JSON, Assembly).Result;
+		File.WriteAllBytes(Path.Join(_projectSettings.GameFolderPath, _settingsFileName), json);
+	}
+
+	public void LoadSettings(string projectPath)
+	{
+		string path = Path.Join(projectPath, _settingsFileName);
+		if(!File.Exists(path))
+		{
+			_projectSettings = new ProjectSettings
+                              {
+                                  GameFolderPath = projectPath
+                              };
+			return;
+		}
+		
+		byte[] json = File.ReadAllBytes(path);
+		ProjectSettings settings = MigrationSerializer.DeserializeAsync<ProjectSettings, IStudioSettingsMigratable>(_migrationManager.TypesHash, json, SerializedDataFormat.JSON, _migrationManager, false, Assembly).Result;
+		settings.GameFolderPath = projectPath;
+		
+		_projectSettings = settings;
+	}
 	#endregion
 }
