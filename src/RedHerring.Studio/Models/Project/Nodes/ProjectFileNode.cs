@@ -23,4 +23,9 @@ public sealed class ProjectFileNode : AProjectNode
 		// init meta
 		await InitMeta(migrationManager, hash);
 	}
+
+	public override void TraverseRecursive(Action<AProjectNode> process, CancellationToken cancellationToken)
+	{
+		process(this);
+	}
 }

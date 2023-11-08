@@ -3,7 +3,7 @@
 namespace RedHerring.Studio.Models.Project.Importers;
 
 [Serializable, SerializedClassId("scene-importer-id")]
-public sealed class SceneImporterSettings : AnImporterSettings
+public sealed class SceneImporterSettings : ImporterSettings
 {
 	public bool Tangents = false;
 	public List<bool> UVs = new();
@@ -11,7 +11,7 @@ public sealed class SceneImporterSettings : AnImporterSettings
 
 #region Migration
 [Serializable, LatestVersion(typeof(SceneImporterSettings))]
-public class SceneImporterSettings_000 : AnImporterSettings_000
+public class SceneImporterSettings_000 : ImporterSettings_000
 {
 	public bool       Tangents;
 	public List<bool> UVs;

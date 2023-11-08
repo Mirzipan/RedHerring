@@ -11,6 +11,7 @@ using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.ImGui;
 using RedHerring.Infusion.Attributes;
 using RedHerring.Studio.Models;
+using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.Tests;
 using RedHerring.Studio.TaskProcessing;
 using RedHerring.Studio.Tools;
@@ -23,21 +24,19 @@ namespace RedHerring.Studio.Systems;
 public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 {
 	[Infuse] private InputSystem      _inputSystem      = null!;
+	[Infuse] private InputReceiver    _inputReceiver    = null!;
 	[Infuse] private GraphicsSystem   _graphicsSystem   = null!;
 	[Infuse] private MetadataDatabase _metadataDatabase = null!;
+	[Infuse] private ToolManager      _toolManager;
 
 	public bool IsEnabled   => true;
 	public int  UpdateOrder => int.MaxValue;
 
 	public bool IsVisible => true;
 	public int  DrawOrder => int.MaxValue;
-    
-	[Infuse]
-	private InputReceiver _inputReceiver = null!;
 
-	private StudioModel _studioModel = new();
-
-	[Infuse] private ToolManager _toolManager;
+	private StudioModel    _studioModel = new();
+	private ImporterThread _importerThread;
 	
 	#region User Interface
 	private readonly DockSpace      _dockSpace       = new();
@@ -67,6 +66,7 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 		InitInput();
 		InitMenu();
 		_toolManager.Init(_studioModel);
+		_importerThread = new ImporterThread(_studioModel);
 
 		// load settings and restore state
 		await LoadSettingsAsync();
@@ -74,6 +74,9 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 		// debug
 		_projectSettings = new SettingsDialog("Project settings", _studioModel.CommandHistory, _studioModel.ProjectSettings);
 		_studioSettings  = new SettingsDialog("Studio settings",  _studioModel.CommandHistory, _studioModel.StudioSettings);
+
+		// start thread
+		_importerThread.Start();
 		return 0;
 	}
 
@@ -81,6 +84,7 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 	{
 		await SaveSettingsAsync();
 		
+		_importerThread.Cancel();
 		_studioModel.Cancel(); // TODO - should we wait for cancellation of all threads?
 		return 0;
 	}
@@ -173,6 +177,7 @@ public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
 		}
         
 		await _studioModel.OpenProject(result.Path);
+		_importerThread.Continue();
 	}
 
 	private void OnExitClicked()

@@ -20,4 +20,19 @@ public class ProjectFolderNode : AProjectNode
 			await child.InitMetaRecursive(migrationManager);
 		}
 	}
+
+	public override void TraverseRecursive(Action<AProjectNode> process, CancellationToken cancellationToken)
+	{
+		process(this);
+
+		foreach (AProjectNode child in Children)
+		{
+			if(cancellationToken.IsCancellationRequested)
+			{
+				return;
+			}
+			
+			child.TraverseRecursive(process, cancellationToken);
+		}
+	}
 }

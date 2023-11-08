@@ -2,5 +2,5 @@
 
 public interface Importer
 {
-    object? Import(Stream stream);
+    object? Import(Stream stream, ImporterSettings settings);
 }
