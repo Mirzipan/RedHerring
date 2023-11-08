@@ -1,8 +1,8 @@
 namespace RedHerring.Studio.Models.Project.Importers;
 
-public abstract class AssetImporter<T_INTERMEDIATE, T_SETTINGS> : Importer where T_SETTINGS : ImporterSettings
+public abstract class AssetImporter<TIntermediate, TSettings> : Importer where TSettings : ImporterSettings
 {
-	object? Importer.Import(Stream stream, ImporterSettings settings) => Import(stream, (T_SETTINGS)settings);
+	object? Importer.Import(Stream stream, ImporterSettings settings) => Import(stream, (TSettings)settings);
 
-	public abstract T_INTERMEDIATE? Import(Stream stream, T_SETTINGS settings);
+	public abstract TIntermediate? Import(Stream stream, TSettings settings);
 }
