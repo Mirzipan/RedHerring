@@ -212,7 +212,16 @@ public sealed class EngineContext : NamedDisposer
             var system = _systems[i];
             system.SetContext(this);
             AttributeInjector.Inject(system, _container);
-            system.RaiseInit();
+
+            try
+            {
+                system.RaiseInit();
+            }
+            catch
+            {
+                //
+            }
+            
             system.DisposeWith(this);
         }
     }
