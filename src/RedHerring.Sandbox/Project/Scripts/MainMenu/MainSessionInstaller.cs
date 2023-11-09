@@ -1,9 +1,9 @@
 ﻿using RedHerring.Infusion;
-using RedHerring.Sandbox.Menus;
+using RedHerring.Sandbox.MainMenu.Session;
 
-namespace RedHerring.Sandbox;
+namespace RedHerring.Sandbox.MainMenu;
 
-public class MainMenuInstaller : BindingsInstaller
+public class MainSessionInstaller : BindingsInstaller
 {
     public void InstallBindings(ContainerDescription description)
     {

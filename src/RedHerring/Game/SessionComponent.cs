@@ -11,4 +11,10 @@ public abstract class SessionComponent : NamedDisposer
     {
         _context = context;
     }
+
+    internal void RaiseInit() => Init();
+
+    protected virtual void Init()
+    {
+    }
 }

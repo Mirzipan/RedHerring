@@ -2,11 +2,12 @@
 using ImGuiNET;
 using RedHerring.Alexandria;
 using RedHerring.Game;
+using RedHerring.Sandbox.Game;
 using static ImGuiNET.ImGui;
 
-namespace RedHerring.Sandbox.Menus;
+namespace RedHerring.Sandbox.MainMenu.Session;
 
-public class MainMenuComponent : SessionComponent, Drawable
+public sealed class MainMenuComponent : SessionComponent, Drawable
 {
     public bool IsVisible => true;
     public int DrawOrder => 0;
@@ -70,7 +71,7 @@ public class MainMenuComponent : SessionComponent, Drawable
 
     private void Quit()
     {
-        bool isOpen = false;
+        bool isOpen = true;
         
         Vector2 center = GetMainViewport().GetCenter();
         SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));

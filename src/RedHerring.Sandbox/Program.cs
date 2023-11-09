@@ -1,6 +1,7 @@
 ﻿using RedHerring.Core;
 using RedHerring.Game;
 using RedHerring.Render;
+using RedHerring.Sandbox.MainMenu;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Extensions.Veldrid;
@@ -73,7 +74,7 @@ internal class Program
         
         _engine.Run(context);
 
-        _sessionContext = new SessionContext().WithInstaller(new MainMenuInstaller());
+        _sessionContext = new SessionContext().WithInstaller(new MainSessionInstaller());
         
         _engine.Run(_sessionContext);
         

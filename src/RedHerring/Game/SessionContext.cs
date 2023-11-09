@@ -164,6 +164,7 @@ public sealed class SessionContext : NamedDisposer
             var component = _components[i];
             component.SetContext(this);
             AttributeInjector.Inject(component, _container);
+            component.RaiseInit();
             component.DisposeWith(this);
         }
     }
