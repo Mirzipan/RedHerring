@@ -29,6 +29,26 @@ public static class InjectionExtensions
         @this.AddInstance(system, types.ToArray());
 
         return @this;
+    }    
+    
+    public static ContainerDescription AddSystem<T>(this ContainerDescription @this) where T : EngineSystem
+    {
+        var type = typeof(T);
+        var types = new List<Type> { type, typeof(EngineSystem) };
+
+        if (type.IsAssignableTo(typeof(Updatable)))
+        {
+            types.Add(typeof(Updatable));
+        }
+
+        if (type.IsAssignableTo(typeof(Drawable)))
+        {
+            types.Add(typeof(Drawable));
+        }
+        
+        @this.AddSingleton(type, types.ToArray());
+
+        return @this;
     }
     
     public static ContainerDescription AddSessionComponent(this ContainerDescription @this, SessionComponent component)
@@ -46,6 +66,26 @@ public static class InjectionExtensions
         }
         
         @this.AddInstance(component, types.ToArray());
+
+        return @this;
+    }    
+    
+    public static ContainerDescription AddSessionComponent<T>(this ContainerDescription @this) where T : SessionComponent
+    {
+        var type = typeof(T);
+        var types = new List<Type> { type, typeof(SessionComponent) };
+
+        if (type.IsAssignableTo(typeof(Updatable)))
+        {
+            types.Add(typeof(Updatable));
+        }
+
+        if (type.IsAssignableTo(typeof(Drawable)))
+        {
+            types.Add(typeof(Drawable));
+        }
+        
+        @this.AddSingleton(type, types.ToArray());
 
         return @this;
     }

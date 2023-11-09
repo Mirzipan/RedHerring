@@ -63,7 +63,7 @@ internal class Program
             Backend = _graphicsBackend,
             UseSeparateRenderThread = true,
         };
-        var engine = new SandboxEngineInstaller();
+        var engine = new EngineInstaller();
         
         var context = new EngineContext
         {
@@ -73,7 +73,7 @@ internal class Program
         
         _engine.Run(context);
 
-        _sessionContext = new SessionContext().WithInstaller(new SandboxSessionInstaller());
+        _sessionContext = new SessionContext().WithInstaller(new MainMenuInstaller());
         
         _engine.Run(_sessionContext);
         
