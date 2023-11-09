@@ -1,4 +1,6 @@
-﻿using RedHerring.Alexandria;
+﻿using System.Numerics;
+using ImGuiNET;
+using RedHerring.Alexandria;
 using RedHerring.Fingerprint;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Game;
@@ -10,10 +12,26 @@ namespace RedHerring.Sandbox.Game.Session;
 
 public sealed class GameMenuComponent : SessionComponent, Drawable
 {
+    private const ImGuiWindowFlags BackgroundWindowFlags = ImGuiWindowFlags.NoSavedSettings 
+                                                           | ImGuiWindowFlags.NoCollapse 
+                                                           | ImGuiWindowFlags.NoTitleBar 
+                                                           | ImGuiWindowFlags.NoResize 
+                                                           | ImGuiWindowFlags.NoScrollbar 
+                                                           | ImGuiWindowFlags.NoMove 
+                                                           | ImGuiWindowFlags.NoBackground;
+    
+    private const ImGuiWindowFlags ChildFlags = ImGuiWindowFlags.NoSavedSettings 
+                                                | ImGuiWindowFlags.NoCollapse 
+                                                | ImGuiWindowFlags.NoTitleBar 
+                                                | ImGuiWindowFlags.AlwaysAutoResize 
+                                                | ImGuiWindowFlags.NoScrollbar 
+                                                | ImGuiWindowFlags.NoMove;
+    
     [Infuse]
     private InputReceiver _input;
     
     private bool _isVisible;
+    private bool _isOpen = true;
 
     public bool IsVisible => _isVisible;
 
@@ -35,29 +53,47 @@ public sealed class GameMenuComponent : SessionComponent, Drawable
         _input.Pop();
     }
 
-    public bool BeginDraw() => _isVisible;
+    public bool BeginDraw()
+    {
+        if (!_isVisible)
+        {
+            return false;
+        }
+        
+        SetNextWindowPos(Vector2.Zero);
+        SetNextWindowSize(GetMainViewport().Size);
+        Begin("Canvas", BackgroundWindowFlags);
+        
+        return true;
+    }
 
     public void Draw(GameTime gameTime)
     {
-        if (BeginChild("game_menu"))
+        var center = GetMainViewport().GetCenter();
+        SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+        
+        if (BeginChild("game_menu", Vector2.Zero, true, ChildFlags))
         {
-            if (Button("Resume"))
+            var buttonSize = new Vector2(300, 20);
+            
+            if (Button("Resume", buttonSize))
+            {
+                _isVisible = false;
+            }
+            
+            if (Button("Save Game", buttonSize))
             {
             }
             
-            if (Button("Save Game"))
-            {
-            }
-            
-            if (Button("Load Game"))
+            if (Button("Load Game", buttonSize))
             {
             }
 
-            if (Button("Options"))
+            if (Button("Options", buttonSize))
             {
             }
             
-            if (Button("Exit to Main Menu"))
+            if (Button("Exit to Main Menu", buttonSize))
             {
                 Exit();
             }
@@ -68,6 +104,7 @@ public sealed class GameMenuComponent : SessionComponent, Drawable
 
     public void EndDraw()
     {
+        End();
     }
 
     #endregion Lifecycle

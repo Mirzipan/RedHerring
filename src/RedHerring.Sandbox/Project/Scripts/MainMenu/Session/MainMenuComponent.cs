@@ -2,9 +2,7 @@
 using ImGuiNET;
 using RedHerring.Alexandria;
 using RedHerring.Game;
-using RedHerring.Infusion.Attributes;
 using RedHerring.Sandbox.Game;
-using Silk.NET.Windowing;
 using static ImGuiNET.ImGui;
 
 namespace RedHerring.Sandbox.MainMenu.Session;
@@ -19,8 +17,7 @@ public sealed class MainMenuComponent : SessionComponent, Drawable
                                                            | ImGuiWindowFlags.NoMove 
                                                            | ImGuiWindowFlags.NoBackground;
 
-    [Infuse]
-    private IView _view;
+    private const string QuitModalId = "quit_modal";
     
     public bool IsVisible => true;
     public int DrawOrder => 0;
@@ -30,7 +27,7 @@ public sealed class MainMenuComponent : SessionComponent, Drawable
     public bool BeginDraw()
     {
         SetNextWindowPos(Vector2.Zero);
-        SetNextWindowSize((Vector2)_view.Size);
+        SetNextWindowSize(GetMainViewport().Size);
         Begin("Canvas", BackgroundWindowFlags);
         
         return true;
@@ -38,30 +35,38 @@ public sealed class MainMenuComponent : SessionComponent, Drawable
 
     public void Draw(GameTime gameTime)
     {
-        if (BeginChild("main_menu", new Vector2(400, 600), true, BackgroundWindowFlags))
+        Spacing();
+
+        if (!BeginChild("main_menu", new Vector2(400, 600), true, BackgroundWindowFlags))
         {
-            if (Button("New Game"))
-            {
-                NewGame();
-            }
-
-            if (Button("Load Game"))
-            {
-                LoadGame();
-            }
-
-            if (Button("Options"))
-            {
-                ShowOptions();
-            }
-            
-            if (Button("Quit"))
-            {
-                Quit();
-            }
-            
-            EndChild();
+            return;
         }
+
+        if (Button("New Game"))
+        {
+            NewGame();
+        }
+
+        if (Button("Load Game"))
+        {
+            LoadGame();
+        }
+
+        if (Button("Options"))
+        {
+            ShowOptions();
+        }
+
+        if (Button("Quit"))
+        {
+            OpenPopup(QuitModalId);
+        }
+        
+        DrawQuitModal();
+
+        EndChild();
+
+        Spacing();
     }
 
     public void EndDraw()
@@ -90,36 +95,36 @@ public sealed class MainMenuComponent : SessionComponent, Drawable
         
     }
 
-    private void Quit()
+    private void DrawQuitModal()
     {
         bool isOpen = true;
         
         Vector2 center = GetMainViewport().GetCenter();
         SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-        
-        PushID("quit_modal");
-        if (BeginPopupModal("Quit", ref isOpen, ImGuiWindowFlags.AlwaysAutoResize))
-        {
-            Text("Are you sure you want to quit the game?.");
-            Separator();
 
-            if (Button("Hell Yeah!", new Vector2(120, 0))) 
-            {
-                CloseCurrentPopup();
-                Context.Engine?.Exit();
-            }
-			
-            SetItemDefaultFocus();
-            SameLine();
-			
-            if (Button("Hell No!", new Vector2(120, 0)))
-            {
-                CloseCurrentPopup();
-            }
-			
-            EndPopup();
+        if (!BeginPopupModal(QuitModalId, ref isOpen, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoMove))
+        {
+            return;
         }
-        PopID();
+
+        Text("Are you sure you want to quit the game?.");
+        Separator();
+
+        if (Button("Hell Yeah!", new Vector2(120, 0))) 
+        {
+            CloseCurrentPopup();
+            Context.Engine?.Exit();
+        }
+			
+        SetItemDefaultFocus();
+        SameLine();
+			
+        if (Button("Hell No!", new Vector2(120, 0)))
+        {
+            CloseCurrentPopup();
+        }
+			
+        EndPopup();
     }
 
     #endregion Private
