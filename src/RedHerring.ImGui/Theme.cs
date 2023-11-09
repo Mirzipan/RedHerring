@@ -247,8 +247,8 @@ public static class Theme
             0.6600000262260437f);
         style.Colors[(int)ImGuiCol.TabUnfocused] = new Vector4(0.06666667014360428f, 0.09803921729326248f,
             0.1490196138620377f, 0.9700000286102295f);
-        style.Colors[(int)ImGuiCol.TabUnfocusedActive] =
-            new Vector4(0.1372549086809158f, 0.2588235437870026f, 0.4196078479290009f, 1.0f);
+        style.Colors[(int)ImGuiCol.TabUnfocusedActive] = 
+            new Vector4(0.2588235437870026f, 0.1372549086809158f, 0.1372549086809158f, 1.0f);
         style.Colors[(int)ImGuiCol.PlotLines] =
             new Vector4(0.6078431606292725f, 0.6078431606292725f, 0.6078431606292725f, 1.0f);
         style.Colors[(int)ImGuiCol.PlotLinesHovered] =
