@@ -13,8 +13,13 @@ public abstract class SessionComponent : NamedDisposer
     }
 
     internal void RaiseInit() => Init();
+    internal void RaiseClose() => Close();
 
     protected virtual void Init()
+    {
+    }
+
+    protected virtual void Close()
     {
     }
 }

@@ -46,6 +46,7 @@ public sealed class Session : NamedDisposer
     {
         Phase = SessionPhase.Closing;
         
+        Context.Close();
         Dispose();
         // TODO: unload stuff
         // TODO: dispose of stuff

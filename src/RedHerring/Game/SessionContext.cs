@@ -39,6 +39,11 @@ public sealed class SessionContext : NamedDisposer
         RaiseInitOnComponents();
     }
 
+    internal void Close()
+    {
+        RaiseCloseOnComponents();
+    }
+
     internal void Update(GameTime gameTime)
     {
         _currentlyUpdatingComponents.AddRange(_updatables);
@@ -166,6 +171,21 @@ public sealed class SessionContext : NamedDisposer
             AttributeInjector.Inject(component, _container);
             component.RaiseInit();
             component.DisposeWith(this);
+        }
+    }
+
+    private void RaiseCloseOnComponents()
+    {
+        if (_components.Count == 0)
+        {
+            return;
+        }
+        
+        int count = _components.Count;
+        for (int i = 0; i < count; i++)
+        {
+            var component = _components[i];
+            component.RaiseClose();
         }
     }
 

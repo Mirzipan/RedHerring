@@ -8,7 +8,7 @@ public class GameSessionInstaller : BindingsInstaller
 {
     public void InstallBindings(ContainerDescription description)
     {
-        description.AddSingleton<GameMenuComponent>();
-        description.AddInstance(new WorldComponent());
+        description.AddSessionComponent<GameMenuComponent>();
+        description.AddSessionComponent(new WorldComponent());
     }
 }
