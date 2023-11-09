@@ -8,7 +8,7 @@ using RedHerring.Infusion.Attributes;
 
 namespace RedHerring.Core.Systems;
 
-public sealed class InputSystem : AnEngineSystem, IUpdatable
+public sealed class InputSystem : EngineSystem, Updatable
 {
     [Infuse]
     private Input _input = null!;

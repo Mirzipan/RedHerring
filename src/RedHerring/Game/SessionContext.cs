@@ -6,14 +6,14 @@ using RedHerring.Infusion.Injectors;
 
 namespace RedHerring.Game;
 
-public sealed class SessionContext : ANamedDisposer
+public sealed class SessionContext : NamedDisposer
 {
-    private readonly List<ASessionComponent> _components = new();
-    private readonly List<IUpdatable> _updatables = new();
-    private readonly List<IDrawable> _drawables = new();
+    private readonly List<SessionComponent> _components = new();
+    private readonly List<Updatable> _updatables = new();
+    private readonly List<Drawable> _drawables = new();
     
-    private readonly List<IUpdatable> _currentlyUpdatingComponents = new();
-    private readonly List<IDrawable> _currentlyDrawingComponents = new();
+    private readonly List<Updatable> _currentlyUpdatingComponents = new();
+    private readonly List<Drawable> _currentlyDrawingComponents = new();
 
     private readonly List<BindingsInstaller> _installers = new();
 
@@ -123,7 +123,7 @@ public sealed class SessionContext : ANamedDisposer
 
     private void ResolveComponents()
     {
-        _components.AddRange(_container.ResolveAll<ASessionComponent>());
+        _components.AddRange(_container.ResolveAll<SessionComponent>());
         int count = _components.Count;
         if (count == 0)
         {
@@ -133,12 +133,12 @@ public sealed class SessionContext : ANamedDisposer
         for (int i = 0; i < count; i++)
         {
             var component = _components[i];
-            if (component is IUpdatable updatable)
+            if (component is Updatable updatable)
             {
                 _updatables.Add(updatable);
             }
             
-            if (component is IDrawable drawable)
+            if (component is Drawable drawable)
             {
                 _drawables.Add(drawable);
             }

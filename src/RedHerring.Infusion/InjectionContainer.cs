@@ -6,7 +6,7 @@ using RedHerring.Infusion.Resolvers;
 
 namespace RedHerring.Infusion;
 
-public sealed class InjectionContainer : ANamedDisposer
+public sealed class InjectionContainer : NamedDisposer
 {
     internal InjectionContainer? Parent { get; private set; }
     internal List<InjectionContainer> Children { get; } = new();

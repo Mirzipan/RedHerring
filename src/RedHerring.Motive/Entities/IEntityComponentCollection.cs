@@ -3,6 +3,6 @@ using RedHerring.Alexandria.Components;
 
 namespace RedHerring.Motive.Entities;
 
-public interface IEntityComponentCollection : IComponentContainer, IEnumerable<AnEntityComponent>, IEnumerable
+public interface IEntityComponentCollection : IComponentContainer, IEnumerable<EntityComponent>, IEnumerable
 {
 }

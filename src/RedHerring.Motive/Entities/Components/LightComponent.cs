@@ -3,7 +3,7 @@ using Vortice.Mathematics;
 
 namespace RedHerring.Motive.Entities.Components;
 
-public class LightComponent : AnEntityComponent, IActivatable
+public class LightComponent : EntityComponent, Activatable
 {
     public bool IsActive { get; set; }
     public Color Color { get; set; }

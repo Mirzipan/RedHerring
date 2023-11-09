@@ -4,7 +4,7 @@ using RedHerring.Render.Features;
 
 namespace RedHerring.Core.Systems;
 
-public sealed class GraphicsSystem : AnEngineSystem
+public sealed class GraphicsSystem : EngineSystem
 {
     [Infuse]
     private Renderer _renderer = null!;

@@ -2,7 +2,7 @@
 
 namespace RedHerring.Motive.Entities.Components;
 
-public abstract class ARenderComponent : AnEntityComponent
+public abstract class RenderComponent : EntityComponent
 {
     // TODO: inject
     private readonly ModelComponent? _modelComponent;

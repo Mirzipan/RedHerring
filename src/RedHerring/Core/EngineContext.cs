@@ -11,14 +11,14 @@ namespace RedHerring.Core;
 /// <summary>
 /// Context used for running the engine.
 /// </summary>
-public sealed class EngineContext : ANamedDisposer
+public sealed class EngineContext : NamedDisposer
 {
-    private readonly List<AnEngineSystem> _systems = new();
-    private readonly List<IUpdatable> _updatables = new();
-    private readonly List<IDrawable> _drawables = new();
+    private readonly List<EngineSystem> _systems = new();
+    private readonly List<Updatable> _updatables = new();
+    private readonly List<Drawable> _drawables = new();
     
-    private readonly List<IUpdatable> _currentlyUpdatingSystems = new();
-    private readonly List<IDrawable> _currentlyDrawingSystems = new();
+    private readonly List<Updatable> _currentlyUpdatingSystems = new();
+    private readonly List<Drawable> _currentlyDrawingSystems = new();
 
     private readonly AssemblyCollection _indexedAssemblies = new();
     private readonly List<BindingsInstaller> _installers = new();
@@ -171,7 +171,7 @@ public sealed class EngineContext : ANamedDisposer
 
     private void ResolveComponents()
     {
-        _systems.AddRange(_container.ResolveAll<AnEngineSystem>());
+        _systems.AddRange(_container.ResolveAll<EngineSystem>());
         int count = _systems.Count;
         if (count == 0)
         {
@@ -181,12 +181,12 @@ public sealed class EngineContext : ANamedDisposer
         for (int i = 0; i < count; i++)
         {
             var system = _systems[i];
-            if (system is IUpdatable updatable)
+            if (system is Updatable updatable)
             {
                 _updatables.Add(updatable);
             }
             
-            if (system is IDrawable drawable)
+            if (system is Drawable drawable)
             {
                 _drawables.Add(drawable);
             }

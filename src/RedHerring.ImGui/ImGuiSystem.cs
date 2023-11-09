@@ -9,7 +9,7 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.ImGui;
 
-public class ImGuiSystem : AnEngineSystem, IUpdatable, IDrawable
+public class ImGuiSystem : EngineSystem, Updatable, Drawable
 {
     [Infuse]
     private InputSystem _inputSystem = null!;

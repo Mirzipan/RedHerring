@@ -3,7 +3,7 @@ using RedHerring.Alexandria;
 
 namespace RedHerring.Motive.Entities.Components;
 
-public abstract class APhysicsComponent : AnEntityComponent, IActivatable
+public abstract class PhysicsComponent : EntityComponent, Activatable
 {
     public bool IsActive { get; set; }
     

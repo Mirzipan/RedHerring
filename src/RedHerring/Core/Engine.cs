@@ -6,7 +6,7 @@ using Silk.NET.Maths;
 
 namespace RedHerring.Core;
 
-public sealed class Engine : ANamedDisposer
+public sealed class Engine : NamedDisposer
 {
     private Session? _session;
     

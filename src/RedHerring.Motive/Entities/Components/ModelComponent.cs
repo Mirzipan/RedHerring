@@ -3,7 +3,7 @@ using Vortice.Mathematics;
 
 namespace RedHerring.Motive.Entities.Components;
 
-public sealed class ModelComponent : AnEntityComponent
+public sealed class ModelComponent : EntityComponent
 {
     private Model? _model;
     private bool _isDirty;

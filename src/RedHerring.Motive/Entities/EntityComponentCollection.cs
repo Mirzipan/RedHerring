@@ -6,7 +6,7 @@ namespace RedHerring.Motive.Entities;
 public sealed class EntityComponentCollection : IEntityComponentCollection
 {
     // We don't use a dictionary, because we allows for duplicate components.
-    private readonly List<AnEntityComponent> _components = new();
+    private readonly List<EntityComponent> _components = new();
 
     public Entity Entity { get; }
     
@@ -23,13 +23,13 @@ public sealed class EntityComponentCollection : IEntityComponentCollection
         return index >= 0 ? _components[index] : null;
     }
 
-    public TComponent? Get<TComponent>() where TComponent : AnEntityComponent
+    public TComponent? Get<TComponent>() where TComponent : EntityComponent
     {
         int index = IndexOf<TComponent>();
         return index >= 0 ? _components[index] as TComponent : null;
     }
 
-    public TComponent GetOrCreate<TComponent>() where TComponent : AnEntityComponent, new()
+    public TComponent GetOrCreate<TComponent>() where TComponent : EntityComponent, new()
     {
         if (!TryGet<TComponent>(out var component))
         {
@@ -40,7 +40,7 @@ public sealed class EntityComponentCollection : IEntityComponentCollection
         return component!;
     }
 
-    public IEnumerable<TComponent> GetAll<TComponent>() where TComponent : AnEntityComponent
+    public IEnumerable<TComponent> GetAll<TComponent>() where TComponent : EntityComponent
     {
         for (int i = 0; i < _components.Count; i++)
         {
@@ -52,7 +52,7 @@ public sealed class EntityComponentCollection : IEntityComponentCollection
         }
     }
 
-    public bool TryGet<TComponent>(out TComponent? component) where TComponent : AnEntityComponent
+    public bool TryGet<TComponent>(out TComponent? component) where TComponent : EntityComponent
     {
         int index = IndexOf<TComponent>();
         if (index >= 0)
@@ -65,7 +65,7 @@ public sealed class EntityComponentCollection : IEntityComponentCollection
         return false;
     }
 
-    public bool TryGet(Type type, out AnEntityComponent? component)
+    public bool TryGet(Type type, out EntityComponent? component)
     {
         int index = IndexOf(type);
         if (index >= 0)
@@ -78,7 +78,7 @@ public sealed class EntityComponentCollection : IEntityComponentCollection
         return false;
     }
 
-    public bool Has<TComponent>() where TComponent : AnEntityComponent => IndexOf<TComponent>() >= 0;
+    public bool Has<TComponent>() where TComponent : EntityComponent => IndexOf<TComponent>() >= 0;
 
     public bool Has(Type type) => IndexOf(type) >= 0;
 
@@ -87,7 +87,7 @@ public sealed class EntityComponentCollection : IEntityComponentCollection
     /// </summary>
     /// <typeparam name="TComponent"></typeparam>
     /// <returns>-1 if no component of the type was found.</returns>
-    public int IndexOf<TComponent>() where TComponent : AnEntityComponent
+    public int IndexOf<TComponent>() where TComponent : EntityComponent
     {
         for (int i = 0; i < _components.Count; i++)
         {
@@ -122,18 +122,18 @@ public sealed class EntityComponentCollection : IEntityComponentCollection
 
     #region Manipulation
 
-    public TComponent Add<TComponent>(TComponent component) where TComponent : AnEntityComponent
+    public TComponent Add<TComponent>(TComponent component) where TComponent : EntityComponent
     {
         AddInternal(component);
         return component;
     }
 
-    public bool Remove(AnEntityComponent component)
+    public bool Remove(EntityComponent component)
     {
         return RemoveInternal(component);
     }
 
-    public bool Remove<TComponent>(RemovalFilter filter) where TComponent : AnEntityComponent
+    public bool Remove<TComponent>(RemovalFilter filter) where TComponent : EntityComponent
     {
         return Remove(typeof(TComponent), filter);
     }
@@ -158,7 +158,7 @@ public sealed class EntityComponentCollection : IEntityComponentCollection
 
     #region IEnumerable
 
-    public IEnumerator<AnEntityComponent> GetEnumerator()
+    public IEnumerator<EntityComponent> GetEnumerator()
     {
         return _components.GetEnumerator();
     }
@@ -172,7 +172,7 @@ public sealed class EntityComponentCollection : IEntityComponentCollection
 
     #region Internals
 
-    internal void AddInternal(AnEntityComponent component)
+    internal void AddInternal(EntityComponent component)
     {
         // TODO: this will need some more logic and safety
         _components.Add(component);
@@ -187,7 +187,7 @@ public sealed class EntityComponentCollection : IEntityComponentCollection
         }
     }
 
-    internal bool RemoveInternal(AnEntityComponent component)
+    internal bool RemoveInternal(EntityComponent component)
     {
         // TODO: this will need some more logic and safety
         if (Entity.InWorld)

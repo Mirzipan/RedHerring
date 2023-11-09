@@ -1,6 +1,6 @@
 ﻿namespace RedHerring.Alexandria;
 
-public interface IDrawable
+public interface Drawable
 {
     bool IsVisible { get; }
     int DrawOrder { get; }

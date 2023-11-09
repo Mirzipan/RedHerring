@@ -5,37 +5,37 @@ namespace RedHerring.Motive.Entities;
 public static class EntityExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T? Get<T>(this Entity @this) where T : AnEntityComponent
+    public static T? Get<T>(this Entity @this) where T : EntityComponent
     {
         return @this.Components.Get<T>();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryGet<T>(this Entity @this, out T? component) where T : AnEntityComponent
+    public static bool TryGet<T>(this Entity @this, out T? component) where T : EntityComponent
     {
         return @this.Components.TryGet(out component);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryGet(this Entity @this, Type type, out AnEntityComponent? component)
+    public static bool TryGet(this Entity @this, Type type, out EntityComponent? component)
     {
         return @this.Components.TryGet(type, out component);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TComponent GetOrCreate<TComponent>(this Entity @this) where TComponent : AnEntityComponent, new()
+    public static TComponent GetOrCreate<TComponent>(this Entity @this) where TComponent : EntityComponent, new()
     {
         return @this.Components.GetOrCreate<TComponent>();
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IEnumerable<TComponent> GetAll<TComponent>(this Entity @this) where TComponent : AnEntityComponent 
+    public static IEnumerable<TComponent> GetAll<TComponent>(this Entity @this) where TComponent : EntityComponent 
     {
         return @this.Components.GetAll<TComponent>();
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Has<TComponent>(this Entity @this) where TComponent : AnEntityComponent 
+    public static bool Has<TComponent>(this Entity @this) where TComponent : EntityComponent 
     {
        return @this.Components.Has<TComponent>();
     }
@@ -47,7 +47,7 @@ public static class EntityExtensions
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int IndexOf<TComponent>(this Entity @this) where TComponent : AnEntityComponent 
+    public static int IndexOf<TComponent>(this Entity @this) where TComponent : EntityComponent 
     {
         return @this.Components.IndexOf<TComponent>();
     }

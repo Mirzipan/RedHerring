@@ -5,7 +5,7 @@ using RedHerring.Motive.Entities;
 
 namespace RedHerring.Motive.Worlds;
 
-public sealed class World : IEssence, INameable
+public sealed class World : Essence, Nameable
 {
     private World? _parent;
     private ObservableCollection<World> _children;

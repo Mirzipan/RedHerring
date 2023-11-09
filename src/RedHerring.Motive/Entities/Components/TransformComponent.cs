@@ -2,7 +2,7 @@
 
 namespace RedHerring.Motive.Entities.Components;
 
-public sealed class TransformComponent : AnEntityComponent
+public sealed class TransformComponent : EntityComponent
 {
     private TransformComponent? _parent;
     private TransformChildrenCollection _children;

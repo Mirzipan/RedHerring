@@ -1,6 +1,6 @@
 ﻿namespace RedHerring.Alexandria;
 
-public interface IActivatable
+public interface Activatable
 {
     bool IsActive { get; set; }
 }

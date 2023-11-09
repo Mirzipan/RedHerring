@@ -3,7 +3,7 @@ using RedHerring.Motive.Worlds;
 
 namespace RedHerring.Game.Components;
 
-public sealed class WorldComponent : ASessionComponent, IDrawable
+public sealed class WorldComponent : SessionComponent, Drawable
 {
     // TODO: any special tracking if necessary, if not, consider removing this component
     private World _world;

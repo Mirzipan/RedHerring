@@ -21,7 +21,7 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.Systems;
 
-public sealed class StudioSystem : AnEngineSystem, IUpdatable, IDrawable
+public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 {
 	[Infuse] private InputSystem      _inputSystem      = null!;
 	[Infuse] private InputReceiver    _inputReceiver    = null!;

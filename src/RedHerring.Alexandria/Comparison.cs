@@ -2,7 +2,7 @@
 
 public static class Comparison
 {
-    public static int Updatables(IUpdatable lhs, IUpdatable rhs) => lhs.UpdateOrder.CompareTo(rhs.UpdateOrder);
+    public static int Updatables(Updatable lhs, Updatable rhs) => lhs.UpdateOrder.CompareTo(rhs.UpdateOrder);
     
-    public static int Drawables(IDrawable lhs, IDrawable rhs) => lhs.DrawOrder.CompareTo(rhs.DrawOrder);
+    public static int Drawables(Drawable lhs, Drawable rhs) => lhs.DrawOrder.CompareTo(rhs.DrawOrder);
 }

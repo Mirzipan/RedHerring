@@ -1,6 +1,6 @@
 ﻿namespace RedHerring.Alexandria;
 
-public interface IUpdatable
+public interface Updatable
 {
     bool IsEnabled { get; }
     int UpdateOrder { get; }

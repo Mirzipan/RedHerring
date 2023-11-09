@@ -1,6 +1,6 @@
 ﻿namespace RedHerring.Alexandria;
 
-public interface INameable
+public interface Nameable
 {
     string? Name { get; }
 }

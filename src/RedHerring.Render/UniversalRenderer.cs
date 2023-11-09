@@ -9,7 +9,7 @@ using Veldrid;
 
 namespace RedHerring.Render;
 
-public sealed class UniversalRenderer : ANamedDisposer, Renderer
+public sealed class UniversalRenderer : NamedDisposer, Renderer
 {
     public readonly Thread Thread;
     

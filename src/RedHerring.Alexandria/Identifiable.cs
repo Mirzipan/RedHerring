@@ -1,6 +1,6 @@
 ﻿namespace RedHerring.Alexandria;
 
-public interface IIdentifiable
+public interface Identifiable
 {
     Guid Id { get; set; }
 }

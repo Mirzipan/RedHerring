@@ -12,18 +12,18 @@ namespace RedHerring;
 
 public static class InjectionExtensions
 {
-    public static ContainerDescription AddSystem(this ContainerDescription @this, AnEngineSystem system)
+    public static ContainerDescription AddSystem(this ContainerDescription @this, EngineSystem system)
     {
-        var types = new List<Type> { system.GetType(), typeof(AnEngineSystem) };
+        var types = new List<Type> { system.GetType(), typeof(EngineSystem) };
 
-        if (system is IUpdatable)
+        if (system is Updatable)
         {
-            types.Add(typeof(IUpdatable));
+            types.Add(typeof(Updatable));
         }
 
-        if (system is IDrawable)
+        if (system is Drawable)
         {
-            types.Add(typeof(IDrawable));
+            types.Add(typeof(Drawable));
         }
         
         @this.AddInstance(system, types.ToArray());
@@ -31,18 +31,18 @@ public static class InjectionExtensions
         return @this;
     }
     
-    public static ContainerDescription AddSessionComponent(this ContainerDescription @this, ASessionComponent component)
+    public static ContainerDescription AddSessionComponent(this ContainerDescription @this, SessionComponent component)
     {
-        var types = new List<Type> { component.GetType(), typeof(ASessionComponent) };
+        var types = new List<Type> { component.GetType(), typeof(SessionComponent) };
 
-        if (component is IUpdatable)
+        if (component is Updatable)
         {
-            types.Add(typeof(IUpdatable));
+            types.Add(typeof(Updatable));
         }
 
-        if (component is IDrawable)
+        if (component is Drawable)
         {
-            types.Add(typeof(IDrawable));
+            types.Add(typeof(Drawable));
         }
         
         @this.AddInstance(component, types.ToArray());

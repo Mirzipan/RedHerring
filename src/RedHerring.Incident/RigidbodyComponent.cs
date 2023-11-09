@@ -3,7 +3,7 @@ using RedHerring.Motive.Entities.Components;
 
 namespace RedHerring.Incident;
 
-public class RigidbodyComponent : APhysicsComponent
+public class RigidbodyComponent : PhysicsComponent
 {
     // TODO: we kinda need a physics library at this point
     

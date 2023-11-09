@@ -4,7 +4,7 @@ using RedHerring.Core;
 
 namespace RedHerring.Game;
 
-public sealed class Session : ANamedDisposer
+public sealed class Session : NamedDisposer
 {
     private Engine _engine;
     public Engine Engine => _engine;

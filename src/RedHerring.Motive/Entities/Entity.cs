@@ -7,7 +7,7 @@ using RedHerring.Numbers;
 
 namespace RedHerring.Motive.Entities;
 
-public sealed class Entity : IEssence, INameable, IEnumerable<AnEntityComponent>
+public sealed class Entity : Essence, Nameable, IEnumerable<EntityComponent>
 {
     internal TransformComponent? _transform;
     internal World? _world;
@@ -56,7 +56,7 @@ public sealed class Entity : IEssence, INameable, IEnumerable<AnEntityComponent>
 
     #region Queries
 
-    public IEnumerator<AnEntityComponent> GetEnumerator() => Components.GetEnumerator();
+    public IEnumerator<EntityComponent> GetEnumerator() => Components.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => Components.GetEnumerator();
 
     #endregion Queries
