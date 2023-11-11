@@ -4,6 +4,36 @@
 
 This document tracks more or less important decisions about the engine, in order to allow easy referencing in the future.
 
+## [2023-11-09]
+
+### Math Library
+*Decided by: Assemblerbot, Mirzipan*
+
+Due to lack of complete maths library available, we will be implementing our own.
+Libraries considered:
+* `Silk.NET` - lacks `Color`
+* `System.Numerics` - lacks integer vectors, and `Color`
+* `Vortice` - lacks float vectors
+
+This decision may be revisited in the future.
+
+## [2023-11-08]
+
+### Importers
+*Decided by: Assemblerbot, Mirzipan*
+
+Importers should be kept simple for now.
+If we find a need for more configurable and extensively modular importers in the future, then that is when they will be implemented.
+
+## [2023-11-06]
+
+### Engine Renderer
+*Decided by: Mirzipan*
+
+Engine should not care about a specific system, such as the `GraphicsSystem`. 
+Systems provide an abstraction, and APIs, and logic access grouping for code outside of the engine itself.
+As such, engine should care about Renderer interface, rather then the whole `GraphicsSystem`.
+
 ## [2023-11-03]
 
 ### Input De-abstraction
