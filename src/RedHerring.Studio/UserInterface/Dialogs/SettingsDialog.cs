@@ -7,8 +7,6 @@ namespace RedHerring.Studio.UserInterface.Dialogs;
 
 public sealed class SettingsDialog
 {
-	private bool _isOpen = true;
-
 	private readonly string    _titleId;
 	private readonly Inspector _inspector;
 
@@ -30,7 +28,8 @@ public sealed class SettingsDialog
 		Gui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
 		Gui.SetNextWindowSizeConstraints(new Vector2(400, 200), new Vector2(2000, 2000));
 
-		if (Gui.BeginPopupModal(_titleId, ref _isOpen))
+		bool isOpenUnused = true;
+		if (Gui.BeginPopupModal(_titleId, ref isOpenUnused))
 		{
 			_inspector.Update();
 			Gui.EndPopup();

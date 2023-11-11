@@ -6,8 +6,6 @@ namespace RedHerring.Studio.UserInterface.Dialogs;
 
 public class MessageBox
 {
-	private bool _isOpen = true;
-	
 	public void Update()
 	{
 		// if (Gui.Button("Open popup"))
@@ -19,7 +17,8 @@ public class MessageBox
 		
 		Gui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
 
-		if (Gui.BeginPopupModal("MessageBox", ref _isOpen, ImGuiWindowFlags.AlwaysAutoResize))
+		bool isOpenUnused = true;
+		if (Gui.BeginPopupModal("MessageBox", ref isOpenUnused, ImGuiWindowFlags.AlwaysAutoResize))
 		{
 			Gui.Text("All those beautiful files will be deleted.\nThis operation cannot be undone!");
 			Gui.Separator();
