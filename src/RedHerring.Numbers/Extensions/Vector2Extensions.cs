@@ -72,6 +72,8 @@ public static class Vector2Extensions
 
     #endregion Clamp
 
+    #region Manipulation
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 Truncate(this in Vector2 @this)
     {
@@ -83,6 +85,20 @@ public static class Vector2Extensions
     {
         return new Vector2(MathF.Round(@this.X), MathF.Round(@this.Y));
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 Abs(this in Vector2 @this)
+    {
+        return new Vector2(MathF.Abs(@this.X), MathF.Abs(@this.Y));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 Sign(this in Vector2 @this)
+    {
+        return new Vector2(MathF.Sign(@this.X), MathF.Sign(@this.Y));
+    }
+
+    #endregion Manipulation
 
     #region Rotation
 
