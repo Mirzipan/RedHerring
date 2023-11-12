@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -14,23 +13,23 @@ public struct Color : IEquatable<Color>
     internal const int Count = 4;
 
     [FieldOffset(0)]
-    private readonly uint _value;
+    private uint _value;
 
     [NonSerialized]
     [FieldOffset(0)]
-    public readonly byte R;
+    public byte R;
 
     [NonSerialized]
     [FieldOffset(1)]
-    public readonly byte G;
+    public byte G;
 
     [NonSerialized]
     [FieldOffset(2)]
-    public readonly byte B;
+    public byte B;
 
     [NonSerialized]
     [FieldOffset(3)]
-    public readonly byte A;
+    public byte A;
 
     public uint Value => _value;
 
