@@ -848,19 +848,19 @@ public struct Color : IEquatable<Color>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Color WithRed(byte red) => new(red, G, B, A);
+    public readonly Color WithRed(byte red) => new(red, G, B, A);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Color WithGreen(byte green) => new(R, green, B, A);
+    public readonly Color WithGreen(byte green) => new(R, green, B, A);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Color WithBlue(byte blue) => new(R, G, blue, A);
+    public readonly Color WithBlue(byte blue) => new(R, G, blue, A);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Color WithAlpha(byte alpha) => new(R, G, B, alpha);
+    public readonly Color WithAlpha(byte alpha) => new(R, G, B, alpha);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Color Clamp(Color min, Color max)
+    public readonly Color Clamp(Color min, Color max)
     {
         return new Color(
             byte.Clamp(R, min.R, max.R),
@@ -870,16 +870,16 @@ public struct Color : IEquatable<Color>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Color Negate()
+    public readonly Color Negate()
     {
         return new Color(255 - R, 255 - G, 255 - B, A);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Color Clamp(Color value, Color min, Color max) => value.Clamp(min, max);
+    public static Color Clamp(in Color value, in Color min, in Color max) => value.Clamp(min, max);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Color Min(Color lhs, Color rhs)
+    public static Color Min(in Color lhs, in Color rhs)
     {
         return new Color(
             lhs.R < rhs.R ? lhs.R : rhs.R,
@@ -889,7 +889,7 @@ public struct Color : IEquatable<Color>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Color Max(Color lhs, Color rhs)
+    public static Color Max(in Color lhs, in Color rhs)
     {
         return new Color(
             lhs.R > rhs.R ? lhs.R : rhs.R,
@@ -899,7 +899,7 @@ public struct Color : IEquatable<Color>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Color Negate(Color value) => value.Negate();
+    public static Color Negate(in Color value) => value.Negate();
 
     public override string ToString() => $"({R}, {G}, {B}, {A})";
 
