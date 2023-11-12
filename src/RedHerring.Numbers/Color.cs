@@ -42,8 +42,6 @@ public struct Color : IEquatable<Color>
 
     public Color(uint value)
     {
-        Vector4 a;
-        
         Unsafe.SkipInit(out this);
         
         _value = value;
@@ -63,14 +61,24 @@ public struct Color : IEquatable<Color>
         A = alpha;
     }
 
+    public Color(int red, int green, int blue, int alpha = 255)
+    {
+        Unsafe.SkipInit(out this);
+        
+        R = red.ClampToByte();
+        G = green.ClampToByte();
+        B = blue.ClampToByte();
+        A = alpha.ClampToByte();
+    }
+
     public Color(ReadOnlySpan<byte> values)
     {
-        if (values.Length < 4)
+        if (values.Length < Count)
         {
             throw new ArgumentOutOfRangeException(nameof(values));
         }
 
-        this = Unsafe.ReadUnaligned<Color>(ref Unsafe.As<byte, byte>(ref MemoryMarshal.GetReference(values)));
+        this = Unsafe.ReadUnaligned<Color>(ref MemoryMarshal.GetReference(values));
     }
     
     internal static byte GetElement(Color color, int index)
@@ -143,6 +151,48 @@ public struct Color : IEquatable<Color>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Color WithAlpha(byte alpha) => new(R, G, B, alpha);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Color Clamp(Color min, Color max)
+    {
+        return new Color(
+            byte.Clamp(R, min.R, max.R), 
+            byte.Clamp(G, min.G, max.G), 
+            byte.Clamp(B, min.B, max.B), 
+            byte.Clamp(A, min.A, max.A));
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Color Negate()
+    {
+        return new Color(255 - R, 255 - G, 255 - B, A);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color Clamp(Color value, Color min, Color max) => value.Clamp(min, max);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color Min(Color lhs, Color rhs)
+    {
+        return new Color(
+            lhs.R < rhs.R ? lhs.R : rhs.R,
+            lhs.G < rhs.G ? lhs.G : rhs.G,
+            lhs.B < rhs.B ? lhs.B : rhs.B,
+            lhs.A < rhs.A ? lhs.A : rhs.A);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color Max(Color lhs, Color rhs)
+    {
+        return new Color(
+            lhs.R > rhs.R ? lhs.R : rhs.R,
+            lhs.G > rhs.G ? lhs.G : rhs.G,
+            lhs.B > rhs.B ? lhs.B : rhs.B,
+            lhs.A > rhs.A ? lhs.A : rhs.A);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color Negate(Color value) => value.Negate();
+
     public override string ToString() => $"({R}, {G}, {B}, {A})";
 
     #endregion Queries
@@ -152,9 +202,67 @@ public struct Color : IEquatable<Color>
     public static bool operator ==(Color lhs, Color rhs) => lhs._value == rhs._value;
 
     public static bool operator !=(Color lhs, Color rhs) => lhs._value != rhs._value;
-    
+
+    public static Color operator +(Color lhs, Color rhs)
+    {
+        return new Color(lhs.R + rhs.R, lhs.G + rhs.G, lhs.B + rhs.B, lhs.A + rhs.A);
+    }
+
     public static implicit operator Color(uint value) => new(value);
 
     #endregion Operators
+
+    #region Copy
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly void CopyTo(byte[]? destination) => CopyTo(destination, 0);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly void CopyTo(byte[]? destination, int index)
+    {
+        if (destination is null)
+        {
+            throw new NullReferenceException(nameof(destination));
+        }
+
+        if (index < 0 || index >= destination.Length)
+        {
+            throw new IndexOutOfRangeException();
+        }
+
+        if (destination.Length - index < Count)
+        {
+            throw new ArgumentOutOfRangeException(nameof(destination));
+        }
+
+        destination[index] = R;
+        destination[index + 1] = G;
+        destination[index + 2] = B;
+        destination[index + 3] = A;
+    }
+    
+    public readonly void CopyTo(Span<byte> destination)
+    {
+        if (destination.Length < Count)
+        {
+            throw new ArgumentOutOfRangeException(nameof(destination));
+        }
+
+        Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(destination), this);
+    }
+
+    public readonly bool TryCopyTo(Span<byte> destination)
+    {
+        if (destination.Length < Count)
+        {
+            return false;
+        }
+
+        Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(destination), this);
+
+        return true;
+    }
+
+    #endregion Copy
 
 }
