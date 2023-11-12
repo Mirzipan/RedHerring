@@ -4,6 +4,15 @@
 
 This document tracks more or less important decisions about the engine, in order to allow easy referencing in the future.
 
+## [2023-11-12]
+
+### Math Library - Vol.2
+*Decided by: Assemblerbot, Mirzipan*
+
+After further discussion and evaluation, we came to a conclusion to just implement complementary types to what `System.Numerics` has.
+A lot of libraries are already using `System.Numerics`, and there is a chance that it will be expanded in the future.
+While `Vortice` already looks like a complementary library, it also includes some very questionable decisions (likely taken from `SharpDX`), which ultimately lead to weird inconsistencies between types. 
+
 ## [2023-11-09]
 
 ### Math Library
