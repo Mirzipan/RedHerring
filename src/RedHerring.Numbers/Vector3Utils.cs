@@ -2,8 +2,11 @@
 
 namespace RedHerring.Numbers;
 
-public static class Vector3Direction
+public static class Vector3Utils
 {
+    public static readonly Vector3 NegativeOne = new Vector3(-1f);
+    public static readonly Vector3 Half = new Vector3(-0.5f);
+    
     public static readonly Vector3 Up = new Vector3(0, 1, 0);
     public static readonly Vector3 Down = new Vector3(0, -1, 0);
     

@@ -31,7 +31,7 @@ public sealed class Entity : Essence, Nameable, IEnumerable<EntityComponent>
 
     public Entity(string? name = null, Vector3 position = default, Quaternion? rotation = null) : this(name, true)
     {
-        var matrix = Matrix4x4.CreateWorld(position, Vector3Direction.Forward, Vector3Direction.Up);
+        var matrix = Matrix4x4.CreateWorld(position, Vector3Utils.Forward, Vector3Utils.Up);
         if (rotation is not null)
         {
             matrix = Matrix4x4.Transform(matrix, rotation.Value);
