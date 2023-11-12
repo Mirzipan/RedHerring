@@ -85,7 +85,7 @@ public static class Vector3Extensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector3 ClampZ(this in Vector3 @this, in float min, in float max)
     {
-        return @this.WithZ(float.Clamp(@this.Y, min, max));
+        return @this.WithZ(float.Clamp(@this.Z, min, max));
     }
 
     #endregion Clamp    
