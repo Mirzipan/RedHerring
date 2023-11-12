@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -902,7 +904,19 @@ public struct Color : IEquatable<Color>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color Negate(in Color value) => value.Negate();
 
-    public override string ToString() => $"({R}, {G}, {B}, {A})";
+    public readonly string ToHex() => _value.ToString("x8");
+    public readonly override string ToString() => ToString("G", CultureInfo.CurrentCulture);
+    
+    public readonly string ToString([StringSyntax(StringSyntaxAttribute.NumericFormat)] string? format)
+    {
+        return ToString(format, CultureInfo.CurrentCulture);
+    }
+    
+    public readonly string ToString([StringSyntax(StringSyntaxAttribute.NumericFormat)] string? format, IFormatProvider? formatProvider)
+    {
+        string separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
+        return $"<{R.ToString(format, formatProvider)}{separator} {G.ToString(format, formatProvider)}{separator} {B.ToString(format, formatProvider)} {A.ToString(format, formatProvider)}>";
+    }
 
     #endregion Queries
 
