@@ -915,7 +915,7 @@ public struct Color : IEquatable<Color>
     public readonly string ToString([StringSyntax(StringSyntaxAttribute.NumericFormat)] string? format, IFormatProvider? formatProvider)
     {
         string separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
-        return $"<{R.ToString(format, formatProvider)}{separator} {G.ToString(format, formatProvider)}{separator} {B.ToString(format, formatProvider)} {A.ToString(format, formatProvider)}>";
+        return $"<{R.ToString(format, formatProvider)}{separator} {G.ToString(format, formatProvider)}{separator} {B.ToString(format, formatProvider)}{separator} {A.ToString(format, formatProvider)}>";
     }
 
     #endregion Queries
