@@ -44,7 +44,7 @@ public static class Vector2Extensions
     #region Clamp
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector2 Saturate(this in Vector2 @this) => Clamp(@this, Vector2.Zero, Vector2.One);
+    public static Vector2 Saturate(this in Vector2 @this) => Vector2.Clamp(@this, Vector2.Zero, Vector2.One);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 Clamp(this in Vector2 @this, in float min, in float max)
@@ -55,7 +55,7 @@ public static class Vector2Extensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 Clamp(this in Vector2 @this, in Vector2 min, in Vector2 max)
     {
-        return new Vector2(float.Clamp(@this.X, min.X, max.X), float.Clamp(@this.Y, min.Y, max.Y));
+        return Vector2.Clamp(@this, min, max);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -75,6 +75,30 @@ public static class Vector2Extensions
     #region Manipulation
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 Add(this in Vector2 @this, Vector2 other) => Vector2.Add(@this, other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 Subtract(this in Vector2 @this, Vector2 other) => Vector2.Subtract(@this, other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 Multiply(this in Vector2 @this, Vector2 other) => Vector2.Multiply(@this, other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 Multiply(this in Vector2 @this, float other) => Vector2.Multiply(@this, other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 Divide(this in Vector2 @this, Vector2 other) => Vector2.Divide(@this, other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 Divide(this in Vector2 @this, float divisor) => Vector2.Divide(@this, divisor);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 Negate(this in Vector2 @this) => Vector2.Negate(@this);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 Normalize(this in Vector2 @this) => Vector2.Normalize(@this);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 Truncate(this in Vector2 @this)
     {
         return new Vector2(MathF.Truncate(@this.X), MathF.Truncate(@this.Y));
@@ -87,10 +111,7 @@ public static class Vector2Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector2 Abs(this in Vector2 @this)
-    {
-        return new Vector2(MathF.Abs(@this.X), MathF.Abs(@this.Y));
-    }
+    public static Vector2 Abs(this in Vector2 @this) => Vector2.Abs(@this);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 Sign(this in Vector2 @this)
@@ -98,7 +119,26 @@ public static class Vector2Extensions
         return new Vector2(MathF.Sign(@this.X), MathF.Sign(@this.Y));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 SquareRoot(this in Vector2 @this) => Vector2.SquareRoot(@this);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 ReflectOff(this in Vector2 @this, Vector2 normal) => Vector2.Reflect(@this, normal);
+
     #endregion Manipulation
+
+    #region Distance
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float DistanceFrom(this in Vector2 @this, Vector2 other) => Vector2.Distance(@this, other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float DistanceSquaredFrom(this in Vector2 @this, Vector2 other)
+    {
+        return Vector2.DistanceSquared(@this, other);
+    }
+
+    #endregion Distance
 
     #region Rotation
 

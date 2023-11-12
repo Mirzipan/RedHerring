@@ -53,7 +53,7 @@ public static class Vector4Extensions
     #region Clamp
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector4 Saturate(this in Vector4 @this) => Clamp(@this, Vector4.Zero, Vector4.One);
+    public static Vector4 Saturate(this in Vector4 @this) => Vector4.Clamp(@this, Vector4.Zero, Vector4.One);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector4 Clamp(this in Vector4 @this, in float min, in float max)
@@ -68,11 +68,7 @@ public static class Vector4Extensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector4 Clamp(this in Vector4 @this, in Vector4 min, in Vector4 max)
     {
-        return new Vector4(
-            float.Clamp(@this.X, min.X, max.X),
-            float.Clamp(@this.Y, min.Y, max.Y),
-            float.Clamp(@this.Z, min.Z, max.Z),
-            float.Clamp(@this.W, min.W, max.W));
+        return Vector4.Clamp(@this, min, max);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -100,16 +96,37 @@ public static class Vector4Extensions
     }
 
     #endregion Clamp
-
+    
     #region Manipulation
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector4 Add(this in Vector4 @this, Vector4 other) => Vector4.Add(@this, other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector4 Subtract(this in Vector4 @this, Vector4 other) => Vector4.Subtract(@this, other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector4 Multiply(this in Vector4 @this, Vector4 other) => Vector4.Multiply(@this, other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector4 Multiply(this in Vector4 @this, float other) => Vector4.Multiply(@this, other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector4 Divide(this in Vector4 @this, Vector4 other) => Vector4.Divide(@this, other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector4 Divide(this in Vector4 @this, float divisor) => Vector4.Divide(@this, divisor);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector4 Negate(this in Vector4 @this) => Vector4.Negate(@this);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector4 Truncate(this in Vector4 @this)
     {
         return new Vector4(
-            MathF.Truncate(@this.X),
-            MathF.Truncate(@this.Y),
-            MathF.Truncate(@this.Z),
+            MathF.Truncate(@this.X), 
+            MathF.Truncate(@this.Y), 
+            MathF.Truncate(@this.Z), 
             MathF.Truncate(@this.W));
     }
 
@@ -117,21 +134,14 @@ public static class Vector4Extensions
     public static Vector4 Round(this in Vector4 @this)
     {
         return new Vector4(
-            MathF.Round(@this.X),
-            MathF.Round(@this.Y),
+            MathF.Round(@this.X), 
+            MathF.Round(@this.Y), 
             MathF.Round(@this.Z), 
             MathF.Round(@this.W));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector4 Abs(this in Vector4 @this)
-    {
-        return new Vector4(
-            MathF.Abs(@this.X), 
-            MathF.Abs(@this.Y), 
-            MathF.Abs(@this.Z), 
-            MathF.Abs(@this.W));
-    }
+    public static Vector4 Abs(this in Vector4 @this) => Vector4.Abs(@this);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector4 Sign(this in Vector4 @this)
@@ -143,5 +153,21 @@ public static class Vector4Extensions
             MathF.Sign(@this.W));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector4 SquareRoot(this in Vector4 @this) => Vector4.SquareRoot(@this);
+
     #endregion Manipulation
+
+    #region Distance
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float DistanceFrom(this in Vector4 @this, Vector4 other) => Vector4.Distance(@this, other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float DistanceSquaredFrom(this in Vector4 @this, Vector4 other)
+    {
+        return Vector4.DistanceSquared(@this, other);
+    }
+
+    #endregion Distance
 }
