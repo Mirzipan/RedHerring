@@ -312,6 +312,10 @@ public partial struct Color4 : IEquatable<Color4>, IFormattable
             float.Clamp(value.B, 0f, 1f),
             float.Clamp(value.A, 0f, 1f));
     }
+    
+    public static implicit operator Vector3(Color4 value) => value.ToVector3();
+
+    public static implicit operator Vector4(Color4 value) => value.ToVector4();
 
     #endregion Operators
 

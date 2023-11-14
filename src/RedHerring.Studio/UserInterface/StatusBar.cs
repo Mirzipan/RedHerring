@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using ImGuiNET;
+using RedHerring.Numbers;
 using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface;
@@ -14,11 +15,11 @@ public class StatusBar
 		Error   = 2,
 	}
 
-	private readonly Vector4[] _messageColors =
+	private readonly Color4[] _messageColors =
 	{
-		new(0.0f, 0.8f, 0.0f, 1.0f), // Info
-		new(1.0f, 0.5f, 0.0f, 1.0f), // Warning
-		new(1.0f, 0.0f, 0.0f, 1.0f), // Error
+		Color4.LightGreen, // Info
+		Color4.Gold, // Warning
+		Color4.Crimson, // Error
 	};
 
 	public string Message      { get; set; } = "";
