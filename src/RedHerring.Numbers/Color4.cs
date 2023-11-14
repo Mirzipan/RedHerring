@@ -12,7 +12,7 @@ namespace RedHerring.Numbers;
 
 [Serializable]
 [StructLayout(LayoutKind.Explicit)]
-public struct Color4 : IEquatable<Color4>, IFormattable
+public partial struct Color4 : IEquatable<Color4>, IFormattable
 {
     internal const int Count = 4;
 
@@ -40,7 +40,11 @@ public struct Color4 : IEquatable<Color4>, IFormattable
     {
     }
 
-    public Color4(Vector3 color, float alpha) : this(color.X, color.Y, color.Z, alpha)
+    public Color4(Vector3 color, float alpha = 1f) : this(color.X, color.Y, color.Z, alpha)
+    {
+    }
+
+    public Color4(Color3 color, float alpha = 1f) : this(color.R, color.G, color.B, alpha)
     {
     }
 
@@ -48,7 +52,7 @@ public struct Color4 : IEquatable<Color4>, IFormattable
     {
     }
 
-    public Color4(float red, float green, float blue, float alpha)
+    public Color4(float red, float green, float blue, float alpha = 1f)
     {
         R = red;
         G = green;
@@ -171,6 +175,10 @@ public struct Color4 : IEquatable<Color4>, IFormattable
     public readonly Color4 WithAlpha(float alpha) => new(R, G, B, alpha);
 
     public Vector4 BGRA() => new Vector4(B, G, R, A);
+
+    public Vector3 ToVector3() => new Vector3(R, G, B);
+
+    public Vector4 ToVector4() => new Vector4(R, G, B, A);
 
     public readonly override string ToString()
     {
@@ -328,7 +336,7 @@ public struct Color4 : IEquatable<Color4>, IFormattable
             throw new IndexOutOfRangeException();
         }
 
-        if ((destination.Length - index) < 4)
+        if ((destination.Length - index) < Count)
         {
             throw new ArgumentOutOfRangeException(nameof(destination));
         }
@@ -341,7 +349,7 @@ public struct Color4 : IEquatable<Color4>, IFormattable
 
     public readonly void CopyTo(Span<float> destination)
     {
-        if (destination.Length < 4)
+        if (destination.Length < Count)
         {
             throw new ArgumentOutOfRangeException(nameof(destination));
         }
@@ -351,7 +359,7 @@ public struct Color4 : IEquatable<Color4>, IFormattable
 
     public readonly bool TryCopyTo(Span<float> destination)
     {
-        if (destination.Length < 4)
+        if (destination.Length < Count)
         {
             return false;
         }

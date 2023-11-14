@@ -211,6 +211,12 @@ public partial struct Color : IEquatable<Color>, IFormattable
         return new Vector4(x, y, z, w);
     }
 
+    public Color3 ToColor3()
+    {
+        ColorPacker.UnpackRGBA(_value, out float x, out float y, out float z, out float _);
+        return new Color3(x, y, z);
+    }
+
     public Color4 ToColor4()
     {
         ColorPacker.UnpackRGBA(_value, out float x, out float y, out float z, out float w);
