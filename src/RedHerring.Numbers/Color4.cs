@@ -15,7 +15,7 @@ namespace RedHerring.Numbers;
 public partial struct Color4 : IEquatable<Color4>, IFormattable
 {
     internal const int Count = 4;
-        
+
     public float R;
     public float G;
     public float B;
@@ -305,7 +305,48 @@ public partial struct Color4 : IEquatable<Color4>, IFormattable
             float.Clamp(value.B, 0f, 1f),
             float.Clamp(value.A, 0f, 1f));
     }
-    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color4 Premultiply(Color4 value)
+    {
+        return new Color4(value.R * value.A, value.G * value.A, value.B * value.A, value.A);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color4 Unmultiply(Color4 value)
+    {
+        if (value.A == 0f)
+        {
+            return Transparent;
+        }
+
+        return new Color4(value.R / value.A, value.G / value.A, value.B / value.A, value.A);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color4 ToLinearRGB(Color4 value)
+    {
+        const float power = 2.2f;
+        
+        return new Color4(
+            MathF.Pow(value.R, power), 
+            MathF.Pow(value.G, power), 
+            MathF.Pow(value.B, power), 
+            value.A);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color4 ToSRGB(Color4 value)
+    {
+        const float power = 1f / 2.2f;
+        
+        return new Color4(
+            MathF.Pow(value.R, power), 
+            MathF.Pow(value.G, power), 
+            MathF.Pow(value.B, power), 
+            value.A);
+    }
+
     public static implicit operator Vector3(Color4 value) => value.ToVector3();
 
     public static implicit operator Vector4(Color4 value) => value.ToVector4();
