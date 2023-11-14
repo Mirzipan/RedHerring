@@ -11,21 +11,14 @@ using System.Runtime.Intrinsics;
 namespace RedHerring.Numbers;
 
 [Serializable]
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
 public partial struct Color4 : IEquatable<Color4>, IFormattable
 {
     internal const int Count = 4;
-
-    [FieldOffset(0)]
+        
     public float R;
-
-    [FieldOffset(4)]
     public float G;
-
-    [FieldOffset(8)]
     public float B;
-
-    [FieldOffset(12)]
     public float A;
 
     public float this[int index]

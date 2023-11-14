@@ -1,7 +1,10 @@
-﻿namespace RedHerring.Numbers;
+﻿using System.Runtime.CompilerServices;
+
+namespace RedHerring.Numbers;
 
 public static class IntExtensions
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static byte ClampToByte(this int @this)
     {
         return @this switch

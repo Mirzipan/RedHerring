@@ -24,11 +24,27 @@ public static class ColorPacker
         return pr | pg | pb | pa;
     }
     
-    public static void UnpackRGBA(uint value, out float r, out float g, out float b, out float a)
+    public static void UnpackRGBA(uint packedValue, out float r, out float g, out float b, out float a)
     {
-        r = UnpackUNorm(255, value);
-        g = UnpackUNorm(255, value >> 8);
-        b = UnpackUNorm(255, value >> 16);
-        a = UnpackUNorm(255, value >> 24);
+        r = UnpackUNorm(255, packedValue);
+        g = UnpackUNorm(255, packedValue >> 8);
+        b = UnpackUNorm(255, packedValue >> 16);
+        a = UnpackUNorm(255, packedValue >> 24);
+    }
+    
+    public static uint PackHSV(HsvColor color)
+    {
+        int hue = (color.H * 360f).RoundToInt();
+        int saturation = (color.S * 100f + 100f).RoundToInt() << 16;
+        int value = (color.V * 100f + 100f).RoundToInt() << 24;
+        return (uint)(hue | saturation | value);
+    }
+    
+    public static HsvColor UnpackHSV(uint packedValue)
+    {
+        ushort hue = (ushort)packedValue;
+        byte saturation = (byte)(packedValue >> 16);
+        byte value = (byte)(packedValue >> 24);
+        return new HsvColor(hue / 360f, (saturation - 100) / 100f, (value - 100) / 100f, 1f);
     }
 }

@@ -9,20 +9,15 @@ using System.Runtime.Intrinsics;
 namespace RedHerring.Numbers;
 
 [Serializable]
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
 public partial struct Color3 : IEquatable<Color3>, IFormattable
 {
     internal const int Count = 3;
 
-    [FieldOffset(0)]
     public float R;
-
-    [FieldOffset(4)]
     public float G;
-
-    [FieldOffset(8)]
     public float B;
-
+    
     public float this[int index]
     {
         get => GetElement(this, index);
