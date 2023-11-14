@@ -172,48 +172,6 @@ public partial struct Color : IEquatable<Color>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Color WithAlpha(byte alpha) => new(R, G, B, alpha);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly Color Clamp(Color min, Color max)
-    {
-        return new Color(
-            byte.Clamp(R, min.R, max.R),
-            byte.Clamp(G, min.G, max.G),
-            byte.Clamp(B, min.B, max.B),
-            byte.Clamp(A, min.A, max.A));
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly Color Negate()
-    {
-        return new Color(255 - R, 255 - G, 255 - B, A);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Color Clamp(in Color value, in Color min, in Color max) => value.Clamp(min, max);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Color Min(in Color lhs, in Color rhs)
-    {
-        return new Color(
-            lhs.R < rhs.R ? lhs.R : rhs.R,
-            lhs.G < rhs.G ? lhs.G : rhs.G,
-            lhs.B < rhs.B ? lhs.B : rhs.B,
-            lhs.A < rhs.A ? lhs.A : rhs.A);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Color Max(in Color lhs, in Color rhs)
-    {
-        return new Color(
-            lhs.R > rhs.R ? lhs.R : rhs.R,
-            lhs.G > rhs.G ? lhs.G : rhs.G,
-            lhs.B > rhs.B ? lhs.B : rhs.B,
-            lhs.A > rhs.A ? lhs.A : rhs.A);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Color Negate(in Color value) => value.Negate();
-
     public int RGBA()
     {
         int value = R;
@@ -279,20 +237,31 @@ public partial struct Color : IEquatable<Color>, IFormattable
 
     #region Operators
 
-    public static bool operator ==(Color lhs, Color rhs) => lhs._value == rhs._value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator ==(Color left, Color right) => left._value == right._value;
 
-    public static bool operator !=(Color lhs, Color rhs) => lhs._value != rhs._value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator !=(Color left, Color right) => left._value != right._value;
 
-    public static Color operator +(Color lhs, Color rhs)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color operator +(Color left, Color right)
     {
-        return new Color(lhs.R + rhs.R, lhs.G + rhs.G, lhs.B + rhs.B, lhs.A + rhs.A);
+        return new Color(left.R + right.R, left.G + right.G, left.B + right.B, left.A + right.A);
     }
 
-    public static Color operator -(Color lhs, Color rhs)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color operator -(Color left, Color right)
     {
-        return new Color(lhs.R - rhs.R, lhs.G - rhs.G, lhs.B - rhs.B, lhs.A - rhs.A);
+        return new Color(left.R - right.R, left.G - right.G, left.B - right.B, left.A - right.A);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color operator -(Color value)
+    {
+        return new Color(255 - value.R, 255 - value.G, 255 - value.B, value.A);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color operator *(Color value, float factor)
     {
         byte r = (value.R * factor).ClampToByte();
@@ -301,6 +270,73 @@ public partial struct Color : IEquatable<Color>, IFormattable
         byte a = (value.A * factor).ClampToByte();
 
         return new Color(r, g, b, a);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color operator *(float left, Color right) => right * left;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color Add(Color left, Color right) => left + right;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color Subtract(Color left, Color right) => left - right;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color Multiply(Color left, float right) => left * right;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color Multiply(float left, Color right) => left * right;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly Color Negate()
+    {
+        return -this;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color Negate(Color value) => -value;
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly Color Clamp(Color min, Color max)
+    {
+        return new Color(
+            byte.Clamp(R, min.R, max.R),
+            byte.Clamp(G, min.G, max.G),
+            byte.Clamp(B, min.B, max.B),
+            byte.Clamp(A, min.A, max.A));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color Clamp(Color value, Color min, Color max)
+    {
+        // We must follow HLSL behavior in the case user specified min value is bigger than max value.
+        return Min(Max(value, min), max);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color Lerp(Color value1, Color value2, float amount)
+    {
+        return (value1 * (1.0f - amount)) + (value2 * amount);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color Min(Color left, Color right)
+    {
+        return new Color(
+            left.R < right.R ? left.R : right.R,
+            left.G < right.G ? left.G : right.G,
+            left.B < right.B ? left.B : right.B,
+            left.A < right.A ? left.A : right.A);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color Max(Color left, Color right)
+    {
+        return new Color(
+            left.R > right.R ? left.R : right.R,
+            left.G > right.G ? left.G : right.G,
+            left.B > right.B ? left.B : right.B,
+            left.A > right.A ? left.A : right.A);
     }
 
     public static implicit operator Color(uint value) => new(value);
