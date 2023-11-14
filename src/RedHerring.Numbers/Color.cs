@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+// ReSharper disable InconsistentNaming
 
 namespace RedHerring.Numbers;
 
@@ -48,7 +50,7 @@ public partial struct Color : IEquatable<Color>, IFormattable
         _value = value;
     }
 
-    public Color(byte value) : this(value, value, value, value)
+    public Color(byte rgba) : this(rgba, rgba, rgba, rgba)
     {
     }
 
@@ -62,14 +64,32 @@ public partial struct Color : IEquatable<Color>, IFormattable
         A = alpha;
     }
 
-    public Color(int red, int green, int blue, int alpha = 255)
+    public Color(int red, int green, int blue, int alpha = 255) : this()
     {
-        Unsafe.SkipInit(out this);
-
         R = red.ClampToByte();
         G = green.ClampToByte();
         B = blue.ClampToByte();
         A = alpha.ClampToByte();
+    }
+
+    public Color(float rgb) : this()
+    {
+        _value = ColorPacker.PackRGBA(rgb, rgb, rgb, 1f);
+    }
+
+    public Color(float red, float green, float blue, float alpha = 1.0f) : this()
+    {
+        _value = ColorPacker.PackRGBA(red, green, blue, alpha);
+    }
+
+    public Color(Vector3 rgb, float alpha = 1.0f) : this()
+    {
+        _value = ColorPacker.PackRGBA(rgb.X, rgb.Y, rgb.Z, alpha);
+    }
+
+    public Color(Vector4 rgba) : this()
+    {
+        _value = ColorPacker.PackRGBA(rgba.X, rgba.Y, rgba.Z, rgba.W);
     }
 
     public Color(ReadOnlySpan<byte> values)
@@ -194,6 +214,51 @@ public partial struct Color : IEquatable<Color>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color Negate(in Color value) => value.Negate();
 
+    public int RGBA()
+    {
+        int value = R;
+        value |= G << 8;
+        value |= B << 16;
+        value |= A << 24;
+        return value;
+    }
+
+    public int ARGB()
+    {
+        int value = A;
+        value |= R << 8;
+        value |= G << 16;
+        value |= B << 24;
+        return value;
+    }
+
+    public int BGRA()
+    {
+        int value = B;
+        value |= G << 8;
+        value |= R << 16;
+        value |= A << 24;
+        return value;
+    }
+
+    public Vector3 ToVector3()
+    {
+        ColorPacker.UnpackRGBA(_value, out float x, out float y, out float z, out float _);
+        return new Vector3(x, y, z);
+    }
+
+    public Vector4 ToVector4()
+    {
+        ColorPacker.UnpackRGBA(_value, out float x, out float y, out float z, out float w);
+        return new Vector4(x, y, z, w);
+    }
+
+    public Color4 ToColor4()
+    {
+        ColorPacker.UnpackRGBA(_value, out float x, out float y, out float z, out float w);
+        return new Color4(x, y, z, w);
+    }
+
     public readonly string ToHex() => _value.ToString("x8");
     public readonly override string ToString() => ToString("G", CultureInfo.CurrentCulture);
 
@@ -223,7 +288,32 @@ public partial struct Color : IEquatable<Color>, IFormattable
         return new Color(lhs.R + rhs.R, lhs.G + rhs.G, lhs.B + rhs.B, lhs.A + rhs.A);
     }
 
+    public static Color operator -(Color lhs, Color rhs)
+    {
+        return new Color(lhs.R - rhs.R, lhs.G - rhs.G, lhs.B - rhs.B, lhs.A - rhs.A);
+    }
+
+    public static Color operator *(Color value, float factor)
+    {
+        byte r = (value.R * factor).ClampToByte();
+        byte g = (value.G * factor).ClampToByte();
+        byte b = (value.B * factor).ClampToByte();
+        byte a = (value.A * factor).ClampToByte();
+
+        return new Color(r, g, b, a);
+    }
+
     public static implicit operator Color(uint value) => new(value);
+
+    public static explicit operator int(Color value) => value.RGBA();
+
+    public static implicit operator Color4(Color value) => value.ToColor4();
+
+    public static explicit operator Color(Vector3 value) => new(value.X, value.Y, value.Z);
+
+    public static explicit operator Color(Vector4 value) => new(value.X, value.Y, value.Z, value.W);
+
+    public static explicit operator Color(Color4 value) => new(value.R, value.G, value.B, value.A);
 
     #endregion Operators
 
