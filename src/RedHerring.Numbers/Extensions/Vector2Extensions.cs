@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace RedHerring.Numbers;
 
-public static class Vector2Extensions
+public static partial class Vector2Extensions
 {
     #region Equality
 

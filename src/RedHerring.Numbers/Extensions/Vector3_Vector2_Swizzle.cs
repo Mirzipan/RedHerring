@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace RedHerring.Alexandria.Extensions.Numerics;
+namespace RedHerring.Numbers;
 
 public static partial class Vector3Extensions
 {
