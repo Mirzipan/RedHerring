@@ -53,7 +53,7 @@ public abstract class AnInspectorControl
 	{
 		ValueBindings.Add(new InspectorValueBinding(source, sourceField, GetOnCommitValue(sourceOwner, sourceField)));
 	}
-
+	
 	public abstract void Update();
 
 	public void SetCustomLabel(string? label)

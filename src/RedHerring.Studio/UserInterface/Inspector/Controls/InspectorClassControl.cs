@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using ImGuiNET;
+using RedHerring.Alexandria.Extensions;
 using RedHerring.Studio.UserInterface.Attributes;
 using Gui = ImGuiNET.ImGui;
 
@@ -25,9 +26,14 @@ public sealed class InspectorClassControl : AnInspectorControl
 
 		Type sourceType = boundObject.GetType(); // this should properly handle abstract bases
 		//Type sourceType = sourceField != null ? sourceField.FieldType : source.GetType();
-		
-		FieldInfo[] fields = sourceType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
+		InitFromSourceFields(sourceType, source, boundObject);
+		InitFromSourceMethods(sourceType, source, boundObject);
+	}
+
+	private void InitFromSourceFields(Type sourceType, object source, object boundObject)
+	{
+		FieldInfo[] fields = sourceType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 		foreach (FieldInfo field in fields)
 		{
 			if(!IsFieldVisible(field))
@@ -47,6 +53,25 @@ public sealed class InspectorClassControl : AnInspectorControl
 			_controls.Add(control);
 
 			control.InitFromSource(source, boundObject, field);
+		}
+	}
+
+	// buttons (only in first object, any other object in the same inspector removes buttons)
+	private void InitFromSourceMethods(Type sourceType, object source, object boundObject)
+	{
+		MethodInfo[] methods = sourceType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+		foreach (MethodInfo method in methods)
+		{
+			ButtonAttribute? buttonAttribute = method.GetCustomAttribute<ButtonAttribute>();
+			if(buttonAttribute == null)
+			{
+				continue;
+			}
+			
+			string controlId = $"{Id}.{method.Name}()";
+
+			InspectorButtonControl button = new (_inspector, controlId, buttonAttribute.Title ?? method.Name.PrettyCamelCase(), boundObject, method);
+			_controls.Add(button);
 		}
 	}
 
