@@ -12,8 +12,8 @@ public sealed class ToolInspector : ATool
 	protected override string    Name => ToolName;
 	private readonly   Inspector _inspector;
 
-	//private List<object> _tests = new(){new InspectorTest(), new InspectorTest2()}; // TODO debug
-	private List<object> _tests = new(){new InspectorTest()}; // TODO debug
+	private List<object> _tests = new(){new InspectorTest(), new InspectorTest2()}; // TODO debug
+	//private List<object> _tests = new(){new InspectorTest()}; // TODO debug
 
 	public ToolInspector(StudioModel studioModel) : base(studioModel)
 	{
@@ -110,6 +110,12 @@ public class InspectorTest2
 	[ValueDropdown("DropdownSource")] public int      DropdownInt    = 1;
 	[ValueDropdown("DropdownSource")] public string   DropdownString = "pear";
 	[HideInInspector]                 public string[] DropdownSource = {"apple", "pear", "orange", "banana"};
+
+	[Button]
+	private void TestMethod()
+	{
+		Console.WriteLine("TestMethod2");
+	}
 }
 
 public class InspectorTestSubclass2

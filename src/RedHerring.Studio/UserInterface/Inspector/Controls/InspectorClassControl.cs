@@ -47,9 +47,9 @@ public sealed class InspectorClassControl : AnInspectorControl
 				continue; // unsupported
 			}
 			
-			string fieldId = $"{Id}.{field.Name}";
+			string controlId = $"{Id}.{field.Name}";
 			
-			AnInspectorControl control = (AnInspectorControl) Activator.CreateInstance(controlType, _inspector, fieldId)!;
+			AnInspectorControl control = (AnInspectorControl) Activator.CreateInstance(controlType, _inspector, controlId)!;
 			_controls.Add(control);
 
 			control.InitFromSource(source, boundObject, field);
@@ -91,6 +91,21 @@ public sealed class InspectorClassControl : AnInspectorControl
 
 		bool[] commonControls = new bool[_controls.Count];
 
+		AdaptToSourceFields(sourceType, sourceOwner, source, boundObject, commonControls);
+		AdaptToSourceMethods(sourceType, sourceOwner, source, boundObject, commonControls);
+		
+		// remove all controls that are not common for all sources
+		for(int i=commonControls.Length-1;i>=0;--i)
+		{
+			if(!commonControls[i])
+			{
+				_controls.RemoveAt(i);
+			}
+		}
+	}
+
+	private void AdaptToSourceFields(Type sourceType, object? sourceOwner, object source, object boundObject, bool[] commonControls)
+	{
 		FieldInfo[] fields = sourceType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 		foreach (FieldInfo field in fields)
 		{
@@ -105,9 +120,9 @@ public sealed class InspectorClassControl : AnInspectorControl
 				continue; // unsupported
 			}
 			
-			string fieldId = $"{Id}.{field.Name}";
+			string controlId = $"{Id}.{field.Name}";
 
-			int controlIndex = _controls.FindIndex(x => x.Id == fieldId);
+			int controlIndex = _controls.FindIndex(x => x.Id == controlId);
 			if(controlIndex == -1)
 			{
 				continue; // control not found => it's not common for all sources => skip
@@ -137,17 +152,44 @@ public sealed class InspectorClassControl : AnInspectorControl
 			control.AdaptToSource(sourceOwner, boundObject, field);
 			commonControls[controlIndex] = true;
 		}
-		
-		// remove all controls that are not common for all sources
-		for(int i=commonControls.Length-1;i>=0;--i)
-		{
-			if(!commonControls[i])
-			{
-				_controls.RemoveAt(i);
-			}
-		}
 	}
 
+	private void AdaptToSourceMethods(Type sourceType, object? sourceOwner, object source, object boundObject, bool[] commonControls)
+	{
+		MethodInfo[] methods = sourceType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+		foreach (MethodInfo method in methods)
+		{
+			ButtonAttribute? buttonAttribute = method.GetCustomAttribute<ButtonAttribute>();
+			if(buttonAttribute == null)
+			{
+				continue;
+			}
+			
+			string controlId = $"{Id}.{method.Name}()";
+
+			int controlIndex = _controls.FindIndex(x => x.Id == controlId);
+			if(controlIndex == -1)
+			{
+				continue; // control not found => it's not common for all sources => skip
+			}
+
+			InspectorButtonControl? button = _controls[controlIndex] as InspectorButtonControl;
+			if (button == null)
+			{
+				continue;
+			}
+
+			string label = buttonAttribute.Title ?? method.Name.PrettyCamelCase();
+			if (button.Label != label)
+			{
+				continue;
+			}
+
+			button.AddBinding(boundObject, method);
+			commonControls[controlIndex] = true;
+		}
+	}
+	
 	public override void Update()
 	{
 		if (Label == null)
