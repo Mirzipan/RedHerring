@@ -14,6 +14,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 	{
 	}
 	
+	#region Init
 	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
 	{
 		base.InitFromSource(sourceOwner, source, sourceField);
@@ -74,7 +75,9 @@ public sealed class InspectorClassControl : AnInspectorControl
 			_controls.Add(button);
 		}
 	}
+	#endregion
 
+	#region Adapt
 	public override void AdaptToSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
 	{
 		// TODO - refactor, similar to InitFromSource
@@ -189,6 +192,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 			commonControls[controlIndex] = true;
 		}
 	}
+	#endregion
 	
 	public override void Update()
 	{

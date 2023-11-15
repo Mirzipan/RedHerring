@@ -14,4 +14,6 @@ public readonly struct InspectorValueBinding
 		SourceField   = sourceField;
 		OnCommitValue = onCommitValue;
 	}
+	
+	
 }

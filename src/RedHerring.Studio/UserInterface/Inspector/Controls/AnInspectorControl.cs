@@ -16,14 +16,15 @@ public abstract class AnInspectorControl
 			  {typeof(bool), typeof(InspectorBoolControl)},
 		  };
 
-	private static readonly Type _classControl            = typeof(InspectorClassControl);
-	private static readonly Type _enumControl             = typeof(InspectorEnumControl);
-	private static readonly Type _valueDropdownIntControl = typeof(InspectorValueDropdownIntControl);
+	private static readonly Type _classControl               = typeof(InspectorClassControl);
+	private static readonly Type _enumControl                = typeof(InspectorEnumControl);
+	private static readonly Type _valueDropdownIntControl    = typeof(InspectorValueDropdownIntControl);
 	private static readonly Type _valueDropdownStringControl = typeof(InspectorValueDropdownStringControl);
+	private static readonly Type _listControl                = typeof(InspectorListControl);
 	#endregion
 
-	public static readonly object UnboundValue   = new();
-	public static readonly object MultipleValues = new();
+	protected static readonly object UnboundValue   = new(); // mark that there is no value to update
+	protected static readonly object MultipleValues = new(); // mark that there are multiple values
 
 	protected readonly Inspector                   _inspector;
 	public readonly    string                      Id;
@@ -83,6 +84,11 @@ public abstract class AnInspectorControl
 		}
 		
 		// by type
+		if (fieldType.IsArray || (fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(List<>)))
+		{
+			return _listControl;
+		}
+
 		if (_fieldToControlMap.TryGetValue(fieldType, out Type? type))
 		{
 			return type;

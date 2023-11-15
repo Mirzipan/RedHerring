@@ -74,6 +74,9 @@ public class InspectorTest
 	[ValueDropdown("DropdownSource")] public int      DropdownInt    = 1;
 	[ValueDropdown("DropdownSource")] public string   DropdownString = "pear";
 	[HideInInspector]                 public string[] DropdownSource = {"apple", "pear", "orange", "banana"};
+
+	public int[] IntArray = {1, 2, 3, 4, 5};
+	public List<int> IntList = new() {1, 2, 3, 4, 5};
 	
 	[Button]
 	private void TestMethod()
@@ -111,6 +114,9 @@ public class InspectorTest2
 	[ValueDropdown("DropdownSource")] public string   DropdownString = "pear";
 	[HideInInspector]                 public string[] DropdownSource = {"apple", "pear", "orange", "banana"};
 
+	public int[]     IntArray = {1, 2, 3, 4, 5};
+	public List<int> IntList  = new() {1, 2, 3, 4, 5};
+	
 	[Button]
 	private void TestMethod()
 	{
