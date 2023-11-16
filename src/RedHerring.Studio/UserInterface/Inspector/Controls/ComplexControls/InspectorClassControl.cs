@@ -15,9 +15,9 @@ public sealed class InspectorClassControl : AnInspectorControl
 	}
 	
 	#region Init
-	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
+	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null, int sourceIndex = -1)
 	{
-		base.InitFromSource(sourceOwner, source, sourceField);
+		base.InitFromSource(sourceOwner, source, sourceField, sourceIndex);
 
 		object? boundObject = sourceField == null ? source : sourceField.GetValue(source);
 		if (boundObject == null)
@@ -42,7 +42,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 				continue;
 			}
 			
-			Type? controlType = FieldToControl(field);
+			Type? controlType = InspectorControlMap.FieldToControl(field);
 			if (controlType == null)
 			{
 				continue; // unsupported
@@ -117,7 +117,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 				continue;
 			}
 			
-			Type? controlType = FieldToControl(field);
+			Type? controlType = InspectorControlMap.FieldToControl(field);
 			if (controlType == null)
 			{
 				continue; // unsupported
@@ -132,6 +132,11 @@ public sealed class InspectorClassControl : AnInspectorControl
 			}
 
 			AnInspectorControl control          = _controls[controlIndex];
+			if (control is InspectorListControl)
+			{
+				continue; // list control cannot be used on multiple objects at once => skip
+			}
+
 			FieldInfo?         firstSourceField = control.ValueBindings[0].SourceField;
 			if (firstSourceField == null)
 			{

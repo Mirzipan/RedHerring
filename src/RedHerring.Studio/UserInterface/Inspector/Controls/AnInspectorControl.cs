@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections;
+using System.Reflection;
 using RedHerring.Alexandria.Extensions;
 using RedHerring.Studio.UserInterface.Attributes;
 
@@ -6,23 +7,6 @@ namespace RedHerring.Studio.UserInterface;
 
 public abstract class AnInspectorControl
 {
-	#region Control map
-	private static Dictionary<Type, Type> _fieldToControlMap // TODO - move to attribute attached to each control class
-		= new()
-		  {
-			  {typeof(int), typeof(InspectorIntControl)},
-			  {typeof(float), typeof(InspectorFloatControl)},
-			  {typeof(string), typeof(InspectorStringControl)},
-			  {typeof(bool), typeof(InspectorBoolControl)},
-		  };
-
-	private static readonly Type _classControl               = typeof(InspectorClassControl);
-	private static readonly Type _enumControl                = typeof(InspectorEnumControl);
-	private static readonly Type _valueDropdownIntControl    = typeof(InspectorValueDropdownIntControl);
-	private static readonly Type _valueDropdownStringControl = typeof(InspectorValueDropdownStringControl);
-	private static readonly Type _listControl                = typeof(InspectorListControl);
-	#endregion
-
 	protected static readonly object UnboundValue   = new(); // mark that there is no value to update
 	protected static readonly object MultipleValues = new(); // mark that there are multiple values
 
@@ -39,7 +23,9 @@ public abstract class AnInspectorControl
 		LabelId    = id;
 	}
 
-	public virtual void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
+	public Type? ValueType => ValueBindings.Count == 0 ? null : ValueBindings[0].SourceField?.FieldType ?? typeof(object);
+
+	public virtual void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null, int sourceIndex = -1)
 	{
 		if (sourceField != null)
 		{
@@ -47,7 +33,7 @@ public abstract class AnInspectorControl
 			LabelId = Label + Id;
 		}
 
-		ValueBindings.Add(new InspectorValueBinding(source, sourceField, GetOnCommitValue(sourceOwner, sourceField)));
+		ValueBindings.Add(new InspectorValueBinding(source, sourceField, sourceIndex, GetOnCommitValue(sourceOwner, sourceField)));
 	}
 
 	public virtual void AdaptToSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
@@ -61,50 +47,6 @@ public abstract class AnInspectorControl
 	{
 		Label   = label;
 		LabelId = label == null ? Id : label + Id;
-	}
-
-	protected Type? FieldToControl(FieldInfo fieldInfo)
-	{
-		Type fieldType = fieldInfo.FieldType;
-		
-		// by attribute
-		if(fieldInfo.GetCustomAttribute<ValueDropdownAttribute>() != null)
-		{
-			if (fieldType == typeof(int))
-			{
-				return _valueDropdownIntControl;
-			}
-
-			if (fieldType == typeof(string))
-			{
-				return _valueDropdownStringControl;
-			}
-
-			return null;
-		}
-		
-		// by type
-		if (fieldType.IsArray || (fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(List<>)))
-		{
-			return _listControl;
-		}
-
-		if (_fieldToControlMap.TryGetValue(fieldType, out Type? type))
-		{
-			return type;
-		}
-
-		if (fieldType.IsEnum)
-		{
-			return _enumControl;
-		}
-
-		if (fieldType.IsClass)
-		{
-			return _classControl;
-		}
-
-		return null;
 	}
 
 	private Action? GetOnCommitValue(object? sourceOwner, FieldInfo? sourceField)
@@ -137,15 +79,27 @@ public abstract class AnInspectorControl
 			return UnboundValue;
 		}
 
-		object? value = ValueBindings[0].SourceField.GetValue(ValueBindings[0].Source);
+		object? value = ValueBindings[0].SourceField!.GetValue(ValueBindings[0].Source);
+		if (ValueBindings[0].IsBoundToList)
+		{
+			IList? list = value as IList;
+			value = list?[ValueBindings[0].Index];
+		}
+		
 		for (int i = 1; i < ValueBindings.Count; ++i)
 		{
-			if (ValueBindings[1].SourceField == null)
+			if (ValueBindings[i].SourceField == null)
 			{
 				return UnboundValue;
 			}
  
-			object? otherValue = ValueBindings[1].SourceField.GetValue(ValueBindings[1].Source);
+			object? otherValue = ValueBindings[i].SourceField!.GetValue(ValueBindings[i].Source);
+			if (ValueBindings[i].IsBoundToList)
+			{
+				IList? list = otherValue as IList;
+				otherValue = list?[ValueBindings[i].Index];
+			}
+
 			if (otherValue == null)
 			{
 				if (value == null)

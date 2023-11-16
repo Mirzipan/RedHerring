@@ -11,9 +11,9 @@ public class InspectorEnumControl : AnInspectorSingleInputControl<Enum>
 	{
 	}
 
-	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
+	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null, int sourceIndex = -1)
 	{
-		base.InitFromSource(sourceOwner, source, sourceField);
+		base.InitFromSource(sourceOwner, source, sourceField, sourceIndex);
 		_items = Enum.GetNames(Value!.GetType());
 	}
 	

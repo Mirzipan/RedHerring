@@ -12,9 +12,9 @@ public abstract class InspectorValueDropdownControl<T> : AnInspectorSingleInputC
 	{
 	}
 
-	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
+	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null, int sourceIndex = -1)
 	{
-		base.InitFromSource(sourceOwner, source, sourceField);
+		base.InitFromSource(sourceOwner, source, sourceField, sourceIndex);
 
 		if (sourceOwner == null)
 		{

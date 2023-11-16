@@ -12,8 +12,8 @@ public sealed class ToolInspector : ATool
 	protected override string    Name => ToolName;
 	private readonly   Inspector _inspector;
 
-	private List<object> _tests = new(){new InspectorTest(), new InspectorTest2()}; // TODO debug
-	//private List<object> _tests = new(){new InspectorTest()}; // TODO debug
+	//private List<object> _tests = new(){new InspectorTest(), new InspectorTest2()}; // TODO debug
+	private List<object> _tests = new(){new InspectorTest()}; // TODO debug
 
 	public ToolInspector(StudioModel studioModel) : base(studioModel)
 	{
@@ -76,7 +76,15 @@ public class InspectorTest
 	[HideInInspector]                 public string[] DropdownSource = {"apple", "pear", "orange", "banana"};
 
 	public int[] IntArray = {1, 2, 3, 4, 5};
-	public List<int> IntList = new() {1, 2, 3, 4, 5};
+	//public List<int> IntList = new() {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+
+	public List<InspectorTestSubclass> SubClassList = new()
+	                                                  {
+		                                                  new InspectorTestSubclass(),
+		                                                  new InspectorTestSubclass(),
+		                                                  new InspectorTestSubclass(),
+		                                                  new InspectorTestSubclass(),
+	                                                  };
 	
 	[Button]
 	private void TestMethod()

@@ -1,4 +1,5 @@
-﻿using RedHerring.Studio.Commands;
+﻿using System.Collections;
+using RedHerring.Studio.Commands;
 
 namespace RedHerring.Studio.UserInterface;
 
@@ -23,7 +24,14 @@ public sealed class InspectorModifyValueCommand : ACommand
 				continue;
 			}
 
-			_previousValues[i] = _valueBindings[i].SourceField?.GetValue(_valueBindings[i].Source);
+			object? previousValue = _valueBindings[i].SourceField?.GetValue(_valueBindings[i].Source);
+			if (_valueBindings[i].IsBoundToList)
+			{
+				IList? list = previousValue as IList;
+				previousValue = list?[_valueBindings[i].Index];
+			}
+
+			_previousValues[i] = previousValue;
 		}
 	}
 	
@@ -36,7 +44,17 @@ public sealed class InspectorModifyValueCommand : ACommand
 				continue;
 			}
 
-			binding.SourceField.SetValue(binding.Source, _value);
+			if (binding.IsBoundToList)
+			{
+				if (binding.SourceField?.GetValue(binding.Source) is IList list)
+				{
+					list[binding.Index] = _value;
+				}
+			}
+			else
+			{
+				binding.SourceField.SetValue(binding.Source, _value);
+			}
 		}
 	}
 
@@ -49,7 +67,17 @@ public sealed class InspectorModifyValueCommand : ACommand
 				continue;
 			}
 
-			_valueBindings[i].SourceField?.SetValue(_valueBindings[i].Source, _previousValues[i]);
+			if (_valueBindings[i].IsBoundToList)
+			{
+				if (_valueBindings[i].SourceField?.GetValue(_valueBindings[i].Source) is IList list)
+				{
+					list[_valueBindings[i].Index] = _previousValues[i];
+				}
+			}
+			else
+			{
+				_valueBindings[i].SourceField?.SetValue(_valueBindings[i].Source, _previousValues[i]);
+			}
 		}
 	}
 }

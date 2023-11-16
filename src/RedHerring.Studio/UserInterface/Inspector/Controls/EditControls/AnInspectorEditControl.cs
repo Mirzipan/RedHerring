@@ -21,13 +21,13 @@ public abstract class AnInspectorEditControl<T> : AnInspectorControl
 		_multipleValuesLabel = MultipleValuesButtonLabel + Id;
 	}
 
-	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
+	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null, int sourceIndex = -1)
 	{
-		base.InitFromSource(sourceOwner, source, sourceField);
+		base.InitFromSource(sourceOwner, source, sourceField, sourceIndex);
 
 		_multipleValues = false;
 		_isReadOnly     = sourceField != null && (sourceField.IsInitOnly || sourceField.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null);
-		Value          = (T?)sourceField?.GetValue(source);
+		UpdateValue();
 	}
 
 	public override void AdaptToSource(object? sourceOwner, object source, FieldInfo? sourceField = null)

@@ -32,6 +32,7 @@ public sealed class CommandHistory
         if (_stack.Count > Capacity)
         {
             _stack.RemoveAt(0);
+            --_executionIndex;
         }
     }
     
@@ -48,10 +49,13 @@ public sealed class CommandHistory
 
     public void Redo()
     {
-        var command = _stack[_executionIndex];
-        command.Do();
-            
-        ++_executionIndex;
+        if (_executionIndex < _stack.Count - 1)
+        {
+            ++_executionIndex;
+
+            var command = _stack[_executionIndex];
+            command.Do();
+        }
     }
 
     private void RemoveAfter(int index)
