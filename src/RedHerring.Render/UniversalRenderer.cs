@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Numerics;
 using RedHerring.Alexandria;
 using RedHerring.Render.Features;
 using RedHerring.Render.Passes;
@@ -18,6 +19,7 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
     private CommandList _commandList;
 
     private RenderFeatureCollection _features;
+    private Camera _camera = new();
     private Vector2D<int> _size;
     
     public GraphicsDevice Device => _graphicsDevice;
@@ -126,6 +128,18 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
         _size = size;
         _graphicsDevice.ResizeMainWindow((uint)size.X, (uint)size.Y);
         _features.Resize(size);
+    }
+
+    public void SetCameraViewMatrix(Matrix4x4 world, Matrix4x4 view, Matrix4x4 projection, float fieldOfView, float clipPlaneNear,
+        float clipPlaneFar)
+    {
+        _camera.Position = world.Translation;
+        _camera.ViewMatrix = view;
+        _camera.ProjectiomMatrix = projection;
+        _camera.ViewProjectionMatrix = view * projection;
+        _camera.FieldOfView = fieldOfView;
+        _camera.ClipPlaneNear = clipPlaneNear;
+        _camera.ClipPlaneFar = clipPlaneFar;
     }
 
     #endregion Public
