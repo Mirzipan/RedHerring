@@ -2,5 +2,6 @@
 
 public interface Importer
 {
+    ImporterSettings CreateSettings();
     object? Import(Stream stream, ImporterSettings settings);
 }

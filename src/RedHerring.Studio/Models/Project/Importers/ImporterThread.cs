@@ -68,6 +68,8 @@ public sealed class ImporterThread
 
 		// import
 		Importer importer = _registry.GetImporter(node.Extension);
+		node.Meta.ImporterSettings ??= importer.CreateSettings();
+
 		using Stream stream = File.OpenRead(node.Path);
 		object? intermediate = importer.Import(stream, node.Meta.ImporterSettings);
 		if (intermediate == null)

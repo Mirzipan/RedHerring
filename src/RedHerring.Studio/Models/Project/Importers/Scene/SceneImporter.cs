@@ -6,6 +6,8 @@ namespace RedHerring.Studio.Models.Project.Importers;
 [Importer(".fbx", ".obj")]
 public class SceneImporter : AssetImporter<SceneIntermediate, SceneImporterSettings>
 {
+	protected override SceneImporterSettings CreateImporterSettings() => new();
+	
 	protected override SceneIntermediate Import(Stream stream, SceneImporterSettings settings)
 	{
 		AssimpContext context = new();

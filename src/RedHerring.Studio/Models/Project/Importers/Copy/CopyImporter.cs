@@ -4,6 +4,8 @@
 [Importer]
 public sealed class CopyImporter : AssetImporter<CopyIntermediate, CopyImporterSettings>
 {
+	protected override CopyImporterSettings CreateImporterSettings() => new();
+
 	protected override CopyIntermediate Import(Stream stream, CopyImporterSettings settings)
 	{
 		byte[] result = new byte[stream.Length];
