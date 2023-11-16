@@ -8,12 +8,7 @@ public class PngImporterProcessor : AssetImporterProcessor<PngIntermediate, PngI
 {
     protected override void Process(PngIntermediate? intermediate, PngImporterSettings settings, string resourcePath)
     {
-        if (intermediate is null)
-        {
-            return;
-        }
-		
-        if(intermediate.Image is null)
+        if(intermediate?.Image is null)
         {
             return;
         }
