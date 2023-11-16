@@ -38,7 +38,7 @@ public sealed class ImporterRegistry : IIndexAttributes
 		if (attribute is ImporterAttribute importerAttribute)
 		{
 			Importer importer = (Importer) Activator.CreateInstance(type)!;
-			foreach (var extension in importerAttribute.Extensions)
+			foreach (string extension in importerAttribute.Extensions)
 			{
 				_importers.Add(extension, importer);
 			}

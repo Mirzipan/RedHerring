@@ -61,6 +61,11 @@ public sealed class ImporterThread
 			return;
 		}
 
+		if (node.Meta.ImporterSettings is null)
+		{
+			return;
+		}
+
 		// import
 		Importer importer = _registry.GetImporter(node.Extension);
 		using Stream stream = File.OpenRead(node.Path);
