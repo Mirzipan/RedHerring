@@ -2,7 +2,7 @@
 
 namespace RedHerring.Render;
 
-internal sealed class Camera
+public sealed class RenderEnvironment
 {
     public Matrix4x4 ViewMatrix;
     public Matrix4x4 ProjectiomMatrix;

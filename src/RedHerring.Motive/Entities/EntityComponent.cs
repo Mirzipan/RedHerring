@@ -4,7 +4,7 @@ using RedHerring.Motive.Worlds;
 
 namespace RedHerring.Motive.Entities;
 
-public abstract class EntityComponent : AComponent<EntityComponentCollection>, Essence
+public abstract class EntityComponent : Component<EntityComponentCollection>, Essence
 {
     private EntityComponentCollection? _container;
 

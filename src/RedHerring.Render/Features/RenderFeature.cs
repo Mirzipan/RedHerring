@@ -7,7 +7,7 @@ using Veldrid;
 
 namespace RedHerring.Render.Features;
 
-public abstract class ARenderFeature : AComponent<RenderFeatureCollection>, IDisposerContainer, IDisposable
+public abstract class RenderFeature : Component<RenderFeatureCollection>, IDisposerContainer, IDisposable
 {
     private RenderFeatureCollection? _container;
     public override RenderFeatureCollection? Container => _container;
@@ -18,7 +18,7 @@ public abstract class ARenderFeature : AComponent<RenderFeatureCollection>, IDis
     
     public abstract void Update(GraphicsDevice device, CommandList commandList);
     
-    public abstract void Render(GraphicsDevice device, CommandList commandList, RenderPass pass);
+    public abstract void Render(GraphicsDevice device, CommandList commandList, RenderEnvironment environment, RenderPass pass);
 
     public abstract void Resize(Vector2D<int> size);
     public abstract void Destroy();

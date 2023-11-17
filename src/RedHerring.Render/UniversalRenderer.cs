@@ -19,7 +19,7 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
     private CommandList _commandList;
 
     private RenderFeatureCollection _features;
-    private Camera _camera = new();
+    private RenderEnvironment _environment = new();
     private Vector2D<int> _size;
     
     public GraphicsDevice Device => _graphicsDevice;
@@ -62,7 +62,7 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
         _features.Add(debug);
     }
 
-    public void AddFeature(ARenderFeature feature)
+    public void AddFeature(RenderFeature feature)
     {
         if (Features.Get(feature.GetType()) is not null)
         {
@@ -105,7 +105,7 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
     public void Draw()
     {
         _features.Update(_graphicsDevice, _commandList);
-        _features.Render(_graphicsDevice, _commandList, new RenderPass());
+        _features.Render(_graphicsDevice, _commandList, _environment, new RenderPass());
         
         // TODO ensure render targets and other magic
     }
@@ -133,13 +133,13 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
     public void SetCameraViewMatrix(Matrix4x4 world, Matrix4x4 view, Matrix4x4 projection, float fieldOfView, float clipPlaneNear,
         float clipPlaneFar)
     {
-        _camera.Position = world.Translation;
-        _camera.ViewMatrix = view;
-        _camera.ProjectiomMatrix = projection;
-        _camera.ViewProjectionMatrix = view * projection;
-        _camera.FieldOfView = fieldOfView;
-        _camera.ClipPlaneNear = clipPlaneNear;
-        _camera.ClipPlaneFar = clipPlaneFar;
+        _environment.Position = world.Translation;
+        _environment.ViewMatrix = view;
+        _environment.ProjectiomMatrix = projection;
+        _environment.ViewProjectionMatrix = view * projection;
+        _environment.FieldOfView = fieldOfView;
+        _environment.ClipPlaneNear = clipPlaneNear;
+        _environment.ClipPlaneFar = clipPlaneFar;
     }
 
     #endregion Public

@@ -7,7 +7,7 @@ namespace RedHerring.Render.Features;
 
 public class RenderFeatureCollection : IComponentContainer, IDisposable
 {
-    private List<ARenderFeature> _features = new();
+    private List<RenderFeature> _features = new();
     private bool _isDirty;
 
     public bool IsDirty => _isDirty;
@@ -47,7 +47,7 @@ public class RenderFeatureCollection : IComponentContainer, IDisposable
         }
     }
 
-    public void Render(GraphicsDevice device, CommandList commandList, RenderPass pass)
+    public void Render(GraphicsDevice device, CommandList commandList, RenderEnvironment environment, RenderPass pass)
     {
         if (_features.Count == 0)
         {
@@ -62,7 +62,7 @@ public class RenderFeatureCollection : IComponentContainer, IDisposable
         for (int i = 0; i < _features.Count; i++)
         {
             var feature = _features[i];
-            feature.Render(device, commandList, pass);
+            feature.Render(device, commandList, environment, pass);
         }
     }
 
@@ -101,7 +101,7 @@ public class RenderFeatureCollection : IComponentContainer, IDisposable
 
     #region Manipulation
 
-    internal TComponent Add<TComponent>(TComponent component) where TComponent : ARenderFeature
+    internal TComponent Add<TComponent>(TComponent component) where TComponent : RenderFeature
     {
         AddInternal(component);
         return component;
@@ -111,7 +111,7 @@ public class RenderFeatureCollection : IComponentContainer, IDisposable
 
     #region Internal
 
-    internal void AddInternal<TComponent>(TComponent component) where TComponent : ARenderFeature
+    internal void AddInternal<TComponent>(TComponent component) where TComponent : RenderFeature
     {
         _features.Add(component);
         component.SetContainer(this);
@@ -123,7 +123,7 @@ public class RenderFeatureCollection : IComponentContainer, IDisposable
         _isDirty = false;
     }
     
-    private int CompareComponent(ARenderFeature lhs, ARenderFeature rhs) => -lhs.Priority.CompareTo(rhs.Priority);
+    private int CompareComponent(RenderFeature lhs, RenderFeature rhs) => -lhs.Priority.CompareTo(rhs.Priority);
 
     #endregion Internal
 }

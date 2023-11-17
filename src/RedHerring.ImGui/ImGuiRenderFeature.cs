@@ -1,4 +1,5 @@
 ﻿using RedHerring.Alexandria;
+using RedHerring.Render;
 using RedHerring.Render.Features;
 using RedHerring.Render.Passes;
 using Silk.NET.Maths;
@@ -7,7 +8,7 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.ImGui;
 
-public class ImGuiRenderFeature : ARenderFeature
+public class ImGuiRenderFeature : RenderFeature
 {
     private ImGuiRenderer? _renderer;
     
@@ -25,7 +26,7 @@ public class ImGuiRenderFeature : ARenderFeature
     {
     }
 
-    public override void Render(GraphicsDevice device, CommandList commandList, RenderPass pass)
+    public override void Render(GraphicsDevice device, CommandList commandList, RenderEnvironment environment, RenderPass pass)
     {
         _renderer?.Render(device, commandList);
     }

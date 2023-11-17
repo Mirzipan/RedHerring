@@ -7,7 +7,7 @@ namespace RedHerring.Render;
 public interface Renderer
 {
     RenderFeatureCollection Features { get; }
-    void AddFeature(ARenderFeature feature);
+    void AddFeature(RenderFeature feature);
     void Init();
     bool BeginDraw();
     void Draw();

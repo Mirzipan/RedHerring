@@ -20,7 +20,7 @@ public sealed class GraphicsSystem : EngineSystem
         return ValueTask.FromResult(0);
     }
 
-    public void RegisterFeature(ARenderFeature feature)
+    public void RegisterFeature(RenderFeature feature)
     {
         _renderer.AddFeature(feature);
     }

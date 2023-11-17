@@ -1,17 +1,24 @@
 ﻿using RedHerring.Alexandria.Disposables;
 using RedHerring.Render.Assets;
+using RedHerring.Render.Layouts;
 using RedHerring.Render.Passes;
+using RedHerring.Render.Shaders;
 using Silk.NET.Maths;
 using Veldrid;
 
 namespace RedHerring.Render.Features;
 
-public class DebugRenderFeature : ARenderFeature, IDisposable
+public class DebugRenderFeature : RenderFeature, IDisposable
 {
     private DebugQuad _quad = null!;
     private ModelResources _modelResources;
 
     private Pipeline _pipeline = null!;
+
+    private DeviceBuffer _projectionBuffer;
+    private DeviceBuffer _viewBuffer;
+
+    private ResourceSet _projectionViewSet;
     
     public override int Priority { get; } = -1000;
 
@@ -19,19 +26,55 @@ public class DebugRenderFeature : ARenderFeature, IDisposable
     
     public override void Init(GraphicsDevice device, CommandList commandList)
     {
-        _pipeline = PipelineFactory.Default(device);
+        var factory = device.ResourceFactory;
+        
+        var projectionView = SharedLayout.CreateProjectionView(factory);
+        var layouts = new[] { projectionView };
+        
+        var description = new GraphicsPipelineDescription
+        {
+            BlendState = BlendStateDescription.SingleOverrideBlend,
+            DepthStencilState = new(
+                true,
+                true,
+                ComparisonKind.LessEqual
+            ),
+            RasterizerState = new(
+                FaceCullMode.Back,
+                PolygonFillMode.Solid,
+                FrontFace.Clockwise,
+                true,
+                false
+            ),
+            PrimitiveTopology = PrimitiveTopology.TriangleStrip,
+            ResourceLayouts = layouts,
+            ShaderSet = ShaderFactory.DefaultShaderSet(device),
+            Outputs = device.SwapchainFramebuffer.OutputDescription,
+        };
+
+        _pipeline = factory.CreateGraphicsPipeline(description);
         _pipeline.DisposeWith(this);
 
-        _quad = new DebugQuad(device, device.ResourceFactory);
+        _quad = new DebugQuad(device, factory);
         _modelResources = _quad.CreateResources();
         _modelResources.DisposeWith(this);
+
+        _projectionBuffer = factory.CreateBuffer(new BufferDescription(64, BufferUsage.UniformBuffer));
+        _viewBuffer = factory.CreateBuffer(new BufferDescription(64, BufferUsage.UniformBuffer));
+
+        _projectionViewSet = factory.CreateResourceSet(new ResourceSetDescription(projectionView, _projectionBuffer, _viewBuffer));
     }
 
-    public override void Render(GraphicsDevice device, CommandList commandList, RenderPass pass)
+    public override void Render(GraphicsDevice device, CommandList commandList, RenderEnvironment environment, RenderPass pass)
     {
+        commandList.UpdateBuffer(_projectionBuffer, 0, environment.ProjectiomMatrix);
+        commandList.UpdateBuffer(_viewBuffer, 0, environment.ViewMatrix);
+        
         commandList.SetVertexBuffer(0, _modelResources.VertexBuffer);
         commandList.SetIndexBuffer(_modelResources.IndexBuffer, _modelResources.IndexFormat);
         commandList.SetPipeline(_pipeline);
+        
+        commandList.SetGraphicsResourceSet(0, _projectionViewSet);
         commandList.DrawIndexed(_modelResources.IndexCount, 1, 0, 0, 0);
     }
 
