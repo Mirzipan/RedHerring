@@ -1,15 +1,12 @@
 ﻿using ImGuiNET;
 using NativeFileDialogSharp;
 using RedHerring.Alexandria;
-using RedHerring.Alexandria.Extensions;
 using RedHerring.Core;
 using RedHerring.Core.Systems;
 using RedHerring.Deduction;
-using RedHerring.Fingerprint;
 using RedHerring.Fingerprint.Layers;
-using RedHerring.Fingerprint.Shortcuts;
-using RedHerring.ImGui;
 using RedHerring.Infusion.Attributes;
+using RedHerring.Studio.Constants;
 using RedHerring.Studio.Models;
 using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.Tests;
@@ -29,6 +26,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	[Infuse] private MetadataDatabase _metadataDatabase = null!;
 	[Infuse] private ToolManager      _toolManager;
 	[Infuse] private ImporterRegistry _importerRegistry = null!;
+	[Infuse] private StudioCamera _camera = null!;
 
 	public bool IsEnabled   => true;
 	public int  UpdateOrder => int.MaxValue;
@@ -55,8 +53,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_inputReceiver.Name             = "studio";
 		_inputReceiver.ConsumesAllInput = false;
         
-		_inputReceiver.Bind("undo", Undo);
-		_inputReceiver.Bind("redo", Redo);
+		_inputReceiver.Bind(InputAction.Undo, Undo);
+		_inputReceiver.Bind(InputAction.Redo, Redo);
 	}
 
 	protected override async ValueTask<int> Load()
@@ -87,6 +85,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		
 		_importerThread.Cancel();
 		_studioModel.Cancel(); // TODO - should we wait for cancellation of all threads?
+		
 		return 0;
 	}
 
@@ -142,8 +141,6 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 
 	private void InitInput()
 	{
-		_inputSystem.AddBinding(new ShortcutBinding("undo", new KeyboardShortcut(Key.U)));
-		_inputSystem.AddBinding(new ShortcutBinding("redo", new KeyboardShortcut(Key.Z)));
 		_inputReceiver.Push();
 	}
 	#endregion Private
