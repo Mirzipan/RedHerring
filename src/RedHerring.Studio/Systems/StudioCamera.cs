@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using ImGuiNET;
 using RedHerring.Alexandria;
 using RedHerring.Alexandria.Identifiers;
 using RedHerring.Core;
@@ -9,11 +8,10 @@ using RedHerring.Infusion.Attributes;
 using RedHerring.Numbers;
 using RedHerring.Render;
 using RedHerring.Studio.Constants;
-using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.Systems;
 
-public sealed class StudioCamera : EngineSystem, Drawable
+public sealed partial class StudioCamera : EngineSystem, Drawable
 {
     public const float FieldOfViewMin = MathF.PI / 4;
     public const float ClipPlaneNearMin = 0.01f;
@@ -237,46 +235,6 @@ public sealed class StudioCamera : EngineSystem, Drawable
         _projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(FieldOfView, aspectRatio, ClipPlaneNear, ClipPlaneFar);
         
         _isDirty = false;
-    }
-
-    private void DebugDraw()
-    {
-        bool open = false;
-        
-        Gui.SetNextWindowSize(new Vector2(300, 200), ImGuiCond.FirstUseEver);
-        if (!Gui.Begin("Studio Camera Debug", ref open))
-        {
-            Gui.End();
-            return;
-        }
-        
-        Gui.Text($"Position: {_position}");
-        Gui.Text($"Target: {_target}");
-        Gui.Text($"Up: {_up}");
-        Gui.Text($"Speed: {_movementSpeed}");
-        
-        Gui.Separator();
-        
-        Gui.Text($"FOV: {_fieldOfView}");
-        Gui.Text($"Clip Plane Near: {_clipPlaneNear}");
-        Gui.Text($"Clip Plane Far: {_clipPlaneFar}");
-        
-        Gui.Separator();
-        
-        DebugDrawMatrix("World", _worldMatrix);
-        DebugDrawMatrix("View", _viewMatrix);
-        DebugDrawMatrix("Projection", _projectionMatrix);
-        
-        Gui.End();
-    }
-
-    private void DebugDrawMatrix(string label, in Matrix4x4 matrix)
-    {
-        Gui.Text(label);
-        Gui.Text($"[{matrix.M11:F4}] [{matrix.M12:F4}] [{matrix.M13:F4}] [{matrix.M14:F4}]");
-        Gui.Text($"[{matrix.M21:F4}] [{matrix.M22:F4}] [{matrix.M23:F4}] [{matrix.M24:F4}]");
-        Gui.Text($"[{matrix.M31:F4}] [{matrix.M32:F4}] [{matrix.M33:F4}] [{matrix.M34:F4}]");
-        Gui.Text($"[{matrix.M41:F4}] [{matrix.M42:F4}] [{matrix.M43:F4}] [{matrix.M44:F4}]");
     }
 
     #endregion Private
