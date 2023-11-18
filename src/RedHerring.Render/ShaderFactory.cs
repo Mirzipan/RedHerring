@@ -49,7 +49,7 @@ void main()
             new VertexLayoutDescription
             (
                 new VertexElementDescription
-                    ("Position", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float2),
+                    ("Position", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
                 new VertexElementDescription
                     ("Color", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float4)
             ),
