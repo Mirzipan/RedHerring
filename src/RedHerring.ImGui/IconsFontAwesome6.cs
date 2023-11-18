@@ -994,7 +994,7 @@ public class FontAwesome6
     public const string PlugCircleMinus = "\ue55e";
     public const string PlugCirclePlus = "\ue55f";
     public const string PlugCircleXmark = "\ue560";
-    public const string Plus = "\u002b";
+    public const string Plus = "\uf067";
     public const string PlusMinus = "\ue43c";
     public const string Podcast = "\uf2ce";
     public const string Poo = "\uf2fe";

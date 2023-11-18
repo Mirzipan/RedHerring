@@ -3,6 +3,7 @@ using ImGuiNET;
 using Gui = ImGuiNET.ImGui;
 
 using System.Reflection;
+using RedHerring.ImGui;
 using RedHerring.Studio.UserInterface.Attributes;
 
 namespace RedHerring.Studio.UserInterface;
@@ -101,7 +102,7 @@ public sealed class InspectorListControl : AnInspectorControl
 					{
 						_controls[i] = CreateControl(elementType, i);
 						_controls[i]?.InitFromSource(_sourceOwner, binding.Source, binding.SourceFieldInfo, i);
-						_controls[i]?.SetCustomLabel(i.ToString());
+						_controls[i]?.SetCustomLabel($"Element {i}");
 					}
 
 					if(_controls[i] == null)
@@ -111,14 +112,14 @@ public sealed class InspectorListControl : AnInspectorControl
 
 					// draggable reorder symbol
 					Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
-					Gui.Text("|||");
+					Icon.ReorderList();
 					Gui.PopStyleVar();
 					Gui.SameLine();
 
 					// delete button
 					if (!list.IsFixedSize)
 					{
-						Gui.Button("x");
+						IconButton.Remove(ButtonSize.Regular);
 						Gui.SameLine();
 					}
 
@@ -151,7 +152,7 @@ public sealed class InspectorListControl : AnInspectorControl
 		}
 
 		Gui.SameLine();
-		return Gui.SmallButton(_buttonCreateLabelId);
+		return IconButton.Add(ButtonSize.Small);
 	}
 
 	private AnInspectorControl? CreateControl(Type? type, int index)
