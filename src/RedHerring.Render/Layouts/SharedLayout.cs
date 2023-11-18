@@ -20,6 +20,19 @@ internal static class SharedLayout
         return result;
     }
 
+    public static ResourceLayout? CreateWorld(ResourceFactory factory)
+    {
+        var world = new Element("WorldBuffer", ResourceKind.UniformBuffer, ShaderStages.Vertex);
+
+        var description = new Layout
+        {
+            Elements = new[] { world },
+        };
+        
+        var result = factory.CreateResourceLayout(description);
+        return result;
+    }
+
     public static ResourceLayout? CreateWorldTexture(ResourceFactory factory)
     {
         var world = new Element("WorldBuffer", ResourceKind.UniformBuffer, ShaderStages.Vertex);

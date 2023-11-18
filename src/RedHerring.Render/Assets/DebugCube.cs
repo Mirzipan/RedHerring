@@ -1,11 +1,12 @@
-﻿using System.Numerics;
-using RedHerring.Numbers;
+﻿using RedHerring.Numbers;
 using Veldrid;
 
 namespace RedHerring.Render.Assets;
 
 public class DebugCube : IDisposable
 {
+    // Colors were chosen, so that faces on the positive side of coordinate axis is always lighter than the negative side
+    
     private static readonly Color4 FrontColor = Color4.LightBlue;
     private static readonly Color4 BackColor = Color4.DarkBlue;
     
@@ -57,11 +58,11 @@ public class DebugCube : IDisposable
         // Right
         08, 09, 10, 09, 11, 10, 
         // Back
-        12, 13, 14, 13, 15, 14, 
+        12, 14, 13, 13, 14, 15, 
         // Bottom
-        16, 17, 18, 17, 19, 18, 
+        16, 18, 17, 17, 18, 19, 
         // Left
-        20, 21, 22, 21, 23, 22, 
+        20, 22, 21, 21, 22, 23, 
     };
 
     private GraphicsDevice _device;
@@ -73,7 +74,7 @@ public class DebugCube : IDisposable
         _factory = factory;
     }
 
-    public ModelResources CreateResources(Vector3 position, float size)
+    public ModelResources CreateResources(float size)
     {
         uint vertexCount = (uint)_vertices.Length;
         var vertexBuffer = _factory.CreateBuffer(new BufferDescription
@@ -86,7 +87,7 @@ public class DebugCube : IDisposable
         for (int i = 0; i < _vertices.Length; i++)
         {
             var entry = _vertices[i];
-            entry.Position = position + entry.Position * size;
+            entry.Position = entry.Position * size;
             vertices[i] = entry;
         }
         
