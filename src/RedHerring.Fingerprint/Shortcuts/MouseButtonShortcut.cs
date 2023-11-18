@@ -18,4 +18,9 @@ public sealed class MouseButtonShortcut : Shortcut
     public bool IsDown(Input input) => input.IsButtonDown(_code.MouseButton);
 
     public bool IsReleased(Input input) => input.IsButtonReleased(_code.MouseButton);
+
+    public override string ToString()
+    {
+        return $"Mouse Button: {_code.MouseButton}";
+    }
 }

@@ -18,4 +18,9 @@ public sealed class MouseAxisShortcut : Shortcut
     public bool IsDown(Input input) => false;
 
     public bool IsReleased(Input input) => false;
+
+    public override string ToString()
+    {
+        return $"Mouse Axis: {_code.MouseAxis}";
+    }
 }

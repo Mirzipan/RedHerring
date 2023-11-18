@@ -18,4 +18,9 @@ public sealed class KeyboardShortcut : Shortcut
     public bool IsDown(Input input) => input.IsKeyDown(_code.Key);
 
     public bool IsReleased(Input input) => input.IsKeyReleased(_code.Key);
+
+    public override string ToString()
+    {
+        return $"Key: {_code.Key}";
+    }
 }

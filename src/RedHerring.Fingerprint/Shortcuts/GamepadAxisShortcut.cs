@@ -24,4 +24,9 @@ public sealed class GamepadAxisShortcut : Shortcut
     public bool IsDown(Input input) => false;
 
     public bool IsReleased(Input input) => false;
+
+    public override string ToString()
+    {
+        return $"Gamepad Axis: {_code.GamepadAxis}";
+    }
 }

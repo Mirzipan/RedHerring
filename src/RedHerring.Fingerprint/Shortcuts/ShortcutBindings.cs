@@ -12,6 +12,12 @@ public class ShortcutBindings : Collection<ShortcutBinding>
         return _shortcutsToActions.TryGetValue(shortcut, out var actions) ? actions : null;
     }
 
+    public ShortcutBinding? PrimaryShortcut(string action)
+    {
+        _actionsToShortcuts.TryGetValue(action, out var shortcuts);
+        return shortcuts?[0];
+    }
+
     protected override void InsertItem(int index, ShortcutBinding item)
     {
         Map(item);

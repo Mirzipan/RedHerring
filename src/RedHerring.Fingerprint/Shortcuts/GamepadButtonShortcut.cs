@@ -18,4 +18,9 @@ public sealed class GamepadButtonShortcut : Shortcut
     public bool IsDown(Input input) => input.IsButtonDown(_code.GamepadButton);
 
     public bool IsReleased(Input input) => input.IsButtonReleased(_code.GamepadButton);
+
+    public override string ToString()
+    {
+        return $"Gamepad Button: {_code.GamepadButton}";
+    }
 }
