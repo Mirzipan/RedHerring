@@ -1,5 +1,7 @@
 ﻿using System.Numerics;
 using ImGuiNET;
+using RedHerring.Alexandria.Extensions;
+using RedHerring.Fingerprint.Shortcuts;
 using static ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.Utils;
@@ -33,5 +35,48 @@ public static class ImGuiExtensions
         }
         
         EndTable();
+    }
+
+    public static void InputBindings(string label, ShortcutBindings bindings, params string[] actions)
+    {
+        if (!CollapsingHeader(label))
+        {
+            return;
+        }
+        
+        if (!BeginTable(label, 2, ImGuiTableFlags.RowBg | ImGuiTableFlags.Borders))
+        {
+            EndTable();
+            return;
+        }
+
+        TableSetupColumn("Action", ImGuiTableColumnFlags.WidthFixed);
+        TableSetupColumn("Shortcut");
+        TableHeadersRow();
+        
+        for (int i = 0; i < actions.Length; i++)
+        {
+            TableNextRow();
+            InputBinding(bindings, actions[i]);
+        }
+        
+        EndTable();
+    }
+
+    private static void InputBinding(ShortcutBindings bindings, string action)
+    {
+        TableNextColumn();
+        Text(action);
+        
+        TableNextColumn();
+        
+        var shortcut = bindings.PrimaryShortcut(action);
+        if (shortcut is null || shortcut.Shortcut is null)
+        {
+            Text("<unmapped>");
+            return;
+        }
+
+        Text(shortcut.Shortcut.ToString());
     }
 }
