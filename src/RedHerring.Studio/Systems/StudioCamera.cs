@@ -180,8 +180,8 @@ public sealed partial class StudioCamera : EngineSystem, Drawable
 
     private void SetupValues()
     {
-        _position = Vector3.Zero;
-        _target = Vector3Utils.Forward * 100f;
+        _position = Vector3Utils.Backward * 10;
+        _target = Vector3Utils.Forward * 30;
         _up = Vector3Utils.Up;
         
         _viewMatrix = Matrix4x4.Identity;
