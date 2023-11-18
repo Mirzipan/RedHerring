@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using ImGuiNET;
 using RedHerring.Alexandria;
 using RedHerring.Alexandria.Identifiers;
 using RedHerring.Core;
@@ -8,15 +9,19 @@ using RedHerring.Infusion.Attributes;
 using RedHerring.Numbers;
 using RedHerring.Render;
 using RedHerring.Studio.Constants;
+using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.Systems;
 
 public sealed class StudioCamera : EngineSystem, Drawable
 {
-    public const float MinFieldOfView = MathF.PI / 4;
-    public const float MinClipPlaneNear = 0.01f;
-    public const float DefaultClipPlaneFar = 1000f;
-    public const float DefaultMovementSpeed = 100f;
+    public const float FieldOfViewMin = MathF.PI / 4;
+    public const float ClipPlaneNearMin = 0.01f;
+    public const float ClipPlaneFarDefault = 1000f;
+
+    public const float MovementSpeedMin = 0.01f;
+    public const float MovementSpeedMax = 10f;
+    public const float MovementSpeedDefault = 0.01f;
 
     [Infuse]
     private Renderer _renderer = null!;
@@ -108,10 +113,7 @@ public sealed class StudioCamera : EngineSystem, Drawable
 
     protected override void Init()
     {
-        SetFieldOfView(MinFieldOfView);
-        SetClipPlanes(MinClipPlaneNear, DefaultClipPlaneFar);
-        SetMovementSpeed(DefaultMovementSpeed);
-        
+        SetupValues();
         SetupInput();
     }
 
@@ -133,6 +135,7 @@ public sealed class StudioCamera : EngineSystem, Drawable
     public void Draw(GameTime gameTime)
     {
         SubmitToRenderer();
+        DebugDraw();
     }
 
     public void EndDraw()
@@ -157,25 +160,41 @@ public sealed class StudioCamera : EngineSystem, Drawable
 
     public void SetFieldOfView(float fov)
     {
-        _fieldOfView = float.Clamp(fov, MinFieldOfView, MathF.PI);
+        _fieldOfView = float.Clamp(fov, FieldOfViewMin, MathF.PI);
         _isDirty = true;
     }
 
     public void SetClipPlanes(float near, float far)
     {
-        _clipPlaneNear = MathF.Max(near, MinClipPlaneNear);
+        _clipPlaneNear = MathF.Max(near, ClipPlaneNearMin);
         _clipPlaneFar = MathF.Max(far, near + 0.01f);
         _isDirty = true;
     }
 
     public void SetMovementSpeed(float value)
     {
-        _movementSpeed = float.Clamp(value, 1, 1000);
+        _movementSpeed = float.Clamp(value, MovementSpeedMin, MovementSpeedMax);
     }
 
     #endregion Public
 
     #region Private
+
+    private void SetupValues()
+    {
+        _position = Vector3.Zero;
+        _target = Vector3Utils.Forward * 100f;
+        _up = Vector3Utils.Up;
+        
+        _viewMatrix = Matrix4x4.Identity;
+        _projectionMatrix = Matrix4x4.Identity;
+        
+        SetFieldOfView(FieldOfViewMin);
+        SetClipPlanes(ClipPlaneNearMin, ClipPlaneFarDefault);
+        SetMovementSpeed(MovementSpeedDefault);
+
+        _isDirty = true;
+    }
 
     private void SetupInput()
     {
@@ -218,6 +237,46 @@ public sealed class StudioCamera : EngineSystem, Drawable
         _projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(FieldOfView, aspectRatio, ClipPlaneNear, ClipPlaneFar);
         
         _isDirty = false;
+    }
+
+    private void DebugDraw()
+    {
+        bool open = false;
+        
+        Gui.SetNextWindowSize(new Vector2(300, 200), ImGuiCond.FirstUseEver);
+        if (!Gui.Begin("Studio Camera Debug", ref open))
+        {
+            Gui.End();
+            return;
+        }
+        
+        Gui.Text($"Position: {_position}");
+        Gui.Text($"Target: {_target}");
+        Gui.Text($"Up: {_up}");
+        Gui.Text($"Speed: {_movementSpeed}");
+        
+        Gui.Separator();
+        
+        Gui.Text($"FOV: {_fieldOfView}");
+        Gui.Text($"Clip Plane Near: {_clipPlaneNear}");
+        Gui.Text($"Clip Plane Far: {_clipPlaneFar}");
+        
+        Gui.Separator();
+        
+        DebugDrawMatrix("World", _worldMatrix);
+        DebugDrawMatrix("View", _viewMatrix);
+        DebugDrawMatrix("Projection", _projectionMatrix);
+        
+        Gui.End();
+    }
+
+    private void DebugDrawMatrix(string label, in Matrix4x4 matrix)
+    {
+        Gui.Text(label);
+        Gui.Text($"[{matrix.M11:F4}] [{matrix.M12:F4}] [{matrix.M13:F4}] [{matrix.M14:F4}]");
+        Gui.Text($"[{matrix.M21:F4}] [{matrix.M22:F4}] [{matrix.M23:F4}] [{matrix.M24:F4}]");
+        Gui.Text($"[{matrix.M31:F4}] [{matrix.M32:F4}] [{matrix.M33:F4}] [{matrix.M34:F4}]");
+        Gui.Text($"[{matrix.M41:F4}] [{matrix.M42:F4}] [{matrix.M43:F4}] [{matrix.M44:F4}]");
     }
 
     #endregion Private

@@ -15,15 +15,16 @@ layout(binding = 0) uniform MatrixBlock
     mat4 ViewMatrix;
 } matrices;
 
-layout(location = 0) in vec2 Position;
+layout(location = 0) in vec3 Position;
 layout(location = 1) in vec4 Color;
 
 layout(location = 0) out vec4 fsin_Color;
 
 void main()
 {
-    mat4 vp = matrices.ProjectionMatrix * matrices.ViewMatrix;
-    gl_Position = vp * vec4(Position, 0, 1);
+    //mat4 vp = matrices.ProjectionMatrix * matrices.ViewMatrix;
+    //gl_Position = vp * vec4(Position, 1);
+    gl_Position = vec4(Position, 1);
     fsin_Color = Color;
 }";
 
