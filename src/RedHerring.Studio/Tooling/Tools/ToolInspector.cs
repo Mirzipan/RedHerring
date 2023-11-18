@@ -70,13 +70,13 @@ public class InspectorTest
 	public                       TestEnum EnumValue  = TestEnum.Def;
 	
 	public InspectorTestSubclass Subclass = new();
-
+	
 	[ValueDropdown("DropdownSource")] public int      DropdownInt    = 1;
 	[ValueDropdown("DropdownSource")] public string   DropdownString = "pear";
 	[HideInInspector]                 public string[] DropdownSource = {"apple", "pear", "orange", "banana"};
-
-	public int[] IntArray = {1, 2, 3, 4, 5};
-	//public List<int> IntList = new() {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+	
+	public int[]     IntArray = {1, 2, 3, 4, 5};
+	public List<int> IntList  = new() {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 	public List<InspectorTestSubclass> SubClassList = new()
 	                                                  {

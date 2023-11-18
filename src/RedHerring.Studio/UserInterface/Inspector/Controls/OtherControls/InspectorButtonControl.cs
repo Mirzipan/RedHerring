@@ -7,7 +7,7 @@ public sealed class InspectorButtonControl : AnInspectorControl
 {
 	private readonly struct Binding
 	{
-		public readonly object     Source;
+		public readonly object Source;
 
 		public Binding(object source, MethodInfo method)
 		{
@@ -27,9 +27,9 @@ public sealed class InspectorButtonControl : AnInspectorControl
 		_bindings.Add(new Binding(source, method));
 	}
 
-	public void AddBinding(object boundObject, MethodInfo method)
+	public void AddBinding(object sourceFieldValue, MethodInfo method)
 	{
-		_bindings.Add(new Binding(boundObject, method));
+		_bindings.Add(new Binding(sourceFieldValue, method));
 	}
 	
 	public override void Update()

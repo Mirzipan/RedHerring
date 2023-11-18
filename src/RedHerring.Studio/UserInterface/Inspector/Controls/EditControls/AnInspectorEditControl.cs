@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using ImGuiNET;
-using RedHerring.Studio.UserInterface.Attributes;
 using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface;
@@ -25,8 +24,8 @@ public abstract class AnInspectorEditControl<T> : AnInspectorControl
 	{
 		base.InitFromSource(sourceOwner, source, sourceField, sourceIndex);
 
-		_multipleValues = false;
-		_isReadOnly     = sourceField != null && (sourceField.IsInitOnly || sourceField.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null);
+		_multipleValues =  false;
+		_isReadOnly     |= Bindings.Any(x => x.IsUnbound || x.IsReadOnly);
 		UpdateValue();
 	}
 
@@ -35,7 +34,7 @@ public abstract class AnInspectorEditControl<T> : AnInspectorControl
 		base.AdaptToSource(sourceOwner, source, sourceField);
 
 		_multipleValues = GetValue() == MultipleValues;
-		_isReadOnly     = _isReadOnly || ValueBindings.Any(x => x.SourceField != null && (x.SourceField.IsInitOnly || x.SourceField.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null));
+		_isReadOnly     |= Bindings.Any(x => x.IsUnbound || x.IsReadOnly);
 	}
 	
 	#region Value manipulation
@@ -100,7 +99,7 @@ public abstract class AnInspectorEditControl<T> : AnInspectorControl
 	{
 		if (_isReadOnly)
 		{
-			Gui.PushStyleVar(ImGuiStyleVar.Alpha, 1.0f); // workaround to readonly input style
+			Gui.PopStyleVar();
 		}
 	}
 	#endregion

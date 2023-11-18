@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections;
+using System.Reflection;
 using ImGuiNET;
 using RedHerring.Alexandria.Extensions;
 using RedHerring.Studio.UserInterface.Attributes;
@@ -6,6 +7,23 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface;
 
+/*
+	Naming, just for clarity:
+ 
+	class MyData	<-- sourceOwner:object
+	{
+		public MyData2 Data;       <-- source:object
+		public List<MyData2> Data; <-- source:object
+	} 
+
+	class MyData2
+	{
+		public int Value; <-- sourceFieldValue:object, sourceField:FieldInfo, sourceFieldType:Type
+		
+		[Button]
+		public void MyMethod() {}
+	}
+*/
 public sealed class InspectorClassControl : AnInspectorControl
 {
 	private List<AnInspectorControl> _controls = new();
@@ -19,22 +37,42 @@ public sealed class InspectorClassControl : AnInspectorControl
 	{
 		base.InitFromSource(sourceOwner, source, sourceField, sourceIndex);
 
-		object? boundObject = sourceField == null ? source : sourceField.GetValue(source);
-		if (boundObject == null)
+		object? sourceFieldValue = sourceField == null ? source : sourceField.GetValue(source);
+		if (sourceFieldValue == null)
 		{
 			return;
 		}
 
-		Type sourceType = boundObject.GetType(); // this should properly handle abstract bases
-		//Type sourceType = sourceField != null ? sourceField.FieldType : source.GetType();
+		Type sourceFieldType = sourceFieldValue.GetType(); // this should properly handle abstract bases
 
-		InitFromSourceFields(sourceType, source, boundObject);
-		InitFromSourceMethods(sourceType, source, boundObject);
+		if (sourceIndex != -1)
+		{
+			if (sourceFieldType.IsArray)
+			{
+				sourceFieldType = sourceFieldType.GetElementType()!;
+			}
+			else if (sourceFieldType.IsGenericType && sourceFieldType.GetGenericTypeDefinition() == typeof(List<>))
+			{
+				sourceFieldType = sourceFieldType.GetGenericArguments()[0];
+			}
+
+			object? sourceElement = (sourceFieldValue as IList)?[sourceIndex];
+			if (sourceElement == null)
+			{
+				return;
+			}
+
+			sourceFieldValue = sourceElement;
+			sourceIndex      = -1;
+		}
+
+		InitFromSourceFields(sourceFieldType, source, sourceFieldValue, sourceIndex);
+		InitFromSourceMethods(sourceFieldType, source, sourceFieldValue);
 	}
 
-	private void InitFromSourceFields(Type sourceType, object source, object boundObject)
+	private void InitFromSourceFields(Type sourceFieldType, object source, object sourceFieldValue, int sourceIndex)
 	{
-		FieldInfo[] fields = sourceType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+		FieldInfo[] fields = sourceFieldType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 		foreach (FieldInfo field in fields)
 		{
 			if(!IsFieldVisible(field))
@@ -53,14 +91,14 @@ public sealed class InspectorClassControl : AnInspectorControl
 			AnInspectorControl control = (AnInspectorControl) Activator.CreateInstance(controlType, _inspector, controlId)!;
 			_controls.Add(control);
 
-			control.InitFromSource(source, boundObject, field);
+			control.InitFromSource(source, sourceFieldValue, field, sourceIndex);
 		}
 	}
 
 	// buttons (only in first object, any other object in the same inspector removes buttons)
-	private void InitFromSourceMethods(Type sourceType, object source, object boundObject)
+	private void InitFromSourceMethods(Type sourceFieldType, object source, object sourceFieldValue)
 	{
-		MethodInfo[] methods = sourceType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+		MethodInfo[] methods = sourceFieldType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 		foreach (MethodInfo method in methods)
 		{
 			ButtonAttribute? buttonAttribute = method.GetCustomAttribute<ButtonAttribute>();
@@ -71,7 +109,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 			
 			string controlId = $"{Id}.{method.Name}()";
 
-			InspectorButtonControl button = new (_inspector, controlId, buttonAttribute.Title ?? method.Name.PrettyCamelCase(), boundObject, method);
+			InspectorButtonControl button = new (_inspector, controlId, buttonAttribute.Title ?? method.Name.PrettyCamelCase(), sourceFieldValue, method);
 			_controls.Add(button);
 		}
 	}
@@ -80,22 +118,20 @@ public sealed class InspectorClassControl : AnInspectorControl
 	#region Adapt
 	public override void AdaptToSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
 	{
-		// TODO - refactor, similar to InitFromSource
 		base.AdaptToSource(sourceOwner, source, sourceField);
 		
-		object? boundObject = sourceField == null ? source : sourceField.GetValue(source);
-		if (boundObject == null)
+		object? sourceFieldValue = sourceField == null ? source : sourceField.GetValue(source);
+		if (sourceFieldValue == null)
 		{
 			return;
 		}
 
-		Type sourceType = boundObject.GetType(); // this should properly handle abstract bases
-		//Type sourceType = sourceField != null ? sourceField.FieldType : source.GetType();
+		Type sourceFieldType = sourceFieldValue.GetType(); // this should properly handle abstract bases
 
 		bool[] commonControls = new bool[_controls.Count];
 
-		AdaptToSourceFields(sourceType, sourceOwner, source, boundObject, commonControls);
-		AdaptToSourceMethods(sourceType, sourceOwner, source, boundObject, commonControls);
+		AdaptToSourceFields(sourceFieldType, sourceOwner, source, sourceFieldValue, commonControls);
+		AdaptToSourceMethods(sourceFieldType, sourceOwner, source, sourceFieldValue, commonControls);
 		
 		// remove all controls that are not common for all sources
 		for(int i=commonControls.Length-1;i>=0;--i)
@@ -107,9 +143,9 @@ public sealed class InspectorClassControl : AnInspectorControl
 		}
 	}
 
-	private void AdaptToSourceFields(Type sourceType, object? sourceOwner, object source, object boundObject, bool[] commonControls)
+	private void AdaptToSourceFields(Type sourceFieldType, object? sourceOwner, object source, object sourceFieldValue, bool[] commonControls)
 	{
-		FieldInfo[] fields = sourceType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+		FieldInfo[] fields = sourceFieldType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 		foreach (FieldInfo field in fields)
 		{
 			if(!IsFieldVisible(field))
@@ -137,7 +173,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 				continue; // list control cannot be used on multiple objects at once => skip
 			}
 
-			FieldInfo?         firstSourceField = control.ValueBindings[0].SourceField;
+			FieldInfo? firstSourceField = control.Bindings[0].SourceFieldInfo;
 			if (firstSourceField == null)
 			{
 				continue;
@@ -157,14 +193,14 @@ public sealed class InspectorClassControl : AnInspectorControl
 				continue; // attributes don't match => it's not common for all sources => skip
 			}
 
-			control.AdaptToSource(sourceOwner, boundObject, field);
+			control.AdaptToSource(sourceOwner, sourceFieldValue, field);
 			commonControls[controlIndex] = true;
 		}
 	}
 
-	private void AdaptToSourceMethods(Type sourceType, object? sourceOwner, object source, object boundObject, bool[] commonControls)
+	private void AdaptToSourceMethods(Type sourceFieldType, object? sourceOwner, object source, object sourceFieldValue, bool[] commonControls)
 	{
-		MethodInfo[] methods = sourceType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+		MethodInfo[] methods = sourceFieldType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 		foreach (MethodInfo method in methods)
 		{
 			ButtonAttribute? buttonAttribute = method.GetCustomAttribute<ButtonAttribute>();
@@ -193,7 +229,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 				continue;
 			}
 
-			button.AddBinding(boundObject, method);
+			button.AddBinding(sourceFieldValue, method);
 			commonControls[controlIndex] = true;
 		}
 	}
@@ -210,14 +246,16 @@ public sealed class InspectorClassControl : AnInspectorControl
 			return;
 		}
 
-		if (Gui.CollapsingHeader(Label, ImGuiTreeNodeFlags.DefaultOpen))
+		//if (Gui.CollapsingHeader(Label, ImGuiTreeNodeFlags.DefaultOpen))
+		if(Gui.TreeNode(Label))
 		{
-			Gui.Indent();
+			//Gui.Indent();
 			foreach (AnInspectorControl control in _controls)
 			{
 				control.Update();
 			}
-			Gui.Unindent();
+			//Gui.Unindent();
+			Gui.TreePop();
 		}
 	}
 

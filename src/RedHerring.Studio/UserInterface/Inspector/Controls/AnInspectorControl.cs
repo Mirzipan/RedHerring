@@ -10,11 +10,11 @@ public abstract class AnInspectorControl
 	protected static readonly object UnboundValue   = new(); // mark that there is no value to update
 	protected static readonly object MultipleValues = new(); // mark that there are multiple values
 
-	protected readonly Inspector                   _inspector;
-	public readonly    string                      Id;
-	public             string?                     Label         = null;
-	public             string                      LabelId       = null!;
-	public readonly    List<InspectorValueBinding> ValueBindings = new();
+	protected readonly Inspector              _inspector;
+	public readonly    string                 Id;
+	public             string?                Label    = null;
+	public             string                 LabelId  = null!;
+	public readonly    List<InspectorBinding> Bindings = new();
 
 	protected AnInspectorControl(Inspector inspector, string id)
 	{
@@ -23,7 +23,7 @@ public abstract class AnInspectorControl
 		LabelId    = id;
 	}
 
-	public Type? ValueType => ValueBindings.Count == 0 ? null : ValueBindings[0].SourceField?.FieldType ?? typeof(object);
+	public Type? BoundValueType => Bindings.Count == 0 ? null : Bindings[0].SourceFieldInfo?.FieldType;
 
 	public virtual void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null, int sourceIndex = -1)
 	{
@@ -33,12 +33,12 @@ public abstract class AnInspectorControl
 			LabelId = Label + Id;
 		}
 
-		ValueBindings.Add(new InspectorValueBinding(source, sourceField, sourceIndex, GetOnCommitValue(sourceOwner, sourceField)));
+		Bindings.Add(InspectorBinding.Create(source, sourceField, sourceIndex, GetOnCommitValueAction(sourceOwner, sourceField)));
 	}
 
 	public virtual void AdaptToSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
 	{
-		ValueBindings.Add(new InspectorValueBinding(source, sourceField, GetOnCommitValue(sourceOwner, sourceField)));
+		Bindings.Add(InspectorBinding.Create(source, sourceField, -1, GetOnCommitValueAction(sourceOwner, sourceField)));
 	}
 	
 	public abstract void Update();
@@ -49,7 +49,7 @@ public abstract class AnInspectorControl
 		LabelId = label == null ? Id : label + Id;
 	}
 
-	private Action? GetOnCommitValue(object? sourceOwner, FieldInfo? sourceField)
+	private Action? GetOnCommitValueAction(object? sourceOwner, FieldInfo? sourceField)
 	{
 		if (sourceOwner == null || sourceField == null)
 		{
@@ -74,32 +74,20 @@ public abstract class AnInspectorControl
 	#region Value manipulation
 	protected object? GetValue()
 	{
-		if (ValueBindings.Count == 0 || ValueBindings[0].SourceField == null)
+		if (Bindings.Count == 0 || Bindings[0].IsUnbound)
 		{
 			return UnboundValue;
 		}
 
-		object? value = ValueBindings[0].SourceField!.GetValue(ValueBindings[0].Source);
-		if (ValueBindings[0].IsBoundToList)
+		object? value = Bindings[0].GetValue();
+		for (int i = 1; i < Bindings.Count; ++i)
 		{
-			IList? list = value as IList;
-			value = list?[ValueBindings[0].Index];
-		}
-		
-		for (int i = 1; i < ValueBindings.Count; ++i)
-		{
-			if (ValueBindings[i].SourceField == null)
+			if (!Bindings[i].IsUnbound)
 			{
 				return UnboundValue;
 			}
  
-			object? otherValue = ValueBindings[i].SourceField!.GetValue(ValueBindings[i].Source);
-			if (ValueBindings[i].IsBoundToList)
-			{
-				IList? list = otherValue as IList;
-				otherValue = list?[ValueBindings[i].Index];
-			}
-
+			object? otherValue = Bindings[i].GetValue();
 			if (otherValue == null)
 			{
 				if (value == null)
@@ -120,13 +108,21 @@ public abstract class AnInspectorControl
 
 	protected void SetValue(object? value)
 	{
-		Console.WriteLine($"Submitted value {value}");
-		_inspector.Commit(new InspectorModifyValueCommand(value, ValueBindings));
-
-		foreach (InspectorValueBinding valueBinding in ValueBindings)
+		object? currentValue = GetValue();
+		if (currentValue == null)
 		{
-			valueBinding.OnCommitValue?.Invoke();
+			if (value == null)
+			{
+				return;
+			}
 		}
+		else if (currentValue.Equals(value))
+		{
+			return;
+		}
+
+		Console.WriteLine($"Submitted value {value}");
+		_inspector.Commit(new InspectorModifyValueCommand(value, Bindings));
 	}
 	#endregion
 }
