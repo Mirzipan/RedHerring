@@ -85,7 +85,7 @@ public class DebugCube : IDisposable
         for (int i = 0; i < _vertices.Length; i++)
         {
             var entry = _vertices[i];
-            entry.Position = position * entry.Position * size;
+            entry.Position = position + entry.Position * size;
             vertices[i] = entry;
         }
         

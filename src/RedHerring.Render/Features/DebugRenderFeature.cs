@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using RedHerring.Alexandria.Disposables;
+using RedHerring.Numbers;
 using RedHerring.Render.Assets;
 using RedHerring.Render.Layouts;
 using RedHerring.Render.Passes;
@@ -57,7 +58,7 @@ public class DebugRenderFeature : RenderFeature, IDisposable
         _pipeline.DisposeWith(this);
 
         _cube = new DebugCube(device, factory);
-        _modelResources = _cube.CreateResources(Vector3.Zero, 10f);
+        _modelResources = _cube.CreateResources(Vector3Utils.Forward * 30, 10f);
         _modelResources.DisposeWith(this);
 
         _projectionBuffer = factory.CreateBuffer(new BufferDescription(64, BufferUsage.UniformBuffer));
