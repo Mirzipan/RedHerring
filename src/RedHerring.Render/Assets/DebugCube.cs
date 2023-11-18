@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using Veldrid;
-using Veldrid.Utilities;
 
 namespace RedHerring.Render.Assets;
 

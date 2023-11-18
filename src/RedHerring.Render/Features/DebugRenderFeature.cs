@@ -47,7 +47,7 @@ public class DebugRenderFeature : RenderFeature, IDisposable
                 true,
                 false
             ),
-            PrimitiveTopology = PrimitiveTopology.TriangleStrip,
+            PrimitiveTopology = PrimitiveTopology.TriangleList,
             ResourceLayouts = layouts,
             ShaderSet = ShaderFactory.DefaultShaderSet(device),
             Outputs = device.SwapchainFramebuffer.OutputDescription,
