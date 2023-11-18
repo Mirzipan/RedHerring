@@ -1,18 +1,19 @@
 ﻿using System.Numerics;
+using RedHerring.Numbers;
 using Veldrid;
 
 namespace RedHerring.Render.Assets;
 
 public class DebugCube : IDisposable
 {
-    private static readonly RgbaFloat FrontColor = RgbaFloat.Blue;
-    private static readonly RgbaFloat BackColor = RgbaFloat.Blue;
+    private static readonly Color4 FrontColor = Color4.LightBlue;
+    private static readonly Color4 BackColor = Color4.DarkBlue;
     
-    private static readonly RgbaFloat TopColor = RgbaFloat.Green;
-    private static readonly RgbaFloat BottomColor = RgbaFloat.Green;
+    private static readonly Color4 TopColor = Color4.LightGreen;
+    private static readonly Color4 BottomColor = Color4.DarkGreen;
 
-    private static readonly RgbaFloat RightColor = RgbaFloat.Red;
-    private static readonly RgbaFloat LeftColor = RgbaFloat.Red;
+    private static readonly Color4 RightColor = Color4.LightCoral;
+    private static readonly Color4 LeftColor = Color4.DarkRed;
 
     private static VertexPositionColor[] _vertices =
     {
@@ -50,17 +51,17 @@ public class DebugCube : IDisposable
     private static ushort[] _indices =
     {
         // Front
-        00, 01, 02, 00, 02, 03,
+        00, 01, 02, 01, 03, 02, 
         // Top
-        04, 05, 06, 04, 06, 07,
+        04, 05, 06, 05, 07, 06, 
         // Right
-        08, 09, 10, 08, 10, 11,
+        08, 09, 10, 09, 11, 10, 
         // Back
-        12, 13, 14, 12, 14, 15,
+        12, 13, 14, 13, 15, 14, 
         // Bottom
-        16, 17, 18, 16, 18, 19,
+        16, 17, 18, 17, 19, 18, 
         // Left
-        20, 21, 22, 20, 22, 23,
+        20, 21, 22, 21, 23, 22, 
     };
 
     private GraphicsDevice _device;

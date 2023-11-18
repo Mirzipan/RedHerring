@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using Veldrid;
+using RedHerring.Numbers;
 
 namespace RedHerring.Render.Assets;
 
@@ -8,9 +8,9 @@ public struct VertexPositionColor
     public const uint SizeInBytes = 28;
     
     public Vector3 Position;
-    public RgbaFloat Color;
+    public Color4 Color;
 
-    public VertexPositionColor(Vector3 position, RgbaFloat color)
+    public VertexPositionColor(Vector3 position, Color4 color)
     {
         Position = position;
         Color = color;
