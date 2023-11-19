@@ -70,12 +70,18 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
         }
         
         Features.Add(feature);
-        feature.Init(_graphicsDevice, _commandList);
+        feature.RaiseInit(_graphicsDevice, _commandList);
         feature.Resize(_size);
     }
 
     public void Init()
     {
+        InitFeatures();
+    }
+
+    public void Reset()
+    {
+        UnloadFeatures();
         InitFeatures();
     }
 
@@ -86,6 +92,9 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
 
     protected override void Destroy()
     {
+        _features.Unload(_graphicsDevice, _commandList);
+        _features.Dispose();
+        
         _commandList.Dispose();
         _graphicsDevice.Dispose();
     }
@@ -149,6 +158,11 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
     private void InitFeatures()
     {
         _features.Init(_graphicsDevice, _commandList);
+    }
+
+    private void UnloadFeatures()
+    {
+        _features.Unload(_graphicsDevice, _commandList);
     }
 
     #endregion Private

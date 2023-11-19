@@ -30,7 +30,7 @@ public class DebugRenderFeature : RenderFeature, IDisposable
 
     #region Lifecycle
     
-    public override void Init(GraphicsDevice device, CommandList commandList)
+    protected override void Init(GraphicsDevice device, CommandList commandList)
     {
         var factory = device.ResourceFactory;
         
@@ -64,16 +64,27 @@ public class DebugRenderFeature : RenderFeature, IDisposable
 
         _position = Vector3Utils.Forward * 30;
         _cube = new DebugCube(device, factory);
+        _cube.DisposeWith(this);
         _modelResources = _cube.CreateResources(10f);
         _modelResources.DisposeWith(this);
 
         _projectionBuffer = factory.CreateBuffer(new BufferDescription(64, BufferUsage.UniformBuffer));
+        _projectionBuffer.DisposeWith(this);
         _viewBuffer = factory.CreateBuffer(new BufferDescription(64, BufferUsage.UniformBuffer));
+        _viewBuffer.DisposeWith(this);
 
         _worldBuffer = factory.CreateBuffer(new BufferDescription(64, BufferUsage.UniformBuffer));
+        _worldBuffer.DisposeWith(this);
 
         _projectionViewSet = factory.CreateResourceSet(new ResourceSetDescription(projectionView, _projectionBuffer, _viewBuffer));
+        _projectionViewSet.DisposeWith(this);
         _worldSet = factory.CreateResourceSet(new ResourceSetDescription(world, _worldBuffer));
+        _worldSet.DisposeWith(this);
+    }
+
+    protected override void Unload(GraphicsDevice device, CommandList commandList)
+    {
+        ResetDisposer();
     }
 
     public override void Render(GraphicsDevice device, CommandList commandList, RenderEnvironment environment, RenderPass pass)
@@ -98,10 +109,6 @@ public class DebugRenderFeature : RenderFeature, IDisposable
     }
 
     public override void Update(GraphicsDevice device, CommandList commandList)
-    {
-    }
-
-    public override void Destroy()
     {
     }
 

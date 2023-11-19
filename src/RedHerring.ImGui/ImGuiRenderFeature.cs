@@ -1,4 +1,5 @@
 ﻿using RedHerring.Alexandria;
+using RedHerring.Alexandria.Disposables;
 using RedHerring.Render;
 using RedHerring.Render.Features;
 using RedHerring.Render.Passes;
@@ -17,9 +18,20 @@ public class ImGuiRenderFeature : RenderFeature
 
     #region Lifecycle
 
-    public override void Init(GraphicsDevice device, CommandList commandList)
+    protected override void Init(GraphicsDevice device, CommandList commandList)
     {
         ResetRenderer(device);
+    }
+
+    protected override void Unload(GraphicsDevice device, CommandList commandList)
+    {
+        FontLoader.Unload();
+
+        if (_renderer is not null)
+        {
+            _renderer.ClearCachedImageResources();
+            _renderer.DestroyDeviceObjects();
+        }
     }
 
     public override void Update(GraphicsDevice device, CommandList commandList)
@@ -35,20 +47,6 @@ public class ImGuiRenderFeature : RenderFeature
     {
         Size = size;
         _renderer?.WindowResized(size.X, size.Y);
-    }
-
-    public override void Destroy()
-    {
-        FontLoader.Unload();
-
-        if (_renderer is not null)
-        {
-            _renderer.ClearCachedImageResources();
-            _renderer.DestroyDeviceObjects();
-            _renderer.Dispose();
-        }
-        
-        //FontLoader.Unloaded(_openSansConfig);
     }
 
     #endregion Lifecycle
@@ -80,6 +78,7 @@ public class ImGuiRenderFeature : RenderFeature
             device.MainSwapchain.Framebuffer.OutputDescription,
             size.X,
             size.Y);
+        _renderer.DisposeWith(this);
 
         RecreateFont();
         Theme.CrimsonRivers();

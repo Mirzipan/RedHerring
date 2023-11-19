@@ -27,9 +27,9 @@ internal sealed class Configuration : EngineSystem
         _input.AddKeyboardBinding(InputAction.MoveForward, Key.W);
         _input.AddKeyboardBinding(InputAction.MoveBackward, Key.S);
 
-        // TODO: fix mouse axis not working
         _input.AddMouseBinding(InputAction.MoveSpeedIncrease, MouseAxis.WheelUp);
         _input.AddMouseBinding(InputAction.MoveSpeedDecrease, MouseAxis.WheelDown);
-
+        
+        _input.AddKeyboardBinding(InputAction.ResetRenderer, Key.F10, Modifiers.Shift);
     }
 }

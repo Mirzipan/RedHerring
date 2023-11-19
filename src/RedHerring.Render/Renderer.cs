@@ -9,6 +9,7 @@ public interface Renderer
     RenderFeatureCollection Features { get; }
     void AddFeature(RenderFeature feature);
     void Init();
+    void Reset();
     bool BeginDraw();
     void Draw();
     void EndDraw();

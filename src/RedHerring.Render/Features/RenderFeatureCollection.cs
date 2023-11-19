@@ -24,7 +24,21 @@ public class RenderFeatureCollection : IComponentContainer, IDisposable
         for (int i = 0; i < _features.Count; i++)
         {
             var feature = _features[i];
-            feature.Init(device, commandList);
+            feature.RaiseInit(device, commandList);
+        }
+    }
+
+    public void Unload(GraphicsDevice device, CommandList commandList)
+    {
+        if (_features.Count == 0)
+        {
+            return;
+        }
+        
+        for (int i = 0; i < _features.Count; i++)
+        {
+            var feature = _features[i];
+            feature.RaiseUnload(device, commandList);
         }
     }
 

@@ -17,6 +17,7 @@ public static class InjectionExtensions
         @this.AddSystem<Configuration>();
         
         @this.AddSystem<StudioCamera>();
+        @this.AddSystem<StudioGraphics>();
         @this.AddSystem<StudioSystem>();
         
         return @this;

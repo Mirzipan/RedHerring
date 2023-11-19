@@ -15,6 +15,10 @@ public class NullRenderer : Renderer
     {
     }
 
+    public void Reset()
+    {
+    }
+
     public bool BeginDraw() => false;
 
     public void Draw()
