@@ -4,6 +4,20 @@
 
 This document tracks more or less important decisions about the engine, in order to allow easy referencing in the future.
 
+## [2023-11-19]
+
+### Input Changes
+*Decided by: Mirzipan*
+
+Creating input shortcuts was too complex for any shortcuts that wanted to use modifiers.
+As an example, if you wanted to create an `Any Shift + F12` shortcut, it would involve creating a top-level `CompositeShortcut` with a `KeyboardShortcut` and an inner `CompositeShortcut`.
+The inner shortcut would then need to contain both, `ShiftLeft` and `ShiftRight`.
+Now all atomic implementations of the `Shortcut` interface include `Modifiers`.
+This is an optional addition, that is not enforced by the interface.
+
+`Input` interface and all shortcuts also lost the `IsKeyUp`, `IsButtonUp`, etc. queries.
+These were not serving any purpose and input could already be checked by negating their `IsDown` counterparts.
+
 ## [2023-11-12]
 
 ### Math Library - Vol.2
