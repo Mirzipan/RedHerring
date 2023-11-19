@@ -20,6 +20,12 @@ public sealed class GraphicsSystem : EngineSystem
         return ValueTask.FromResult(0);
     }
 
+    protected override ValueTask<int> Unload()
+    {
+        _renderer.Close();
+        return ValueTask.FromResult(0);
+    }
+
     public void RegisterFeature(RenderFeature feature)
     {
         _renderer.AddFeature(feature);

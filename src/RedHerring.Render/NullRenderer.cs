@@ -15,6 +15,10 @@ public class NullRenderer : Renderer
     {
     }
 
+    public void Close()
+    {
+    }
+
     public void Reset()
     {
     }
@@ -36,6 +40,9 @@ public class NullRenderer : Renderer
     public void SetCameraViewMatrix(Matrix4x4 world, Matrix4x4 view, Matrix4x4 projection, float fieldOfView, float clipPlaneNear,
         float clipPlaneFar)
     {
-        
+    }
+
+    public void ReloadShaders()
+    {
     }
 }

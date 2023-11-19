@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Reactive.Disposables;
 using RedHerring.Alexandria.Disposables;
 using RedHerring.Numbers;
 using RedHerring.Render.Assets;
@@ -32,59 +33,16 @@ public class DebugRenderFeature : RenderFeature, IDisposable
     
     protected override void Init(GraphicsDevice device, CommandList commandList)
     {
-        var factory = device.ResourceFactory;
-        
-        var projectionView = SharedLayout.CreateProjectionView(factory);
-        var world = SharedLayout.CreateWorld(factory);
-        var layouts = new[] { projectionView, world };
-        
-        var description = new GraphicsPipelineDescription
-        {
-            BlendState = BlendStateDescription.SingleOverrideBlend,
-            DepthStencilState = new(
-                true,
-                true,
-                ComparisonKind.LessEqual
-            ),
-            RasterizerState = new(
-                FaceCullMode.Back,
-                PolygonFillMode.Solid,
-                FrontFace.Clockwise,
-                true,
-                false
-            ),
-            PrimitiveTopology = PrimitiveTopology.TriangleList,
-            ResourceLayouts = layouts,
-            ShaderSet = ShaderFactory.DefaultShaderSet(device),
-            Outputs = device.SwapchainFramebuffer.OutputDescription,
-        };
-
-        _pipeline = factory.CreateGraphicsPipeline(description);
-        _pipeline.DisposeWith(this);
-
-        _position = Vector3Utils.Forward * 30;
-        _cube = new DebugCube(device, factory);
-        _cube.DisposeWith(this);
-        _modelResources = _cube.CreateResources(10f);
-        _modelResources.DisposeWith(this);
-
-        _projectionBuffer = factory.CreateBuffer(new BufferDescription(64, BufferUsage.UniformBuffer));
-        _projectionBuffer.DisposeWith(this);
-        _viewBuffer = factory.CreateBuffer(new BufferDescription(64, BufferUsage.UniformBuffer));
-        _viewBuffer.DisposeWith(this);
-
-        _worldBuffer = factory.CreateBuffer(new BufferDescription(64, BufferUsage.UniformBuffer));
-        _worldBuffer.DisposeWith(this);
-
-        _projectionViewSet = factory.CreateResourceSet(new ResourceSetDescription(projectionView, _projectionBuffer, _viewBuffer));
-        _projectionViewSet.DisposeWith(this);
-        _worldSet = factory.CreateResourceSet(new ResourceSetDescription(world, _worldBuffer));
-        _worldSet.DisposeWith(this);
+        Init(device);
     }
 
-    protected override void Unload(GraphicsDevice device, CommandList commandList)
+    protected override void ReloadShaders(GraphicsDevice device, CommandList commandList)
     {
-        ResetDisposer();
+        var container = (IDisposerContainer)this;
+        container.Disposer.Dispose();
+        container.Disposer = new CompositeDisposable();
+
+        Init(device);
     }
 
     public override void Render(GraphicsDevice device, CommandList commandList, RenderEnvironment environment, RenderPass pass)
@@ -113,4 +71,85 @@ public class DebugRenderFeature : RenderFeature, IDisposable
     }
 
     #endregion Lifecycle
+
+    #region Private
+
+    private void Init(GraphicsDevice device)
+    {
+        var factory = device.ResourceFactory;
+        CreateModelResources(device, factory);
+        
+        var projectionView = CreateResourceLayouts(factory, out var world, out var layouts);
+
+        CreatePipeline(device, factory, layouts);
+        CreateBuffers(factory);
+        CreateResourceSets(factory, projectionView, world);
+    }
+
+    private void CreateResourceSets(ResourceFactory factory, ResourceLayout? projectionView, ResourceLayout? world)
+    {
+        _projectionViewSet =
+            factory.CreateResourceSet(new ResourceSetDescription(projectionView, _projectionBuffer, _viewBuffer));
+        _projectionViewSet.DisposeWith(this);
+        _worldSet = factory.CreateResourceSet(new ResourceSetDescription(world, _worldBuffer));
+        _worldSet.DisposeWith(this);
+    }
+
+    private void CreateBuffers(ResourceFactory factory)
+    {
+        _projectionBuffer = factory.CreateBuffer(new BufferDescription(64, BufferUsage.UniformBuffer));
+        _projectionBuffer.DisposeWith(this);
+        _viewBuffer = factory.CreateBuffer(new BufferDescription(64, BufferUsage.UniformBuffer));
+        _viewBuffer.DisposeWith(this);
+
+        _worldBuffer = factory.CreateBuffer(new BufferDescription(64, BufferUsage.UniformBuffer));
+        _worldBuffer.DisposeWith(this);
+    }
+
+    private static ResourceLayout? CreateResourceLayouts(ResourceFactory factory, out ResourceLayout? world,
+        out ResourceLayout?[] layouts)
+    {
+        var projectionView = SharedLayout.CreateProjectionView(factory);
+        world = SharedLayout.CreateWorld(factory);
+        layouts = new[] { projectionView, world };
+        return projectionView;
+    }
+
+    private void CreatePipeline(GraphicsDevice device, ResourceFactory factory, ResourceLayout?[] layouts)
+    {
+        var description = new GraphicsPipelineDescription
+        {
+            BlendState = BlendStateDescription.SingleOverrideBlend,
+            DepthStencilState = new(
+                true,
+                true,
+                ComparisonKind.LessEqual
+            ),
+            RasterizerState = new(
+                FaceCullMode.Back,
+                PolygonFillMode.Solid,
+                FrontFace.Clockwise,
+                true,
+                false
+            ),
+            PrimitiveTopology = PrimitiveTopology.TriangleList,
+            ResourceLayouts = layouts,
+            ShaderSet = ShaderFactory.DefaultShaderSet(device),
+            Outputs = device.SwapchainFramebuffer.OutputDescription,
+        };
+
+        _pipeline = factory.CreateGraphicsPipeline(description);
+        _pipeline.DisposeWith(this);
+    }
+
+    private void CreateModelResources(GraphicsDevice device, ResourceFactory factory)
+    {
+        _position = Vector3Utils.Forward * 30;
+        _cube = new DebugCube(device, factory);
+        _cube.DisposeWith(this);
+        _modelResources = _cube.CreateResources(10f);
+        _modelResources.DisposeWith(this);
+    }
+
+    #endregion Private
 }

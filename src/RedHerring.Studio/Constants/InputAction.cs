@@ -15,5 +15,5 @@ public static class InputAction
     public const string MoveSpeedIncrease = "move_speed_increase";
     public const string MoveSpeedDecrease = "move_speed_decrease";
     
-    public const string ResetRenderer = "reset_renderer";
+    public const string ReloadShaders = "reload_shaders";
 }

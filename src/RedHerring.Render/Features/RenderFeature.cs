@@ -22,14 +22,17 @@ public abstract class RenderFeature : Component<RenderFeatureCollection>, IDispo
         _initialized = true;
     }
 
-    internal void RaiseUnload(GraphicsDevice device, CommandList commandList)
+    internal void RaiseReloadShaders(GraphicsDevice device, CommandList commandList)
     {
-        Unload(device, commandList);
+        ReloadShaders(device, commandList);
         _initialized = false;
     }
 
     protected abstract void Init(GraphicsDevice device, CommandList commandList);
-    protected abstract void Unload(GraphicsDevice device, CommandList commandList);
+
+    protected virtual void ReloadShaders(GraphicsDevice device, CommandList commandList)
+    {
+    }
     
     public abstract void Update(GraphicsDevice device, CommandList commandList);
     
@@ -43,15 +46,12 @@ public abstract class RenderFeature : Component<RenderFeatureCollection>, IDispo
         ((IDisposerContainer)this).Disposer.Dispose();
     }
 
+    protected virtual void Destroy()
+    {
+    }
+
     internal void SetContainer(RenderFeatureCollection container)
     {
         _container = container;
-    }
-
-    protected void ResetDisposer()
-    {
-        var container = (IDisposerContainer)this;
-        container.Disposer.Dispose();
-        container.Disposer = new CompositeDisposable();
     }
 }

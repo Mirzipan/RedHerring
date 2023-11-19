@@ -30,6 +30,6 @@ internal sealed class Configuration : EngineSystem
         _input.AddMouseBinding(InputAction.MoveSpeedIncrease, MouseAxis.WheelUp);
         _input.AddMouseBinding(InputAction.MoveSpeedDecrease, MouseAxis.WheelDown);
         
-        _input.AddKeyboardBinding(InputAction.ResetRenderer, Key.F10, Modifiers.Shift);
+        _input.AddKeyboardBinding(InputAction.ReloadShaders, Key.F10, Modifiers.Shift);
     }
 }

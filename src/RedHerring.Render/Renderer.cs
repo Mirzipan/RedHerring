@@ -9,7 +9,7 @@ public interface Renderer
     RenderFeatureCollection Features { get; }
     void AddFeature(RenderFeature feature);
     void Init();
-    void Reset();
+    void Close();
     bool BeginDraw();
     void Draw();
     void EndDraw();
@@ -17,4 +17,6 @@ public interface Renderer
 
     void SetCameraViewMatrix(Matrix4x4 world, Matrix4x4 view, Matrix4x4 projection, float fieldOfView, float clipPlaneNear,
         float clipPlaneFar);
+
+    void ReloadShaders();
 }

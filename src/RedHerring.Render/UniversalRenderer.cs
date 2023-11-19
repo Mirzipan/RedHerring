@@ -79,10 +79,8 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
         InitFeatures();
     }
 
-    public void Reset()
+    public void Close()
     {
-        UnloadFeatures();
-        InitFeatures();
     }
 
     private void ThreadStart(object? obj)
@@ -92,7 +90,7 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
 
     protected override void Destroy()
     {
-        _features.Unload(_graphicsDevice, _commandList);
+        _features.ReloadShaders(_graphicsDevice, _commandList);
         _features.Dispose();
         
         _commandList.Dispose();
@@ -151,6 +149,15 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
         _environment.ClipPlaneFar = clipPlaneFar;
     }
 
+    public void ReloadShaders()
+    {
+        Console.WriteLine("[Renderer] Shader reload - START");
+        
+        _features.ReloadShaders(_graphicsDevice, _commandList);
+        
+        Console.WriteLine("[Renderer] Shader reload - DONE");
+    }
+
     #endregion Public
 
     #region Private
@@ -158,11 +165,6 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
     private void InitFeatures()
     {
         _features.Init(_graphicsDevice, _commandList);
-    }
-
-    private void UnloadFeatures()
-    {
-        _features.Unload(_graphicsDevice, _commandList);
     }
 
     #endregion Private

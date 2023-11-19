@@ -44,17 +44,17 @@ public class StudioGraphics : EngineSystem
         _receiver.Layer = new OctoByte("graphics");
         _receiver.ConsumesAllInput = false;
         
-        _receiver.Bind(InputAction.ResetRenderer, InputState.Released, OnResetRenderer);
+        _receiver.Bind(InputAction.ReloadShaders, InputState.Released, OnReloadShaders);
     }
 
     #endregion Private
 
     #region Bindings
 
-    private void OnResetRenderer(ref ActionEvent evt)
+    private void OnReloadShaders(ref ActionEvent evt)
     {
         evt.Consumed = true;
-        _renderer.Reset();
+        _renderer.ReloadShaders();
     }
 
     #endregion Bindings

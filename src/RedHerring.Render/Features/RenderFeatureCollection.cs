@@ -1,4 +1,5 @@
 ﻿using RedHerring.Alexandria.Components;
+using RedHerring.Alexandria.Disposables;
 using RedHerring.Render.Passes;
 using Silk.NET.Maths;
 using Veldrid;
@@ -28,7 +29,7 @@ public class RenderFeatureCollection : IComponentContainer, IDisposable
         }
     }
 
-    public void Unload(GraphicsDevice device, CommandList commandList)
+    public void ReloadShaders(GraphicsDevice device, CommandList commandList)
     {
         if (_features.Count == 0)
         {
@@ -38,7 +39,7 @@ public class RenderFeatureCollection : IComponentContainer, IDisposable
         for (int i = 0; i < _features.Count; i++)
         {
             var feature = _features[i];
-            feature.RaiseUnload(device, commandList);
+            feature.RaiseReloadShaders(device, commandList);
         }
     }
 

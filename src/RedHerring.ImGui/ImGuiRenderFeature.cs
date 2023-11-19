@@ -23,19 +23,6 @@ public class ImGuiRenderFeature : RenderFeature
         ResetRenderer(device);
     }
 
-    protected override void Unload(GraphicsDevice device, CommandList commandList)
-    {
-        FontLoader.Unload();
-
-        if (_renderer is not null)
-        {
-            _renderer.ClearCachedImageResources();
-            _renderer.DestroyDeviceObjects();
-        }
-        
-        ResetDisposer();
-    }
-
     public override void Update(GraphicsDevice device, CommandList commandList)
     {
     }
