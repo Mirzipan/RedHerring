@@ -165,7 +165,7 @@ public sealed class Engine : NamedDisposer
         Context.Draw(time);
         Session?.Draw(time);
         
-        Renderer!.Draw();
+        Renderer.Draw();
     }
     
     private void Update(GameTime time)
