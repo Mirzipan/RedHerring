@@ -20,6 +20,7 @@ public sealed partial class StudioCamera : EngineSystem, Drawable
     public const float MovementSpeedMin = 0.01f;
     public const float MovementSpeedMax = 10f;
     public const float MovementSpeedDefault = 0.01f;
+    public const float MovementSpeedStep = 0.01f;
 
     [Infuse]
     private Renderer _renderer = null!;
@@ -281,13 +282,13 @@ public sealed partial class StudioCamera : EngineSystem, Drawable
     private void OnMoveSpeedIncrease(ref ActionEvent evt)
     {
         evt.Consumed = true;
-        SetMovementSpeed(_movementSpeed + 10);
+        SetMovementSpeed(_movementSpeed + MovementSpeedStep * evt.Value);
     }
 
     private void OnMoveSpeedDecrease(ref ActionEvent evt)
     {
         evt.Consumed = true;
-        SetMovementSpeed(_movementSpeed - 10);
+        SetMovementSpeed(_movementSpeed - MovementSpeedStep * evt.Value);
     }
 
     #endregion Bindings
