@@ -32,6 +32,8 @@ public class ImGuiRenderFeature : RenderFeature
             _renderer.ClearCachedImageResources();
             _renderer.DestroyDeviceObjects();
         }
+        
+        ResetDisposer();
     }
 
     public override void Update(GraphicsDevice device, CommandList commandList)
