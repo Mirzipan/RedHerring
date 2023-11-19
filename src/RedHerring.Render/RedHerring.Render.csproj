@@ -19,12 +19,16 @@
 
     <ItemGroup>
       <Folder Include="ImGui\" />
-      <Folder Include="Shaders\" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\RedHerring.Alexandria\RedHerring.Alexandria.csproj" />
       <ProjectReference Include="..\RedHerring.Infusion\RedHerring.Infusion.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ClCompile Include="Shaders\debug_vertexcolor_fragment.hlsl" />
+      <ClCompile Include="Shaders\debug_vertexcolor_vertex.hlsl" />
     </ItemGroup>
 
 </Project>
