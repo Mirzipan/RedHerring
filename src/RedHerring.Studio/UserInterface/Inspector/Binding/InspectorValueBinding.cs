@@ -32,25 +32,4 @@ public class InspectorValueBinding : InspectorBinding
 		_sourceField?.SetValue(_source, value);
 		_onCommitValue?.Invoke();
 	}
-
-	public Type? GetElementType()
-	{
-		Type? sourceFieldType = SourceFieldInfo?.FieldType;
-		if (sourceFieldType == null)
-		{
-			return null;
-		}
-
-		if (sourceFieldType.IsArray)
-		{
-			return sourceFieldType.GetElementType()!;
-		}
-		
-		if (sourceFieldType.IsGenericType && sourceFieldType.GetGenericTypeDefinition() == typeof(List<>))
-		{
-			return sourceFieldType.GetGenericArguments()[0];
-		}
-
-		return null;
-	}
 }

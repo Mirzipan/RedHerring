@@ -22,4 +22,25 @@ public abstract class InspectorBinding
 
 		return new InspectorValueBinding(source, sourceField, onCommitValue);
 	}
+
+	public Type? GetElementType()
+	{
+		Type? sourceFieldType = SourceFieldInfo?.FieldType;
+		if (sourceFieldType == null)
+		{
+			return null;
+		}
+
+		if (sourceFieldType.IsArray)
+		{
+			return sourceFieldType.GetElementType()!;
+		}
+		
+		if (sourceFieldType.IsGenericType && sourceFieldType.GetGenericTypeDefinition() == typeof(List<>))
+		{
+			return sourceFieldType.GetGenericArguments()[0];
+		}
+
+		return null;
+	}
 }

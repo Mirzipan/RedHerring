@@ -69,7 +69,8 @@ public class InspectorTest
 	public                       bool     BoolValue  = true;
 	public                       TestEnum EnumValue  = TestEnum.Def;
 	
-	public InspectorTestSubclass Subclass = new();
+	public InspectorTestSubclass  Subclass  = new();
+	public InspectorTestSubclass? Subclass2 = null;
 	
 	[ValueDropdown("DropdownSource")] public int      DropdownInt    = 1;
 	[ValueDropdown("DropdownSource")] public string   DropdownString = "pear";

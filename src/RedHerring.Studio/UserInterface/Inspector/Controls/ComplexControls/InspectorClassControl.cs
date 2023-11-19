@@ -26,10 +26,17 @@ namespace RedHerring.Studio.UserInterface;
 */
 public sealed class InspectorClassControl : AnInspectorControl
 {
-	private List<AnInspectorControl> _controls = new();
+	private          List<AnInspectorControl> _controls         = new();
+	private          bool                     _isMultipleValues = false;
+	private          bool                     _isNullSource     = false;
+	private readonly string                   _createValuePopupId;
+
+	private Type?   _sourceFieldType;
+	private Type[]? _assignableTypes = null;
 
 	public InspectorClassControl(Inspector inspector, string id) : base(inspector, id)
 	{
+		_createValuePopupId = id + ".popup";
 	}
 	
 	#region Init
@@ -37,29 +44,34 @@ public sealed class InspectorClassControl : AnInspectorControl
 	{
 		base.InitFromSource(sourceOwner, source, sourceField, sourceIndex);
 
+		_isMultipleValues = false;
+		
 		object? sourceFieldValue = sourceField == null ? source : sourceField.GetValue(source);
 		if (sourceFieldValue == null)
 		{
+			_sourceFieldType = sourceField?.FieldType;
+			_isNullSource    = true;
 			return;
 		}
 
-		Type sourceFieldType = sourceFieldValue.GetType(); // this should properly handle abstract bases
+		_sourceFieldType = sourceFieldValue.GetType(); // this should properly handle abstract bases
 
 		// binding to item inside list/array
 		if (sourceIndex != -1)
 		{
-			if (sourceFieldType.IsArray)
+			if (_sourceFieldType.IsArray)
 			{
-				sourceFieldType = sourceFieldType.GetElementType()!;
+				_sourceFieldType = _sourceFieldType.GetElementType()!;
 			}
-			else if (sourceFieldType.IsGenericType && sourceFieldType.GetGenericTypeDefinition() == typeof(List<>))
+			else if (_sourceFieldType.IsGenericType && _sourceFieldType.GetGenericTypeDefinition() == typeof(List<>))
 			{
-				sourceFieldType = sourceFieldType.GetGenericArguments()[0];
+				_sourceFieldType = _sourceFieldType.GetGenericArguments()[0];
 			}
 
 			object? sourceElement = (sourceFieldValue as IList)?[sourceIndex];
 			if (sourceElement == null)
 			{
+				_isNullSource = true;
 				return;
 			}
 
@@ -67,8 +79,8 @@ public sealed class InspectorClassControl : AnInspectorControl
 			sourceIndex      = -1;
 		}
 
-		InitFromSourceFields(sourceFieldType, source, sourceFieldValue, sourceIndex);
-		InitFromSourceMethods(sourceFieldType, source, sourceFieldValue);
+		InitFromSourceFields(_sourceFieldType, source, sourceFieldValue, sourceIndex);
+		InitFromSourceMethods(_sourceFieldType, source, sourceFieldValue);
 	}
 
 	private void InitFromSourceFields(Type sourceFieldType, object source, object sourceFieldValue, int sourceIndex)
@@ -124,6 +136,12 @@ public sealed class InspectorClassControl : AnInspectorControl
 		object? sourceFieldValue = sourceField == null ? source : sourceField.GetValue(source);
 		if (sourceFieldValue == null)
 		{
+			if (_isNullSource)
+			{
+				return;
+			}
+
+			_isMultipleValues = true;
 			return;
 		}
 
@@ -238,6 +256,25 @@ public sealed class InspectorClassControl : AnInspectorControl
 	
 	public override void Update()
 	{
+		if (_isNullSource)
+		{
+			Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
+			Gui.Text("[null]");
+			Gui.PopStyleVar();
+			Gui.SameLine();
+
+			Gui.Text(Label);
+			Gui.SameLine();
+
+			if (Gui.SmallButton("+")) //TODO - symbol, just not like the + on list to avoid confusion
+			{
+				Gui.OpenPopup(_createValuePopupId);
+			}
+
+			UpdateCreationPopup();
+			return;
+		}
+
 		if (Label == null)
 		{
 			foreach (AnInspectorControl control in _controls)
@@ -248,7 +285,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 		}
 
 		//if (Gui.CollapsingHeader(Label, ImGuiTreeNodeFlags.DefaultOpen))
-		if(Gui.TreeNode(Label))
+		if(Gui.TreeNode(LabelId))
 		{
 			//Gui.Indent();
 			foreach (AnInspectorControl control in _controls)
@@ -264,5 +301,56 @@ public sealed class InspectorClassControl : AnInspectorControl
 	{
 		return (field.IsPublic && field.GetCustomAttribute<HideInInspectorAttribute>() == null)
 		       || field.GetCustomAttribute<ShowInInspectorAttribute>() != null;
+	}
+
+	private void UpdateCreationPopup()
+	{
+		if (Gui.BeginPopup(_createValuePopupId))
+		{
+			if (_sourceFieldType != null)
+			{
+				_assignableTypes ??= ObtainAllAssignableTypes(_sourceFieldType);
+			}
+
+			if (_assignableTypes == null || _assignableTypes.Length == 0)
+			{
+				Gui.Selectable("No class available");
+			}
+			else
+			{
+				Type? selectedType = null;
+				foreach(Type type in _assignableTypes)
+				{
+					if (Gui.Selectable(type.Name))
+					{
+						selectedType = type;
+					}
+				}
+
+				if (selectedType != null)
+				{
+					InstantiateClass(selectedType);
+				}
+			}
+
+			Gui.EndPopup();
+		}
+	}
+	
+	private void InstantiateClass(Type type)
+	{
+		_inspector.Commit(new InspectorInstantiateClassCommand(Bindings, type));
+		
+		// TODO - item is not updated! .. needs rework :-(
+	}
+
+	private Type[] ObtainAllAssignableTypes(Type baseType)
+	{
+		Type[] availableTypes = AppDomain.CurrentDomain.GetAssemblies()
+			.SelectMany(domainAssembly => domainAssembly.GetTypes())
+			.Where(type => baseType.IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface
+		).ToArray();
+
+		return availableTypes;
 	}
 }

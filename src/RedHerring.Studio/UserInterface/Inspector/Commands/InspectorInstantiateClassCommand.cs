@@ -2,19 +2,20 @@
 
 namespace RedHerring.Studio.UserInterface;
 
-public sealed class InspectorModifyValueCommand : ACommand
+// TODO - refactor, too many similar parts
+public sealed class InspectorInstantiateClassCommand : ACommand
 {
-	private readonly object?                _value;
 	private readonly List<InspectorBinding> _bindings;
+	private readonly Type                   _type;
 	private readonly object?[]              _previousValues;
 	
-	public InspectorModifyValueCommand(object? value, List<InspectorBinding> bindings)
+	public InspectorInstantiateClassCommand(List<InspectorBinding> bindings, Type type)
 	{
-		_value = value;
-		
 		_bindings = new List<InspectorBinding>();
-		_bindings.AddRange(bindings); // hmm, it is safe to just keep reference to the list?
-		
+		_bindings.AddRange(bindings);
+
+		_type           = type;
+
 		_previousValues = new object[_bindings.Count];
 		for(int i=0;i <_bindings.Count; ++i)
 		{
@@ -27,7 +28,7 @@ public sealed class InspectorModifyValueCommand : ACommand
 			_previousValues[i] = previousValue;
 		}
 	}
-	
+
 	public override void Do()
 	{
 		foreach (InspectorBinding binding in _bindings)
@@ -37,7 +38,8 @@ public sealed class InspectorModifyValueCommand : ACommand
 				continue;
 			}
 
-			binding.SetValue(_value);
+			object? instance = Activator.CreateInstance(_type);
+			binding.SetValue(instance);
 		}
 	}
 

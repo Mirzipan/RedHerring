@@ -83,8 +83,8 @@ public sealed class InspectorListControl : AnInspectorControl
 				{
 					_controls.Add(new ControlDescriptor($"{Id}.delete{i}"));
 				}
-					
-				Type? elementType = list[i]?.GetType();
+				
+				Type? elementType = list[i] == null ? binding.GetElementType() : list[i]!.GetType();
 				Type? controlType = _controls[i].Control != null ? _controls[i].Control!.BoundValueType : null;  
 					
 				if (elementType != controlType || _controls[i].Control?.Bindings[0].Index != i)

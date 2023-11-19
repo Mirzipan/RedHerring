@@ -3,14 +3,14 @@ using RedHerring.Studio.Commands;
 
 namespace RedHerring.Studio.UserInterface;
 
-public class InspectorCreateListElementCommand : ACommand
+public sealed class InspectorCreateListElementCommand : ACommand
 {
 	private readonly List<InspectorBinding> _bindings;
 	
-	public InspectorCreateListElementCommand(List<InspectorBinding> valueBindings)
+	public InspectorCreateListElementCommand(List<InspectorBinding> bindings)
 	{
 		_bindings = new List<InspectorBinding>();
-		_bindings.AddRange(valueBindings);
+		_bindings.AddRange(bindings);
 	}
 
 	public override void Do()

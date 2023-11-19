@@ -3,17 +3,17 @@ using RedHerring.Studio.Commands;
 
 namespace RedHerring.Studio.UserInterface;
 
-public class InspectorDeleteListElementCommand : ACommand
+public sealed class InspectorDeleteListElementCommand : ACommand
 {
 	private readonly List<InspectorBinding> _bindings;
 	private readonly int                    _index;
 
 	private readonly object?[] _previousValues;
 	
-	public InspectorDeleteListElementCommand(List<InspectorBinding> valueBindings, int index)
+	public InspectorDeleteListElementCommand(List<InspectorBinding> bindings, int index)
 	{
 		_bindings = new List<InspectorBinding>();
-		_bindings.AddRange(valueBindings);
+		_bindings.AddRange(bindings);
 
 		_index = index;
 		
