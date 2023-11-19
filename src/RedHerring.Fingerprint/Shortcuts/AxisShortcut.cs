@@ -28,8 +28,6 @@ public class AxisShortcut : Shortcut
         return positive - negative;
     }
 
-    public bool IsUp(Input input) => false;
-
     public bool IsPressed(Input input) => false;
 
     public bool IsDown(Input input) => false;

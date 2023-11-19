@@ -62,24 +62,6 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
         };
     }
 
-    public bool IsUp(Input input)
-    {
-        if (Items.Count == 0)
-        {
-            return true;
-        }
-        
-        for (int i = 0; i < Items.Count; i++)
-        {
-            if (Items[i].IsUp(input))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public bool IsPressed(Input input)
     {
         return Evaluation switch

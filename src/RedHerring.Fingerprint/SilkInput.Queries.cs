@@ -6,6 +6,16 @@ public partial class SilkInput
 {
     #region Queries
 
+    public bool AreModifiersDown(Modifiers modifiers)
+    {
+        if (modifiers == Modifiers.None)
+        {
+            return true;
+        }
+        
+        return _keyboardState is not null && (_keyboardState.Modifiers & modifiers) != 0;
+    }
+
     public bool IsKeyUp(Key key) => _keyboardState?.IsKeyUp(key) ?? true;
     public bool IsKeyPressed(Key key) => _keyboardState?.IsKeyPressed(key) ?? false;
     public bool IsKeyDown(Key key) => _keyboardState?.IsKeyDown(key) ?? false;

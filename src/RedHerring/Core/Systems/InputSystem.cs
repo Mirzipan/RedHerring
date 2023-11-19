@@ -37,14 +37,12 @@ public sealed class InputSystem : EngineSystem, Updatable
 
     #region Queries
 
-    public bool IsKeyUp(Key key) => _input.IsKeyUp(key);
     public bool IsKeyPressed(Key key) => _input.IsKeyPressed(key);
     public bool IsKeyDown(Key key) => _input.IsKeyDown(key);
     public bool IsKeyReleased(Key key) => _input.IsKeyReleased(key);
     public bool IsAnyKeyDown() => _input.IsAnyKeyDown();
     public void GetKeysDown(IList<Key> keys) => _input.KeysDown(keys);
     
-    public bool IsButtonUp(MouseButton button) => _input.IsButtonUp(button);
     public bool IsButtonPressed(MouseButton button) => _input.IsButtonPressed(button);
     public bool IsButtonDown(MouseButton button) => _input.IsButtonDown(button);
     public bool IsButtonReleased(MouseButton button) => _input.IsButtonReleased(button);
@@ -56,7 +54,6 @@ public sealed class InputSystem : EngineSystem, Updatable
     public Vector2 MouseDelta => _input.MouseDelta;
     public float MouseWheelDelta => _input.MouseWheelDelta;
     
-    public bool IsButtonUp(GamepadButton button) => _input.IsButtonUp(button);
     public bool IsButtonPressed(GamepadButton button) => _input.IsButtonPressed(button);
     public bool IsButtonDown(GamepadButton button) => _input.IsButtonDown(button);
     public bool IsButtonReleased(GamepadButton button) => _input.IsButtonReleased(button);
@@ -98,12 +95,7 @@ public sealed class InputSystem : EngineSystem, Updatable
             return;
         }
         
-        var shortcut = new CompositeShortcut
-        {
-            new KeyboardShortcut(Key.ShiftLeft),
-            new KeyboardShortcut(Key.F12),
-        };
-        AddBinding(new ShortcutBinding("dbg_draw", shortcut));
+        AddBinding(new ShortcutBinding("dbg_draw", new KeyboardShortcut(Key.F12, Modifiers.Shift)));
         
         _receiver.Bind("dbg_draw", InputState.Released, ToggleDebugDraw);
         _receiver.Push();

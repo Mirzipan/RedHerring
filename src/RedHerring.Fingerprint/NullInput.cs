@@ -29,7 +29,8 @@ public sealed class NullInput : Input
     public float MouseWheelDelta => 0f;
     public ShortcutBindings? Bindings { get; set; }
     public InputLayers Layers => _layers;
-    
+
+    public bool AreModifiersDown(Modifiers modifiers) => false;
     public bool IsKeyUp(Key key) => true;
     public bool IsKeyPressed(Key key) => false;
     public bool IsKeyDown(Key key) => false;

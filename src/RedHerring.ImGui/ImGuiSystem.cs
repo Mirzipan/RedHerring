@@ -86,10 +86,7 @@ public class ImGuiSystem : EngineSystem, Updatable, Drawable
 
     private void CreateShortcuts()
     {
-        var shortcut = new CompositeShortcut();
-        shortcut.Add(new KeyboardShortcut(Key.ShiftLeft));
-        shortcut.Add(new KeyboardShortcut(Key.F11));
-        _inputSystem.AddBinding("imgui_metrics", shortcut);
+        _inputSystem.AddBinding("imgui_metrics", new KeyboardShortcut(Key.F11, Modifiers.Shift));
 
         _receiver.Name = "ImGui";
         _receiver.Bind("imgui_metrics", InputState.Released, ToggleFontDebug);
