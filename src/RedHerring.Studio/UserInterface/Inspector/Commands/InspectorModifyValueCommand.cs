@@ -4,9 +4,9 @@ namespace RedHerring.Studio.UserInterface;
 
 public sealed class InspectorModifyValueCommand : ACommand
 {
-	private readonly object?                     _value;
+	private readonly object?                _value;
 	private readonly List<InspectorBinding> _bindings;
-	private readonly object?[]                   _previousValues;
+	private readonly object?[]              _previousValues;
 	
 	public InspectorModifyValueCommand(object? value, List<InspectorBinding> valueBindings)
 	{

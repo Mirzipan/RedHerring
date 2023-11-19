@@ -20,10 +20,21 @@ namespace RedHerring.Studio.UserInterface;
  */
 public sealed class InspectorListControl : AnInspectorControl
 {
-	private object?                   _sourceOwner   = null;
-	private bool                      _isReadOnly    = false;
+	private class ControlDescriptor
+	{
+		public AnInspectorControl? Control = null;
+		public readonly string              DeleteButtonLabelId;
+
+		public ControlDescriptor(string deleteButtonLabelId)
+		{
+			DeleteButtonLabelId = deleteButtonLabelId;
+		}
+	}
+
+	private          object?                   _sourceOwner = null;
+	private          bool                      _isReadOnly  = false;
 	private readonly string                    _buttonCreateLabelId;
-	private List<AnInspectorControl?> _controls      = new(); // control per item
+	private readonly List<ControlDescriptor> _controls = new();
 
 	public InspectorListControl(Inspector inspector, string id) : base(inspector, id)
 	{
@@ -74,7 +85,8 @@ public sealed class InspectorListControl : AnInspectorControl
 		
 		if (value is IList list)
 		{
-			bool createNewElement = false;
+			bool createNewElement   = false;
+			int  deleteElementIndex = -1;
 			
 			//Type[] listElementType = binding.SourceField!.FieldType.GenericTypeArguments;
 
@@ -89,23 +101,24 @@ public sealed class InspectorListControl : AnInspectorControl
 				//foreach (AnInspectorControl control in _controls)
 				for(int i = 0; i < list.Count; ++i)
 				{
-					// add button
+					// add new control
 					if(i == _controls.Count)
 					{
-						_controls.Add(null);
+						_controls.Add(new ControlDescriptor($"x{Id}_B{i}"));
 					}
 					
 					Type? elementType = list[i]?.GetType();
-					Type? controlType = _controls[i] != null ? _controls[i]!.BoundValueType : null;  
+					Type? controlType = _controls[i].Control != null ? _controls[i].Control!.BoundValueType : null;  
 					
-					if (elementType != controlType || _controls[i]?.Bindings[0].Index != i)
+					if (elementType != controlType || _controls[i].Control?.Bindings[0].Index != i)
 					{
-						_controls[i] = CreateControl(elementType, i);
-						_controls[i]?.InitFromSource(_sourceOwner, binding.Source, binding.SourceFieldInfo, i);
-						_controls[i]?.SetCustomLabel($"Element {i}");
+						AnInspectorControl? control = CreateControl(elementType, i);
+						control?.InitFromSource(_sourceOwner, binding.Source, binding.SourceFieldInfo, i);
+						control?.SetCustomLabel(i.ToString());
+						_controls[i].Control = control;
 					}
 
-					if(_controls[i] == null)
+					if(_controls[i].Control == null)
 					{
 						continue;
 					}
@@ -119,12 +132,15 @@ public sealed class InspectorListControl : AnInspectorControl
 					// delete button
 					if (!list.IsFixedSize)
 					{
-						IconButton.Remove(ButtonSize.Regular);
+						if (Gui.Button(_controls[i].DeleteButtonLabelId))
+						{
+							deleteElementIndex = i;
+						}
 						Gui.SameLine();
 					}
 
 					// element
-					_controls[i]!.Update();
+					_controls[i].Control!.Update();
 					
 				}
 				//Gui.Unindent();
@@ -137,7 +153,14 @@ public sealed class InspectorListControl : AnInspectorControl
 
 			if (createNewElement)
 			{
-				Console.WriteLine("Create new");
+				Console.WriteLine("Create new element");
+				_inspector.Commit(new InspectorCreateListElementCommand(Bindings));
+			}
+
+			if (deleteElementIndex != -1)
+			{
+				Console.WriteLine($"Delete element {deleteElementIndex}");
+				_inspector.Commit(new InspectorDeleteListElementCommand(Bindings, deleteElementIndex));
 			}
 
 			return;
