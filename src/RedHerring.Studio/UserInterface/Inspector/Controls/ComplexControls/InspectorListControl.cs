@@ -64,106 +64,79 @@ public sealed class InspectorListControl : AnInspectorControl
 			return;
 		}
 
-		// if (value is Array array) // array first, because it's a special case of IList
-		// {
-		// 	Type arrayElementType = binding.SourceField!.FieldType.GetElementType()!;
-		// 	
-		// 	if (Gui.CollapsingHeader(LabelId, ImGuiTreeNodeFlags.DefaultOpen))
-		// 	{
-		// 		Gui.Indent();
-		//
-		// 		//foreach (AnInspectorControl control in _controls)
-		// 		for (int i = 0; i < array.Length; ++i)
-		// 		{
-		// 		}
-		//
-		// 		Gui.Unindent();
-		// 	}
-		//
-		// 	return;
-		// }
-		
-		if (value is IList list)
+		if (value is not IList list)
 		{
-			bool createNewElement   = false;
-			int  deleteElementIndex = -1;
-			
-			//Type[] listElementType = binding.SourceField!.FieldType.GenericTypeArguments;
-
-			//Gui.SetNextItemWidth(Gui.GetContentRegionAvail().X - 20);
-			//if (Gui.CollapsingHeader(LabelId, ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.AllowItemOverlap))
-			if (Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowItemOverlap))
-			{
-				createNewElement = NewElementButtonOnTheSameLine(list.IsFixedSize);
-
-				//Gui.Indent();
-			
-				//foreach (AnInspectorControl control in _controls)
-				for(int i = 0; i < list.Count; ++i)
-				{
-					// add new control
-					if(i == _controls.Count)
-					{
-						_controls.Add(new ControlDescriptor($"{Id}.delete{i}"));
-					}
-					
-					Type? elementType = list[i]?.GetType();
-					Type? controlType = _controls[i].Control != null ? _controls[i].Control!.BoundValueType : null;  
-					
-					if (elementType != controlType || _controls[i].Control?.Bindings[0].Index != i)
-					{
-						AnInspectorControl? control = CreateControl(elementType, i);
-						control?.InitFromSource(_sourceOwner, binding.Source, binding.SourceFieldInfo, i);
-						control?.SetCustomLabel(i.ToString());
-						_controls[i].Control = control;
-					}
-
-					if(_controls[i].Control == null)
-					{
-						continue;
-					}
-
-					// draggable reorder symbol
-					Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
-					Icon.ReorderList();
-					Gui.PopStyleVar();
-					Gui.SameLine();
-
-					// delete button
-					if (!list.IsFixedSize)
-					{
-						if (ButtonDeleteElement(_controls[i].DeleteButtonId))
-						{
-							deleteElementIndex = i;
-						}
-						Gui.SameLine();
-					}
-
-					// element
-					_controls[i].Control!.Update();
-					
-				}
-				//Gui.Unindent();
-				Gui.TreePop();
-			}
-			else
-			{
-				createNewElement = NewElementButtonOnTheSameLine(list.IsFixedSize);
-			}
-
-			if (createNewElement)
-			{
-				Console.WriteLine("Create new element");
-				_inspector.Commit(new InspectorCreateListElementCommand(Bindings));
-			}
-
-			if (deleteElementIndex != -1)
-			{
-				Console.WriteLine($"Delete element {deleteElementIndex}");
-				_inspector.Commit(new InspectorDeleteListElementCommand(Bindings, deleteElementIndex));
-			}
-
 			return;
+		}
+
+		bool createNewElement   = false;
+		int  deleteElementIndex = -1;
+			
+		if (Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowItemOverlap))
+		{
+			createNewElement = NewElementButtonOnTheSameLine(list.IsFixedSize);
+
+			for(int i = 0; i < list.Count; ++i)
+			{
+				// add new control
+				if(i == _controls.Count)
+				{
+					_controls.Add(new ControlDescriptor($"{Id}.delete{i}"));
+				}
+					
+				Type? elementType = list[i]?.GetType();
+				Type? controlType = _controls[i].Control != null ? _controls[i].Control!.BoundValueType : null;  
+					
+				if (elementType != controlType || _controls[i].Control?.Bindings[0].Index != i)
+				{
+					AnInspectorControl? control = CreateControl(elementType, i);
+					control?.InitFromSource(_sourceOwner, binding.Source, binding.SourceFieldInfo, i);
+					control?.SetCustomLabel(i.ToString());
+					_controls[i].Control = control;
+				}
+
+				if(_controls[i].Control == null)
+				{
+					continue;
+				}
+
+				// draggable reorder symbol
+				Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
+				Icon.ReorderList();
+				Gui.PopStyleVar();
+				Gui.SameLine();
+
+				// delete button
+				if (!list.IsFixedSize)
+				{
+					if (ButtonDeleteElement(_controls[i].DeleteButtonId))
+					{
+						deleteElementIndex = i;
+					}
+					Gui.SameLine();
+				}
+
+				// element
+				_controls[i].Control!.Update();
+					
+			}
+			Gui.TreePop();
+		}
+		else
+		{
+			createNewElement = NewElementButtonOnTheSameLine(list.IsFixedSize);
+		}
+
+		if (createNewElement)
+		{
+			Console.WriteLine("Create new element");
+			_inspector.Commit(new InspectorCreateListElementCommand(Bindings));
+		}
+
+		if (deleteElementIndex != -1)
+		{
+			Console.WriteLine($"Delete element {deleteElementIndex}");
+			_inspector.Commit(new InspectorDeleteListElementCommand(Bindings, deleteElementIndex));
 		}
 	}
 

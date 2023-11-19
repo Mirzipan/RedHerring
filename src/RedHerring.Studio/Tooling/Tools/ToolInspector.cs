@@ -76,12 +76,10 @@ public class InspectorTest
 	[HideInInspector]                 public string[] DropdownSource = {"apple", "pear", "orange", "banana"};
 	
 	public int[]     IntArray = {1, 2, 3, 4, 5};
-	public List<int> IntList  = new() {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+	public List<int> IntList  = new() {1, 2, 3, 4};
 
 	public List<InspectorTestSubclass> SubClassList = new()
 	                                                  {
-		                                                  new InspectorTestSubclass(),
-		                                                  new InspectorTestSubclass(),
 		                                                  new InspectorTestSubclass(),
 		                                                  new InspectorTestSubclass(),
 	                                                  };

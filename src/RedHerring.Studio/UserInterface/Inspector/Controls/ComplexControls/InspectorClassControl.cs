@@ -45,6 +45,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 
 		Type sourceFieldType = sourceFieldValue.GetType(); // this should properly handle abstract bases
 
+		// binding to item inside list/array
 		if (sourceIndex != -1)
 		{
 			if (sourceFieldType.IsArray)
