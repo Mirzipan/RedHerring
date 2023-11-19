@@ -23,22 +23,22 @@ public sealed class InspectorListControl : AnInspectorControl
 	private class ControlDescriptor
 	{
 		public AnInspectorControl? Control = null;
-		public readonly string              DeleteButtonLabelId;
+		public readonly string              DeleteButtonId;
 
-		public ControlDescriptor(string deleteButtonLabelId)
+		public ControlDescriptor(string deleteButtonId)
 		{
-			DeleteButtonLabelId = deleteButtonLabelId;
+			DeleteButtonId = deleteButtonId;
 		}
 	}
 
 	private          object?                   _sourceOwner = null;
 	private          bool                      _isReadOnly  = false;
-	private readonly string                    _buttonCreateLabelId;
+	private readonly string                    _buttonCreateElementId;
 	private readonly List<ControlDescriptor> _controls = new();
 
 	public InspectorListControl(Inspector inspector, string id) : base(inspector, id)
 	{
-		_buttonCreateLabelId = "+" + id;
+		_buttonCreateElementId = id + ".create";
 	}
 
 	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null, int sourceIndex = -1)
@@ -104,7 +104,7 @@ public sealed class InspectorListControl : AnInspectorControl
 					// add new control
 					if(i == _controls.Count)
 					{
-						_controls.Add(new ControlDescriptor($"x{Id}_B{i}"));
+						_controls.Add(new ControlDescriptor($"{Id}.delete{i}"));
 					}
 					
 					Type? elementType = list[i]?.GetType();
@@ -132,7 +132,7 @@ public sealed class InspectorListControl : AnInspectorControl
 					// delete button
 					if (!list.IsFixedSize)
 					{
-						if (Gui.Button(_controls[i].DeleteButtonLabelId))
+						if (ButtonDeleteElement(_controls[i].DeleteButtonId))
 						{
 							deleteElementIndex = i;
 						}
@@ -175,7 +175,7 @@ public sealed class InspectorListControl : AnInspectorControl
 		}
 
 		Gui.SameLine();
-		return IconButton.Add(ButtonSize.Small);
+		return ButtonCreateElement(_buttonCreateElementId);
 	}
 
 	private AnInspectorControl? CreateControl(Type? type, int index)
@@ -192,5 +192,21 @@ public sealed class InspectorListControl : AnInspectorControl
 		}
 		
 		return (AnInspectorControl) Activator.CreateInstance(controlType, _inspector, $"{Id}_{index}")!;
+	}
+
+	private bool ButtonCreateElement(string id)
+	{
+		Gui.PushID(id);
+		bool result = IconButton.Add(ButtonSize.Small);
+		Gui.PopID();
+		return result;
+	}
+
+	private bool ButtonDeleteElement(string id)
+	{
+		Gui.PushID(id);
+		bool result = IconButton.Remove(ButtonSize.Regular);
+		Gui.PopID();
+		return result;
 	}
 }
