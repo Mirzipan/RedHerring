@@ -297,6 +297,17 @@ public struct BoundingBox : IEquatable<BoundingBox>
         return box;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BoundingBox Include(BoundingBox box1, BoundingBox box2) => box1 + box2;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BoundingBox Include(BoundingBox box, Vector3 point)
+    {
+        box.Minimum = Vector3.Min(box.Minimum, point);
+        box.Maximum = Vector3.Max(box.Maximum, point);
+        return box;
+    }
+
     public static BoundingBox FromPoints(Vector3[]? points)
     {
         if (points is null)
