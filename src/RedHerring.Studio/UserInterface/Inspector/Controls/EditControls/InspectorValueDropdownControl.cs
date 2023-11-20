@@ -4,7 +4,7 @@ using RedHerring.Studio.UserInterface.Attributes;
 namespace RedHerring.Studio.UserInterface;
 
 // TODO: it's dangerous to use this control in two different classes! Some kind of check is needed.
-public abstract class InspectorValueDropdownControl<T> : AnInspectorSingleInputControl<T>
+public abstract class InspectorValueDropdownControl<T> : InspectorSingleInputControl<T>
 {
 	protected string[] _items = null!;
 

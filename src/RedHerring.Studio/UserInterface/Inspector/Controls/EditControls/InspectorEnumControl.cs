@@ -3,7 +3,7 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface;
 
-public class InspectorEnumControl : AnInspectorSingleInputControl<Enum>
+public class InspectorEnumControl : InspectorSingleInputControl<Enum>
 {
 	private string[] _items = null!;
 	

@@ -3,7 +3,7 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface;
 
-public sealed class InspectorButtonControl : AnInspectorControl
+public sealed class InspectorButtonControl : InspectorControl
 {
 	private readonly struct Binding
 	{

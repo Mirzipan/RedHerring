@@ -2,9 +2,9 @@
 
 namespace RedHerring.Studio.UserInterface;
 
-public abstract class AnInspectorSingleInputControl<T> : AnInspectorEditControl<T>
+public abstract class InspectorSingleInputControl<T> : InspectorEditControl<T>
 {
-	protected AnInspectorSingleInputControl(Inspector inspector, string id) : base(inspector, id)
+	protected InspectorSingleInputControl(Inspector inspector, string id) : base(inspector, id)
 	{
 	}
 

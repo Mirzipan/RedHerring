@@ -18,11 +18,11 @@ namespace RedHerring.Studio.UserInterface;
 		- list of references
 			- custom, needs research
  */
-public sealed class InspectorListControl : AnInspectorControl
+public sealed class InspectorListControl : InspectorControl
 {
 	private class ControlDescriptor
 	{
-		public AnInspectorControl? Control = null;
+		public InspectorControl? Control = null;
 		public readonly string              DeleteButtonId;
 
 		public ControlDescriptor(string deleteButtonId)
@@ -89,7 +89,7 @@ public sealed class InspectorListControl : AnInspectorControl
 					
 				if (elementType != controlType || _controls[i].Control?.Bindings[0].Index != i)
 				{
-					AnInspectorControl? control = CreateControl(elementType, i);
+					InspectorControl? control = CreateControl(elementType, i);
 					control?.InitFromSource(_sourceOwner, binding.Source, binding.SourceFieldInfo, i);
 					control?.SetCustomLabel(i.ToString());
 					_controls[i].Control = control;
@@ -151,7 +151,7 @@ public sealed class InspectorListControl : AnInspectorControl
 		return ButtonCreateElement(_buttonCreateElementId);
 	}
 
-	private AnInspectorControl? CreateControl(Type? type, int index)
+	private InspectorControl? CreateControl(Type? type, int index)
 	{
 		if (type == null)
 		{
@@ -164,7 +164,7 @@ public sealed class InspectorListControl : AnInspectorControl
 			return null;
 		}
 		
-		return (AnInspectorControl) Activator.CreateInstance(controlType, _inspector, $"{Id}_{index}")!;
+		return (InspectorControl) Activator.CreateInstance(controlType, _inspector, $"{Id}_{index}")!;
 	}
 
 	private bool ButtonCreateElement(string id)

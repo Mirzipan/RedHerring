@@ -4,7 +4,7 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface;
 
-public abstract class AnInspectorEditControl<T> : AnInspectorControl
+public abstract class InspectorEditControl<T> : InspectorControl
 {
 	private const string MultipleValuesButtonLabel = "Edit multiple";
 
@@ -15,7 +15,7 @@ public abstract class AnInspectorEditControl<T> : AnInspectorControl
 	
 	protected bool _isReadOnly = false;
 	
-	protected AnInspectorEditControl(Inspector inspector, string id) : base(inspector, id)
+	protected InspectorEditControl(Inspector inspector, string id) : base(inspector, id)
 	{
 		_multipleValuesLabel = MultipleValuesButtonLabel + Id;
 	}

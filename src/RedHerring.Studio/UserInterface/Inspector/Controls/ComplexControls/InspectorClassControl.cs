@@ -24,9 +24,9 @@ namespace RedHerring.Studio.UserInterface;
 		public void MyMethod() {}
 	}
 */
-public sealed class InspectorClassControl : AnInspectorControl
+public sealed class InspectorClassControl : InspectorControl
 {
-	private          List<AnInspectorControl> _controls         = new();
+	private          List<InspectorControl> _controls         = new();
 	private          bool                     _isMultipleValues = false;
 	private          bool                     _isNullSource     = false;
 	private readonly string                   _createValuePopupId;
@@ -101,7 +101,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 			
 			string controlId = $"{Id}.{field.Name}";
 			
-			AnInspectorControl control = (AnInspectorControl) Activator.CreateInstance(controlType, _inspector, controlId)!;
+			InspectorControl control = (InspectorControl) Activator.CreateInstance(controlType, _inspector, controlId)!;
 			_controls.Add(control);
 
 			control.InitFromSource(source, sourceFieldValue, field, sourceIndex);
@@ -186,7 +186,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 				continue; // control not found => it's not common for all sources => skip
 			}
 
-			AnInspectorControl control          = _controls[controlIndex];
+			InspectorControl control          = _controls[controlIndex];
 			if (control is InspectorListControl)
 			{
 				continue; // list control cannot be used on multiple objects at once => skip
@@ -277,7 +277,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 
 		if (Label == null)
 		{
-			foreach (AnInspectorControl control in _controls)
+			foreach (InspectorControl control in _controls)
 			{
 				control.Update();
 			}
@@ -288,7 +288,7 @@ public sealed class InspectorClassControl : AnInspectorControl
 		if(Gui.TreeNode(LabelId))
 		{
 			//Gui.Indent();
-			foreach (AnInspectorControl control in _controls)
+			foreach (InspectorControl control in _controls)
 			{
 				control.Update();
 			}

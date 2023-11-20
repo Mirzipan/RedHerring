@@ -3,7 +3,7 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface;
 
-public sealed class InspectorFloatControl : AnInspectorSingleInputControl<float>
+public sealed class InspectorFloatControl : InspectorSingleInputControl<float>
 {
 	public InspectorFloatControl(Inspector inspector, string id) : base(inspector, id)
 	{

@@ -3,7 +3,7 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface;
 
-public class InspectorBoolControl : AnInspectorSingleInputControl<bool>
+public class InspectorBoolControl : InspectorSingleInputControl<bool>
 {
 	public InspectorBoolControl(Inspector inspector, string id) : base(inspector, id)
 	{

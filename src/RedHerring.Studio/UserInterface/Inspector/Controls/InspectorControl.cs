@@ -5,7 +5,7 @@ using RedHerring.Studio.UserInterface.Attributes;
 
 namespace RedHerring.Studio.UserInterface;
 
-public abstract class AnInspectorControl
+public abstract class InspectorControl
 {
 	protected static readonly object UnboundValue   = new(); // mark that there is no value to update
 	protected static readonly object MultipleValues = new(); // mark that there are multiple values
@@ -16,7 +16,7 @@ public abstract class AnInspectorControl
 	public             string                 LabelId  = null!;
 	public readonly    List<InspectorBinding> Bindings = new();
 
-	protected AnInspectorControl(Inspector inspector, string id)
+	protected InspectorControl(Inspector inspector, string id)
 	{
 		_inspector = inspector;
 		Id         = id;
