@@ -8,8 +8,8 @@ public class InspectorListValueBinding : InspectorValueBinding
 	private readonly int _index;
 	public override  int Index => _index;
 	
-	public InspectorListValueBinding(object source, FieldInfo? sourceField, Action? onCommitValue, int index)
-		: base(source, sourceField, onCommitValue)
+	public InspectorListValueBinding(object? sourceOwner, object source, FieldInfo? sourceField, Action? onCommitValue, int index)
+		: base(sourceOwner, source, sourceField, onCommitValue)
 	{
 		if (index == -1)
 		{

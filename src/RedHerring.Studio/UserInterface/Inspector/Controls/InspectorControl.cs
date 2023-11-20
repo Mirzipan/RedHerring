@@ -33,12 +33,12 @@ public abstract class InspectorControl
 			LabelId = Label + Id;
 		}
 
-		Bindings.Add(InspectorBinding.Create(source, sourceField, sourceIndex, GetOnCommitValueAction(sourceOwner, sourceField)));
+		Bindings.Add(InspectorBinding.Create(sourceOwner, source, sourceField, sourceIndex, GetOnCommitValueAction(sourceOwner, sourceField)));
 	}
 
 	public virtual void AdaptToSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
 	{
-		Bindings.Add(InspectorBinding.Create(source, sourceField, -1, GetOnCommitValueAction(sourceOwner, sourceField)));
+		Bindings.Add(InspectorBinding.Create(sourceOwner, source, sourceField, -1, GetOnCommitValueAction(sourceOwner, sourceField)));
 	}
 	
 	public abstract void Update();
