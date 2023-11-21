@@ -12,7 +12,7 @@ public struct BoundingSphere : IEquatable<BoundingSphere>
     public static BoundingSphere Empty
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => new BoundingSphere(Vector3.Zero, 0f);
+        get => new(Vector3.Zero, 0f);
     }
     
     public Vector3 Center;
@@ -24,6 +24,12 @@ public struct BoundingSphere : IEquatable<BoundingSphere>
     {
         Center = center;
         Radius = radius;
+    }
+
+    public BoundingSphere(ref BoundingBox box)
+    {
+        Center = (box.Minimum + box.Maximum) * 0.5f;
+        Radius = Vector3.Distance(Center, box.Maximum);
     }
 
     #endregion Lifecycle
@@ -122,6 +128,137 @@ public struct BoundingSphere : IEquatable<BoundingSphere>
     {
         return new BoundingSphere(sphere.Center, sphere.Radius * scale);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BoundingSphere Include(BoundingSphere sphere, BoundingSphere other) => sphere + other;
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Intersect(BoundingSphere sphere, BoundingBox box)
+    {
+        Vector3 vector = Vector3.Clamp(sphere.Center, box.Minimum, box.Maximum);
+        float distanceSquared = Vector3.DistanceSquared(sphere.Center, vector);
+        return distanceSquared <= sphere.Radius * sphere.Radius;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ContainmentKind Contains(BoundingSphere sphere, Vector3 point)
+    {
+        if (Vector3.DistanceSquared(point, sphere.Center) <= sphere.Radius * sphere.Radius)
+        {
+            return ContainmentKind.Contains;
+        }
+
+        return ContainmentKind.Disjoint;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ContainmentKind Contains(BoundingSphere sphere, BoundingBox box)
+    {
+        if (!Intersect(sphere, box))
+        {
+            return ContainmentKind.Disjoint;
+        }
+        
+        Vector3 vector;
+        float radiusSquared = sphere.Radius * sphere.Radius;
+        
+        vector.X = sphere.Center.X - box.Minimum.X;
+        vector.Y = sphere.Center.Y - box.Maximum.Y;
+        vector.Z = sphere.Center.Z - box.Maximum.Z;
+
+        if (vector.LengthSquared() > radiusSquared)
+        {
+            return ContainmentKind.Intersects;
+        }
+        
+        vector.X = sphere.Center.X - box.Maximum.X;
+        vector.Y = sphere.Center.Y - box.Maximum.Y;
+        vector.Z = sphere.Center.Z - box.Maximum.Z;
+
+        if (vector.LengthSquared() > radiusSquared)
+        {
+            return ContainmentKind.Intersects;
+        }
+        
+        vector.X = sphere.Center.X - box.Maximum.X;
+        vector.Y = sphere.Center.Y - box.Minimum.Y;
+        vector.Z = sphere.Center.Z - box.Maximum.Z;
+
+        if (vector.LengthSquared() > radiusSquared)
+        {
+            return ContainmentKind.Intersects;
+        }
+        
+        vector.X = sphere.Center.X - box.Minimum.X;
+        vector.Y = sphere.Center.Y - box.Minimum.Y;
+        vector.Z = sphere.Center.Z - box.Maximum.Z;
+
+        if (vector.LengthSquared() > radiusSquared)
+        {
+            return ContainmentKind.Intersects;
+        }
+        
+        vector.X = sphere.Center.X - box.Minimum.X;
+        vector.Y = sphere.Center.Y - box.Maximum.Y;
+        vector.Z = sphere.Center.Z - box.Minimum.Z;
+
+        if (vector.LengthSquared() > radiusSquared)
+        {
+            return ContainmentKind.Intersects;
+        }
+        
+        vector.X = sphere.Center.X - box.Maximum.X;
+        vector.Y = sphere.Center.Y - box.Maximum.Y;
+        vector.Z = sphere.Center.Z - box.Minimum.Z;
+
+        if (vector.LengthSquared() > radiusSquared)
+        {
+            return ContainmentKind.Intersects;
+        }
+        
+        vector.X = sphere.Center.X - box.Maximum.X;
+        vector.Y = sphere.Center.Y - box.Minimum.Y;
+        vector.Z = sphere.Center.Z - box.Minimum.Z;
+
+        if (vector.LengthSquared() > radiusSquared)
+        {
+            return ContainmentKind.Intersects;
+        }
+        
+        vector.X = sphere.Center.X - box.Minimum.X;
+        vector.Y = sphere.Center.Y - box.Minimum.Y;
+        vector.Z = sphere.Center.Z - box.Minimum.Z;
+
+        if (vector.LengthSquared() > radiusSquared)
+        {
+            return ContainmentKind.Intersects;
+        }
+        
+        return ContainmentKind.Contains;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ContainmentKind Contains(BoundingSphere sphere, BoundingSphere other)
+    {
+        float distance = Vector3.Distance(sphere.Center, other.Center);
+        if (sphere.Radius + other.Radius < distance)
+        {
+            return ContainmentKind.Disjoint;
+        }
+
+        if (sphere.Radius - other.Radius < distance)
+        {
+            return ContainmentKind.Intersects;
+        }
+        
+        return ContainmentKind.Contains;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BoundingSphere FromBox(BoundingBox box) => new(ref box);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BoundingSphere FromBox(ref BoundingBox box) => new(ref box);
 
     #endregion Operators
 }

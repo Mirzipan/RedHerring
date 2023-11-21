@@ -94,6 +94,12 @@ public struct BoundingBox : IEquatable<BoundingBox>
         Maximum = maximum;
     }
 
+    public BoundingBox(BoundingSphere sphere)
+    {
+        Minimum = sphere.Center - new Vector3(sphere.Radius);
+        Maximum = sphere.Center + new Vector3(sphere.Radius);
+    }
+
     #endregion Lifecycle
 
     #region Equality
@@ -274,7 +280,7 @@ public struct BoundingBox : IEquatable<BoundingBox>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static BoundingBox Translate(BoundingBox box, Vector3 translation)
+    public static BoundingBox Translate(ref BoundingBox box, Vector3 translation)
     {
         box.Minimum += translation;
         box.Maximum += translation;
@@ -282,7 +288,7 @@ public struct BoundingBox : IEquatable<BoundingBox>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static BoundingBox Inflate(BoundingBox box, float size)
+    public static BoundingBox Inflate(ref BoundingBox box, float size)
     {
         box.Minimum -= new Vector3(size);
         box.Maximum += new Vector3(size);
@@ -290,7 +296,7 @@ public struct BoundingBox : IEquatable<BoundingBox>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static BoundingBox Inflate(BoundingBox box, Vector3 size)
+    public static BoundingBox Inflate(ref BoundingBox box, Vector3 size)
     {
         box.Minimum -= size;
         box.Maximum += size;
@@ -301,7 +307,7 @@ public struct BoundingBox : IEquatable<BoundingBox>
     public static BoundingBox Include(BoundingBox box1, BoundingBox box2) => box1 + box2;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static BoundingBox Include(BoundingBox box, Vector3 point)
+    public static BoundingBox Include(ref BoundingBox box, Vector3 point)
     {
         box.Minimum = Vector3.Min(box.Minimum, point);
         box.Maximum = Vector3.Max(box.Maximum, point);
@@ -335,6 +341,9 @@ public struct BoundingBox : IEquatable<BoundingBox>
     {
         return new BoundingBox(center - extent, center + extent);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BoundingBox FromSphere(BoundingSphere sphere) => new(sphere);
 
     #endregion Operators
 }
