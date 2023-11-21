@@ -52,4 +52,23 @@ public static class Vector3Utils
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => new Vector3(0, 0, 1);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void SeparateMinMax(ref Vector3 min, ref Vector3 max)
+    {
+        if (min.X > max.X)
+        {
+            (min.X, max.X) = (max.X, min.X);
+        }
+        
+        if (min.Y > max.Y)
+        {
+            (min.Y, max.Y) = (max.Y, min.Y);
+        }
+        
+        if (min.Z > max.Z)
+        {
+            (min.Z, max.Z) = (max.Z, min.Z);
+        }
+    }
 }

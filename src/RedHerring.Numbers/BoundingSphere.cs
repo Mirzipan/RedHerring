@@ -131,13 +131,31 @@ public struct BoundingSphere : IEquatable<BoundingSphere>
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoundingSphere Include(BoundingSphere sphere, BoundingSphere other) => sphere + other;
+
+    public static BoundingSphere Transform(BoundingSphere sphere, Matrix4x4 matrix)
+    {
+        Vector3 center = Vector3.Transform(sphere.Center, matrix);
+        float majorAxisLengthSquared = MathF.Max(
+            (matrix.M11 * matrix.M11) + (matrix.M12 * matrix.M12) + (matrix.M13 * matrix.M13), MathF.Max(
+                (matrix.M21 * matrix.M21) + (matrix.M22 * matrix.M22) + (matrix.M23 * matrix.M23),
+                (matrix.M31 * matrix.M31) + (matrix.M32 * matrix.M32) + (matrix.M33 * matrix.M33)));
+        
+        return new BoundingSphere(center, sphere.Radius * MathF.Sqrt(majorAxisLengthSquared));
+    }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Intersect(BoundingSphere sphere, BoundingBox box)
+    public static bool Intersects(BoundingSphere sphere, BoundingBox box)
     {
         Vector3 vector = Vector3.Clamp(sphere.Center, box.Minimum, box.Maximum);
         float distanceSquared = Vector3.DistanceSquared(sphere.Center, vector);
         return distanceSquared <= sphere.Radius * sphere.Radius;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Intersects(BoundingSphere sphere, BoundingSphere other)
+    {
+        float radii = sphere.Radius + other.Radius;
+        return Vector3.DistanceSquared(sphere.Center, other.Center) <= radii * radii;
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -154,7 +172,7 @@ public struct BoundingSphere : IEquatable<BoundingSphere>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ContainmentKind Contains(BoundingSphere sphere, BoundingBox box)
     {
-        if (!Intersect(sphere, box))
+        if (!Intersects(sphere, box))
         {
             return ContainmentKind.Disjoint;
         }

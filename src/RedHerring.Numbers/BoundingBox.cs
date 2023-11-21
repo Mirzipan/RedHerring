@@ -215,8 +215,37 @@ public struct BoundingBox : IEquatable<BoundingBox>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoundingBox Multiply(BoundingBox box, Vector3 scale) => box * scale;
 
+    public static BoundingBox Transform(BoundingBox box, Matrix4x4 matrix)
+    {
+        Vector3 bbMin = matrix.Translation;
+        Vector3 bbMax = matrix.Translation;
+        
+        Vector3 right = matrix.Right();
+        Vector3 min = right * box.Minimum.X;
+        Vector3 max = right * box.Maximum.X;
+        Vector3Utils.SeparateMinMax(ref min, ref max);
+        bbMin += min;
+        bbMax += max;
+        
+        Vector3 up = matrix.Up();
+        min = up * box.Minimum.X;
+        max = up * box.Maximum.X;
+        Vector3Utils.SeparateMinMax(ref min, ref max);
+        bbMin += min;
+        bbMax += max;
+        
+        Vector3 backward = matrix.Backward();
+        min = backward * box.Minimum.X;
+        max = backward * box.Maximum.X;
+        Vector3Utils.SeparateMinMax(ref min, ref max);
+        bbMin += min;
+        bbMax += max;
+        
+        return new BoundingBox(bbMin, bbMax);
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Intersect(BoundingBox left, BoundingBox right)
+    public static bool Intersects(BoundingBox left, BoundingBox right)
     {
         return left.Maximum.X >= right.Minimum.X && left.Minimum.X <= right.Maximum.X
             && left.Maximum.Y >= right.Minimum.Y && left.Minimum.Y <= right.Maximum.Y
