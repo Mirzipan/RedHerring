@@ -280,6 +280,33 @@ public struct BoundingBox : IEquatable<BoundingBox>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ContainmentKind Contains(BoundingBox box, BoundingSphere sphere)
+    {
+        Vector3 vector = Vector3.Clamp(sphere.Center, box.Minimum, box.Maximum);
+        float distanceSquared = Vector3.DistanceSquared(sphere.Center, vector);
+
+        if (distanceSquared > sphere.Radius * sphere.Radius)
+        {
+            return ContainmentKind.Disjoint;
+        }
+
+        if ((box.Minimum.X + sphere.Radius <= sphere.Center.X)
+            && (sphere.Center.X <= box.Maximum.X - sphere.Radius)
+            && (box.Maximum.X - box.Minimum.X > sphere.Radius)
+            && (box.Minimum.Y + sphere.Radius <= sphere.Center.Y)
+            && (sphere.Center.Y <= box.Maximum.Y - sphere.Radius)
+            && (box.Maximum.Y - box.Minimum.Y > sphere.Radius)
+            && (box.Minimum.Z + sphere.Radius <= sphere.Center.Z)
+            && (sphere.Center.Z <= box.Maximum.Z - sphere.Radius)
+            && (box.Maximum.Z - box.Minimum.Z > sphere.Radius))
+        {
+            return ContainmentKind.Contains;
+        }
+
+        return ContainmentKind.Intersects;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoundingBox Translate(ref BoundingBox box, Vector3 translation)
     {
         box.Minimum += translation;
