@@ -181,9 +181,9 @@ public sealed partial class StudioCamera : EngineSystem, Drawable
 
     private void SetupValues()
     {
-        _position = Vector3Utils.Backward * 10;
-        _target = Vector3Utils.Forward * 30;
-        _up = Vector3Utils.Up;
+        _position = Vector3Direction.Backward * 10;
+        _target = Vector3Direction.Forward * 30;
+        _up = Vector3Direction.Up;
         
         _viewMatrix = Matrix4x4.Identity;
         _projectionMatrix = Matrix4x4.Identity;
@@ -231,7 +231,7 @@ public sealed partial class StudioCamera : EngineSystem, Drawable
             aspectRatio = (float)size.X / size.Y;
         }
 
-        _worldMatrix = Matrix4x4.CreateLookAt(_position, _target, _up);
+        _worldMatrix = Matrix4x4.CreateLookAt(_position, _position + Vector3Direction.Forward, _up);
         Matrix4x4.Invert(_worldMatrix, out _viewMatrix);
         _projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(FieldOfView, aspectRatio, ClipPlaneNear, ClipPlaneFar);
         
@@ -246,37 +246,37 @@ public sealed partial class StudioCamera : EngineSystem, Drawable
     private void OnMoveLeft(ref ActionEvent evt)
     {
         evt.Consumed = true;
-        Position += Vector3Utils.Left * _movementSpeed;
+        Position += Vector3Direction.Left * _movementSpeed;
     }
 
     private void OnMoveRight(ref ActionEvent evt)
     {
         evt.Consumed = true;
-        Position += Vector3Utils.Right * _movementSpeed;
+        Position += Vector3Direction.Right * _movementSpeed;
     }
 
     private void OnMoveUp(ref ActionEvent evt)
     {
         evt.Consumed = true;
-        Position += Vector3Utils.Up * _movementSpeed;
+        Position += Vector3Direction.Up * _movementSpeed;
     }
 
     private void OnMoveDown(ref ActionEvent evt)
     {
         evt.Consumed = true;
-        Position += Vector3Utils.Down * _movementSpeed;
+        Position += Vector3Direction.Down * _movementSpeed;
     }
 
     private void OnMoveForward(ref ActionEvent evt)
     {
         evt.Consumed = true;
-        Position += Vector3Utils.Forward * _movementSpeed;
+        Position += Vector3Direction.Forward * _movementSpeed;
     }
 
     private void OnMoveBackward(ref ActionEvent evt)
     {
         evt.Consumed = true;
-        Position += Vector3Utils.Backward * _movementSpeed;
+        Position += Vector3Direction.Backward * _movementSpeed;
     }
 
     private void OnMoveSpeedIncrease(ref ActionEvent evt)

@@ -144,7 +144,7 @@ public class DebugRenderFeature : RenderFeature, IDisposable
 
     private void CreateModelResources(GraphicsDevice device, ResourceFactory factory)
     {
-        _position = Vector3Utils.Forward * 30;
+        _position = Vector3Direction.Forward * 30;
         _cube = new DebugCube(device, factory);
         _cube.DisposeWith(this);
         _modelResources = _cube.CreateResources(10f);
