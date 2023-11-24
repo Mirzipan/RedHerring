@@ -4,7 +4,7 @@ namespace RedHerring.Studio.UserInterface;
 
 public sealed class Inspector
 {
-	private readonly List<object>             _sources = new();
+	private readonly List<object>           _sources = new();
 	private          InspectorClassControl? _contentControl;
 
 	private static int _uniqueIdGenerator = 0;

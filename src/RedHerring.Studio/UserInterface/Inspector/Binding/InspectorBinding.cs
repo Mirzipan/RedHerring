@@ -12,6 +12,8 @@ public abstract class InspectorBinding
 	public abstract FieldInfo? SourceFieldInfo { get; }
 	public abstract int        Index           { get; }
 
+	public abstract Type? BoundType { get; }
+
 	public abstract object? GetValue();
 	public abstract void SetValue(object? value);
 
@@ -54,7 +56,7 @@ public abstract class InspectorBinding
 			return null;
 		}
 
-		Type sourceFieldType = sourceFieldValue.GetType(); // this should properly handle abstract bases
+		//Type sourceFieldType = sourceFieldValue.GetType(); // this should properly handle abstract bases
 
 		// binding to item inside list/array
 		if (Index == -1)
@@ -62,14 +64,14 @@ public abstract class InspectorBinding
 			return sourceFieldValue;
 		}
 
-		if (sourceFieldType.IsArray)
-		{
-			sourceFieldType = sourceFieldType.GetElementType()!;
-		}
-		else if (sourceFieldType.IsGenericType && sourceFieldType.GetGenericTypeDefinition() == typeof(List<>))
-		{
-			sourceFieldType = sourceFieldType.GetGenericArguments()[0];
-		}
+		// if (sourceFieldType.IsArray)
+		// {
+		// 	sourceFieldType = sourceFieldType.GetElementType()!;
+		// }
+		// else if (sourceFieldType.IsGenericType && sourceFieldType.GetGenericTypeDefinition() == typeof(List<>))
+		// {
+		// 	sourceFieldType = sourceFieldType.GetGenericArguments()[0];
+		// }
 
 		object? sourceElement = (sourceFieldValue as IList)?[Index];
 		if (sourceElement == null)

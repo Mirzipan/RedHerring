@@ -78,7 +78,7 @@ public class InspectorTest
 	
 	public int[]     IntArray = {1, 2, 3, 4, 5};
 	public List<int> IntList  = new() {1, 2, 3, 4};
-
+	
 	public List<InspectorTestSubclass> SubClassList = new()
 	                                                  {
 		                                                  new InspectorTestSubclass(),

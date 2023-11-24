@@ -32,40 +32,57 @@ public sealed class InspectorClassControl : InspectorControl
 	private readonly string                 _createValuePopupId;
 	private          List<object?>          _sourceFieldValues = new();
 
-	private Type?   _sourceFieldType;
 	private Type[]? _assignableTypes = null;
 
 	public InspectorClassControl(Inspector inspector, string id) : base(inspector, id)
 	{
 		_createValuePopupId = id + ".popup";
 	}
-	
-	#region Init
-	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null, int sourceIndex = -1)
+
+	#region Build
+	private void Rebuild()
 	{
-		base.InitFromSource(sourceOwner, source, sourceField, sourceIndex);
+		RemoveAllControls();
+		if(Bindings.Count == 0)
+		{
+			return;
+		}
+		
+		CreateControlsFromSource(Bindings[0]);
+		
+		for(int i=1; i<Bindings.Count; ++i)
+		{
+			AdaptControlsToSource(Bindings[i]);
+		}
+	}
+
+	private void RemoveAllControls()
+	{
 		_sourceFieldValues.Clear();
 		_controls.Clear();
-
 		_isMultipleValues = false;
-		
+	}
+
+	private void CreateControlsFromSource(InspectorBinding binding)
+	{
 		object? sourceFieldValue = Bindings[0].GetFieldValue();
 		_sourceFieldValues.Add(sourceFieldValue);
-		if (sourceFieldValue == null)
+
+		Type? boundType = binding.BoundType;
+		if (sourceFieldValue == null || boundType == null)
 		{
-			_sourceFieldType = sourceField?.FieldType;
 			_isNullSource    = true;
 			return;
 		}
 
-		_isNullSource    = false;
-		_sourceFieldType = sourceFieldValue.GetType(); // this should properly handle abstract bases
+		_isNullSource = false;
 
-		InitFromSourceFields(_sourceFieldType, source, sourceFieldValue, sourceIndex);
-		InitFromSourceMethods(_sourceFieldType, source, sourceFieldValue);
+		
+		InitFromSourceFields(boundType, binding.Source, sourceFieldValue);
+		InitFromSourceMethods(boundType, binding.Source, sourceFieldValue);
 	}
 
-	private void InitFromSourceFields(Type sourceFieldType, object source, object sourceFieldValue, int sourceIndex)
+	private void InitFromSourceFields(Type sourceFieldType, object source, object sourceFieldValue)
 	{
 		FieldInfo[] fields = sourceFieldType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 		foreach (FieldInfo field in fields)
@@ -86,7 +103,7 @@ public sealed class InspectorClassControl : InspectorControl
 			InspectorControl control = (InspectorControl) Activator.CreateInstance(controlType, _inspector, controlId)!;
 			_controls.Add(control);
 
-			control.InitFromSource(source, sourceFieldValue, field, sourceIndex);
+			control.InitFromSource(source, sourceFieldValue, field);
 		}
 	}
 
@@ -111,14 +128,13 @@ public sealed class InspectorClassControl : InspectorControl
 	#endregion
 
 	#region Adapt
-	public override void AdaptToSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
+	private void AdaptControlsToSource(InspectorBinding binding)
 	{
-		base.AdaptToSource(sourceOwner, source, sourceField);
-
 		object? sourceFieldValue = Bindings[^1].GetFieldValue();
 		_sourceFieldValues.Add(sourceFieldValue);
 
-		if (sourceFieldValue == null)
+		Type? boundType = binding.BoundType;
+		if (sourceFieldValue == null || boundType == null)
 		{
 			if (_isNullSource)
 			{
@@ -129,12 +145,10 @@ public sealed class InspectorClassControl : InspectorControl
 			return;
 		}
 
-		Type sourceFieldType = sourceFieldValue.GetType(); // this should properly handle abstract bases
-
 		bool[] commonControls = new bool[_controls.Count];
 
-		AdaptToSourceFields(sourceFieldType, sourceOwner, source, sourceFieldValue, commonControls);
-		AdaptToSourceMethods(sourceFieldType, sourceOwner, source, sourceFieldValue, commonControls);
+		AdaptToSourceFields(boundType, binding.SourceOwner, binding.Source, sourceFieldValue, commonControls);
+		AdaptToSourceMethods(boundType, binding.SourceOwner, binding.Source, sourceFieldValue, commonControls);
 		
 		// remove all controls that are not common for all sources
 		for(int i=commonControls.Length -1;i >=0;--i)
@@ -240,9 +254,9 @@ public sealed class InspectorClassControl : InspectorControl
 	
 	public override void Update()
 	{
-		if (FieldValuesChanged())
+		if (SourceFieldValuesChanged())
 		{
-			Reinit();
+			Rebuild();
 		}
 
 		if (_isNullSource)
@@ -273,21 +287,23 @@ public sealed class InspectorClassControl : InspectorControl
 			return;
 		}
 
-		//if (Gui.CollapsingHeader(Label, ImGuiTreeNodeFlags.DefaultOpen))
 		if(Gui.TreeNode(LabelId))
 		{
-			//Gui.Indent();
 			foreach (InspectorControl control in _controls)
 			{
 				control.Update();
 			}
-			//Gui.Unindent();
 			Gui.TreePop();
 		}
 	}
 
-	private bool FieldValuesChanged()
+	private bool SourceFieldValuesChanged()
 	{
+		if (_sourceFieldValues.Count != Bindings.Count)
+		{
+			return true;
+		}
+
 		for (int i = 0; i < Bindings.Count; ++i)
 		{
 			if(Bindings[i].GetFieldValue() != _sourceFieldValues[i])
@@ -297,19 +313,6 @@ public sealed class InspectorClassControl : InspectorControl
 		}
 
 		return false;
-	}
-
-	private void Reinit()
-	{
-		List<InspectorBinding> bindings = new (Bindings);
-		Bindings.Clear();
-		
-		InitFromSource(bindings[0].SourceOwner, bindings[0].Source, bindings[0].SourceFieldInfo, bindings[0].Index);
-		
-		for(int i=1;i<bindings.Count;++i)
-		{
-			AdaptToSource(bindings[i].SourceOwner, bindings[i].Source, bindings[i].SourceFieldInfo);
-		}
 	}
 
 	private bool IsFieldVisible(FieldInfo field)
@@ -322,9 +325,10 @@ public sealed class InspectorClassControl : InspectorControl
 	{
 		if (Gui.BeginPopup(_createValuePopupId))
 		{
-			if (_sourceFieldType != null)
+			Type? boundType = Bindings[0].BoundType;
+			if (boundType != null)
 			{
-				_assignableTypes ??= ObtainAllAssignableTypes(_sourceFieldType);
+				_assignableTypes ??= ObtainAllAssignableTypes(boundType);
 			}
 
 			if (_assignableTypes == null || _assignableTypes.Length == 0)
@@ -355,8 +359,6 @@ public sealed class InspectorClassControl : InspectorControl
 	private void InstantiateClass(Type type)
 	{
 		_inspector.Commit(new InspectorInstantiateClassCommand(Bindings, type));
-		
-		// TODO - item is not updated! .. needs rework :-(
 	}
 
 	private Type[] ObtainAllAssignableTypes(Type baseType)

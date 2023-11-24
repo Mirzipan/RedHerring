@@ -16,6 +16,7 @@ public class InspectorValueBinding : InspectorBinding
 	public override object     Source          => _source;
 	public override FieldInfo? SourceFieldInfo => _sourceField!;
 	public override int        Index           => -1;
+	public override Type?      BoundType       => _sourceField?.FieldType ?? _source.GetType();
 	
 	public InspectorValueBinding(object? sourceOwner, object source, FieldInfo? sourceField, Action? onCommitValue)
 	{

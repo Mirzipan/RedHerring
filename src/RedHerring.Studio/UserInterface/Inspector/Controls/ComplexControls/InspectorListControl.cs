@@ -22,8 +22,8 @@ public sealed class InspectorListControl : InspectorControl
 {
 	private class ControlDescriptor
 	{
-		public InspectorControl? Control = null;
-		public readonly string              DeleteButtonId;
+		public          InspectorControl? Control = null;
+		public readonly string            DeleteButtonId;
 
 		public ControlDescriptor(string deleteButtonId)
 		{
@@ -31,10 +31,14 @@ public sealed class InspectorListControl : InspectorControl
 		}
 	}
 
-	private          object?                   _sourceOwner = null;
-	private          bool                      _isReadOnly  = false;
-	private readonly string                    _buttonCreateElementId;
+	private bool _isMultipleValues = false;
+	private bool _isNullSource     = false;
+	private bool _isReadOnly       = false;
+	
+	private readonly string                  _buttonCreateElementId;
 	private readonly List<ControlDescriptor> _controls = new();
+
+	private object? _listValue = null;
 
 	public InspectorListControl(Inspector inspector, string id) : base(inspector, id)
 	{
@@ -44,8 +48,7 @@ public sealed class InspectorListControl : InspectorControl
 	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null, int sourceIndex = -1)
 	{
 		base.InitFromSource(sourceOwner, source, sourceField, sourceIndex);
-		_sourceOwner = sourceOwner;
-		_isReadOnly  = sourceField != null && (sourceField.IsInitOnly || sourceField.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null);
+		_isReadOnly = sourceField != null && (sourceField.IsInitOnly || sourceField.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null);
 	}
 
 	public override void AdaptToSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
@@ -56,15 +59,13 @@ public sealed class InspectorListControl : InspectorControl
 	
 	public override void Update()
 	{
-		InspectorBinding binding = Bindings.First();
-		
-		object? value = binding.GetValue();
-		if (value == null)
+		if (SourceFieldValuesChanged())
 		{
-			return;
+			Rebuild();
 		}
 
-		if (value is not IList list)
+		IList? list = Bindings.Count != 1 ? null : Bindings[0].GetValue() as IList;
+		if (list == null)
 		{
 			return;
 		}
@@ -76,25 +77,8 @@ public sealed class InspectorListControl : InspectorControl
 		{
 			createNewElement = NewElementButtonOnTheSameLine(list.IsFixedSize);
 
-			for(int i = 0; i < list.Count; ++i)
+			for(int i = 0; i < _controls.Count; ++i)
 			{
-				// add new control
-				if(i == _controls.Count)
-				{
-					_controls.Add(new ControlDescriptor($"{Id}.delete{i}"));
-				}
-				
-				Type? elementType = list[i] == null ? binding.GetElementType() : list[i]!.GetType();
-				Type? controlType = _controls[i].Control != null ? _controls[i].Control!.BoundValueType : null;  
-					
-				if (elementType != controlType || _controls[i].Control?.Bindings[0].Index != i)
-				{
-					InspectorControl? control = CreateControl(elementType, i);
-					control?.InitFromSource(_sourceOwner, binding.Source, binding.SourceFieldInfo, i);
-					control?.SetCustomLabel(i.ToString());
-					_controls[i].Control = control;
-				}
-
 				if(_controls[i].Control == null)
 				{
 					continue;
@@ -140,6 +124,85 @@ public sealed class InspectorListControl : InspectorControl
 		}
 	}
 
+	private bool SourceFieldValuesChanged()
+	{
+		if (Bindings.Count == 0)
+		{
+			throw new InvalidDataException();
+		}
+
+		if (Bindings.Count > 1)
+		{
+			return !_isMultipleValues;
+		}
+
+		InspectorBinding binding = Bindings[0];
+		
+		object? value = binding.GetValue();
+		if (value == null)
+		{
+			return !_isNullSource;
+		}
+
+		if (value is not IList list)
+		{
+			throw new InvalidDataException();
+		}
+
+		if (value != _listValue)
+		{
+			return true;
+		}
+
+		return _controls.Count != list.Count;
+	}
+
+	private void Rebuild()
+	{
+		_controls.Clear();
+		
+		if (Bindings.Count > 1)
+		{
+			_isMultipleValues = true;
+			return;
+		}
+		_isMultipleValues = false;
+
+		InspectorBinding binding = Bindings[0];
+		
+		object? value = binding.GetValue();
+		if (value == null)
+		{
+			_isNullSource = true;
+			return;
+		}
+		_isNullSource = false;
+
+		if (value is not IList list)
+		{
+			return; // error
+		}
+
+		for(int i = 0; i < list.Count; ++i)
+		{
+			if(i == _controls.Count)
+			{
+				_controls.Add(new ControlDescriptor($"{Id}.delete{i}"));
+			}
+			
+			Type? elementType = list[i]              == null ? binding.GetElementType() : list[i]!.GetType();
+			Type? controlType = _controls[i].Control != null ? _controls[i].Control!.BoundValueType : null;  
+				
+			if (elementType != controlType || _controls[i].Control?.Bindings[0].Index != i)
+			{
+				InspectorControl? control = CreateControl(elementType, i);
+				control?.InitFromSource(binding.SourceOwner, binding.Source, binding.SourceFieldInfo, i);
+				control?.SetCustomLabel(i.ToString());
+				_controls[i].Control = control;
+			}
+		}
+	}
+	
 	private bool NewElementButtonOnTheSameLine(bool isFixedSize)
 	{
 		if (isFixedSize)

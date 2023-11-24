@@ -23,7 +23,7 @@ public abstract class InspectorControl
 		LabelId    = id;
 	}
 
-	public Type? BoundValueType => Bindings.Count == 0 ? null : Bindings[0].SourceFieldInfo?.FieldType;
+	public Type? BoundValueType => Bindings.Count == 0 ? null : Bindings[0].SourceFieldInfo?.FieldType; // todo - remove/move to binding?
 
 	public virtual void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null, int sourceIndex = -1)
 	{
@@ -49,7 +49,7 @@ public abstract class InspectorControl
 		LabelId = label == null ? Id : label + Id;
 	}
 
-	private Action? GetOnCommitValueAction(object? sourceOwner, FieldInfo? sourceField)
+	private Action? GetOnCommitValueAction(object? sourceOwner, FieldInfo? sourceField) // TODO - move to binding?
 	{
 		if (sourceOwner == null || sourceField == null)
 		{
@@ -70,7 +70,7 @@ public abstract class InspectorControl
 
 		return () => onCommitMethod.Invoke(sourceOwner, null);
 	}
-
+	
 	#region Value manipulation
 	protected object? GetValue()
 	{

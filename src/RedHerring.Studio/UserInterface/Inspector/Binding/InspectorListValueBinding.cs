@@ -8,6 +8,8 @@ public class InspectorListValueBinding : InspectorValueBinding
 	private readonly int _index;
 	public override  int Index => _index;
 	
+	public override Type? BoundType => GetElementType() ?? base.BoundType;
+	
 	public InspectorListValueBinding(object? sourceOwner, object source, FieldInfo? sourceField, Action? onCommitValue, int index)
 		: base(sourceOwner, source, sourceField, onCommitValue)
 	{
