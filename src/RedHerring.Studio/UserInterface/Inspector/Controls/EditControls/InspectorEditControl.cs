@@ -11,13 +11,13 @@ public abstract class InspectorEditControl<T> : InspectorControl
 	protected T? Value;
 	
 	protected        bool    _multipleValues = false;
-	private readonly string? _multipleValuesLabel;
+	private readonly string? _multipleValuesLabelId;
 	
 	protected bool _isReadOnly = false;
 	
 	protected InspectorEditControl(Inspector inspector, string id) : base(inspector, id)
 	{
-		_multipleValuesLabel = MultipleValuesButtonLabel + Id;
+		_multipleValuesLabelId = $"{MultipleValuesButtonLabel}##{Id}";
 	}
 
 	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null, int sourceIndex = -1)
@@ -79,7 +79,7 @@ public abstract class InspectorEditControl<T> : InspectorControl
 	protected bool GuiMultiEditButton()
 	{
 		Gui.BeginDisabled(_isReadOnly);
-		bool buttonClicked = Gui.Button(_multipleValuesLabel);
+		bool buttonClicked = Gui.Button(_multipleValuesLabelId);
 		Gui.EndDisabled();
 		Gui.SameLine();
 		Gui.AlignTextToFramePadding();

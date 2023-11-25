@@ -20,7 +20,7 @@ public abstract class InspectorControl
 	{
 		_inspector = inspector;
 		Id         = id;
-		LabelId    = id;
+		LabelId    = $"##{id}";
 	}
 
 	public Type? BoundValueType => Bindings.Count == 0 ? null : Bindings[0].SourceFieldInfo?.FieldType; // todo - remove/move to binding?
@@ -30,7 +30,7 @@ public abstract class InspectorControl
 		if (sourceField != null)
 		{
 			Label   = sourceField.Name.PrettyCamelCase();
-			LabelId = Label + Id;
+			LabelId = $"{Label}##{Id}";
 		}
 
 		Bindings.Add(InspectorBinding.Create(sourceOwner, source, sourceField, sourceIndex, GetOnCommitValueAction(sourceOwner, sourceField)));
@@ -46,7 +46,7 @@ public abstract class InspectorControl
 	public void SetCustomLabel(string? label)
 	{
 		Label   = label;
-		LabelId = label == null ? Id : label + Id;
+		LabelId = label == null ? $"##{Id}" : $"{label}##{Id}";
 	}
 
 	private Action? GetOnCommitValueAction(object? sourceOwner, FieldInfo? sourceField) // TODO - move to binding?
@@ -121,7 +121,7 @@ public abstract class InspectorControl
 			return;
 		}
 
-		Console.WriteLine($"Submitted value {value}");
+		Console.WriteLine($"Submitted value {value} from control {Id}");
 		_inspector.Commit(new InspectorModifyValueCommand(value, Bindings));
 	}
 	#endregion

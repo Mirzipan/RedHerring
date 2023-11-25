@@ -50,9 +50,7 @@ public sealed class Inspector
 			return;
 		}
 
-		string id = $"##{_uniqueId.ToString()}";
-		
-		_contentControl = new InspectorClassControl(this, id);
+		_contentControl = new InspectorClassControl(this, _uniqueId.ToString());
 		_contentControl.InitFromSource(null, _sources[0]);
 		_contentControl.SetCustomLabel(null);
 		for(int i=1;i <_sources.Count;i++)
