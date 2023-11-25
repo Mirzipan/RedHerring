@@ -70,7 +70,7 @@ public abstract class InspectorEditControl<T> : InspectorControl
 
 		if(_isReadOnly || !controlIsActive)
 		{
-			UpdateValue();
+			//UpdateValue();
 		}
 	}
 	#endregion

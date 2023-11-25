@@ -159,6 +159,7 @@ public sealed class InspectorListControl : InspectorControl
 
 	private void Rebuild()
 	{
+		Console.WriteLine($"Rebuild called on list {Id}");
 		_controls.Clear();
 		
 		if (Bindings.Count > 1)
@@ -182,12 +183,13 @@ public sealed class InspectorListControl : InspectorControl
 		{
 			return; // error
 		}
+		_listValue = value;
 
 		for(int i = 0; i < list.Count; ++i)
 		{
 			if(i == _controls.Count)
 			{
-				_controls.Add(new ControlDescriptor($"{Id}.delete{i}"));
+				_controls.Add(new ControlDescriptor($"{Id}.delete[{i}]"));
 			}
 			
 			Type? elementType = list[i]              == null ? binding.GetElementType() : list[i]!.GetType();
@@ -227,7 +229,7 @@ public sealed class InspectorListControl : InspectorControl
 			return null;
 		}
 		
-		return (InspectorControl) Activator.CreateInstance(controlType, _inspector, $"{Id}_{index}")!;
+		return (InspectorControl) Activator.CreateInstance(controlType, _inspector, $"{Id}[{index}]")!;
 	}
 
 	private bool ButtonCreateElement(string id)
