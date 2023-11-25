@@ -17,10 +17,15 @@ public sealed class Inspector
 		_commandHistory = commandHistory;
 	}
 
-	public void Init(object source)
+	public void Init(object? source)
 	{
 		_sources.Clear();
-		_sources.Add(source);
+		
+		if (source != null)
+		{
+			_sources.Add(source);
+		}
+
 		Rebuild();
 	}
 

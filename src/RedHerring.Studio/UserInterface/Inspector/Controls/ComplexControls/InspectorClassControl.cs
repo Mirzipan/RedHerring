@@ -67,11 +67,11 @@ public sealed class InspectorClassControl : InspectorControl
 
 	private void CreateControlsFromSource(InspectorBinding binding)
 	{
-		object? sourceFieldValue = Bindings[0].GetFieldValue();
-		_sourceFieldValues.Add(sourceFieldValue);
+		object? sourceValue = Bindings[0].GetValue();
+		_sourceFieldValues.Add(sourceValue);
 
 		Type? boundType = binding.BoundType;
-		if (sourceFieldValue == null || boundType == null)
+		if (sourceValue == null || boundType == null)
 		{
 			_isNullSource    = true;
 			return;
@@ -80,8 +80,8 @@ public sealed class InspectorClassControl : InspectorControl
 		_isNullSource = false;
 
 		
-		CreateControlsFromSourceFields(boundType, binding.Source, sourceFieldValue);
-		CreateControlsFromSourceMethods(boundType, binding.Source, sourceFieldValue);
+		CreateControlsFromSourceFields(boundType, binding.Source, sourceValue);
+		CreateControlsFromSourceMethods(boundType, binding.Source, sourceValue);
 	}
 
 	private void CreateControlsFromSourceFields(Type sourceFieldType, object source, object sourceFieldValue)
@@ -132,11 +132,11 @@ public sealed class InspectorClassControl : InspectorControl
 	#region Adapt
 	private void AdaptControlsToSource(InspectorBinding binding)
 	{
-		object? sourceFieldValue = Bindings[^1].GetFieldValue();
-		_sourceFieldValues.Add(sourceFieldValue);
+		object? sourceValue = Bindings[^1].GetValue();
+		_sourceFieldValues.Add(sourceValue);
 
 		Type? boundType = binding.BoundType;
-		if (sourceFieldValue == null || boundType == null)
+		if (sourceValue == null || boundType == null)
 		{
 			if (_isNullSource)
 			{
@@ -149,8 +149,8 @@ public sealed class InspectorClassControl : InspectorControl
 
 		bool[] commonControls = new bool[_controls.Count];
 
-		AdaptControlsToSourceFields(boundType, binding.SourceOwner, binding.Source, sourceFieldValue, commonControls);
-		AdaptControlsToSourceMethods(boundType, binding.SourceOwner, binding.Source, sourceFieldValue, commonControls);
+		AdaptControlsToSourceFields(boundType, binding.SourceOwner, binding.Source, sourceValue, commonControls);
+		AdaptControlsToSourceMethods(boundType, binding.SourceOwner, binding.Source, sourceValue, commonControls);
 		
 		// remove all controls that are not common for all sources
 		for(int i=commonControls.Length -1;i >=0;--i)
@@ -308,7 +308,7 @@ public sealed class InspectorClassControl : InspectorControl
 
 		for (int i = 0; i < Bindings.Count; ++i)
 		{
-			if(Bindings[i].GetFieldValue() != _sourceFieldValues[i])
+			if(Bindings[i].GetValue() != _sourceFieldValues[i])
 			{
 				return true;
 			}
