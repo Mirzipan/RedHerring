@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Studio", "RedHer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Deduction", "RedHerring.Deduction\RedHerring.Deduction.csproj", "{57E8ADAE-9AA8-4F0B-8368-E77FA14536D7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Clues", "RedHerring.Clues\RedHerring.Clues.csproj", "{A06FE3A5-99C0-4B53-8E36-2B90752A2E1C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,5 +92,9 @@ Global
 		{57E8ADAE-9AA8-4F0B-8368-E77FA14536D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57E8ADAE-9AA8-4F0B-8368-E77FA14536D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57E8ADAE-9AA8-4F0B-8368-E77FA14536D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A06FE3A5-99C0-4B53-8E36-2B90752A2E1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A06FE3A5-99C0-4B53-8E36-2B90752A2E1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A06FE3A5-99C0-4B53-8E36-2B90752A2E1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A06FE3A5-99C0-4B53-8E36-2B90752A2E1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
