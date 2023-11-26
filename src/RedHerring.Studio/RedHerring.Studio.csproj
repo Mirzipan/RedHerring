@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\RedHerring.Assets\RedHerring.Assets.csproj" />
+      <ProjectReference Include="..\RedHerring.Clues\RedHerring.Clues.csproj" />
       <ProjectReference Include="..\RedHerring.Deduction\RedHerring.Deduction.csproj" />
       <ProjectReference Include="..\RedHerring.ImGui\RedHerring.ImGui.csproj" />
       <ProjectReference Include="..\RedHerring.Motive\RedHerring.Motive.csproj" />
@@ -29,6 +30,10 @@
       <PackageReference Include="Silk.NET.Windowing.Common" Version="2.18.0" />
       <PackageReference Include="Silk.NET.Windowing.Extensions.Veldrid" Version="2.18.0" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Definitions\" />
     </ItemGroup>
 
 </Project>

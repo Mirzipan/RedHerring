@@ -1,4 +1,5 @@
-﻿using RedHerring.ImGui;
+﻿using RedHerring.Clues;
+using RedHerring.ImGui;
 using RedHerring.Infusion;
 using RedHerring.Studio.Systems;
 using Configuration = RedHerring.Studio.Systems.Configuration;
@@ -10,6 +11,11 @@ public static class InjectionExtensions
     public static ContainerDescription AddImGui(this ContainerDescription @this)
     {
         return @this.AddSystem(new ImGuiSystem());
+    }
+    
+    public static ContainerDescription AddDefinitions(this ContainerDescription @this)
+    {
+        return @this.AddSystem<DefinitionSystem>();
     }
 
     public static ContainerDescription AddStudio(this ContainerDescription @this)
