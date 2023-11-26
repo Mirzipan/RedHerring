@@ -3,6 +3,7 @@ using ImGuiNET;
 using Gui = ImGuiNET.ImGui;
 
 using System.Reflection;
+using RedHerring.Alexandria.Extensions;
 using RedHerring.ImGui;
 using RedHerring.Studio.UserInterface.Attributes;
 
@@ -24,10 +25,12 @@ public sealed class InspectorListControl : InspectorControl
 	{
 		public          InspectorControl? Control = null;
 		public readonly string            DeleteButtonId;
+		public readonly string            DragAndDropId;
 
-		public ControlDescriptor(string deleteButtonId)
+		public ControlDescriptor(string deleteButtonId, string dragAndDropId)
 		{
 			DeleteButtonId = deleteButtonId;
+			DragAndDropId  = dragAndDropId;
 		}
 	}
 
@@ -39,6 +42,8 @@ public sealed class InspectorListControl : InspectorControl
 	private readonly List<ControlDescriptor> _controls = new();
 
 	private object? _listValue = null;
+
+	private int _draggedIndex = -1; // to avoid using unsafe context
 
 	public InspectorListControl(Inspector inspector, string id) : base(inspector, id)
 	{
@@ -85,9 +90,7 @@ public sealed class InspectorListControl : InspectorControl
 				}
 
 				// draggable reorder symbol
-				Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
-				Icon.ReorderList();
-				Gui.PopStyleVar();
+				CreateDragAndDropControl(_controls[i].DragAndDropId, i);
 				Gui.SameLine();
 
 				// delete button
@@ -189,7 +192,7 @@ public sealed class InspectorListControl : InspectorControl
 		{
 			if(i == _controls.Count)
 			{
-				_controls.Add(new ControlDescriptor($"{Id}.delete[{i}]"));
+				_controls.Add(new ControlDescriptor($"{Id}.delete[{i}]", $"{Id}.dad[{i}]"));
 			}
 			
 			Type? elementType = list[i]              == null ? binding.GetElementType() : list[i]!.GetType();
@@ -205,17 +208,6 @@ public sealed class InspectorListControl : InspectorControl
 		}
 	}
 	
-	private bool NewElementButtonOnTheSameLine(bool isFixedSize)
-	{
-		if (isFixedSize)
-		{
-			return false;
-		}
-
-		Gui.SameLine();
-		return ButtonCreateElement(_buttonCreateElementId);
-	}
-
 	private InspectorControl? CreateControl(Type? type, int index)
 	{
 		if (type == null)
@@ -230,6 +222,58 @@ public sealed class InspectorListControl : InspectorControl
 		}
 		
 		return (InspectorControl) Activator.CreateInstance(controlType, _inspector, $"{Id}[{index}]")!;
+	}
+
+	#region Drag&drop
+	private void CreateDragAndDropControl(string dragAndDropId, int index)
+	{
+		Gui.PushID(dragAndDropId);
+		
+		Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
+		Icon.ReorderList();
+		Gui.PopStyleVar();
+
+		if (Gui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoDisableHover))
+		{
+			_draggedIndex = index;
+			Gui.SetDragDropPayload(Id, IntPtr.Zero, 0);
+			Gui.Text("Dragging list item");
+			Gui.EndDragDropSource();
+		}
+
+		if (Gui.BeginDragDropTarget())
+		{
+			ImGuiPayloadPtr dragPayload = Gui.AcceptDragDropPayload(Id);
+			//if (dragPayload.IsDataType(Id))
+			{
+				if (Gui.IsMouseReleased(ImGuiMouseButton.Left))
+				{
+					if (_draggedIndex >= 0 && _draggedIndex < _controls.Count)
+					{
+						Console.WriteLine($"Swap {_draggedIndex} with {index}");
+					}
+
+					_draggedIndex = -1;
+				}
+			}
+
+			Gui.EndDragDropTarget();
+		}
+
+		Gui.PopID();
+	}
+	#endregion
+	
+	#region Buttons
+	private bool NewElementButtonOnTheSameLine(bool isFixedSize)
+	{
+		if (isFixedSize)
+		{
+			return false;
+		}
+
+		Gui.SameLine();
+		return ButtonCreateElement(_buttonCreateElementId);
 	}
 
 	private bool ButtonCreateElement(string id)
@@ -247,4 +291,5 @@ public sealed class InspectorListControl : InspectorControl
 		Gui.PopID();
 		return result;
 	}
+	#endregion
 }
