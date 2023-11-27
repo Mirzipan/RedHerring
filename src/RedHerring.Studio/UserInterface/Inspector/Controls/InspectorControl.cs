@@ -20,25 +20,25 @@ public abstract class InspectorControl
 	{
 		_inspector = inspector;
 		Id         = id;
-		LabelId    = id;
+		LabelId    = $"##{id}";
 	}
 
-	public Type? BoundValueType => Bindings.Count == 0 ? null : Bindings[0].SourceFieldInfo?.FieldType;
+	public Type? BoundValueType => Bindings.Count == 0 ? null : Bindings[0].SourceFieldInfo?.FieldType; // todo - remove/move to binding?
 
 	public virtual void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null, int sourceIndex = -1)
 	{
 		if (sourceField != null)
 		{
 			Label   = sourceField.Name.PrettyCamelCase();
-			LabelId = Label + Id;
+			LabelId = $"{Label}##{Id}";
 		}
 
-		Bindings.Add(InspectorBinding.Create(source, sourceField, sourceIndex, GetOnCommitValueAction(sourceOwner, sourceField)));
+		Bindings.Add(InspectorBinding.Create(sourceOwner, source, sourceField, sourceIndex, GetOnCommitValueAction(sourceOwner, sourceField)));
 	}
 
 	public virtual void AdaptToSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
 	{
-		Bindings.Add(InspectorBinding.Create(source, sourceField, -1, GetOnCommitValueAction(sourceOwner, sourceField)));
+		Bindings.Add(InspectorBinding.Create(sourceOwner, source, sourceField, -1, GetOnCommitValueAction(sourceOwner, sourceField)));
 	}
 	
 	public abstract void Update();
@@ -46,10 +46,10 @@ public abstract class InspectorControl
 	public void SetCustomLabel(string? label)
 	{
 		Label   = label;
-		LabelId = label == null ? Id : label + Id;
+		LabelId = label == null ? $"##{Id}" : $"{label}##{Id}";
 	}
 
-	private Action? GetOnCommitValueAction(object? sourceOwner, FieldInfo? sourceField)
+	private Action? GetOnCommitValueAction(object? sourceOwner, FieldInfo? sourceField) // TODO - move to binding?
 	{
 		if (sourceOwner == null || sourceField == null)
 		{
@@ -70,7 +70,7 @@ public abstract class InspectorControl
 
 		return () => onCommitMethod.Invoke(sourceOwner, null);
 	}
-
+	
 	#region Value manipulation
 	protected object? GetValue()
 	{
@@ -121,8 +121,8 @@ public abstract class InspectorControl
 			return;
 		}
 
-		Console.WriteLine($"Submitted value {value}");
-		_inspector.Commit(new InspectorModifyValueCommand(value, Bindings));
+		Console.WriteLine($"Submitted value {value} from control {Id}");
+		_inspector.Commit(new InspectorModifyValueCommand(Bindings, value));
 	}
 	#endregion
 }

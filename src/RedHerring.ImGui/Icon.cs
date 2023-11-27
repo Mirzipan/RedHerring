@@ -67,7 +67,7 @@ public static class Icon
     public static void ReorderList()
     {
         PushFont(Font.FASolid);
-        Text(FontAwesome6.Bars);
+        Button(FontAwesome6.Bars);
         PopFont();
     }
 

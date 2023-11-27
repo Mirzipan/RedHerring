@@ -23,7 +23,7 @@ public sealed class InspectorButtonControl : InspectorControl
 	public InspectorButtonControl(Inspector inspector, string id, string label, object source, MethodInfo method) : base(inspector, id)
 	{
 		Label   = label;
-		LabelId = $"{Label}{Id}";
+		LabelId = $"{Label}##{Id}";
 		_bindings.Add(new Binding(source, method));
 	}
 

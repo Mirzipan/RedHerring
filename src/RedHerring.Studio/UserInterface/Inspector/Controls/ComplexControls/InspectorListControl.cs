@@ -3,6 +3,7 @@ using ImGuiNET;
 using Gui = ImGuiNET.ImGui;
 
 using System.Reflection;
+using RedHerring.Alexandria.Extensions;
 using RedHerring.ImGui;
 using RedHerring.Studio.UserInterface.Attributes;
 
@@ -22,19 +23,27 @@ public sealed class InspectorListControl : InspectorControl
 {
 	private class ControlDescriptor
 	{
-		public InspectorControl? Control = null;
-		public readonly string              DeleteButtonId;
+		public          InspectorControl? Control = null;
+		public readonly string            DeleteButtonId;
+		public readonly string            DragAndDropId;
 
-		public ControlDescriptor(string deleteButtonId)
+		public ControlDescriptor(string deleteButtonId, string dragAndDropId)
 		{
 			DeleteButtonId = deleteButtonId;
+			DragAndDropId  = dragAndDropId;
 		}
 	}
 
-	private          object?                   _sourceOwner = null;
-	private          bool                      _isReadOnly  = false;
-	private readonly string                    _buttonCreateElementId;
+	private bool _isMultipleValues = false;
+	private bool _isNullSource     = false;
+	private bool _isReadOnly       = false;
+	
+	private readonly string                  _buttonCreateElementId;
 	private readonly List<ControlDescriptor> _controls = new();
+
+	private object? _listValue = null;
+
+	private int _draggedIndex = -1; // to avoid using unsafe context
 
 	public InspectorListControl(Inspector inspector, string id) : base(inspector, id)
 	{
@@ -44,8 +53,7 @@ public sealed class InspectorListControl : InspectorControl
 	public override void InitFromSource(object? sourceOwner, object source, FieldInfo? sourceField = null, int sourceIndex = -1)
 	{
 		base.InitFromSource(sourceOwner, source, sourceField, sourceIndex);
-		_sourceOwner = sourceOwner;
-		_isReadOnly  = sourceField != null && (sourceField.IsInitOnly || sourceField.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null);
+		_isReadOnly = sourceField != null && (sourceField.IsInitOnly || sourceField.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null);
 	}
 
 	public override void AdaptToSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
@@ -56,15 +64,13 @@ public sealed class InspectorListControl : InspectorControl
 	
 	public override void Update()
 	{
-		InspectorBinding binding = Bindings.First();
-		
-		object? value = binding.GetValue();
-		if (value == null)
+		if (SourceFieldValuesChanged())
 		{
-			return;
+			Rebuild();
 		}
 
-		if (value is not IList list)
+		IList? list = Bindings.Count != 1 ? null : Bindings[0].GetValue() as IList;
+		if (list == null)
 		{
 			return;
 		}
@@ -76,34 +82,15 @@ public sealed class InspectorListControl : InspectorControl
 		{
 			createNewElement = NewElementButtonOnTheSameLine(list.IsFixedSize);
 
-			for(int i = 0; i < list.Count; ++i)
+			for(int i = 0; i < _controls.Count; ++i)
 			{
-				// add new control
-				if(i == _controls.Count)
-				{
-					_controls.Add(new ControlDescriptor($"{Id}.delete{i}"));
-				}
-				
-				Type? elementType = list[i] == null ? binding.GetElementType() : list[i]!.GetType();
-				Type? controlType = _controls[i].Control != null ? _controls[i].Control!.BoundValueType : null;  
-					
-				if (elementType != controlType || _controls[i].Control?.Bindings[0].Index != i)
-				{
-					InspectorControl? control = CreateControl(elementType, i);
-					control?.InitFromSource(_sourceOwner, binding.Source, binding.SourceFieldInfo, i);
-					control?.SetCustomLabel(i.ToString());
-					_controls[i].Control = control;
-				}
-
 				if(_controls[i].Control == null)
 				{
 					continue;
 				}
 
 				// draggable reorder symbol
-				Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
-				Icon.ReorderList();
-				Gui.PopStyleVar();
+				CreateDragAndDropControl(_controls[i].DragAndDropId, i);
 				Gui.SameLine();
 
 				// delete button
@@ -140,17 +127,87 @@ public sealed class InspectorListControl : InspectorControl
 		}
 	}
 
-	private bool NewElementButtonOnTheSameLine(bool isFixedSize)
+	private bool SourceFieldValuesChanged()
 	{
-		if (isFixedSize)
+		if (Bindings.Count == 0)
 		{
-			return false;
+			throw new InvalidDataException();
 		}
 
-		Gui.SameLine();
-		return ButtonCreateElement(_buttonCreateElementId);
+		if (Bindings.Count > 1)
+		{
+			return !_isMultipleValues;
+		}
+
+		InspectorBinding binding = Bindings[0];
+		
+		object? value = binding.GetValue();
+		if (value == null)
+		{
+			return !_isNullSource;
+		}
+
+		if (value is not IList list)
+		{
+			throw new InvalidDataException();
+		}
+
+		if (value != _listValue)
+		{
+			return true;
+		}
+
+		return _controls.Count != list.Count;
 	}
 
+	private void Rebuild()
+	{
+		Console.WriteLine($"Rebuild called on list {Id}");
+		_controls.Clear();
+		
+		if (Bindings.Count > 1)
+		{
+			_isMultipleValues = true;
+			return;
+		}
+		_isMultipleValues = false;
+
+		InspectorBinding binding = Bindings[0];
+		
+		object? value = binding.GetValue();
+		if (value == null)
+		{
+			_isNullSource = true;
+			return;
+		}
+		_isNullSource = false;
+
+		if (value is not IList list)
+		{
+			return; // error
+		}
+		_listValue = value;
+
+		for(int i = 0; i < list.Count; ++i)
+		{
+			if(i == _controls.Count)
+			{
+				_controls.Add(new ControlDescriptor($"{Id}.delete[{i}]", $"{Id}.dad[{i}]"));
+			}
+			
+			Type? elementType = list[i]              == null ? binding.GetElementType() : list[i]!.GetType();
+			Type? controlType = _controls[i].Control != null ? _controls[i].Control!.BoundValueType : null;  
+				
+			if (elementType != controlType || _controls[i].Control?.Bindings[0].Index != i)
+			{
+				InspectorControl? control = CreateControl(elementType, i);
+				control?.InitFromSource(binding.SourceOwner, binding.Source, binding.SourceFieldInfo, i);
+				control?.SetCustomLabel(i.ToString());
+				_controls[i].Control = control;
+			}
+		}
+	}
+	
 	private InspectorControl? CreateControl(Type? type, int index)
 	{
 		if (type == null)
@@ -164,7 +221,56 @@ public sealed class InspectorListControl : InspectorControl
 			return null;
 		}
 		
-		return (InspectorControl) Activator.CreateInstance(controlType, _inspector, $"{Id}_{index}")!;
+		return (InspectorControl) Activator.CreateInstance(controlType, _inspector, $"{Id}[{index}]")!;
+	}
+
+	#region Drag&drop
+	private void CreateDragAndDropControl(string dragAndDropId, int index)
+	{
+		Gui.PushID(dragAndDropId);
+		
+		Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
+		Icon.ReorderList();
+		Gui.PopStyleVar();
+
+		if (Gui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoDisableHover))
+		{
+			_draggedIndex = index;
+			Gui.SetDragDropPayload(Id, IntPtr.Zero, 0);
+			Gui.Text("Dragging list item");
+			Gui.EndDragDropSource();
+		}
+
+		if (Gui.BeginDragDropTarget())
+		{
+			Gui.AcceptDragDropPayload(Id);
+			if (Gui.IsMouseReleased(ImGuiMouseButton.Left))
+			{
+				if (_draggedIndex >= 0 && _draggedIndex < _controls.Count)
+				{
+					Console.WriteLine($"Swap {_draggedIndex} with {index}");
+					_inspector.Commit(new InspectorSwapListElementsCommand(Bindings, _draggedIndex, index));
+				}
+
+				_draggedIndex = -1;
+			}
+			Gui.EndDragDropTarget();
+		}
+
+		Gui.PopID();
+	}
+	#endregion
+	
+	#region Buttons
+	private bool NewElementButtonOnTheSameLine(bool isFixedSize)
+	{
+		if (isFixedSize)
+		{
+			return false;
+		}
+
+		Gui.SameLine();
+		return ButtonCreateElement(_buttonCreateElementId);
 	}
 
 	private bool ButtonCreateElement(string id)
@@ -182,4 +288,5 @@ public sealed class InspectorListControl : InspectorControl
 		Gui.PopID();
 		return result;
 	}
+	#endregion
 }

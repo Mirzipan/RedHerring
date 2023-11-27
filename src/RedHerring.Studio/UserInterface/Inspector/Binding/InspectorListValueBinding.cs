@@ -3,13 +3,16 @@ using System.Reflection;
 
 namespace RedHerring.Studio.UserInterface;
 
+// list item binding
 public class InspectorListValueBinding : InspectorValueBinding
 {
 	private readonly int _index;
 	public override  int Index => _index;
 	
-	public InspectorListValueBinding(object source, FieldInfo? sourceField, Action? onCommitValue, int index)
-		: base(source, sourceField, onCommitValue)
+	public override Type? BoundType => GetElementType() ?? base.BoundType;
+	
+	public InspectorListValueBinding(object? sourceOwner, object source, FieldInfo? sourceField, Action? onCommitValue, int index)
+		: base(sourceOwner, source, sourceField, onCommitValue)
 	{
 		if (index == -1)
 		{
@@ -21,13 +24,13 @@ public class InspectorListValueBinding : InspectorValueBinding
 
 	public override object? GetValue()
 	{
-		IList? list = _sourceField?.GetValue(_source) as IList;
+		IList? list = _sourceField?.GetValue(Source) as IList;
 		return list?[_index];
 	}
 
 	public override void SetValue(object? value)
 	{
-		if (_sourceField?.GetValue(_source) is IList list)
+		if (_sourceField?.GetValue(Source) is IList list)
 		{
 			list[_index] = value;
 			_onCommitValue?.Invoke();

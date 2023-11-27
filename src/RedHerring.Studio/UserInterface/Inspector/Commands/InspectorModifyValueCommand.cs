@@ -8,7 +8,7 @@ public sealed class InspectorModifyValueCommand : ACommand
 	private readonly List<InspectorBinding> _bindings;
 	private readonly object?[]              _previousValues;
 	
-	public InspectorModifyValueCommand(object? value, List<InspectorBinding> bindings)
+	public InspectorModifyValueCommand(List<InspectorBinding> bindings, object? value)
 	{
 		_value = value;
 		
