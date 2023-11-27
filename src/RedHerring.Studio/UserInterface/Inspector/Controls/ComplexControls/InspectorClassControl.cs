@@ -29,6 +29,7 @@ public sealed class InspectorClassControl : InspectorControl
 	private          List<InspectorControl> _controls         = new();
 	private          bool                   _isMultipleValues = false;
 	private          bool                   _isNullSource     = false;
+	private readonly string                 _instantiationButtonId;
 	private readonly string                 _instantiationPopupId;
 	private          List<object?>          _sourceFieldValues = new();
 
@@ -36,7 +37,8 @@ public sealed class InspectorClassControl : InspectorControl
 
 	public InspectorClassControl(Inspector inspector, string id) : base(inspector, id)
 	{
-		_instantiationPopupId = id + ".popup";
+		_instantiationButtonId = id + ".button";
+		_instantiationPopupId  = id + ".popup";
 	}
 
 	#region Build
@@ -271,7 +273,11 @@ public sealed class InspectorClassControl : InspectorControl
 			Gui.Text(Label);
 			Gui.SameLine();
 
-			if (Gui.SmallButton("+")) //TODO - symbol, just not like the + on list to avoid confusion
+			Gui.PushID(_instantiationButtonId);
+			bool instantiationButtonClicked = Gui.SmallButton("+"); //TODO - symbol, just not like the + on list to avoid confusion
+			Gui.PopID();
+			
+			if (instantiationButtonClicked) 
 			{
 				InstantiateValueOrOpenInstantiationPopup();
 			}
