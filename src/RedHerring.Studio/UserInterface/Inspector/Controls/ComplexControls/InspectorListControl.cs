@@ -243,20 +243,17 @@ public sealed class InspectorListControl : InspectorControl
 
 		if (Gui.BeginDragDropTarget())
 		{
-			ImGuiPayloadPtr dragPayload = Gui.AcceptDragDropPayload(Id);
-			//if (dragPayload.IsDataType(Id))
+			Gui.AcceptDragDropPayload(Id);
+			if (Gui.IsMouseReleased(ImGuiMouseButton.Left))
 			{
-				if (Gui.IsMouseReleased(ImGuiMouseButton.Left))
+				if (_draggedIndex >= 0 && _draggedIndex < _controls.Count)
 				{
-					if (_draggedIndex >= 0 && _draggedIndex < _controls.Count)
-					{
-						Console.WriteLine($"Swap {_draggedIndex} with {index}");
-					}
-
-					_draggedIndex = -1;
+					Console.WriteLine($"Swap {_draggedIndex} with {index}");
+					_inspector.Commit(new InspectorSwapListElementsCommand(Bindings, _draggedIndex, index));
 				}
-			}
 
+				_draggedIndex = -1;
+			}
 			Gui.EndDragDropTarget();
 		}
 

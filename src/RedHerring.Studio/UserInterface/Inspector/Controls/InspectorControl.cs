@@ -122,7 +122,7 @@ public abstract class InspectorControl
 		}
 
 		Console.WriteLine($"Submitted value {value} from control {Id}");
-		_inspector.Commit(new InspectorModifyValueCommand(value, Bindings));
+		_inspector.Commit(new InspectorModifyValueCommand(Bindings, value));
 	}
 	#endregion
 }
