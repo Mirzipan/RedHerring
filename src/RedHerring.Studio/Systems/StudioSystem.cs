@@ -248,7 +248,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	#region Settings
 	private async Task SaveSettingsAsync()
 	{
-		_studioModel.StudioSettings.StoreToolWindows(ATool.UniqueToolIdGeneratorState, _toolManager.ExportActiveTools());
+		_studioModel.StudioSettings.StoreToolWindows(Tool.UniqueToolIdGeneratorState, _toolManager.ExportActiveTools());
 		
 		_studioModel.StudioSettings.UiLayout = Gui.SaveIniSettingsToMemory();
 		await _studioModel.SaveStudioSettingsAsync();
@@ -258,7 +258,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	{
 		await _studioModel.LoadStudioSettingsAsync();
 
-		ATool.SetUniqueIdGenerator(_studioModel.StudioSettings.ToolUniqueIdGeneratorState);
+		Tool.SetUniqueIdGenerator(_studioModel.StudioSettings.ToolUniqueIdGeneratorState);
 		_toolManager.ImportActiveTools(_studioModel.StudioSettings.ActiveToolWindows);
 		
 		if (_studioModel.StudioSettings.UiLayout != null)

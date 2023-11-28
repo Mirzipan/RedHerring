@@ -6,11 +6,12 @@ using Gui = ImGuiNET.ImGui;
 namespace RedHerring.Studio.Tools;
 
 [Tool(ToolName)]
-public sealed class ToolInspector : ATool
+public sealed class ToolInspector : Tool
 {
 	public const       string    ToolName = "Inspector";
 	protected override string    Name => ToolName;
 	private readonly   Inspector _inspector;
+	private            bool      _subscribedToChange = false;
 
 	//private List<object> _tests = new(){new InspectorTest(), new InspectorTest2()}; // TODO debug
 	private List<object> _tests = new(){new InspectorTest()}; // TODO debug
@@ -18,13 +19,11 @@ public sealed class ToolInspector : ATool
 	public ToolInspector(StudioModel studioModel) : base(studioModel)
 	{
 		_inspector = new Inspector(studioModel.CommandHistory);
-		_inspector.Init(_tests);
 	}
 
 	public ToolInspector(StudioModel studioModel, int uniqueId) : base(studioModel, uniqueId)
 	{
 		_inspector = new Inspector(studioModel.CommandHistory);
-		_inspector.Init(_tests);
 	}
 	
 	public override void Update(out bool finished)
@@ -37,11 +36,44 @@ public sealed class ToolInspector : ATool
 		bool isOpen = true;
 		if (Gui.Begin(NameWithSalt, ref isOpen))
 		{
+			SubscribeToChange();
 			_inspector.Update();
 			Gui.End();
 		}
+		else
+		{
+			UnsubscribeFromChange();
+		}
 
 		return !isOpen;
+	}
+
+	private void SubscribeToChange()
+	{
+		if (_subscribedToChange)
+		{
+			return;
+		}
+
+		StudioModel.Selection.SelectionChanged += OnSelectionChanged;
+		_subscribedToChange                    =  true;
+		OnSelectionChanged();
+	}
+
+	private void UnsubscribeFromChange()
+	{
+		if (!_subscribedToChange)
+		{
+			return;
+		}
+		
+		StudioModel.Selection.SelectionChanged -= OnSelectionChanged;
+		_subscribedToChange                    =  false;
+	}
+
+	private void OnSelectionChanged()
+	{
+		_inspector.Init(StudioModel.Selection.GetAllSelectedTargets());
 	}
 }
 

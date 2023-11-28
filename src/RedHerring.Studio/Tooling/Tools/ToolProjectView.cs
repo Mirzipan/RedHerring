@@ -8,7 +8,7 @@ using Gui = ImGuiNET.ImGui;
 namespace RedHerring.Studio.Tools;
 
 [Tool(ToolName)]
-public sealed class ToolProjectView : ATool
+public sealed class ToolProjectView : Tool
 {
 	public const string ToolName = "Project view";
 	
@@ -57,7 +57,7 @@ public sealed class ToolProjectView : ATool
 
 		if (nodeExpanded)
 		{
-			foreach (AProjectNode child in node.Children)
+			foreach (ProjectNode child in node.Children)
 			{
 				if (child is ProjectFolderNode folder)
 				{
@@ -79,7 +79,7 @@ public sealed class ToolProjectView : ATool
 		UpdateNode(node, TreeLeafNodeFlags);
 	}
 	
-	private bool UpdateNode(AProjectNode node, ImGuiTreeNodeFlags flags)
+	private bool UpdateNode(ProjectNode node, ImGuiTreeNodeFlags flags)
 	{
 		string id = node.Meta.Guid!;
 
@@ -92,17 +92,17 @@ public sealed class ToolProjectView : ATool
 
 		if (Gui.IsItemClicked() && !Gui.IsItemToggledOpen())
 		{
-			HandleSelection(id);
+			HandleSelection(id, node);
 		}
 
 		return nodeExpanded;
 	}
 
-	private void HandleSelection(string id)
+	private void HandleSelection(string id, ProjectNode node)
 	{
 		if(Gui.GetIO().KeyCtrl)
 		{
-			StudioModel.Selection.Flip(id);
+			StudioModel.Selection.Flip(id, node);
 			return;
 		}
 
@@ -113,7 +113,7 @@ public sealed class ToolProjectView : ATool
 		}
 
 		StudioModel.Selection.DeselectAll();
-		StudioModel.Selection.Select(id);
+		StudioModel.Selection.Select(id, node);
 	}
 
 

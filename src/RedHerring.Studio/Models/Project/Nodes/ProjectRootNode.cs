@@ -16,7 +16,7 @@ public sealed class ProjectRootNode : ProjectFolderNode
 			       Hash = $"#{Name}"		// # is not valid base64 symbol, so this hash will be unique no matter what Name is
 		       };
 		
-		foreach (AProjectNode child in Children)
+		foreach (ProjectNode child in Children)
 		{
 			await child.InitMetaRecursive(migrationManager);
 		}

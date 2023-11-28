@@ -49,7 +49,7 @@ public sealed class ImporterThread
 		}
 	}
 
-	private void Import(AProjectNode node)
+	private void Import(ProjectNode node)
 	{
 		if (node is ProjectFolderNode)
 		{

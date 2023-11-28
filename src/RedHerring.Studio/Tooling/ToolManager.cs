@@ -7,7 +7,7 @@ namespace RedHerring.Studio.Tools;
 public sealed class ToolManager : IIndexAttributes
 {
 	private readonly Dictionary<string, Type> _toolsByName = new();
-	private readonly List<ATool>              _activeTools = new();
+	private readonly List<Tool>              _activeTools = new();
 
 	private StudioModel _studioModel;
 	
@@ -16,11 +16,11 @@ public sealed class ToolManager : IIndexAttributes
 		_studioModel    = studioModel;
 	}
 
-	public ATool? Activate(string toolName, int uniqueId = -1)
+	public Tool? Activate(string toolName, int uniqueId = -1)
 	{
-		ATool? tool = uniqueId == -1
-				? (ATool?) Activator.CreateInstance(_toolsByName[toolName], _studioModel)
-				: (ATool?) Activator.CreateInstance(_toolsByName[toolName], _studioModel, uniqueId);
+		Tool? tool = uniqueId == -1
+				? (Tool?) Activator.CreateInstance(_toolsByName[toolName], _studioModel)
+				: (Tool?) Activator.CreateInstance(_toolsByName[toolName], _studioModel, uniqueId);
 		if (tool == null)
 		{
 			return null;

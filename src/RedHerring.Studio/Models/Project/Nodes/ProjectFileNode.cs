@@ -3,7 +3,7 @@ using Migration;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
 
-public sealed class ProjectFileNode : AProjectNode
+public sealed class ProjectFileNode : ProjectNode
 {
 	private static readonly HashAlgorithm _hashAlgorithm = SHA1.Create();
 	
@@ -24,7 +24,7 @@ public sealed class ProjectFileNode : AProjectNode
 		await InitMeta(migrationManager, hash);
 	}
 
-	public override void TraverseRecursive(Action<AProjectNode> process, CancellationToken cancellationToken)
+	public override void TraverseRecursive(Action<ProjectNode> process, CancellationToken cancellationToken)
 	{
 		process(this);
 	}

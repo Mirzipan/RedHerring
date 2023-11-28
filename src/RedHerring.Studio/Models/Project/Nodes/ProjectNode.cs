@@ -2,7 +2,7 @@ using Migration;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
 
-public abstract class AProjectNode
+public abstract class ProjectNode
 {
 	public          string   Name { get; set; }
 	public readonly string   Path;
@@ -11,7 +11,7 @@ public abstract class AProjectNode
 	
 	public string Extension => System.IO.Path.GetExtension(Path).ToLower();	// cache if needed
 
-	protected AProjectNode(string name, string path, string relativePath)
+	protected ProjectNode(string name, string path, string relativePath)
 	{
 		Name         = name;
 		Path         = path;
@@ -46,5 +46,5 @@ public abstract class AProjectNode
 		Meta = meta;
 	}
 
-	public abstract void TraverseRecursive(Action<AProjectNode> process, CancellationToken cancellationToken);
+	public abstract void TraverseRecursive(Action<ProjectNode> process, CancellationToken cancellationToken);
 }

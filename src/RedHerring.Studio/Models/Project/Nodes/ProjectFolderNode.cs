@@ -3,9 +3,9 @@ using Migration;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
 
-public class ProjectFolderNode : AProjectNode
+public class ProjectFolderNode : ProjectNode
 {
-	public ObservableCollection<AProjectNode> Children { get; init; } = new();
+	public ObservableCollection<ProjectNode> Children { get; init; } = new();
 	
 	public ProjectFolderNode(string name, string path, string relativePath) : base(name, path, relativePath)
 	{
@@ -15,17 +15,17 @@ public class ProjectFolderNode : AProjectNode
 	{
 		await InitMeta(migrationManager, null);
 		
-		foreach (AProjectNode child in Children)
+		foreach (ProjectNode child in Children)
 		{
 			await child.InitMetaRecursive(migrationManager);
 		}
 	}
 
-	public override void TraverseRecursive(Action<AProjectNode> process, CancellationToken cancellationToken)
+	public override void TraverseRecursive(Action<ProjectNode> process, CancellationToken cancellationToken)
 	{
 		process(this);
 
-		foreach (AProjectNode child in Children)
+		foreach (ProjectNode child in Children)
 		{
 			if(cancellationToken.IsCancellationRequested)
 			{

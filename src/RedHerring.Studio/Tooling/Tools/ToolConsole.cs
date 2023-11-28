@@ -5,7 +5,7 @@ using Gui = ImGuiNET.ImGui;
 namespace RedHerring.Studio.Tools;
 
 [Tool(ToolName)]
-public sealed class ToolConsole : ATool
+public sealed class ToolConsole : Tool
 {
 	public const       string ToolName = "Console";
 	protected override string Name => ToolName;
