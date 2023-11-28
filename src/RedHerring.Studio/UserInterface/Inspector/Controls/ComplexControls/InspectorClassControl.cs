@@ -69,7 +69,7 @@ public sealed class InspectorClassControl : InspectorControl
 
 	private void CreateControlsFromSource(InspectorBinding binding)
 	{
-		object? sourceValue = Bindings[0].GetValue();
+		object? sourceValue = binding.GetValue();
 		_sourceFieldValues.Add(sourceValue);
 
 		Type? boundType = binding.BoundType;
@@ -134,7 +134,7 @@ public sealed class InspectorClassControl : InspectorControl
 	#region Adapt
 	private void AdaptControlsToSource(InspectorBinding binding)
 	{
-		object? sourceValue = Bindings[^1].GetValue();
+		object? sourceValue = binding.GetValue();
 		_sourceFieldValues.Add(sourceValue);
 
 		Type? boundType = binding.BoundType;
@@ -385,6 +385,7 @@ public sealed class InspectorClassControl : InspectorControl
 	private void InstantiateClass(Type type)
 	{
 		_inspector.Commit(new InspectorInstantiateClassCommand(Bindings, type));
+		_sourceFieldValues.Clear(); // force refresh
 	}
 
 	private Type[] ObtainAllAssignableTypes(Type baseType)

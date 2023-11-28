@@ -14,7 +14,7 @@ public class InspectorValueBinding : InspectorBinding
 	public override bool       IsReadOnly      => _sourceField == null || _sourceField.IsInitOnly || _sourceField.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null;
 	public override object?    SourceOwner     => _sourceOwner;
 	public override FieldInfo? SourceFieldInfo => _sourceField!;
-	public override Type?      BoundType       => _sourceField?.FieldType ?? Source.GetType();
+	public override Type?      BoundType       => GetValue()?.GetType() ?? _sourceField?.FieldType ?? Source.GetType();
 	
 	public InspectorValueBinding(object? sourceOwner, object source, FieldInfo? sourceField, Action? onCommitValue)
 		: base(source)
