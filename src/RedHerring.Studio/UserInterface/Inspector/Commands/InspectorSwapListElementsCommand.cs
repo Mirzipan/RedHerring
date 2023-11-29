@@ -3,7 +3,7 @@ using RedHerring.Studio.Commands;
 
 namespace RedHerring.Studio.UserInterface;
 
-public class InspectorSwapListElementsCommand : ACommand
+public class InspectorSwapListElementsCommand : Command
 {
 	private readonly List<InspectorBinding> _bindings;
 	private readonly int _indexA;

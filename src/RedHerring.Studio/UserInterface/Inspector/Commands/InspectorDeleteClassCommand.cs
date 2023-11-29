@@ -2,19 +2,16 @@
 
 namespace RedHerring.Studio.UserInterface;
 
-// TODO - refactor, too many similar parts
-public sealed class InspectorInstantiateClassCommand : Command
+// TODO - refactor, copy pasted
+public class InspectorDeleteClassCommand : Command
 {
 	private readonly List<InspectorBinding> _bindings;
-	private readonly Type                   _type;
 	private readonly object?[]              _previousValues;
 	
-	public InspectorInstantiateClassCommand(List<InspectorBinding> bindings, Type type)
+	public InspectorDeleteClassCommand(List<InspectorBinding> bindings)
 	{
 		_bindings = new List<InspectorBinding>();
 		_bindings.AddRange(bindings);
-
-		_type           = type;
 
 		_previousValues = new object[_bindings.Count];
 		for(int i=0;i <_bindings.Count; ++i)
@@ -38,8 +35,7 @@ public sealed class InspectorInstantiateClassCommand : Command
 				continue;
 			}
 
-			object? instance = Activator.CreateInstance(_type);
-			binding.SetValue(instance);
+			binding.SetValue(null);
 		}
 	}
 

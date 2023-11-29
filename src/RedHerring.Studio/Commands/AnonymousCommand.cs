@@ -1,6 +1,6 @@
 ﻿namespace RedHerring.Studio.Commands;
 
-public sealed class AnonymousCommand : ACommand
+public sealed class AnonymousCommand : Command
 {
     private readonly Action _do;
     private readonly Action _undo;

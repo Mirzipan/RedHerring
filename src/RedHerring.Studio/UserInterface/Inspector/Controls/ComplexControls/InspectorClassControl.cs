@@ -26,9 +26,10 @@ namespace RedHerring.Studio.UserInterface;
 */
 public sealed class InspectorClassControl : InspectorControl
 {
-	private          List<InspectorControl> _controls         = new();
-	private          bool                   _isMultipleValues = false;
-	private          bool                   _isNullSource     = false;
+	private          List<InspectorControl> _controls             = new();
+	private          bool                   _isMultipleValues     = false;
+	private          bool                   _isNullSource         = false;
+	private          bool                   _allowDeleteReference = false;
 	private readonly string                 _instantiationButtonId;
 	private readonly string                 _instantiationPopupId;
 	private          List<object?>          _sourceFieldValues = new();
@@ -79,8 +80,8 @@ public sealed class InspectorClassControl : InspectorControl
 			return;
 		}
 
-		_isNullSource = false;
-
+		_isNullSource         = false;
+		_allowDeleteReference = binding.AllowDeleteReference;
 		
 		CreateControlsFromSourceFields(boundType, binding.Source, sourceValue);
 		CreateControlsFromSourceMethods(boundType, binding.Source, sourceValue);
@@ -148,6 +149,8 @@ public sealed class InspectorClassControl : InspectorControl
 			_isMultipleValues = true;
 			return;
 		}
+
+		_allowDeleteReference &= binding.AllowDeleteReference;
 
 		bool[] commonControls = new bool[_controls.Count];
 
@@ -295,7 +298,17 @@ public sealed class InspectorClassControl : InspectorControl
 			return;
 		}
 
-		if(Gui.TreeNode(LabelId))
+		bool treeNodeOpen = Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowItemOverlap);
+		if (_allowDeleteReference)
+		{
+			Gui.SameLine();
+			if (Gui.SmallButton("x"))
+			{
+				DeleteValue();
+			}
+		}
+
+		if(treeNodeOpen)
 		{
 			foreach (InspectorControl control in _controls)
 			{
@@ -329,7 +342,7 @@ public sealed class InspectorClassControl : InspectorControl
 		       || field.GetCustomAttribute<ShowInInspectorAttribute>() != null;
 	}
 
-	#region Value instantiation
+	#region Value instantiation / delete
 	private void InstantiateValueOrOpenInstantiationPopup()
 	{
 		Type? boundType = Bindings[0].BoundType;
@@ -396,6 +409,12 @@ public sealed class InspectorClassControl : InspectorControl
 			).ToArray();
 
 		return availableTypes;
+	}
+
+	private void DeleteValue()
+	{
+		_inspector.Commit(new InspectorDeleteClassCommand(Bindings));
+		_sourceFieldValues.Clear(); // force refresh
 	}
 	#endregion
 }

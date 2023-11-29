@@ -1,15 +1,16 @@
 using Migration;
 using RedHerring.Studio.Models.Project.Importers;
+using RedHerring.Studio.UserInterface.Attributes;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
 
 [Serializable, SerializedClassId("metadata-class-id")]
 public class Metadata
 {
-	public string? Guid    = null;
-	public string? Hash    = null;
+	[ReadOnlyInInspector] public string? Guid    = null;
+	[HideInInspector] public string? Hash    = null;
 	
-	public ImporterSettings? ImporterSettings = null;
+	[AllowDeleteReference] public ImporterSettings? ImporterSettings = null;
 
 	public void UpdateGuid()
 	{

@@ -2,7 +2,7 @@
 
 namespace RedHerring.Studio.UserInterface;
 
-public sealed class InspectorModifyValueCommand : ACommand
+public sealed class InspectorModifyValueCommand : Command
 {
 	private readonly object?                _value;
 	private readonly List<InspectorBinding> _bindings;

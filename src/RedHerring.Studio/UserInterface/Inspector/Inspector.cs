@@ -41,7 +41,7 @@ public sealed class Inspector
 		_contentControl?.Update();
 	}
 
-	public void Commit(ACommand command)
+	public void Commit(Command command)
 	{
 		_commandHistory.Commit(command);
 	}

@@ -7,11 +7,12 @@ public class InspectorBinding
 {
 	public readonly object Source;
 
-	public virtual bool       IsUnbound       => false;
-	public virtual bool       IsReadOnly      => false;
-	public virtual object?    SourceOwner     => null;
-	public virtual FieldInfo? SourceFieldInfo => null;
-	public virtual int        Index           => -1;
+	public virtual bool       IsUnbound            => false;
+	public virtual bool       IsReadOnly           => false;
+	public virtual bool       AllowDeleteReference => false;
+	public virtual object?    SourceOwner          => null;
+	public virtual FieldInfo? SourceFieldInfo      => null;
+	public virtual int        Index                => -1;
 
 	public virtual Type? BoundType => Source.GetType();
 

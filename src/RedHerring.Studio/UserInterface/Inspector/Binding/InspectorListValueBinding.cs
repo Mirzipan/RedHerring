@@ -6,8 +6,9 @@ namespace RedHerring.Studio.UserInterface;
 // list item binding
 public class InspectorListValueBinding : InspectorValueBinding
 {
-	private readonly int _index;
-	public override  int Index => _index;
+	private readonly int  _index;
+	public override  int  Index                => _index;
+	public override  bool AllowDeleteReference => true;
 	
 	public override Type? BoundType => GetElementType() ?? base.BoundType;
 	

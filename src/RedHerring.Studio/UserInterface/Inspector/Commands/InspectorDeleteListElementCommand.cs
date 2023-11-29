@@ -3,7 +3,7 @@ using RedHerring.Studio.Commands;
 
 namespace RedHerring.Studio.UserInterface;
 
-public sealed class InspectorDeleteListElementCommand : ACommand
+public sealed class InspectorDeleteListElementCommand : Command
 {
 	private readonly List<InspectorBinding> _bindings;
 	private readonly int                    _index;

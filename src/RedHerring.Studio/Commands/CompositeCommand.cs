@@ -1,15 +1,15 @@
 ﻿namespace RedHerring.Studio.Commands;
 
-public sealed class CompositeCommand : ACommand
+public sealed class CompositeCommand : Command
 {
-    private readonly ACommand[] _subCommands;
+    private readonly Command[] _subCommands;
     
-    public CompositeCommand(params ACommand[] commands)
+    public CompositeCommand(params Command[] commands)
     {
         _subCommands = commands;
     }
 
-    public CompositeCommand(IEnumerable<ACommand> commands)
+    public CompositeCommand(IEnumerable<Command> commands)
     {
         _subCommands = commands.ToArray();
     }

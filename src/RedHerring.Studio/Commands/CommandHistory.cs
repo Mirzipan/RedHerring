@@ -4,23 +4,23 @@ public sealed class CommandHistory
 {
     public int Capacity { get; set; } = byte.MaxValue;
 
-    private List<ACommand> _stack = new();
+    private List<Command> _stack = new();
     private int _executionIndex;
     
-    private LinkedList<ACommand?> _commands = new();
-    private LinkedListNode<ACommand?>? _current;
-    private LinkedListNode<ACommand?> _root;
+    private LinkedList<Command?> _commands = new();
+    private LinkedListNode<Command?>? _current;
+    private LinkedListNode<Command?> _root;
 
     public CommandHistory()
     {
         _executionIndex = -1;
         
-        _root = new LinkedListNode<ACommand?>(null);
+        _root = new LinkedListNode<Command?>(null);
         _commands.AddFirst(_root);
         _current = _root;
     }
 
-    public void Commit(ACommand command)
+    public void Commit(Command command)
     {
         command.Do();
 
