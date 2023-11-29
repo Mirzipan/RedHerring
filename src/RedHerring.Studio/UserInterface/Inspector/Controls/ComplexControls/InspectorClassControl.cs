@@ -32,6 +32,7 @@ public sealed class InspectorClassControl : InspectorControl
 	private          bool                   _allowDeleteReference = false;
 	private readonly string                 _instantiationButtonId;
 	private readonly string                 _instantiationPopupId;
+	private readonly string                 _deleteButtonId;
 	private          List<object?>          _sourceFieldValues = new();
 
 	private Type[]? _assignableTypes = null;
@@ -40,6 +41,7 @@ public sealed class InspectorClassControl : InspectorControl
 	{
 		_instantiationButtonId = id + ".button";
 		_instantiationPopupId  = id + ".popup";
+		_deleteButtonId        = id + ".delete";
 	}
 
 	#region Build
@@ -301,11 +303,13 @@ public sealed class InspectorClassControl : InspectorControl
 		bool treeNodeOpen = Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowItemOverlap);
 		if (_allowDeleteReference)
 		{
+			Gui.PushID(_deleteButtonId);
 			Gui.SameLine();
-			if (Gui.SmallButton("x"))
+			if (Gui.SmallButton("delete"))
 			{
 				DeleteValue();
 			}
+			Gui.PopID();
 		}
 
 		if(treeNodeOpen)
