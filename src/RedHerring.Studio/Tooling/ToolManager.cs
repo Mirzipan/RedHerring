@@ -30,6 +30,12 @@ public sealed class ToolManager : IIndexAttributes
 		return tool;
 	}
 
+	public Tool? Get(string toolName) // TODO - generic if used more than once
+	{
+		Type toolType = _toolsByName[toolName];
+		return _activeTools.FirstOrDefault(tool => tool.GetType() == toolType);
+	}
+
 	public void Index(Attribute attribute, Type type)
 	{
 		_toolsByName.Add(((ToolAttribute)attribute).Name, type);

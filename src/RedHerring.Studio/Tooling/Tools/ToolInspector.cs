@@ -75,6 +75,11 @@ public sealed class ToolInspector : Tool
 	{
 		_inspector.Init(StudioModel.Selection.GetAllSelectedTargets());
 	}
+
+	public void Test()
+	{
+		_inspector.Init(_tests);
+	}
 }
 
 

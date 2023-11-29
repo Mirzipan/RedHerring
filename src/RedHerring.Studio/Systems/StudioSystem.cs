@@ -164,6 +164,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_menu.AddItem("Debug/Task processor test", OnDebugTaskProcessorTestClicked);
 		_menu.AddItem("Debug/Serialization test",  OnDebugSerializationTestClicked);
 		_menu.AddItem("Debug/Importer test",       OnDebugImporterTestClicked);
+		_menu.AddItem("Debug/Inspector test",      OnDebugInspectorTestClicked);
 	}
 
 	private async void OnOpenProjectClicked()
@@ -224,6 +225,11 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	private void OnDebugImporterTestClicked()
 	{
 		ImporterTests.Test();
+	}
+
+	private void OnDebugInspectorTestClicked()
+	{
+		(_toolManager.Get(ToolInspector.ToolName) as ToolInspector)?.Test();
 	}
 	#endregion
     
