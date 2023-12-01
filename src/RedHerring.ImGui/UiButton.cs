@@ -7,28 +7,12 @@ public static class IconButton
 {
     public static bool Regular(string icon)
     {
-        PushFont(Font.FASolid);
-        if (Button(icon))
-        {
-            PopFont();
-            return true;
-        }
-        
-        PopFont();
-        return false;
+        return Button(icon);
     }
     
     public static bool Small(string icon)
     {
-        PushFont(Font.FASolid);
-        if (SmallButton(icon))
-        {
-            PopFont();
-            return true;
-        }
-        
-        PopFont();
-        return false;
+        return SmallButton(icon);
     }
     
     public static bool Add(ButtonSize size) => SizedButton(size)(FontAwesome6.Plus);
@@ -42,6 +26,5 @@ public static class IconButton
             ButtonSize.Small => Small,
             _ => Regular,
         };
-
     }
 }

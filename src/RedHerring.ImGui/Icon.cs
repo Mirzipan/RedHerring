@@ -20,25 +20,26 @@ public static class Icon
 
     public static void Folder(bool isEmpty)
     {
-        PushFont(isEmpty ? Font.FARegular : Font.FASolid);
         SetNextItemWidth(30);
-        Text(FontAwesome6.Folder);
-        PopFont();
+        Text(FolderIconText(isEmpty));
         
         SameLine();
+    }
+    
+    public static string FolderIconText(bool isEmpty)
+    {
+        return isEmpty ? FontAwesome6.FolderClosed : FontAwesome6.Folder;
     }
 
     public static void File(string name)
     {
-        PushFont(Font.FASolid);
         SetNextItemWidth(30);
-        Text(IconByExtension(name));
-        PopFont();
+        Text(FileIconText(name));
         
         SameLine();
     }
 
-    private static string IconByExtension(string name)
+    public static string FileIconText(string name)
     {
         string extension = Path.GetExtension(name).ToLowerInvariant();
         if (ImageFiles.Contains(extension))
@@ -66,9 +67,7 @@ public static class Icon
 
     public static void ReorderList()
     {
-        PushFont(Font.FASolid);
         Button(FontAwesome6.Bars);
-        PopFont();
     }
 
     #endregion List

@@ -4,7 +4,7 @@ namespace RedHerring.Studio.Models.Project.FileSystem;
 
 public abstract class ProjectNode
 {
-	public          string   Name { get; set; }
+	public          string   Name { get; }
 	public readonly string   Path;
 	public readonly string   RelativePath; // relative path inside Assets directory
 	public          Metadata Meta = null!;

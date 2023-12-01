@@ -17,6 +17,8 @@ public sealed class ToolProjectView : Tool
 	private const ImGuiTreeNodeFlags TreeLeafNodeFlags     = ImGuiTreeNodeFlags.Leaf        | ImGuiTreeNodeFlags.NoTreePushOnOpen  | TreeCommonFlags;
 	
 	protected override string Name => ToolName;
+
+	private Dictionary<ProjectNode, string> _nodeLabels = new();
     
 	public ToolProjectView(StudioModel studioModel) : base(studioModel)
 	{
@@ -36,10 +38,14 @@ public sealed class ToolProjectView : Tool
 		bool isOpen = true;
 		if (Gui.Begin(NameWithSalt, ref isOpen))
 		{
-			//Tree();
 			UpdateFolder(StudioModel.Project.AssetsFolder);
-			
 			Gui.End();
+		}
+
+		if (!isOpen)
+		{
+			// called in the frame when the window is closed
+			_nodeLabels.Clear();
 		}
 
 		return !isOpen;
@@ -52,7 +58,6 @@ public sealed class ToolProjectView : Tool
 			return;
 		}
 
-		Icon.Folder(node.Children.Count == 0);
 		bool nodeExpanded = UpdateNode(node, TreeInternalNodeFlags);
 
 		if (nodeExpanded)
@@ -75,7 +80,6 @@ public sealed class ToolProjectView : Tool
     
 	private void UpdateFile(ProjectFileNode node)
 	{
-		Icon.File(node.Path);
 		UpdateNode(node, TreeLeafNodeFlags);
 	}
 	
@@ -87,8 +91,22 @@ public sealed class ToolProjectView : Tool
 		{
 			flags |= ImGuiTreeNodeFlags.Selected;
 		}
+		
+		if(!_nodeLabels.TryGetValue(node, out string? label))
+		{
+			if (node is ProjectFolderNode folder)
+			{
+				label = $"{Icon.FolderIconText(folder.Children.Count == 0)} {node.Name}";
+			}
+			else
+			{
+				label = $"{Icon.FileIconText(node.Path)} {node.Name}";
+			}
 
-		bool nodeExpanded = Gui.TreeNodeEx(id, flags, node.Name);
+			_nodeLabels.Add(node, label);
+		}
+		
+		bool nodeExpanded = Gui.TreeNodeEx(id, flags, label);
 
 		if (Gui.IsItemClicked() && !Gui.IsItemToggledOpen())
 		{
