@@ -1,4 +1,5 @@
-﻿using RedHerring.Studio.Models;
+﻿using IconFonts;
+using RedHerring.Studio.Models;
 using RedHerring.Studio.Models.ViewModels.Console;
 using Gui = ImGuiNET.ImGui;
 
@@ -7,7 +8,7 @@ namespace RedHerring.Studio.Tools;
 [Tool(ToolName)]
 public sealed class ToolConsole : Tool
 {
-	public const       string ToolName = "Console";
+	public const       string ToolName = FontAwesome6.Terminal + " Console";
 	protected override string Name => ToolName;
 
 	public ToolConsole(StudioModel studioModel) : base(studioModel)

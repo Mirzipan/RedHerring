@@ -10,7 +10,7 @@ namespace RedHerring.Studio.Tools;
 [Tool(ToolName)]
 public sealed class ToolProjectView : Tool
 {
-	public const string ToolName = "Project view";
+	public const string ToolName = FontAwesome6.FolderTree + " Project view";
 	
 	private const ImGuiTreeNodeFlags TreeCommonFlags       = ImGuiTreeNodeFlags.SpanAvailWidth;
 	private const ImGuiTreeNodeFlags TreeInternalNodeFlags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick | TreeCommonFlags;

@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿using IconFonts;
+using ImGuiNET;
 using NativeFileDialogSharp;
 using RedHerring.Alexandria;
 using RedHerring.Core;
@@ -156,9 +157,10 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_menu.AddItem("Edit/Project settings..", OnEditProjectSettingsClicked);
 		_menu.AddItem("Edit/Studio settings..",  OnEditStudioSettingsClicked);
 
-		_menu.AddItem("View/Project",   OnViewProjectClicked);
-		_menu.AddItem("View/Console",   OnViewConsoleClicked);
-		_menu.AddItem("View/Inspector", OnViewInspectorClicked);
+		// TODO - tools should be generated from tool manager
+		_menu.AddItem($"View/{FontAwesome6.FolderTree} Project",   OnViewProjectClicked);
+		_menu.AddItem($"View/{FontAwesome6.Terminal} Console",   OnViewConsoleClicked);
+		_menu.AddItem($"View/{FontAwesome6.CircleInfo} Inspector", OnViewInspectorClicked);
 
 		_menu.AddItem("Debug/Modal window",        () => Gui.OpenPopup("MessageBox"));
 		_menu.AddItem("Debug/Task processor test", OnDebugTaskProcessorTestClicked);

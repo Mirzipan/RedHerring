@@ -1,4 +1,5 @@
-﻿using RedHerring.Studio.Models;
+﻿using IconFonts;
+using RedHerring.Studio.Models;
 using RedHerring.Studio.UserInterface;
 using RedHerring.Studio.UserInterface.Attributes;
 using Gui = ImGuiNET.ImGui;
@@ -8,7 +9,7 @@ namespace RedHerring.Studio.Tools;
 [Tool(ToolName)]
 public sealed class ToolInspector : Tool
 {
-	public const       string    ToolName = "Inspector";
+	public const       string    ToolName = FontAwesome6.CircleInfo + " Inspector";
 	protected override string    Name => ToolName;
 	private readonly   Inspector _inspector;
 	private            bool      _subscribedToChange = false;

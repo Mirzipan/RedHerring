@@ -71,7 +71,10 @@ public sealed class ToolManager : IIndexAttributes
 
 		foreach (ToolId id in toolIds)
 		{
-			Activate(id.Name, id.UniqueId);
+			if (_toolsByName.ContainsKey(id.Name))
+			{
+				Activate(id.Name, id.UniqueId);
+			}
 		}
 	}
 	#endregion
