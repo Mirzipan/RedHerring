@@ -224,7 +224,7 @@ public sealed partial class StudioCamera : EngineSystem, Drawable
 
     private void CalculateMatrices()
     {
-        var size = Context.View.Size;
+        var size = Context.Window.Size;
         float aspectRatio = 16f / 9;
         if (size.Y != 0)
         {

@@ -16,7 +16,7 @@ public sealed class GraphicsSystem : EngineSystem
     protected override ValueTask<int> Load()
     {
         _renderer.Init();
-        _renderer.Resize(Context.View.Size);
+        _renderer.Resize(Context.Window.Size);
         return ValueTask.FromResult(0);
     }
 

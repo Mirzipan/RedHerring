@@ -69,7 +69,7 @@ internal class Program
         var context = new EngineContext
         {
             Name = "Game Engine",
-            View = _window!,
+            Window = _window!,
         }.WithAssemblies(AppDomain.CurrentDomain.GetAssemblies()).WithInstaller(render).WithInstaller(engine);
         
         _engine.Run(context);

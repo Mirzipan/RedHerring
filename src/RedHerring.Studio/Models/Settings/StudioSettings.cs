@@ -7,14 +7,9 @@ namespace RedHerring.Studio.Models;
 [Serializable, SerializedClassId("studio-settings-class-id")]
 public sealed class StudioSettings
 {
-	public const string DefaultTheme = "Crimson Rivers";
-	
-	[NonSerialized] public static string? HomeDirectory = (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
-		? (Environment.GetEnvironmentVariable("XDG_CONFIG_HOME") ?? "~/Library/Application Support")
-		: Environment.ExpandEnvironmentVariables("%APPDATA%");
-	
-	public string SettingsPath => Path.Join(HomeDirectory, "RedHerring", "options.json");
-	
+	public const string DefaultTheme     = "Crimson Rivers";
+	public const string SettingsFileName = "studio_settings.json";
+
 	public int WorkerThreadsCount = 4;
 
 	[ValueDropdown(nameof(_themes)), OnCommitValue(nameof(ApplyTheme))] public string Theme = DefaultTheme;
@@ -26,9 +21,9 @@ public sealed class StudioSettings
 		};
 	
 	#region Data storage
-	[HideInInspector] public string?      UiLayout;
-	[HideInInspector] public int          ToolUniqueIdGeneratorState;
-	[HideInInspector] public List<ToolId> ActiveToolWindows = new();
+	[HideInInspector] public string?       UiLayout;
+	[HideInInspector] public int           ToolUniqueIdGeneratorState;
+	[HideInInspector] public List<ToolId>  ActiveToolWindows = new();
 	#endregion
 
 	public void StoreToolWindows(int uniqueIdGeneratorState, List<ToolId> openedToolWindows)

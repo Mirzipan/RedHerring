@@ -7,6 +7,7 @@ public class StudioEngineInstaller : BindingsInstaller
 {
 	public void InstallBindings(ContainerDescription description)
 	{
+		description.AddCoreSystems();
 		description.AddGraphics();
 		description.AddInput().AddImGui();
 		description.AddDefinitions();

@@ -21,13 +21,14 @@ namespace RedHerring.Studio.Systems;
 
 public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 {
+	[Infuse] private PathsSystem      _paths            = null!;
 	[Infuse] private InputSystem      _inputSystem      = null!;
 	[Infuse] private InputReceiver    _inputReceiver    = null!;
 	[Infuse] private GraphicsSystem   _graphicsSystem   = null!;
 	[Infuse] private MetadataDatabase _metadataDatabase = null!;
 	[Infuse] private ToolManager      _toolManager;
 	[Infuse] private ImporterRegistry _importerRegistry = null!;
-	[Infuse] private StudioCamera _camera = null!;
+	[Infuse] private StudioCamera     _camera           = null!;
 
 	public bool IsEnabled   => true;
 	public int  UpdateOrder => int.MaxValue;
@@ -48,7 +49,6 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	#endregion
     
 	#region Lifecycle
-
 	protected override void Init()
 	{
 		_inputReceiver.Name             = "studio";
@@ -69,7 +69,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_importerThread = new ImporterThread(_studioModel, _importerRegistry);
 
 		// load settings and restore state
-		await LoadSettingsAsync();
+		LoadSettings();
 		
 		// debug
 		_projectSettings = new SettingsDialog("Project settings", _studioModel.CommandHistory, _studioModel.Project.ProjectSettings);
@@ -77,12 +77,13 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 
 		// start thread
 		_importerThread.Start();
+		
 		return 0;
 	}
 
 	protected override async ValueTask<int> Unload()
 	{
-		await SaveSettingsAsync();
+		SaveSettings();
 		
 		_importerThread.Cancel();
 		_studioModel.Cancel(); // TODO - should we wait for cancellation of all threads?
@@ -254,17 +255,17 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	#endregion Input
 	
 	#region Settings
-	private async Task SaveSettingsAsync()
+	private void SaveSettings()
 	{
 		_studioModel.StudioSettings.StoreToolWindows(Tool.UniqueToolIdGeneratorState, _toolManager.ExportActiveTools());
 		
 		_studioModel.StudioSettings.UiLayout = Gui.SaveIniSettingsToMemory();
-		await _studioModel.SaveStudioSettingsAsync();
+		_studioModel.SaveStudioSettings(_paths.ApplicationDataPath);
 	}
 
-	private async Task LoadSettingsAsync()
+	private void LoadSettings()
 	{
-		await _studioModel.LoadStudioSettingsAsync();
+		_studioModel.LoadStudioSettings(_paths.ApplicationDataPath);
 
 		Tool.SetUniqueIdGenerator(_studioModel.StudioSettings.ToolUniqueIdGeneratorState);
 		_toolManager.ImportActiveTools(_studioModel.StudioSettings.ActiveToolWindows);

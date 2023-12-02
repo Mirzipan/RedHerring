@@ -28,7 +28,7 @@ public sealed class EngineContext : NamedDisposer
 
     public Engine? Engine => _engine;
     public InjectionContainer Container => _container;
-    public IView View { get; set; } = null!;
+    public IWindow Window { get; set; } = null!;
 
     #region Lifecycle
 
@@ -159,7 +159,7 @@ public sealed class EngineContext : NamedDisposer
         description.AddInstance(this);
         description.AddInstance(_engine!);
         description.AddMetadata(_indexedAssemblies);
-        description.AddInstance(View, typeof(IView));
+        description.AddInstance(Window, typeof(IView));
 
         foreach (var installer in _installers)
         {

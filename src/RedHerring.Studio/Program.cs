@@ -67,8 +67,8 @@ internal class Program
         
         var context = new EngineContext
         {
-            Name = "Studio Engine",
-            View = _window!,
+            Name = "RedHerring Studio",
+            Window = _window!,
         }.WithAssemblies(AppDomain.CurrentDomain.GetAssemblies()).WithInstaller(render).WithInstaller(studio);
         _engine.Run(context);
 

@@ -8,7 +8,7 @@ public class EngineInstaller : BindingsInstaller
 {
     public void InstallBindings(ContainerDescription description)
     {
-        description.AddGraphics().AddInput().AddSystem(new ImGuiSystem());
+        description.AddCoreSystems().AddGraphics().AddInput().AddSystem(new ImGuiSystem());
         description.AddSystem<Configuration>();
     }
 }
