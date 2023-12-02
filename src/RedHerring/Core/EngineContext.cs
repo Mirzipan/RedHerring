@@ -28,6 +28,7 @@ public sealed class EngineContext : NamedDisposer
 
     public Engine? Engine => _engine;
     public InjectionContainer Container => _container;
+    public Platform Platform { get; set; } = null!;
     public IWindow Window { get; set; } = null!;
 
     #region Lifecycle

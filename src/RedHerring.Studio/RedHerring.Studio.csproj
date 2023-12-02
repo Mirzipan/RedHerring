@@ -13,6 +13,7 @@
       <ProjectReference Include="..\RedHerring.Deduction\RedHerring.Deduction.csproj" />
       <ProjectReference Include="..\RedHerring.ImGui\RedHerring.ImGui.csproj" />
       <ProjectReference Include="..\RedHerring.Motive\RedHerring.Motive.csproj" />
+      <ProjectReference Include="..\RedHerring.Platforms\RedHerring.Platforms.csproj" />
       <ProjectReference Include="..\RedHerring.Serialization\RedHerring.Serialization.csproj" />
       <ProjectReference Include="..\RedHerring\RedHerring.csproj" />
     </ItemGroup>

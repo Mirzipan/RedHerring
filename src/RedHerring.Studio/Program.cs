@@ -1,5 +1,6 @@
 ﻿using RedHerring.Core;
 using RedHerring.Game;
+using RedHerring.Platforms;
 using RedHerring.Render;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
@@ -17,8 +18,12 @@ internal class Program
 
     private static GraphicsBackend _graphicsBackend;
 
+    private static Platform _platform = null!;
+
     private static void Main(string[] args)
     {
+        _platform = DesktopPlatform.Create("RedHerring Studio");
+        
         Init();
         
         var opts = new WindowOptions
@@ -68,6 +73,7 @@ internal class Program
         var context = new EngineContext
         {
             Name = "RedHerring Studio",
+            Platform = _platform,
             Window = _window!,
         }.WithAssemblies(AppDomain.CurrentDomain.GetAssemblies()).WithInstaller(render).WithInstaller(studio);
         _engine.Run(context);
