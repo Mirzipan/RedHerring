@@ -1,4 +1,5 @@
-﻿using RedHerring.Alexandria;
+﻿using System.Runtime.CompilerServices;
+using RedHerring.Alexandria;
 using RedHerring.Core;
 using RedHerring.Core.Systems;
 using RedHerring.Deduction;
@@ -16,15 +17,8 @@ public static class InjectionExtensions
     {
         var types = new List<Type> { system.GetType(), typeof(EngineSystem) };
 
-        if (system is Updatable)
-        {
-            types.Add(typeof(Updatable));
-        }
-
-        if (system is Drawable)
-        {
-            types.Add(typeof(Drawable));
-        }
+        AddTypeIfAssignableTo<Updatable>(types, system);
+        AddTypeIfAssignableTo<Drawable>(types, system);
         
         @this.AddInstance(system, types.ToArray());
 
@@ -36,15 +30,8 @@ public static class InjectionExtensions
         var type = typeof(T);
         var types = new List<Type> { type, typeof(EngineSystem) };
 
-        if (type.IsAssignableTo(typeof(Updatable)))
-        {
-            types.Add(typeof(Updatable));
-        }
-
-        if (type.IsAssignableTo(typeof(Drawable)))
-        {
-            types.Add(typeof(Drawable));
-        }
+        AddTypeIfAssignableTo<Updatable>(types, type);
+        AddTypeIfAssignableTo<Drawable>(types, type);
         
         @this.AddSingleton(type, types.ToArray());
 
@@ -54,16 +41,9 @@ public static class InjectionExtensions
     public static ContainerDescription AddSessionComponent(this ContainerDescription @this, SessionComponent component)
     {
         var types = new List<Type> { component.GetType(), typeof(SessionComponent) };
-
-        if (component is Updatable)
-        {
-            types.Add(typeof(Updatable));
-        }
-
-        if (component is Drawable)
-        {
-            types.Add(typeof(Drawable));
-        }
+        
+        AddTypeIfAssignableTo<Updatable>(types, component);
+        AddTypeIfAssignableTo<Drawable>(types, component);
         
         @this.AddInstance(component, types.ToArray());
 
@@ -75,15 +55,8 @@ public static class InjectionExtensions
         var type = typeof(T);
         var types = new List<Type> { type, typeof(SessionComponent) };
 
-        if (type.IsAssignableTo(typeof(Updatable)))
-        {
-            types.Add(typeof(Updatable));
-        }
-
-        if (type.IsAssignableTo(typeof(Drawable)))
-        {
-            types.Add(typeof(Drawable));
-        }
+        AddTypeIfAssignableTo<Updatable>(types, type);
+        AddTypeIfAssignableTo<Drawable>(types, type);
         
         @this.AddSingleton(type, types.ToArray());
 
@@ -116,18 +89,30 @@ public static class InjectionExtensions
     {
         var types = new List<Type> { indexer.GetType(), typeof(IIndexMetadata) };
 
-        if (indexer is IIndexAttributes)
-        {
-            types.Add(typeof(IIndexAttributes));
-        }
-
-        if (indexer is IIndexTypes)
-        {
-            types.Add(typeof(IIndexTypes));
-        }
+        AddTypeIfAssignableTo<IIndexAttributes>(types, indexer);
+        AddTypeIfAssignableTo<IIndexTypes>(types, indexer);
         
         @this.AddInstance(indexer, types.ToArray());
 
         return @this;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void AddTypeIfAssignableTo<T>(List<Type> destination, Type type)
+    {
+        var targetType = typeof(T);
+        if (type.IsAssignableTo(targetType))
+        {
+            destination.Add(targetType);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void AddTypeIfAssignableTo<T>(List<Type> destination, object instance)
+    {
+        if (instance is T)
+        {
+            destination.Add(typeof(T));
+        }
     }
 }

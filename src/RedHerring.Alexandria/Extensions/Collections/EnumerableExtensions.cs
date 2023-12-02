@@ -12,7 +12,7 @@ public static partial class EnumerableExtensions
     /// <param name="this"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static bool IsNullOrEmpty<T>(this IEnumerable<T> @this)
+    public static bool IsNullOrEmpty<T>(this IEnumerable<T>? @this)
     {
         return @this switch
         {
@@ -31,7 +31,7 @@ public static partial class EnumerableExtensions
     /// <param name="this"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static bool NotNullOrEmpty<T>(this IEnumerable<T> @this) => !@this.IsNullOrEmpty();
+    public static bool NotNullOrEmpty<T>(this IEnumerable<T>? @this) => !@this.IsNullOrEmpty();
 
     /// <summary>
     /// Returns an empty <see cref="IEnumerable{T}"/> if this is null or empty.
@@ -39,7 +39,7 @@ public static partial class EnumerableExtensions
     /// <param name="this"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T> @this) => @this ?? Enumerable.Empty<T>();
+    public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? @this) => @this ?? Enumerable.Empty<T>();
 
     /// <summary>
     /// Returns the current value of <see cref="IEnumerable{T}"/> if not null or empty, otherwise returns default.
@@ -48,10 +48,10 @@ public static partial class EnumerableExtensions
     /// <param name="default"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static IEnumerable<T> ValueOrDefault<T>(this IEnumerable<T> @this, IEnumerable<T> @default)
+    public static IEnumerable<T> ValueOrDefault<T>(this IEnumerable<T>? @this, IEnumerable<T> @default)
     {
         // ReSharper disable PossibleMultipleEnumeration
-        return !IsNullOrEmpty(@this) ? @this : @default;
+        return (!IsNullOrEmpty(@this) ? @this : @default)!;
         // ReSharper restore PossibleMultipleEnumeration
     }
 
