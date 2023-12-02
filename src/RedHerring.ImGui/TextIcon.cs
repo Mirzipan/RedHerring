@@ -4,8 +4,10 @@ using static ImGuiNET.ImGui;
 
 namespace RedHerring.ImGui;
 
-public static class Icon
+public static class TextIcon
 {
+    public const string ReorderList = FontAwesome6.Bars;
+    
     #region Filesystem
 
     private static readonly List<string> ImageFiles = new()
@@ -17,29 +19,13 @@ public static class Icon
     {
         ".wav", ".ogg",
     };
-
-    public static void Folder(bool isEmpty)
-    {
-        SetNextItemWidth(30);
-        Text(FolderIconText(isEmpty));
-        
-        SameLine();
-    }
     
-    public static string FolderIconText(bool isEmpty)
+    public static string Folder(bool isEmpty)
     {
         return isEmpty ? FontAwesome6.FolderClosed : FontAwesome6.Folder;
     }
 
-    public static void File(string name)
-    {
-        SetNextItemWidth(30);
-        Text(FileIconText(name));
-        
-        SameLine();
-    }
-
-    public static string FileIconText(string name)
+    public static string File(string name)
     {
         string extension = Path.GetExtension(name).ToLowerInvariant();
         if (ImageFiles.Contains(extension))
@@ -62,13 +48,4 @@ public static class Icon
     }
 
     #endregion Filesystem
-
-    #region List
-
-    public static void ReorderList()
-    {
-        Button(FontAwesome6.Bars);
-    }
-
-    #endregion List
 }

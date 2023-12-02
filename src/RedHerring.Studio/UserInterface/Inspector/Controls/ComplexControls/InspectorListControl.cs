@@ -230,7 +230,7 @@ public sealed class InspectorListControl : InspectorControl
 		Gui.PushID(dragAndDropId);
 		
 		Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
-		Icon.ReorderList();
+		Gui.Button(TextIcon.ReorderList);
 		Gui.PopStyleVar();
 
 		if (Gui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoDisableHover))

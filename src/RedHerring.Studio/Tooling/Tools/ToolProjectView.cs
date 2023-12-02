@@ -96,11 +96,11 @@ public sealed class ToolProjectView : Tool
 		{
 			if (node is ProjectFolderNode folder)
 			{
-				label = $"{Icon.FolderIconText(folder.Children.Count == 0)} {node.Name}";
+				label = $"{TextIcon.Folder(folder.Children.Count == 0)} {node.Name}";
 			}
 			else
 			{
-				label = $"{Icon.FileIconText(node.Path)} {node.Name}";
+				label = $"{TextIcon.File(node.Path)} {node.Name}";
 			}
 
 			_nodeLabels.Add(node, label);
