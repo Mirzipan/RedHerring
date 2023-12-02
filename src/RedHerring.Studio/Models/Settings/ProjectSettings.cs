@@ -1,5 +1,5 @@
 ﻿using Migration;
-using RedHerring.Studio.Models.Project;
+using RedHerring.Core.Systems;
 using RedHerring.Studio.UserInterface.Attributes;
 
 namespace RedHerring.Studio.Models;
@@ -9,14 +9,11 @@ public sealed class ProjectSettings
 {
 	[ReadOnlyInInspector, NonSerialized] public string GameFolderPath = "[here will be path to game folder]";
 
-	public TargetPlatformEnum TargetPlatform = TargetPlatformEnum.PC;
-
 	[NonSerialized] private string? _relativeResourcesPath;
-	public                  string  RelativeResourcesPath => _relativeResourcesPath ??= "Resources_" + TargetPlatform;
+	public                  string  RelativeResourcesPath => _relativeResourcesPath ??= PathsSystem.ResourcesFolderName;
 
 	[NonSerialized] private string? _absoluteResourcesPath;
-	public                  string  AbsoluteResourcesPath => _absoluteResourcesPath ??= Path.Combine(GameFolderPath, RelativeResourcesPath);
-
+	public                  string  AbsoluteResourcesPath => _absoluteResourcesPath ??= Path.Combine(GameFolderPath, PathsSystem.ResourcesFolderName);
 }
 
 #region Migration
@@ -28,6 +25,5 @@ public interface IProjectSettingsMigratable
 [Serializable, LatestVersion(typeof(ProjectSettings))]
 public class ProjectSettings_000 : IProjectSettingsMigratable
 {
-	public TargetPlatformEnum TargetPlatform;
 }
 #endregion
