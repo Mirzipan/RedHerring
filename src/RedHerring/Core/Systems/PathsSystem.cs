@@ -1,20 +1,53 @@
-﻿namespace RedHerring.Core.Systems;
+﻿using System.Runtime.InteropServices;
+using RedHerring.Alexandria.Extensions.Collections;
+
+namespace RedHerring.Core.Systems;
 
 public sealed class PathsSystem : EngineSystem
 {
 	public const string ResourcesFolderName = "Resources";
 	
-	private static readonly string? _homePath =
-		(Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
-			? (Environment.GetEnvironmentVariable("XDG_CONFIG_HOME") ?? "~/Library/Application Support")
-			: Environment.ExpandEnvironmentVariables("%APPDATA%");
+	private static string _homePath = null!;
 	
-	public string ApplicationDataPath { get; private set; } = null!;
+	public string ApplicationData { get; private set; } = null!;
 	
-	public string ResourcesPath { get; private set; } = ResourcesFolderName;
+	public string Resources { get; private set; } = ResourcesFolderName;
 	
 	protected override void Init()
 	{
-		ApplicationDataPath = Path.Join(_homePath, Context.Name);
+		InitHomePath();
+		ApplicationData = Path.Join(_homePath, Context.Name);
+	}
+
+	private void InitHomePath()
+	{
+		string? path = null;
+		
+		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+		{
+			path = Environment.ExpandEnvironmentVariables("%APPDATA%");
+		}
+
+		if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+		{
+			path = Environment.ExpandEnvironmentVariables("XDG_CONFIG_HOME");
+
+			if (path.IsNullOrEmpty())
+			{
+				path = Environment.ExpandEnvironmentVariables("~/Library/Application Support");
+			}
+		}
+		
+		if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+		{
+			path = Environment.ExpandEnvironmentVariables("XDG_CONFIG_HOME");
+		}
+		
+		if (path.IsNullOrEmpty())
+		{
+			path = "./";
+		}
+
+		_homePath = path!;
 	}
 }

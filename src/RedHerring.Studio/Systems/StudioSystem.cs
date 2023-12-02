@@ -260,12 +260,12 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_studioModel.StudioSettings.StoreToolWindows(Tool.UniqueToolIdGeneratorState, _toolManager.ExportActiveTools());
 		
 		_studioModel.StudioSettings.UiLayout = Gui.SaveIniSettingsToMemory();
-		_studioModel.SaveStudioSettings(_paths.ApplicationDataPath);
+		_studioModel.SaveStudioSettings(_paths.ApplicationData);
 	}
 
 	private void LoadSettings()
 	{
-		_studioModel.LoadStudioSettings(_paths.ApplicationDataPath);
+		_studioModel.LoadStudioSettings(_paths.ApplicationData);
 
 		Tool.SetUniqueIdGenerator(_studioModel.StudioSettings.ToolUniqueIdGeneratorState);
 		_toolManager.ImportActiveTools(_studioModel.StudioSettings.ActiveToolWindows);

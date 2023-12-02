@@ -26,7 +26,7 @@ public sealed class WindowConfigurationSystem : EngineSystem
 
 	protected override void Init()
 	{
-		_configFilePath = Path.Join(_paths.ApplicationDataPath, _configurationFileName);
+		_configFilePath = Path.Join(_paths.ApplicationData, _configurationFileName);
 	}
 	
 	protected override ValueTask<int> Load()
@@ -69,9 +69,9 @@ public sealed class WindowConfigurationSystem : EngineSystem
 
 	protected override ValueTask<int> Unload()
 	{
-		if (!Directory.Exists(_paths.ApplicationDataPath))
+		if (!Directory.Exists(_paths.ApplicationData))
 		{
-			Directory.CreateDirectory(_paths.ApplicationDataPath);
+			Directory.CreateDirectory(_paths.ApplicationData);
 		}
 
 		Data data = new()
