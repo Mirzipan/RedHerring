@@ -9,6 +9,7 @@ using RedHerring.Fingerprint.Layers;
 using RedHerring.Infusion.Attributes;
 using RedHerring.Studio.Constants;
 using RedHerring.Studio.Models;
+using RedHerring.Studio.Models.Project;
 using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.Tests;
 using RedHerring.Studio.TaskProcessing;
@@ -36,8 +37,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	public bool IsVisible => true;
 	public int  DrawOrder => int.MaxValue;
 
-	private StudioModel    _studioModel = new();
-	private ImporterThread _importerThread;
+	private StudioModel    _studioModel = null!;
 	
 	#region User Interface
 	private readonly DockSpace      _dockSpace       = new();
@@ -51,6 +51,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	#region Lifecycle
 	protected override void Init()
 	{
+		_studioModel = new StudioModel(_importerRegistry);
+		
 		_inputReceiver.Name             = "studio";
 		_inputReceiver.ConsumesAllInput = false;
         
@@ -66,7 +68,6 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		InitInput();
 		InitMenu();
 		_toolManager.Init(_studioModel);
-		_importerThread = new ImporterThread(_studioModel, _importerRegistry);
 
 		// load settings and restore state
 		LoadSettings();
@@ -75,9 +76,6 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_projectSettings = new SettingsDialog("Project settings", _studioModel.CommandHistory, _studioModel.Project.ProjectSettings);
 		_studioSettings  = new SettingsDialog("Studio settings",  _studioModel.CommandHistory, _studioModel.StudioSettings);
 
-		// start thread
-		_importerThread.Start();
-		
 		return 0;
 	}
 
@@ -85,7 +83,6 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	{
 		SaveSettings();
 		
-		_importerThread.Cancel();
 		_studioModel.Cancel(); // TODO - should we wait for cancellation of all threads?
 		
 		return 0;
@@ -170,7 +167,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_menu.AddItem("Debug/Inspector test",      OnDebugInspectorTestClicked);
 	}
 
-	private async void OnOpenProjectClicked()
+	private void OnOpenProjectClicked()
 	{
 		DialogResult result = Dialog.FolderPicker();
 		if(!result.IsOk)
@@ -178,8 +175,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 			return;
 		}
         
-		await _studioModel.OpenProject(result.Path);
-		_importerThread.Continue();
+		_studioModel.OpenProject(result.Path);
 	}
 
 	private void OnExitClicked()

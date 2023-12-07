@@ -2,6 +2,7 @@ using System.Reflection;
 using Migration;
 using RedHerring.Studio.Commands;
 using RedHerring.Studio.Models.Project;
+using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.ViewModels;
 using RedHerring.Studio.Models.ViewModels.Console;
 using RedHerring.Studio.TaskProcessing;
@@ -35,18 +36,19 @@ public class StudioModel
 	private readonly TaskProcessor _taskProcessor = new(_threadsCount);
 	public           TaskProcessor TaskProcessor => _taskProcessor;
 
-	public StudioModel()
+	public StudioModel(ImporterRegistry importerRegistry)
 	{
-		_project = new ProjectModel(_migrationManager);
+		_project = new ProjectModel(_migrationManager, importerRegistry);
 	}
 
 	public void Cancel()
 	{
 		_taskProcessor.Cancel();
 		Project.Close();
+		Project.Cancel();
 	}
 
-	public async Task OpenProject(string path)
+	public void OpenProject(string path)
 	{
 		Selection.DeselectAll();
 		Project.Close();
@@ -54,7 +56,7 @@ public class StudioModel
 		try
 		{
 			ConsoleViewModel.Log($"Opening project from {path}", ConsoleItemType.Info);
-			await Project.Open(path);
+			Project.Open(path);
 			ConsoleViewModel.Log($"Project opened", ConsoleItemType.Success);
 		}
 		catch (Exception e)

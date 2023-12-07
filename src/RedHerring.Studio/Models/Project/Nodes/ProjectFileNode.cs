@@ -10,22 +10,25 @@ public sealed class ProjectFileNode : ProjectNode
 	public ProjectFileNode(string name, string path, string relativePath) : base(name, path, relativePath)
 	{
 	}
-
-	public override async Task InitMetaRecursive(MigrationManager migrationManager)
+	
+	public override void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken)
 	{
 		// calculate file hash
 		string hash;
-		await using(FileStream file = new (Path, FileMode.Open))
+		using(FileStream file = new (Path, FileMode.Open))
 		{
-			hash = Convert.ToBase64String(await _hashAlgorithm.ComputeHashAsync(file));
+			hash = Convert.ToBase64String(_hashAlgorithm.ComputeHash(file)); // how to cancel compute hash?
 		}
 		
 		// init meta
-		await InitMeta(migrationManager, hash);
+		CreateMetaFile(migrationManager, hash);
 	}
 
-	public override void TraverseRecursive(Action<ProjectNode> process, CancellationToken cancellationToken)
+	public override void TraverseRecursive(Action<ProjectNode> process, TraverseFlags flags, CancellationToken cancellationToken)
 	{
-		process(this);
+		if ((flags & TraverseFlags.Files) != 0)
+		{
+			process(this);
+		}
 	}
 }

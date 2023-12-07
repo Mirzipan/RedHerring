@@ -8,7 +8,7 @@ public abstract class ProjectNode
 	public readonly string   Path;
 	public readonly string   RelativePath; // relative path inside Assets directory
 	public          Metadata Meta = null!;
-	
+
 	public string Extension => System.IO.Path.GetExtension(Path).ToLower();	// cache if needed
 
 	protected ProjectNode(string name, string path, string relativePath)
@@ -18,9 +18,9 @@ public abstract class ProjectNode
 		RelativePath = relativePath;
 	}
 
-	public abstract Task InitMetaRecursive(MigrationManager migrationManager);
-
-	protected async Task InitMeta(MigrationManager migrationManager, string? hash)
+	public abstract void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken);
+	
+	protected void CreateMetaFile(MigrationManager migrationManager, string? hash)
 	{
 		string metaPath = $"{Path}.meta";
 		
@@ -28,8 +28,8 @@ public abstract class ProjectNode
 		Metadata? meta = null;
 		if (File.Exists(metaPath))
 		{
-			byte[] json = await File.ReadAllBytesAsync(metaPath);
-			meta = await MigrationSerializer.DeserializeAsync<Metadata, IMetadataMigratable>(null, json, SerializedDataFormat.JSON, migrationManager, true, StudioModel.Assembly);
+			byte[] json = File.ReadAllBytes(metaPath);
+			meta = MigrationSerializer.DeserializeAsync<Metadata, IMetadataMigratable>(null, json, SerializedDataFormat.JSON, migrationManager, true, StudioModel.Assembly).GetAwaiter().GetResult();
 		}
 		
 		// write if needed
@@ -39,12 +39,12 @@ public abstract class ProjectNode
 			meta.UpdateGuid();
 			meta.SetHash(hash);
 
-			byte[] json =  await MigrationSerializer.SerializeAsync(meta, SerializedDataFormat.JSON, StudioModel.Assembly);
-			await File.WriteAllBytesAsync(metaPath, json);
+			byte[] json = MigrationSerializer.SerializeAsync(meta, SerializedDataFormat.JSON, StudioModel.Assembly).GetAwaiter().GetResult();
+			File.WriteAllBytes(metaPath, json);
 		}
 
 		Meta = meta;
 	}
 
-	public abstract void TraverseRecursive(Action<ProjectNode> process, CancellationToken cancellationToken);
+	public abstract void TraverseRecursive(Action<ProjectNode> process, TraverseFlags flags, CancellationToken cancellationToken);
 }

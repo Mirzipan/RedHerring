@@ -11,19 +11,17 @@ public class ProjectFolderNode : ProjectNode
 	{
 	}
 
-	public override async Task InitMetaRecursive(MigrationManager migrationManager)
+	public override void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken)
 	{
-		await InitMeta(migrationManager, null);
-		
-		foreach (ProjectNode child in Children)
-		{
-			await child.InitMetaRecursive(migrationManager);
-		}
+		CreateMetaFile(migrationManager, null);
 	}
 
-	public override void TraverseRecursive(Action<ProjectNode> process, CancellationToken cancellationToken)
+	public override void TraverseRecursive(Action<ProjectNode> process, TraverseFlags flags, CancellationToken cancellationToken)
 	{
-		process(this);
+		if ((flags & TraverseFlags.Directories) != 0)
+		{
+			process(this);
+		}
 
 		foreach (ProjectNode child in Children)
 		{
@@ -32,7 +30,7 @@ public class ProjectFolderNode : ProjectNode
 				return;
 			}
 			
-			child.TraverseRecursive(process, cancellationToken);
+			child.TraverseRecursive(process, flags, cancellationToken);
 		}
 	}
 }

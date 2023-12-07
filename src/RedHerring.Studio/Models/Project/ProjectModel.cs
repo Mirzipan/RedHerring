@@ -1,6 +1,7 @@
 using System.Reflection;
 using Migration;
 using RedHerring.Studio.Models.Project.FileSystem;
+using RedHerring.Studio.Models.Project.Importers;
 
 namespace RedHerring.Studio.Models.Project;
 
@@ -12,6 +13,7 @@ public sealed class ProjectModel
 	public static Assembly Assembly => typeof(ProjectModel).Assembly; 
 
 	private readonly MigrationManager _migrationManager;
+	private readonly ImporterRegistry _importerRegistry;
 	
 	private ProjectFolderNode? _assetsFolder;
 	public  ProjectFolderNode? AssetsFolder => _assetsFolder;
@@ -19,19 +21,29 @@ public sealed class ProjectModel
 	private ProjectSettings? _projectSettings;
 	public  ProjectSettings ProjectSettings => _projectSettings!;
 	
-	public ProjectModel(MigrationManager migrationManager)
+	private readonly ProjectThread _thread = new ();
+	
+	public ProjectModel(MigrationManager migrationManager, ImporterRegistry importerRegistry)
 	{
 		_migrationManager = migrationManager;
+		_importerRegistry = importerRegistry;
 	}
-	
+
+	public void Cancel()
+	{
+		_thread.Cancel();
+	}
+
 	#region Open/close
 	public void Close()
 	{
+		_thread.ClearQueue();
+		
 		SaveSettings();
 		_assetsFolder = null;
 	}
 	
-	public async Task Open(string projectPath)
+	public void Open(string projectPath)
 	{
 		LoadSettings(projectPath);
 		
@@ -42,7 +54,8 @@ public sealed class ProjectModel
 		{
 			// error
 			Console.WriteLine($"Assets folder not found on path {assetsPath}");
-			await assetsFolder.InitMetaRecursive(_migrationManager); // create meta for at least root
+			_assetsFolder = assetsFolder;
+			InitMeta();
 			return;
 		}
 		
@@ -57,8 +70,9 @@ public sealed class ProjectModel
 			Console.WriteLine($"Exception: {e}");
 		}
 
-		await assetsFolder.InitMetaRecursive(_migrationManager);
 		_assetsFolder = assetsFolder;
+		InitMeta();
+		ImportAll();
 	}
 
 	private void RecursiveScan(string path, string relativePath, ProjectFolderNode root)
@@ -88,10 +102,44 @@ public sealed class ProjectModel
 			root.Children.Add(fileNode);
 		}
 	}
+
+	private void InitMeta()
+	{
+		_assetsFolder!.TraverseRecursive(
+			node => _thread.Enqueue(new ProjectTask(cancellationToken => node.InitMeta(_migrationManager, cancellationToken))),
+			TraverseFlags.Directories | TraverseFlags.Files,
+			default
+		);
+	}
+
 	#endregion
 	
 	#region Import
-	
+	public void ImportAll()
+	{
+		// TODO - delete everything from Resources?
+
+		_assetsFolder!.TraverseRecursive(ImportProjectNode, TraverseFlags.Files, default);
+	}
+
+	private void ImportProjectNode(ProjectNode node)
+	{
+		_thread.Enqueue(
+			new ProjectTask(
+				cancellationToken =>
+				{
+					Importer importer = _importerRegistry.GetImporter(node.Extension);
+					node.Meta.ImporterSettings ??= importer.CreateSettings();
+
+					string resourcePath = Path.Combine(_projectSettings!.AbsoluteResourcesPath, node.RelativePath);
+
+					using Stream stream = File.OpenRead(node.Path);
+					importer.Import(stream, node.Meta.ImporterSettings, resourcePath, cancellationToken);
+				}
+			)
+		);
+	}
+
 	#endregion
 	
 	#region Settings

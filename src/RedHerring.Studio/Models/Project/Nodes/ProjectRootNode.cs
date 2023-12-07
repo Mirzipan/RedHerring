@@ -8,17 +8,12 @@ public sealed class ProjectRootNode : ProjectFolderNode
 	{
 	}
 
-	public override async Task InitMetaRecursive(MigrationManager migrationManager)
+	public override void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken)
 	{
 		Meta = new Metadata
 		       {
 			       Guid = Name,
-			       Hash = $"#{Name}"		// # is not valid base64 symbol, so this hash will be unique no matter what Name is
+			       Hash = $"#{Name}" // # is not valid base64 symbol, so this hash will be unique no matter what Name is
 		       };
-		
-		foreach (ProjectNode child in Children)
-		{
-			await child.InitMetaRecursive(migrationManager);
-		}
 	}
 }
