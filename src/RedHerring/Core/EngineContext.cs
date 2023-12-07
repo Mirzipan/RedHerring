@@ -30,6 +30,9 @@ public sealed class EngineContext : NamedDisposer
     public InjectionContainer Container => _container;
     public Platform Platform { get; set; } = null!;
     public IWindow Window { get; set; } = null!;
+    public string ProductName { get; set; }
+    public int DesiredWidth { get; set; }
+    public int DesiredHeight { get; set; }
 
     #region Lifecycle
 
