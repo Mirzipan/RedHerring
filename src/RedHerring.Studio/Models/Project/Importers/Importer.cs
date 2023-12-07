@@ -3,5 +3,5 @@
 public interface Importer
 {
     ImporterSettings CreateSettings();
-    void Import(Stream stream, ImporterSettings settings, string resourcePath, CancellationToken cancellationToken);
+    ImporterResult   Import(Stream stream, ImporterSettings settings, string resourcePath, CancellationToken cancellationToken);
 }

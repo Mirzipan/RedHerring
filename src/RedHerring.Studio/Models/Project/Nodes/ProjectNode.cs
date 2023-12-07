@@ -19,7 +19,14 @@ public abstract class ProjectNode
 	}
 
 	public abstract void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken);
-	
+
+	public void UpdateMetaFile()
+	{
+		string metaPath = $"{Path}.meta";
+		byte[] json     = MigrationSerializer.SerializeAsync(Meta, SerializedDataFormat.JSON, StudioModel.Assembly).GetAwaiter().GetResult();
+		File.WriteAllBytes(metaPath, json);
+	}
+
 	protected void CreateMetaFile(MigrationManager migrationManager, string? hash)
 	{
 		string metaPath = $"{Path}.meta";

@@ -6,7 +6,7 @@ public sealed class CopyImporter : AssetImporter<CopyImporterSettings>
 {
 	protected override CopyImporterSettings CreateImporterSettings() => new();
 
-	protected override void Import(Stream stream, CopyImporterSettings settings, string resourcePath, CancellationToken cancellationToken)
+	protected override ImporterResult Import(Stream stream, CopyImporterSettings settings, string resourcePath, CancellationToken cancellationToken)
 	{
 		byte[] data = new byte[stream.Length];
 		int read   = stream.Read(data, 0, data.Length);
@@ -14,5 +14,6 @@ public sealed class CopyImporter : AssetImporter<CopyImporterSettings>
 		
 		Directory.CreateDirectory(Path.GetDirectoryName(resourcePath)!);
 		File.WriteAllBytes(resourcePath, data);
+		return ImporterResult.Finished;
 	}
 }

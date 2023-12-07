@@ -8,7 +8,7 @@ public sealed class PngImporter : AssetImporter<PngImporterSettings>
 {
     protected override PngImporterSettings CreateImporterSettings() => new();
 
-    protected override void Import(Stream stream, PngImporterSettings settings, string resourcePath, CancellationToken cancellationToken)
+    protected override ImporterResult Import(Stream stream, PngImporterSettings settings, string resourcePath, CancellationToken cancellationToken)
     {
         using Image image = Image.Load(stream);
         
@@ -32,5 +32,6 @@ public sealed class PngImporter : AssetImporter<PngImporterSettings>
                       };
         
         image.SaveAsPng(resourcePath, encoder);
+        return ImporterResult.Finished;
     }
 }

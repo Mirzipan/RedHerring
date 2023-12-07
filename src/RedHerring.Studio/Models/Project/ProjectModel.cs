@@ -46,7 +46,7 @@ public sealed class ProjectModel
 	public void Open(string projectPath)
 	{
 		LoadSettings(projectPath);
-		
+
 		string            assetsPath   = Path.Join(projectPath, _assetsFolderName);
 		ProjectFolderNode assetsFolder = new ProjectRootNode(_assetsFolderName, assetsPath);
 
@@ -134,7 +134,12 @@ public sealed class ProjectModel
 					string resourcePath = Path.Combine(_projectSettings!.AbsoluteResourcesPath, node.RelativePath);
 
 					using Stream stream = File.OpenRead(node.Path);
-					importer.Import(stream, node.Meta.ImporterSettings, resourcePath, cancellationToken);
+					ImporterResult result = importer.Import(stream, node.Meta.ImporterSettings, resourcePath, cancellationToken);
+
+					if (result == ImporterResult.FinishedSettingsChanged)
+					{
+						node.UpdateMetaFile();
+					}
 				}
 			)
 		);

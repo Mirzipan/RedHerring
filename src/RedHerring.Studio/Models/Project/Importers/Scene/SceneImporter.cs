@@ -12,7 +12,7 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 {
 	protected override SceneImporterSettings CreateImporterSettings() => new();
 	
-	protected override void Import(Stream stream, SceneImporterSettings settings, string resourcePath, CancellationToken cancellationToken)
+	protected override ImporterResult Import(Stream stream, SceneImporterSettings settings, string resourcePath, CancellationToken cancellationToken)
 	{
 		AssimpContext context = new();
 		context.SetConfig(new NormalSmoothingAngleConfig(66.0f)); // just for testing
@@ -23,14 +23,35 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 		
 		if(!scene.HasMeshes)
 		{
-			return;
+			return ImporterResult.Finished;
 		}
 		
 		Directory.CreateDirectory(Path.GetDirectoryName(resourcePath)!);
 
 		// TODO - far from finished
-		foreach (Assimp.Mesh? assimpMesh in scene.Meshes)
+		bool settingsChanged = false;
+		for (int i = 0; i < scene.Meshes.Count; ++i)
 		{
+			// update settings
+			Assimp.Mesh assimpMesh = scene.Meshes[i];
+			if (i == settings.Meshes.Count)
+			{
+				settings.Meshes.Add(new SceneImporterMeshSettings(assimpMesh.Name));
+				settingsChanged = true;
+			}
+			else if(settings.Meshes[i].Name != assimpMesh.Name)
+			{
+				settings.Meshes[i] = new SceneImporterMeshSettings(assimpMesh.Name);
+				settingsChanged    = true;
+			}
+
+			// check
+			if (!settings.Meshes[i].Import)
+			{
+				continue;
+			}
+
+			// import
 			Model model = new();
 			
 			model.Vertices = new(assimpMesh.VertexCount);
@@ -66,5 +87,14 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 			byte[] json = SerializationUtility.SerializeValue(model, DataFormat.JSON);
 			File.WriteAllBytes($"{resourcePath}_{mesh.Name}_.mesh", json);
 		}
+
+		// cut the rest
+		if (settings.Meshes.Count > scene.Meshes.Count)
+		{
+			settings.Meshes.RemoveRange(scene.Meshes.Count, settings.Meshes.Count - scene.Meshes.Count);
+			settingsChanged = true;
+		}
+
+		return settingsChanged ? ImporterResult.FinishedSettingsChanged : ImporterResult.Finished;
 	}
 }
