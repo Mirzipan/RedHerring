@@ -155,7 +155,7 @@ public sealed class ProjectModel
 			return;
 		}
 
-		byte[] json = MigrationSerializer.SerializeAsync(_projectSettings, SerializedDataFormat.JSON, Assembly).Result;
+		byte[] json = MigrationSerializer.SerializeAsync(_projectSettings, SerializedDataFormat.JSON, Assembly).GetAwaiter().GetResult();
 		File.WriteAllBytes(Path.Join(_projectSettings.GameFolderPath, _settingsFileName), json);
 	}
 
@@ -172,7 +172,7 @@ public sealed class ProjectModel
 		}
 		
 		byte[] json = File.ReadAllBytes(path);
-		ProjectSettings settings = MigrationSerializer.DeserializeAsync<ProjectSettings, IStudioSettingsMigratable>(_migrationManager.TypesHash, json, SerializedDataFormat.JSON, _migrationManager, false, Assembly).Result;
+		ProjectSettings settings = MigrationSerializer.DeserializeAsync<ProjectSettings, IStudioSettingsMigratable>(_migrationManager.TypesHash, json, SerializedDataFormat.JSON, _migrationManager, false, Assembly).GetAwaiter().GetResult();
 		settings.GameFolderPath = projectPath;
 		
 		_projectSettings = settings;
