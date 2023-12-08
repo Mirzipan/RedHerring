@@ -75,38 +75,66 @@ public sealed class InspectorListControl : InspectorControl
 			return;
 		}
 
+		if (_isReadOnly)
+		{
+			if (Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowItemOverlap))
+			{
+				for(int i = 0; i < _controls.Count; ++i)
+				{
+					if(_controls[i].Control == null)
+					{
+						continue;
+					}
+
+					_controls[i].Control!.Update();
+					
+				}
+				Gui.TreePop();
+			}
+
+			return;
+		}
+		
 		bool createNewElement   = false;
 		int  deleteElementIndex = -1;
-			
+
 		if (Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowItemOverlap))
 		{
-			createNewElement = NewElementButtonOnTheSameLine(list.IsFixedSize);
-
-			for(int i = 0; i < _controls.Count; ++i)
+			if (!_isReadOnly)
 			{
-				if(_controls[i].Control == null)
+				createNewElement = NewElementButtonOnTheSameLine(list.IsFixedSize);
+			}
+
+			for (int i = 0; i < _controls.Count; ++i)
+			{
+				if (_controls[i].Control == null)
 				{
 					continue;
 				}
 
 				// draggable reorder symbol
-				CreateDragAndDropControl(_controls[i].DragAndDropId, i);
-				Gui.SameLine();
-
-				// delete button
-				if (!list.IsFixedSize)
+				if (!_isReadOnly)
 				{
-					if (ButtonDeleteElement(_controls[i].DeleteButtonId))
-					{
-						deleteElementIndex = i;
-					}
+					CreateDragAndDropControl(_controls[i].DragAndDropId, i);
 					Gui.SameLine();
+
+					// delete button
+					if (!list.IsFixedSize)
+					{
+						if (ButtonDeleteElement(_controls[i].DeleteButtonId))
+						{
+							deleteElementIndex = i;
+						}
+
+						Gui.SameLine();
+					}
 				}
 
 				// element
 				_controls[i].Control!.Update();
-					
+
 			}
+
 			Gui.TreePop();
 		}
 		else

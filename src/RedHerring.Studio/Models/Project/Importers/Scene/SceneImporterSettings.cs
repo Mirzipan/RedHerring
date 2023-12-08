@@ -1,4 +1,5 @@
 ﻿using Migration;
+using RedHerring.Studio.UserInterface.Attributes;
 
 namespace RedHerring.Studio.Models.Project.Importers;
 
@@ -8,7 +9,7 @@ public sealed class SceneImporterSettings : ImporterSettings
 	public bool Tangents = false;
 	public List<bool> UVs = new();
 
-	public List<SceneImporterMeshSettings> Meshes = new();
+	[ReadOnlyInInspector] public List<SceneImporterMeshSettings> Meshes = new();
 }
 
 #region Migration
