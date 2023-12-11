@@ -1,11 +1,14 @@
-﻿using RedHerring.Alexandria;
+﻿using ImGuiNET;
+using RedHerring.Alexandria;
 using RedHerring.Core;
 using RedHerring.Core.Systems;
 using RedHerring.Fingerprint;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Infusion.Attributes;
+using Silk.NET.Input;
 using Gui = ImGuiNET.ImGui;
+using Key = RedHerring.Fingerprint.Key;
 
 namespace RedHerring.ImGui;
 
@@ -55,6 +58,7 @@ public class ImGuiSystem : EngineSystem, Updatable, Drawable
     
     public void Update(GameTime gameTime)
     {
+        UpdateCursor();
         _imInputSnapshot.Update(_inputSystem.Input);
         _feature.Update(gameTime, _imInputSnapshot);
     }
@@ -93,6 +97,30 @@ public class ImGuiSystem : EngineSystem, Updatable, Drawable
         _receiver.Push();
     }
 
+    private void UpdateCursor()
+    {
+        StandardCursor cursor = Gui.GetMouseCursor() switch
+        {
+            ImGuiMouseCursor.None       => StandardCursor.Default,
+            ImGuiMouseCursor.Arrow      => StandardCursor.Default,
+            ImGuiMouseCursor.TextInput  => StandardCursor.IBeam,
+            ImGuiMouseCursor.ResizeAll  => StandardCursor.Default,
+            ImGuiMouseCursor.ResizeNS   => StandardCursor.VResize,
+            ImGuiMouseCursor.ResizeEW   => StandardCursor.HResize,
+            ImGuiMouseCursor.ResizeNESW => StandardCursor.Default,
+            ImGuiMouseCursor.ResizeNWSE => StandardCursor.Default,
+            ImGuiMouseCursor.Hand       => StandardCursor.Hand,
+            ImGuiMouseCursor.NotAllowed => StandardCursor.Default,
+            ImGuiMouseCursor.COUNT      => StandardCursor.Default,
+            _                           => throw new ArgumentOutOfRangeException()
+        };
+
+        if (_inputSystem.Mouse != null)
+        {
+            _inputSystem.Mouse.Mouse.Cursor.StandardCursor = cursor;
+        }
+    }
+    
     #endregion Private
 
     #region Bindings
