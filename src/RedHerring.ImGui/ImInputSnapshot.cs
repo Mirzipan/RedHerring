@@ -37,7 +37,7 @@ internal class ImInputSnapshot : InputSnapshot
         UpdateKeyboard(input);
     }
 
-    public bool IsMouseDown(VMouseButton button) => _mouseButtons[(int)button];
+    public bool IsMouseDown(VMouseButton button) => _mouseButtons[(int)Convert(button)];
 
     private void Clear()
     {
@@ -271,6 +271,26 @@ internal class ImInputSnapshot : InputSnapshot
             MouseButton.Button11 => VMouseButton.Button8,
             MouseButton.Button12 => VMouseButton.Button9,
             _ => VMouseButton.Left,
+        };
+    }
+
+    private static MouseButton Convert(VMouseButton button)
+    {
+        return button switch
+        {
+            VMouseButton.Left => MouseButton.Left,
+            VMouseButton.Middle => MouseButton.Middle,
+            VMouseButton.Right => MouseButton.Right,
+            VMouseButton.Button1 => MouseButton.Button4,
+            VMouseButton.Button2 => MouseButton.Button5,
+            VMouseButton.Button3 => MouseButton.Button6,
+            VMouseButton.Button4 => MouseButton.Button7,
+            VMouseButton.Button5 => MouseButton.Button8,
+            VMouseButton.Button6 => MouseButton.Button9,
+            VMouseButton.Button7 => MouseButton.Button10,
+            VMouseButton.Button8 => MouseButton.Button11,
+            VMouseButton.Button9 => MouseButton.Button12,
+            _ => MouseButton.Left,
         };
     }
 }
