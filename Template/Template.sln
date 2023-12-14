@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameExecutable", "GameExecutable\GameExecutable.csproj", "{DEC8BF96-DEA3-4458-A415-E395F3A3D16E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameLibrary", "GameLibrary\GameLibrary.csproj", "{239C4A7B-66C0-4072-A70D-323C5F4F962D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DEC8BF96-DEA3-4458-A415-E395F3A3D16E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEC8BF96-DEA3-4458-A415-E395F3A3D16E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEC8BF96-DEA3-4458-A415-E395F3A3D16E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEC8BF96-DEA3-4458-A415-E395F3A3D16E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{239C4A7B-66C0-4072-A70D-323C5F4F962D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{239C4A7B-66C0-4072-A70D-323C5F4F962D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{239C4A7B-66C0-4072-A70D-323C5F4F962D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{239C4A7B-66C0-4072-A70D-323C5F4F962D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

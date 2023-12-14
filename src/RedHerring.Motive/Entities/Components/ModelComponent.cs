@@ -50,8 +50,8 @@ public sealed class ModelComponent : EntityComponent
     {
         if (_model is null)
         {
-            BoundingBox = BoundingBox.Empty;
-            BoundingSphere = BoundingSphere.Empty;
+            BoundingBox = BoundingBox.Zero;
+            BoundingSphere = BoundingSphere.Zero;
             return;
         }
 
