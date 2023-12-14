@@ -58,8 +58,8 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
 
         _features = new RenderFeatureCollection();
         
-        var debug = new DebugRenderFeature();
-        _features.Add(debug);
+        //var debug = new DebugRenderFeature();
+        //_features.Add(debug);
     }
 
     public void AddFeature(RenderFeature feature)
