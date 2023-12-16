@@ -115,8 +115,8 @@ public sealed class SessionContext : NamedDisposer
     private void InstallBindings()
     {
         var description = new ContainerDescription("Session", _engine!.Context.Container);
-        description.AddInstance(this);
-        description.AddInstance(_engine);
+        description.AddSingleton(this);
+        description.AddSingleton(_engine);
         
         foreach (var installer in _installers)
         {

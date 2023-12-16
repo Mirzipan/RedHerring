@@ -157,10 +157,10 @@ public sealed class EngineContext : NamedDisposer
     private void InstallBindings()
     {
         var description = new ContainerDescription("Engine");
-        description.AddInstance(this);
-        description.AddInstance(_engine!);
+        description.AddSingleton(this);
+        description.AddSingleton(_engine!);
         description.AddMetadata(_indexedAssemblies);
-        description.AddInstance(Window, typeof(IView));
+        description.AddSingleton(Window, typeof(IView));
 
         foreach (var installer in _installers)
         {

@@ -20,7 +20,7 @@ public static class InjectionExtensions
         AddTypeIfAssignableTo<Updatable>(types, system);
         AddTypeIfAssignableTo<Drawable>(types, system);
         
-        @this.AddInstance(system, types.ToArray());
+        @this.AddSingleton(system, types.ToArray());
 
         return @this;
     }    
@@ -45,7 +45,7 @@ public static class InjectionExtensions
         AddTypeIfAssignableTo<Updatable>(types, component);
         AddTypeIfAssignableTo<Drawable>(types, component);
         
-        @this.AddInstance(component, types.ToArray());
+        @this.AddSingleton(component, types.ToArray());
 
         return @this;
     }    
@@ -75,7 +75,7 @@ public static class InjectionExtensions
     {
         var meta = new MetadataDatabase(collection);
         meta.Process();
-        @this.AddInstance(meta);
+        @this.AddSingleton(meta);
 
         foreach (var indexer in meta.Indexers)
         {
@@ -92,7 +92,7 @@ public static class InjectionExtensions
         AddTypeIfAssignableTo<IIndexAttributes>(types, indexer);
         AddTypeIfAssignableTo<IIndexTypes>(types, indexer);
         
-        @this.AddInstance(indexer, types.ToArray());
+        @this.AddSingleton(indexer, types.ToArray());
 
         return @this;
     }

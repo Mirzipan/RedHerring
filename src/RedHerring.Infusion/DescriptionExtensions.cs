@@ -37,15 +37,15 @@ public static class DescriptionExtensions
         return @this.AddTransient(concrete, types);
     }
     
-    public static ContainerDescription AddInstance<TContract>(this ContainerDescription @this, object instance)
+    public static ContainerDescription AddSingleton<TContract>(this ContainerDescription @this, object instance)
     {
-        return @this.AddInstance(instance, typeof(TContract));
+        return @this.AddSingleton(instance, typeof(TContract));
     }
     
     public static ContainerDescription AddSingletonAsInterfaces(this ContainerDescription @this, object instance)
     {
         var interfaces = instance.GetType().GetInterfaces();
-        return @this.AddInstance(instance, interfaces);
+        return @this.AddSingleton(instance, interfaces);
     }
     public static ContainerDescription AddSingletonWithInterfaces(this ContainerDescription @this, object instance)
     {
@@ -53,6 +53,6 @@ public static class DescriptionExtensions
         var interfaces = type.GetInterfaces();
         var types = new Type[interfaces.Length + 1];
         types[^1] = type;
-        return @this.AddInstance(instance, types);
+        return @this.AddSingleton(instance, types);
     }
 }

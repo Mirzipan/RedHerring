@@ -34,25 +34,47 @@ public sealed class ContainerDescription
 
     #region Manipulation
 
+    public ContainerDescription AddSingleton<T>() => AddSingleton(typeof(T), typeof(T));
+
     public ContainerDescription AddSingleton(Type concrete) => AddSingleton(concrete, concrete);
 
     public ContainerDescription AddSingleton(Type concrete, params Type[] contracts)
     {
-        return Add(concrete, contracts, () => new SingletonResolver(concrete));
+        return Add(concrete, contracts, new SingletonTypeResolver(concrete));
     }
+
+    public ContainerDescription AddSingleton(object instance) => AddSingleton(instance, instance.GetType());
+
+    public ContainerDescription AddSingleton(object instance, params Type[] contracts)
+    {
+        return Add(instance.GetType(), contracts, new SingletonInstanceResolver(instance));
+    }
+
+    public ContainerDescription AddSingleton<T>(Func<InjectionContainer, T> factory) => AddSingleton(factory, typeof(T));
+
+    public ContainerDescription AddSingleton<T>(Func<InjectionContainer, T> factory, params Type[] contracts)
+    {
+        return Add(typeof(T), contracts, new SingletonFactoryResolver(FactoryMethod));
+
+        object FactoryMethod(InjectionContainer container) => factory.Invoke(container)!;
+    }
+
+    public ContainerDescription AddTransient<T>() => AddTransient(typeof(T), typeof(T));
 
     public ContainerDescription AddTransient(Type concrete) => AddTransient(concrete, concrete);
 
     public ContainerDescription AddTransient(Type concrete, params Type[] contracts)
     {
-        return Add(concrete, contracts, () => new TransientResolver(concrete));
+        return Add(concrete, contracts, new TransientTypeResolver(concrete));
     }
 
-    public ContainerDescription AddInstance(object instance) => AddInstance(instance, instance.GetType());
+    public ContainerDescription AddTransient<T>(Func<InjectionContainer, T> factory) => AddTransient(factory, typeof(T));
 
-    public ContainerDescription AddInstance(object instance, params Type[] contracts)
+    public ContainerDescription AddTransient<T>(Func<InjectionContainer, T> factory, params Type[] contracts)
     {
-        return Add(instance.GetType(), contracts, () => new InstanceResolver(instance));
+        return Add(typeof(T), contracts, new TransientFactoryResolver(FactoryMethod));
+
+        object FactoryMethod(InjectionContainer container) => factory.Invoke(container)!;
     }
 
     #endregion Manipulation
@@ -93,25 +115,11 @@ public sealed class ContainerDescription
         }
     }
     
-    private ContainerDescription Add(Type concrete, Type[] contracts, Func<Resolver> resolverFactory)
+    private ContainerDescription Add(Type concrete, Type[] contracts, Resolver resolver)
     {
-        ValidateContracts(concrete, contracts);
-        var resolver = resolverFactory.Invoke();
-        var resolverDescriptor = new ResolverDescription(resolver, contracts);
+        var resolverDescriptor = ResolverDescription.Create(resolver, concrete, contracts);
         _resolvers.Add(resolverDescriptor);
         return this;
-    }
-
-    private static void ValidateContracts(Type concrete, Type[] contracts)
-    {
-        for (int i = 0; i < contracts.Length; i++)
-        {
-            var contract = contracts[i];
-            if (!contract.IsAssignableFrom(concrete))
-            {
-                throw new ContractNotAssignableException(concrete, contract);
-            }
-        }
     }
 
     #endregion Private

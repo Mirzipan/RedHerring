@@ -19,7 +19,7 @@ public class RenderInstaller : BindingsInstaller
     public void InstallBindings(ContainerDescription description)
     {
         var renderer = new UniversalRenderer(_view, Backend, UseSeparateRenderThread);
-        description.AddInstance(renderer, typeof(Renderer));
+        description.AddSingleton(renderer, typeof(Renderer));
     }
     
     public static GraphicsBackend PreferredBackend()

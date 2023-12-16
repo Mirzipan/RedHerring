@@ -82,7 +82,7 @@ public sealed class InjectionContainer : NamedDisposer
 
     private void InjectSelf()
     {
-        ResolversByContract.Add(typeof(InjectionContainer), new InstanceResolver(this));
+        ResolversByContract.Add(typeof(InjectionContainer), new SingletonInstanceResolver(this));
     }
 
     private IEnumerable<Resolver>? Resolvers(Type type)

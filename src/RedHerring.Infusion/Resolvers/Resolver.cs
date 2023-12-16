@@ -1,10 +1,6 @@
-﻿using RedHerring.Alexandria;
+﻿namespace RedHerring.Infusion.Resolvers;
 
-namespace RedHerring.Infusion.Resolvers;
-
-public abstract class Resolver : NamedDisposer
+public interface Resolver : IDisposable
 {
-    public Type Contract { get; protected set; }
-    
-    public abstract object Resolve(InjectionContainer container);
+    object Resolve(InjectionContainer container);
 }
