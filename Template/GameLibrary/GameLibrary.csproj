@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="OdinSerializer">
+        <HintPath>..\Libraries\OdinSerializer.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring">
+        <HintPath>..\Libraries\RedHerring.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring.Alexandria">
+        <HintPath>..\Libraries\RedHerring.Alexandria.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring.Assets">
+        <HintPath>..\Libraries\RedHerring.Assets.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring.Clues">
+        <HintPath>..\Libraries\RedHerring.Clues.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring.Deduction">
+        <HintPath>..\Libraries\RedHerring.Deduction.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring.Fingerprint">
+        <HintPath>..\Libraries\RedHerring.Fingerprint.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring.ImGui">
+        <HintPath>..\Libraries\RedHerring.ImGui.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring.Incident">
+        <HintPath>..\Libraries\RedHerring.Incident.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring.Infusion">
+        <HintPath>..\Libraries\RedHerring.Infusion.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring.Motive">
+        <HintPath>..\Libraries\RedHerring.Motive.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring.Numbers">
+        <HintPath>..\Libraries\RedHerring.Numbers.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring.Platforms">
+        <HintPath>..\Libraries\RedHerring.Platforms.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring.Render">
+        <HintPath>..\Libraries\RedHerring.Render.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring.Serialization">
+        <HintPath>..\Libraries\RedHerring.Serialization.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Reactive" Version="6.0.0" />
+    </ItemGroup>
+
+</Project>

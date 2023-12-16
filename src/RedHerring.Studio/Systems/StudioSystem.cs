@@ -31,6 +31,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	[Infuse] private ImporterRegistry _importerRegistry = null!;
 	[Infuse] private StudioCamera     _camera           = null!;
 
+	private NewProjectDialog _newProjectDialog = null!;
+	
 	public bool IsEnabled   => true;
 	public int  UpdateOrder => int.MaxValue;
 
@@ -43,8 +45,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	private readonly DockSpace      _dockSpace       = new();
 	private readonly Menu           _menu            = new();
 	private readonly StatusBar      _statusBar       = new();
-	private          SettingsDialog _projectSettings = null!;
-	private          SettingsDialog _studioSettings  = null!;
+	private          ObjectDialog _projectSettings = null!;
+	private          ObjectDialog _studioSettings  = null!;
 	private readonly MessageBox     _messageBox      = new();
 	#endregion
     
@@ -58,6 +60,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
         
 		_inputReceiver.Bind(InputAction.Undo, Undo);
 		_inputReceiver.Bind(InputAction.Redo, Redo);
+
+		_newProjectDialog = new NewProjectDialog(_studioModel);
 	}
 
 	protected override async ValueTask<int> Load()
@@ -73,8 +77,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		LoadSettings();
 		
 		// debug
-		_projectSettings = new SettingsDialog("Project settings", _studioModel.CommandHistory, _studioModel.Project.ProjectSettings);
-		_studioSettings  = new SettingsDialog("Studio settings",  _studioModel.CommandHistory, _studioModel.StudioSettings);
+		_projectSettings = new ObjectDialog("Project settings", _studioModel.CommandHistory, _studioModel.Project.ProjectSettings);
+		_studioSettings  = new ObjectDialog("Studio settings",  _studioModel.CommandHistory, _studioModel.StudioSettings);
 
 		return 0;
 	}
@@ -100,9 +104,10 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_projectSettings.Update();
 		_studioSettings.Update();
 		_messageBox.Update();
+		_newProjectDialog.Update();
 
 		_toolManager.Update();
-
+		
 		//Gui.ShowDemoWindow();
 	}
 
@@ -147,6 +152,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	#region Menu
 	private void InitMenu()
 	{
+		_menu.AddItem("File/New project..",  OnNewProjectClicked);
 		_menu.AddItem("File/Open project..", OnOpenProjectClicked);
 		_menu.AddItem("File/Exit",           OnExitClicked);
 
@@ -165,6 +171,11 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_menu.AddItem("Debug/Serialization test",  OnDebugSerializationTestClicked);
 		_menu.AddItem("Debug/Importer test",       OnDebugImporterTestClicked);
 		_menu.AddItem("Debug/Inspector test",      OnDebugInspectorTestClicked);
+	}
+
+	private void OnNewProjectClicked()
+	{
+		_newProjectDialog.Open();
 	}
 
 	private void OnOpenProjectClicked()

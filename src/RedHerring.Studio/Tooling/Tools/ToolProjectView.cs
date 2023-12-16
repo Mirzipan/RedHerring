@@ -107,6 +107,11 @@ public sealed class ToolProjectView : Tool
 		}
 		
 		bool nodeExpanded = Gui.TreeNodeEx(id, flags, label);
+		if (Gui.BeginPopupContextItem(id))
+		{
+			Gui.Text("This is popup");
+			Gui.EndPopup();
+		}
 
 		if (Gui.IsItemClicked() && !Gui.IsItemToggledOpen())
 		{

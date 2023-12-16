@@ -5,12 +5,12 @@ using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface.Dialogs;
 
-public sealed class SettingsDialog
+public sealed class ObjectDialog
 {
 	private readonly string    _titleId;
 	private readonly Inspector _inspector;
 
-	public SettingsDialog(string titleId, CommandHistory history, object sourceModel)
+	public ObjectDialog(string titleId, CommandHistory history, object sourceModel)
 	{
 		_titleId   = titleId;
 		_inspector = new Inspector(history);
