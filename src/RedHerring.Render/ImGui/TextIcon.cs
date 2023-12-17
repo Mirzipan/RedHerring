@@ -1,8 +1,4 @@
-﻿using IconFonts;
-using RedHerring.Alexandria.Extensions;
-using static ImGuiNET.ImGui;
-
-namespace RedHerring.ImGui;
+﻿namespace RedHerring.Render.ImGui;
 
 public static class TextIcon
 {

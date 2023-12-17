@@ -1,7 +1,6 @@
-﻿using IconFonts;
-using static ImGuiNET.ImGui;
+﻿using static ImGuiNET.ImGui;
 
-namespace RedHerring.ImGui;
+namespace RedHerring.Render.ImGui;
 
 public static class IconButton
 {

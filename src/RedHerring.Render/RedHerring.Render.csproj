@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>12</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,17 +20,29 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="ImGui\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\RedHerring.Alexandria\RedHerring.Alexandria.csproj" />
+      <ProjectReference Include="..\RedHerring.Fingerprint\RedHerring.Fingerprint.csproj" />
       <ProjectReference Include="..\RedHerring.Infusion\RedHerring.Infusion.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <ClCompile Include="Shaders\debug_vertexcolor_fragment.hlsl" />
       <ClCompile Include="Shaders\debug_vertexcolor_vertex.hlsl" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\fa-regular-400.ttf" />
+      <Resource Include="Resources\fa-regular-400.ttf">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\fa-solid-900.ttf" />
+      <Resource Include="Resources\fa-solid-900.ttf">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\Roboto-Regular.ttf" />
+      <Resource Include="Resources\Roboto-Regular.ttf">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
     </ItemGroup>
 
 </Project>

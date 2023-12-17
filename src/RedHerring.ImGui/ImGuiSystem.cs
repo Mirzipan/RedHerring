@@ -6,6 +6,7 @@ using RedHerring.Fingerprint;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Infusion.Attributes;
+using RedHerring.Render.ImGui;
 using Silk.NET.Input;
 using Gui = ImGuiNET.ImGui;
 using Key = RedHerring.Fingerprint.Key;
@@ -23,7 +24,6 @@ public class ImGuiSystem : EngineSystem, Updatable, Drawable
     private InputReceiver _receiver = null!;
 
     private ImInputSnapshot _imInputSnapshot = null!;
-    private ImGuiRenderFeature _feature = null!;
     
     public bool IsVisible => true;
     public int DrawOrder => 10_000_000;
@@ -40,27 +40,13 @@ public class ImGuiSystem : EngineSystem, Updatable, Drawable
         _imInputSnapshot = new ImInputSnapshot();
 
         CreateShortcuts();
-        // SubscribeToInput();
-    }
-
-    protected override ValueTask<int> Load()
-    {
-        _feature = new ImGuiRenderFeature();
-        _graphicsSystem.RegisterFeature(_feature);
-        return ValueTask.FromResult(0);
-    }
-
-    protected override ValueTask<int> Unload()
-    {
-        // UnsubscribeFromInput();
-        return ValueTask.FromResult(0);
     }
     
     public void Update(GameTime gameTime)
     {
         UpdateCursor();
         _imInputSnapshot.Update(_inputSystem.Input);
-        _feature.Update(gameTime, _imInputSnapshot);
+        ImGuiProxy.Update(gameTime, _imInputSnapshot);
     }
 
     #endregion Lifecycle

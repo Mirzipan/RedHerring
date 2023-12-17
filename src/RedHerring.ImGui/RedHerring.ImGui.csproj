@@ -14,17 +14,8 @@
 
     <ItemGroup>
       <None Remove="Resources\fa-solid-900.ttf" />
-      <Content Include="Resources\fa-solid-900.ttf">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="Resources\Roboto-Regular.ttf" />
-      <Content Include="Resources\Roboto-Regular.ttf">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="Resources\fa-regular-400.ttf" />
-      <Content Include="Resources\fa-regular-400.ttf">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
     </ItemGroup>
 
 </Project>

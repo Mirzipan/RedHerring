@@ -1,12 +1,15 @@
 ﻿using System.Globalization;
 using System.Numerics;
 using RedHerring.Alexandria;
+using RedHerring.Alexandria.Disposables;
 using RedHerring.Render.Features;
+using RedHerring.Render.ImGui;
 using RedHerring.Render.Passes;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Extensions.Veldrid;
 using Veldrid;
+using ImGuiRenderer = RedHerring.Render.ImGui.ImGuiRenderer;
 
 namespace RedHerring.Render;
 
@@ -20,6 +23,8 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
 
     private RenderFeatureCollection _features;
     private RenderEnvironment _environment = new();
+    private ImGuiRenderer? _imGui;
+    
     private Vector2D<int> _size;
     
     public GraphicsDevice Device => _graphicsDevice;
@@ -76,6 +81,9 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
 
     public void Init()
     {
+        ImGuiProxy.ResetImGuiRenderer(ref _imGui, _graphicsDevice, _size.X, _size.Y);
+        _imGui?.DisposeWith(this);
+        
         InitFeatures();
     }
 
@@ -95,6 +103,9 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
         
         _commandList.Dispose();
         _graphicsDevice.Dispose();
+        
+        _imGui?.Dispose();
+        ImGuiProxy.Dispose();
     }
 
     public bool BeginDraw()
@@ -115,6 +126,8 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
         _features.Render(_graphicsDevice, _commandList, _environment, new RenderPass());
         
         // TODO ensure render targets and other magic
+        
+        _imGui?.Render(_graphicsDevice, _commandList);
     }
 
     public void EndDraw()
@@ -134,6 +147,7 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
     {
         _size = size;
         _graphicsDevice.ResizeMainWindow((uint)size.X, (uint)size.Y);
+        _imGui?.WindowResized(size.X, size.Y);
         _features.Resize(size);
     }
 

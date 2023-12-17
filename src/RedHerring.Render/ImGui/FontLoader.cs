@@ -1,9 +1,7 @@
-﻿using IconFonts;
-using ImGuiNET;
-using Veldrid;
+﻿using ImGuiNET;
 using Gui = ImGuiNET.ImGui;
 
-namespace RedHerring.ImGui;
+namespace RedHerring.Render.ImGui;
 
 internal static class FontLoader
 {

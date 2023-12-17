@@ -1,5 +1,4 @@
-﻿using IconFonts;
-using ImGuiNET;
+﻿using ImGuiNET;
 using NativeFileDialogSharp;
 using RedHerring.Alexandria;
 using RedHerring.Core;
@@ -7,6 +6,7 @@ using RedHerring.Core.Systems;
 using RedHerring.Deduction;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Infusion.Attributes;
+using RedHerring.Render.ImGui;
 using RedHerring.Studio.Constants;
 using RedHerring.Studio.Models;
 using RedHerring.Studio.Models.Project;

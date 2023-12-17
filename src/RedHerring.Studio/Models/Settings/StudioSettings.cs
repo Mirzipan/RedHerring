@@ -15,9 +15,9 @@ public sealed class StudioSettings
 	[ValueDropdown(nameof(_themes)), OnCommitValue(nameof(ApplyTheme))] public string Theme = DefaultTheme;
 	[HideInInspector, NonSerialized] private static StudioTheme[] _themes = // TODO - maybe from some attributes? 
 		{ 
-			new ("Crimson Rivers", ImGui.Theme.CrimsonRivers),
-			new ("Embrace the Darkness", ImGui.Theme.EmbraceTheDarkness),
-			new ("Bloodsucker", ImGui.Theme.Bloodsucker)
+			new ("Crimson Rivers", Render.ImGui.Theme.CrimsonRivers),
+			new ("Embrace the Darkness", Render.ImGui.Theme.EmbraceTheDarkness),
+			new ("Bloodsucker", Render.ImGui.Theme.Bloodsucker)
 		};
 	
 	#region Data storage

@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using Vortice.Mathematics;
 
-namespace RedHerring.ImGui;
+namespace RedHerring.Render.ImGui;
 
 public static class ColorExtensions
 {

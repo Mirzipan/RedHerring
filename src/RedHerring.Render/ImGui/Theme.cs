@@ -2,7 +2,7 @@ using System.Numerics;
 using ImGuiNET;
 using Gui = ImGuiNET.ImGui;
 
-namespace RedHerring.ImGui;
+namespace RedHerring.Render.ImGui;
 
 public static class Theme
 {

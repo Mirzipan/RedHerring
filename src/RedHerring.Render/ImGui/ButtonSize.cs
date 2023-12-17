@@ -1,4 +1,4 @@
-﻿namespace RedHerring.ImGui;
+﻿namespace RedHerring.Render.ImGui;
 
 public enum ButtonSize
 {
