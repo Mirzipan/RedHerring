@@ -1,11 +1,15 @@
 ﻿using System.Numerics;
 using System.Reflection;
 using ImGuiNET;
+using RedHerring.Fingerprint;
+using RedHerring.Fingerprint.Events;
 using Veldrid;
+using MouseButton = RedHerring.Fingerprint.MouseButton;
 
 namespace RedHerring.Render.ImGui;
 
-// Taken from Veldrid and modified to work with newer Dear ImGui versions. 
+// Taken from Veldrid and modified to work with newer Dear ImGui versions, without having to wait for updates to Veldrid itself.
+// https://github.com/veldrid/veldrid/tree/master/src/Veldrid.ImGui
 
 /// <summary>
 /// Can render draw lists produced by ImGui.
@@ -40,6 +44,9 @@ public class ImGuiRenderer : IDisposable
     private readonly Dictionary<Texture, TextureView> _autoViewsByTexture = new();
     private readonly Dictionary<IntPtr, ResourceSetInfo> _viewsById = new();
 
+    // Input
+    private readonly List<char> _inputChars = new();
+    
     private readonly List<IDisposable> _ownedResources = new();
     private int _lastAssignedId = 100;
     private bool _frameBegun;
@@ -68,7 +75,7 @@ public class ImGuiRenderer : IDisposable
         ColorSpaceHandling colorSpaceHandling)
     {
         _gd = gd;
-        _assembly = typeof(Veldrid.ImGuiRenderer).GetTypeInfo().Assembly;
+        _assembly = typeof(ImGuiRenderer).GetTypeInfo().Assembly;
         _colorSpaceHandling = colorSpaceHandling;
         _windowWidth = width;
         _windowHeight = height;
@@ -207,8 +214,8 @@ public class ImGuiRenderer : IDisposable
 
     private IntPtr GetNextImGuiBindingID()
     {
-        int newID = _lastAssignedId++;
-        return (IntPtr)newID;
+        int newId = _lastAssignedId++;
+        return (IntPtr)newId;
     }
 
     /// <summary>
@@ -400,10 +407,10 @@ public class ImGuiRenderer : IDisposable
     /// <summary>
     /// Updates ImGui input and IO configuration state.
     /// </summary>
-    public void Update(float deltaSeconds, InputSnapshot snapshot)
+    public void Update(float deltaSeconds, Input input)
     {
         BeginUpdate(deltaSeconds);
-        UpdateImGuiInput(snapshot);
+        UpdateImGuiInput(input);
         EndUpdate();
     }
 
@@ -445,196 +452,38 @@ public class ImGuiRenderer : IDisposable
         io.DeltaTime = deltaSeconds; // DeltaTime is in seconds.
     }
 
-    private bool TryMapKey(Key key, out ImGuiKey result)
-    {
-        ImGuiKey keyToImGuiKeyShortcut(Key keyToConvert, Key startKey1, ImGuiKey startKey2)
-        {
-            int changeFromStart1 = (int)keyToConvert - (int)startKey1;
-            return startKey2 + changeFromStart1;
-        }
-
-        if (key >= Key.F1 && key <= Key.F12)
-        {
-            result = keyToImGuiKeyShortcut(key, Key.F1, ImGuiKey.F1);
-            return true;
-        }
-        else if (key >= Key.Keypad0 && key <= Key.Keypad9)
-        {
-            result = keyToImGuiKeyShortcut(key, Key.Keypad0, ImGuiKey.Keypad0);
-            return true;
-        }
-        else if (key >= Key.A && key <= Key.Z)
-        {
-            result = keyToImGuiKeyShortcut(key, Key.A, ImGuiKey.A);
-            return true;
-        }
-        else if (key >= Key.Number0 && key <= Key.Number9)
-        {
-            result = keyToImGuiKeyShortcut(key, Key.Number0, ImGuiKey._0);
-            return true;
-        }
-
-        switch (key)
-        {
-            case Key.ShiftLeft:
-            case Key.ShiftRight:
-                result = ImGuiKey.ModShift;
-                return true;
-            case Key.ControlLeft:
-            case Key.ControlRight:
-                result = ImGuiKey.ModCtrl;
-                return true;
-            case Key.AltLeft:
-            case Key.AltRight:
-                result = ImGuiKey.ModAlt;
-                return true;
-            case Key.WinLeft:
-            case Key.WinRight:
-                result = ImGuiKey.ModSuper;
-                return true;
-            case Key.Menu:
-                result = ImGuiKey.Menu;
-                return true;
-            case Key.Up:
-                result = ImGuiKey.UpArrow;
-                return true;
-            case Key.Down:
-                result = ImGuiKey.DownArrow;
-                return true;
-            case Key.Left:
-                result = ImGuiKey.LeftArrow;
-                return true;
-            case Key.Right:
-                result = ImGuiKey.RightArrow;
-                return true;
-            case Key.Enter:
-                result = ImGuiKey.Enter;
-                return true;
-            case Key.Escape:
-                result = ImGuiKey.Escape;
-                return true;
-            case Key.Space:
-                result = ImGuiKey.Space;
-                return true;
-            case Key.Tab:
-                result = ImGuiKey.Tab;
-                return true;
-            case Key.BackSpace:
-                result = ImGuiKey.Backspace;
-                return true;
-            case Key.Insert:
-                result = ImGuiKey.Insert;
-                return true;
-            case Key.Delete:
-                result = ImGuiKey.Delete;
-                return true;
-            case Key.PageUp:
-                result = ImGuiKey.PageUp;
-                return true;
-            case Key.PageDown:
-                result = ImGuiKey.PageDown;
-                return true;
-            case Key.Home:
-                result = ImGuiKey.Home;
-                return true;
-            case Key.End:
-                result = ImGuiKey.End;
-                return true;
-            case Key.CapsLock:
-                result = ImGuiKey.CapsLock;
-                return true;
-            case Key.ScrollLock:
-                result = ImGuiKey.ScrollLock;
-                return true;
-            case Key.PrintScreen:
-                result = ImGuiKey.PrintScreen;
-                return true;
-            case Key.Pause:
-                result = ImGuiKey.Pause;
-                return true;
-            case Key.NumLock:
-                result = ImGuiKey.NumLock;
-                return true;
-            case Key.KeypadDivide:
-                result = ImGuiKey.KeypadDivide;
-                return true;
-            case Key.KeypadMultiply:
-                result = ImGuiKey.KeypadMultiply;
-                return true;
-            case Key.KeypadSubtract:
-                result = ImGuiKey.KeypadSubtract;
-                return true;
-            case Key.KeypadAdd:
-                result = ImGuiKey.KeypadAdd;
-                return true;
-            case Key.KeypadDecimal:
-                result = ImGuiKey.KeypadDecimal;
-                return true;
-            case Key.KeypadEnter:
-                result = ImGuiKey.KeypadEnter;
-                return true;
-            case Key.Tilde:
-                result = ImGuiKey.GraveAccent;
-                return true;
-            case Key.Minus:
-                result = ImGuiKey.Minus;
-                return true;
-            case Key.Plus:
-                result = ImGuiKey.Equal;
-                return true;
-            case Key.BracketLeft:
-                result = ImGuiKey.LeftBracket;
-                return true;
-            case Key.BracketRight:
-                result = ImGuiKey.RightBracket;
-                return true;
-            case Key.Semicolon:
-                result = ImGuiKey.Semicolon;
-                return true;
-            case Key.Quote:
-                result = ImGuiKey.Apostrophe;
-                return true;
-            case Key.Comma:
-                result = ImGuiKey.Comma;
-                return true;
-            case Key.Period:
-                result = ImGuiKey.Period;
-                return true;
-            case Key.Slash:
-                result = ImGuiKey.Slash;
-                return true;
-            case Key.BackSlash:
-            case Key.NonUSBackSlash:
-                result = ImGuiKey.Backslash;
-                return true;
-            default:
-                result = ImGuiKey.GamepadBack;
-                return false;
-        }
-    }
-
-    private unsafe void UpdateImGuiInput(InputSnapshot snapshot)
+    private unsafe void UpdateImGuiInput(Input input)
     {
         ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
-        io.AddMousePosEvent(snapshot.MousePosition.X, snapshot.MousePosition.Y);
-        io.AddMouseButtonEvent(0, snapshot.IsMouseDown(MouseButton.Left));
-        io.AddMouseButtonEvent(1, snapshot.IsMouseDown(MouseButton.Right));
-        io.AddMouseButtonEvent(2, snapshot.IsMouseDown(MouseButton.Middle));
-        io.AddMouseButtonEvent(3, snapshot.IsMouseDown(MouseButton.Button1));
-        io.AddMouseButtonEvent(4, snapshot.IsMouseDown(MouseButton.Button2));
-        io.AddMouseWheelEvent(0f, snapshot.WheelDelta);
 
-        for (int i = 0; i < snapshot.KeyCharPresses.Count; i++)
+        var mouse = input.Mouse;
+        if (mouse is not null)
         {
-            io.AddInputCharacter(snapshot.KeyCharPresses[i]);
+            io.AddMousePosEvent(mouse.Position.X, mouse.Position.Y);
+            io.AddMouseWheelEvent(0f, mouse.ScrollWheel.Y);
+
+            for (int i = 0; i < mouse.ButtonsChanged.Count; i++)
+            {
+                var change = mouse.ButtonsChanged[i];
+                io.AddMouseButtonEvent((int)change.Button, change.IsDown);
+            }
         }
 
-        for (int i = 0; i < snapshot.KeyEvents.Count; i++)
+        var keyboard = input.Keyboard;
+        if (keyboard is not null)
         {
-            KeyEvent keyEvent = snapshot.KeyEvents[i];
-            if (TryMapKey(keyEvent.Key, out ImGuiKey imguikey))
+            _inputChars.Clear();
+            keyboard.Chars(_inputChars);
+
+            for (int i = 0; i < _inputChars.Count; i++)
             {
-                io.AddKeyEvent(imguikey, keyEvent.Down);
+                io.AddInputCharacter(_inputChars[i]);
+            }
+
+            for (int i = 0; i < keyboard.KeysChanged.Count; i++)
+            {
+                var change = keyboard.KeysChanged[i];
+                io.AddKeyEvent(Convert.ToImGuiKey(change.Key), change.IsDown);
             }
         }
     }

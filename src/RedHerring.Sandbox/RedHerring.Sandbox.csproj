@@ -16,7 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RedHerring.ImGui\RedHerring.ImGui.csproj" />
       <ProjectReference Include="..\RedHerring.Motive\RedHerring.Motive.csproj" />
       <ProjectReference Include="..\RedHerring\RedHerring.csproj" />
     </ItemGroup>

@@ -9,7 +9,7 @@ public class StudioEngineInstaller : BindingsInstaller
 	{
 		description.AddCoreSystems();
 		description.AddGraphics();
-		description.AddInput().AddImGui();
+		description.AddInput();
 		description.AddDefinitions();
 		description.AddStudio();
 	}

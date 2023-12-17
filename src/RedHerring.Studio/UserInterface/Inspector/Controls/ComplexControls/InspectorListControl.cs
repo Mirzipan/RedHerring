@@ -4,7 +4,6 @@ using Gui = ImGuiNET.ImGui;
 
 using System.Reflection;
 using RedHerring.Alexandria.Extensions;
-using RedHerring.ImGui;
 using RedHerring.Render.ImGui;
 using RedHerring.Studio.UserInterface.Attributes;
 

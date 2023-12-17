@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using RedHerring.Alexandria.Masks;
 using RedHerring.Fingerprint.Events;
 using Silk.NET.Input;
@@ -27,7 +28,15 @@ public class MouseState : IDisposable
 
     public IMouse Mouse => _mouse;
     public string Name => _mouse.Name;
-    public IEnumerable<MouseButtonChanged> ButtonsChanged => _buttonsChanged;
+    public IReadOnlyList<MouseButtonChanged> ButtonsChanged => _buttonsChanged;
+
+    public StandardCursor Cursor
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => _mouse.Cursor.StandardCursor;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => _mouse.Cursor.StandardCursor = value;
+    }
 
     #region Lifecycle
 

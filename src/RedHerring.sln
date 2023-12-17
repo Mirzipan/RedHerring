@@ -22,8 +22,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Infusion", "RedH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Assets", "RedHerring.Assets\RedHerring.Assets.csproj", "{3E686ECC-95FA-4685-88D7-06E9AF1AA8A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.ImGui", "RedHerring.ImGui\RedHerring.ImGui.csproj", "{139AF41E-6E87-4750-921B-7D3D25473232}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Studio", "RedHerring.Studio\RedHerring.Studio.csproj", "{2C2D73CF-3898-4BE8-971A-76C9AA17974B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Deduction", "RedHerring.Deduction\RedHerring.Deduction.csproj", "{57E8ADAE-9AA8-4F0B-8368-E77FA14536D7}"
@@ -84,10 +82,6 @@ Global
 		{3E686ECC-95FA-4685-88D7-06E9AF1AA8A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E686ECC-95FA-4685-88D7-06E9AF1AA8A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E686ECC-95FA-4685-88D7-06E9AF1AA8A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{139AF41E-6E87-4750-921B-7D3D25473232}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{139AF41E-6E87-4750-921B-7D3D25473232}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{139AF41E-6E87-4750-921B-7D3D25473232}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{139AF41E-6E87-4750-921B-7D3D25473232}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2C2D73CF-3898-4BE8-971A-76C9AA17974B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2C2D73CF-3898-4BE8-971A-76C9AA17974B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C2D73CF-3898-4BE8-971A-76C9AA17974B}.Release|Any CPU.ActiveCfg = Release|Any CPU

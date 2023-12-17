@@ -27,7 +27,7 @@ public class KeyboardState : IDisposable
     public string Name => _device.Name;
     public Modifiers Modifiers => _modifiers;
 
-    public IEnumerable<KeyChanged> KeysChanged => _keysChanged;
+    public IReadOnlyList<KeyChanged> KeysChanged => _keysChanged;
 
     #region Lifecycle
 

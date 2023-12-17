@@ -1,4 +1,5 @@
 ﻿using RedHerring.Alexandria;
+using RedHerring.Fingerprint;
 using Veldrid;
 
 namespace RedHerring.Render.ImGui;
@@ -7,9 +8,9 @@ public static class ImGuiProxy
 {
     private static ImGuiRenderer? _renderer;
     
-    public static void Update(GameTime time, InputSnapshot snapshot)
+    public static void Update(GameTime time, Input input)
     {
-        _renderer?.Update((float)time.Elapsed.TotalSeconds, snapshot);
+        _renderer?.Update((float)time.Elapsed.TotalSeconds, input);
     }
     
     internal static void ResetImGuiRenderer(ref ImGuiRenderer? renderer, GraphicsDevice device, int width, int height)

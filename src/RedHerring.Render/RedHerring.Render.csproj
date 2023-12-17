@@ -26,8 +26,45 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ClCompile Include="Shaders\debug_vertexcolor_fragment.hlsl" />
-      <ClCompile Include="Shaders\debug_vertexcolor_vertex.hlsl" />
+      <EmbeddedResource Include="Resources/GLSL/imgui-vertex.glsl">
+        <LogicalName>imgui-vertex.glsl</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Resources/GLSL/imgui-vertex-legacy.glsl">
+        <LogicalName>imgui-vertex-legacy.glsl</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Resources/GLSL/imgui-frag.glsl">
+        <LogicalName>imgui-frag.glsl</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Resources/GLSLES/imgui-vertex.glsles">
+        <LogicalName>imgui-vertex.glsles</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Resources/GLSLES/imgui-vertex-legacy.glsles">
+        <LogicalName>imgui-vertex-legacy.glsles</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Resources/GLSLES/imgui-frag.glsles">
+        <LogicalName>imgui-frag.glsles</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Resources/HLSL/imgui-vertex.hlsl.bytes">
+        <LogicalName>imgui-vertex.hlsl.bytes</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Resources\HLSL\imgui-vertex-legacy.hlsl.bytes">
+        <LogicalName>imgui-vertex-legacy.hlsl.bytes</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Resources/HLSL/imgui-frag.hlsl.bytes">
+        <LogicalName>imgui-frag.hlsl.bytes</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Resources/SPIR-V/imgui-vertex.spv">
+        <LogicalName>imgui-vertex.spv</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Resources/SPIR-V/imgui-frag.spv">
+        <LogicalName>imgui-frag.spv</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Resources/Metal/imgui-vertex.metallib">
+        <LogicalName>imgui-vertex.metallib</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Resources/Metal/imgui-frag.metallib">
+        <LogicalName>imgui-frag.metallib</LogicalName>
+      </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
@@ -43,6 +80,30 @@
       <Resource Include="Resources\Roboto-Regular.ttf">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Resource>
+      <None Remove="Resources\GLSL\imgui-frag.glsl" />
+      <EmbeddedResource Include="Resources\GLSL\imgui-frag.glsl">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="Resources\GLSL\imgui-vertex.glsl" />
+      <EmbeddedResource Include="Resources\GLSL\imgui-vertex.glsl">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="Resources\GLSL\imgui-vertex-legacy.glsl" />
+      <EmbeddedResource Include="Resources\GLSL\imgui-vertex-legacy.glsl">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="Resources\GLSLES\imgui-frag.glsles" />
+      <EmbeddedResource Include="Resources\GLSLES\imgui-frag.glsles">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="Resources\GLSLES\imgui-vertex.glsles" />
+      <EmbeddedResource Include="Resources\GLSLES\imgui-vertex.glsles">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="Resources\GLSLES\imgui-vertex-legacy.glsles" />
+      <EmbeddedResource Include="Resources\GLSLES\imgui-vertex-legacy.glsles">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>
