@@ -72,7 +72,7 @@ public sealed class GameMenuComponent : SessionComponent, Drawable
         var center = GetMainViewport().GetCenter();
         SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
         
-        if (BeginChild("game_menu", Vector2.Zero, true, ChildFlags))
+        if (BeginChild("game_menu", Vector2.Zero, ImGuiChildFlags.None, ChildFlags))
         {
             var buttonSize = new Vector2(300, 20);
             

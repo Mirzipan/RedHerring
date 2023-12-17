@@ -37,7 +37,7 @@ public sealed class MainMenuComponent : SessionComponent, Drawable
     {
         Spacing();
 
-        if (!BeginChild("main_menu", new Vector2(400, 600), true, BackgroundWindowFlags))
+        if (!BeginChild("main_menu", new Vector2(400, 600), ImGuiChildFlags.None, BackgroundWindowFlags))
         {
             return;
         }

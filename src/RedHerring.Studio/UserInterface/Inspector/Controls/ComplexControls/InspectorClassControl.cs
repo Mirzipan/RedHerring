@@ -300,7 +300,7 @@ public sealed class InspectorClassControl : InspectorControl
 			return;
 		}
 
-		bool treeNodeOpen = Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowItemOverlap);
+		bool treeNodeOpen = Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowOverlap);
 		if (_allowDeleteReference)
 		{
 			Gui.PushID(_deleteButtonId);

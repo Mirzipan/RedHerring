@@ -77,7 +77,7 @@ public sealed class InspectorListControl : InspectorControl
 
 		if (_isReadOnly)
 		{
-			if (Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowItemOverlap))
+			if (Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowOverlap))
 			{
 				for(int i = 0; i < _controls.Count; ++i)
 				{
@@ -98,7 +98,7 @@ public sealed class InspectorListControl : InspectorControl
 		bool createNewElement   = false;
 		int  deleteElementIndex = -1;
 
-		if (Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowItemOverlap))
+		if (Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowOverlap))
 		{
 			if (!_isReadOnly)
 			{

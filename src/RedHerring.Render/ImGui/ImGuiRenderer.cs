@@ -2,9 +2,7 @@
 using System.Reflection;
 using ImGuiNET;
 using RedHerring.Fingerprint;
-using RedHerring.Fingerprint.Events;
 using Veldrid;
-using MouseButton = RedHerring.Fingerprint.MouseButton;
 
 namespace RedHerring.Render.ImGui;
 
@@ -15,7 +13,7 @@ namespace RedHerring.Render.ImGui;
 /// Can render draw lists produced by ImGui.
 /// Also provides functions for updating ImGui input.
 /// </summary>
-public class ImGuiRenderer : IDisposable
+public sealed class ImGuiRenderer : IDisposable
 {
     private GraphicsDevice _gd;
     private readonly Assembly _assembly;
@@ -58,7 +56,7 @@ public class ImGuiRenderer : IDisposable
     /// <param name="outputDescription">The output format.</param>
     /// <param name="width">The initial width of the rendering target. Can be resized.</param>
     /// <param name="height">The initial height of the rendering target. Can be resized.</param>
-    public ImGuiRenderer(GraphicsDevice gd, OutputDescription outputDescription, int width, int height)
+    internal ImGuiRenderer(GraphicsDevice gd, OutputDescription outputDescription, int width, int height)
         : this(gd, outputDescription, width, height, ColorSpaceHandling.Legacy)
     {
     }
@@ -71,7 +69,7 @@ public class ImGuiRenderer : IDisposable
     /// <param name="width">The initial width of the rendering target. Can be resized.</param>
     /// <param name="height">The initial height of the rendering target. Can be resized.</param>
     /// <param name="colorSpaceHandling">Identifies how the renderer should treat vertex colors.</param>
-    public ImGuiRenderer(GraphicsDevice gd, OutputDescription outputDescription, int width, int height,
+    internal ImGuiRenderer(GraphicsDevice gd, OutputDescription outputDescription, int width, int height,
         ColorSpaceHandling colorSpaceHandling)
     {
         _gd = gd;
@@ -518,7 +516,7 @@ public class ImGuiRenderer : IDisposable
 
         for (int i = 0; i < drawData.CmdListsCount; i++)
         {
-            ImDrawListPtr cmdList = drawData.CmdListsRange[i];
+            ImDrawListPtr cmdList = drawData.CmdLists[i];
 
             cl.UpdateBuffer(
                 _vertexBuffer,
@@ -563,7 +561,7 @@ public class ImGuiRenderer : IDisposable
         int idxOffset = 0;
         for (int n = 0; n < drawData.CmdListsCount; n++)
         {
-            ImDrawListPtr cmdList = drawData.CmdListsRange[n];
+            ImDrawListPtr cmdList = drawData.CmdLists[n];
             for (int cmd = 0; cmd < cmdList.CmdBuffer.Size; cmd++)
             {
                 ImDrawCmdPtr pcmd = cmdList.CmdBuffer[cmd];
