@@ -49,13 +49,13 @@ internal static class FontLoader
                                   {
                                       GlyphRanges        = glyphRangePtr,
                                       MergeMode          = 1,
-                                      OversampleH        = 1,
+                                      OversampleH        = 2,
                                       OversampleV        = 1,
                                       PixelSnapH         = 1,
                                       RasterizerMultiply = 1,
+                                      RasterizerDensity  = 1,
                                       GlyphMinAdvanceX   = Size,
                                       GlyphMaxAdvanceX   = 256,
-                                      
                                   };
 
             Gui.GetIO().Fonts.AddFontFromFileTTF(path, Size, &config);

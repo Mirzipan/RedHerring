@@ -69,17 +69,17 @@
 
     <ItemGroup>
       <None Remove="Resources\fa-regular-400.ttf" />
-      <Resource Include="Resources\fa-regular-400.ttf">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Resource>
+      <EmbeddedResource Include="Resources\fa-regular-400.ttf">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
       <None Remove="Resources\fa-solid-900.ttf" />
-      <Resource Include="Resources\fa-solid-900.ttf">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Resource>
+      <EmbeddedResource Include="Resources\fa-solid-900.ttf">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
       <None Remove="Resources\Roboto-Regular.ttf" />
-      <Resource Include="Resources\Roboto-Regular.ttf">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Resource>
+      <EmbeddedResource Include="Resources\Roboto-Regular.ttf">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
       <None Remove="Resources\GLSL\imgui-frag.glsl" />
       <EmbeddedResource Include="Resources\GLSL\imgui-frag.glsl">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
