@@ -27,7 +27,7 @@ public sealed class ToolConsole : Tool
 	private bool UpdateUI()
 	{
 		bool isOpen = true;
-		if (Gui.Begin(NameWithSalt, ref isOpen))
+		if (Gui.Begin(NameId, ref isOpen))
 		{
 			for(int i=0; i<StudioModel.Console.Count; ++i)
 			{

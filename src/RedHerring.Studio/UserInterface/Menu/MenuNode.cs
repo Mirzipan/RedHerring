@@ -1,10 +1,10 @@
 ﻿namespace RedHerring.Studio.UserInterface;
 
-public abstract class AMenuNode
+public abstract class MenuNode
 {
 	public readonly string Name;
 	
-	protected AMenuNode(string name)
+	protected MenuNode(string name)
 	{
 		Name = name;
 	}

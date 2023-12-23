@@ -2,7 +2,7 @@
 
 namespace RedHerring.Studio.UserInterface;
 
-public sealed class MenuLeafNode : AMenuNode
+public sealed class MenuLeafNode : MenuNode
 {
 	private readonly string      _shortcut; // TODO - this should be generated from input shortcut
 	private readonly Action      _onClick;

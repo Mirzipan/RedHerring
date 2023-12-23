@@ -1,10 +1,12 @@
 ﻿using Migration;
+using RedHerring.Studio.Models.Project.FileSystem;
 
 namespace RedHerring.Studio.Models.Project.Importers;
 
 [Serializable, SerializedClassId("copy-importer-id")]
 public sealed class CopyImporterSettings : ImporterSettings
 {
+	public override ProjectNodeType NodeType => ProjectNodeType.AssetBinary;
 }
 
 #region Migration

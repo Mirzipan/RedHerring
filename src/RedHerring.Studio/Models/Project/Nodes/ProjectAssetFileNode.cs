@@ -3,23 +3,31 @@ using Migration;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
 
-public sealed class ProjectFileNode : ProjectNode
+public sealed class ProjectAssetFileNode : ProjectNode
 {
+	public override string RelativeDirectoryPath => RelativePath.Substring(0, RelativePath.Length - Name.Length);
+	public override bool   Exists                => File.Exists(AbsolutePath);
+	
 	private static readonly HashAlgorithm _hashAlgorithm = SHA1.Create();
 	
-	public ProjectFileNode(string name, string path, string relativePath) : base(name, path, relativePath)
+	public ProjectAssetFileNode(string name, string absolutePath, string relativePath) : base(name, absolutePath, relativePath, true)
 	{
 	}
-	
+
 	public override void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken)
 	{
 		// calculate file hash
 		string hash;
-		using(FileStream file = new (Path, FileMode.Open))
+		try
 		{
+			using FileStream file = new(AbsolutePath, FileMode.Open);
 			hash = Convert.ToBase64String(_hashAlgorithm.ComputeHash(file)); // how to cancel compute hash?
 		}
-		
+		catch (Exception e)
+		{
+			hash = "";
+		}
+
 		// init meta
 		CreateMetaFile(migrationManager, hash);
 	}
@@ -30,5 +38,10 @@ public sealed class ProjectFileNode : ProjectNode
 		{
 			process(this);
 		}
+	}
+
+	public override ProjectNode? FindNode(string path)
+	{
+		return null;
 	}
 }

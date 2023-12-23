@@ -35,7 +35,7 @@ public sealed class ToolInspector : Tool
 	private bool UpdateUI()
 	{
 		bool isOpen = true;
-		if (Gui.Begin(NameWithSalt, ref isOpen))
+		if (Gui.Begin(NameId, ref isOpen))
 		{
 			SubscribeToChange();
 			_inspector.Update();

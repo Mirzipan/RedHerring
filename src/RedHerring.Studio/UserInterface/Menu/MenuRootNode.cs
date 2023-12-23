@@ -4,20 +4,33 @@ namespace RedHerring.Studio.UserInterface;
 
 public sealed class MenuRootNode : MenuInternalNode
 {
-	public MenuRootNode() : base("")
+	private readonly MenuStyle _style;
+	
+	public MenuRootNode(MenuStyle style) : base("")
 	{
+		_style = style;
 	}
 	
 	public override void Update()
 	{
-		if (Gui.BeginMainMenuBar())
+		if (_style == MenuStyle.MainMenu)
 		{
-			foreach (AMenuNode child in _children)
+			if (Gui.BeginMainMenuBar())
 			{
-				child.Update();
+				foreach (MenuNode child in _children)
+				{
+					child.Update();
+				}
+
+				Gui.EndMainMenuBar();
 			}
 
-			Gui.EndMainMenuBar();
+			return;
+		}
+
+		foreach (MenuNode child in _children)
+		{
+			child.Update();
 		}
 	}
 }

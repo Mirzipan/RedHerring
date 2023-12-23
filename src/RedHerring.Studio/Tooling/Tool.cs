@@ -10,7 +10,7 @@ public abstract class Tool
 	public static  int UniqueToolIdGeneratorState => _uniqueToolIdGenerator; // used for saving
 	
 	private readonly   int    UniqueId;
-	protected readonly string NameWithSalt;
+	protected readonly string NameId;
 	
 	protected abstract string Name { get; }
 	public ToolId Id => new(Name, UniqueId);
@@ -23,7 +23,7 @@ public abstract class Tool
 	protected Tool(StudioModel studioModel, int uniqueId)
 	{
 		UniqueId     = uniqueId;
-		NameWithSalt = $"{Name}##{UniqueId}";
+		NameId = $"{Name}##{UniqueId}";
 		StudioModel  = studioModel;
 	}
 	

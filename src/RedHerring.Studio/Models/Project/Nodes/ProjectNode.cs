@@ -1,35 +1,49 @@
 using Migration;
+using RedHerring.Studio.UserInterface.Attributes;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
 
 public abstract class ProjectNode
 {
-	public          string   Name { get; }
-	public readonly string   Path;
-	public readonly string   RelativePath; // relative path inside Assets directory
-	public          Metadata Meta = null!;
+	[ReadOnlyInInspector] public ProjectNodeType Type = ProjectNodeType.Uninitialized;
 
-	public string Extension => System.IO.Path.GetExtension(Path).ToLower();	// cache if needed
+	public          string Name { get; }
+	public readonly string AbsolutePath;
+	public readonly string RelativePath; // relative path inside Assets directory
+	public abstract string RelativeDirectoryPath { get; }
 
-	protected ProjectNode(string name, string path, string relativePath)
+	[ReadOnlyInInspector] public bool HasMetaFile;
+	
+	public Metadata? Meta;
+
+	public          string Extension => System.IO.Path.GetExtension(AbsolutePath).ToLower(); // cache if needed
+	public abstract bool   Exists    { get; }
+
+	protected ProjectNode(string name, string absolutePath, string relativePath, bool hasMetaFile)
 	{
 		Name         = name;
-		Path         = path;
+		AbsolutePath         = absolutePath;
 		RelativePath = relativePath;
+		HasMetaFile  = hasMetaFile;
 	}
 
 	public abstract void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken);
 
 	public void UpdateMetaFile()
 	{
-		string metaPath = $"{Path}.meta";
+		string metaPath = $"{AbsolutePath}.meta";
 		byte[] json     = MigrationSerializer.SerializeAsync(Meta, SerializedDataFormat.JSON, StudioModel.Assembly).GetAwaiter().GetResult();
 		File.WriteAllBytes(metaPath, json);
 	}
 
+	public void SetNodeType(ProjectNodeType type)
+	{
+		Type = type;
+	}
+
 	protected void CreateMetaFile(MigrationManager migrationManager, string? hash)
 	{
-		string metaPath = $"{Path}.meta";
+		string metaPath = $"{AbsolutePath}.meta";
 		
 		// read if possible
 		Metadata? meta = null;
@@ -54,4 +68,6 @@ public abstract class ProjectNode
 	}
 
 	public abstract void TraverseRecursive(Action<ProjectNode> process, TraverseFlags flags, CancellationToken cancellationToken);
+
+	public abstract ProjectNode? FindNode(string path);
 }

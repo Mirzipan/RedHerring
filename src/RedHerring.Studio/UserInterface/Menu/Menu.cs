@@ -1,27 +1,33 @@
-﻿using Gui = ImGuiNET.ImGui;
-
-namespace RedHerring.Studio.UserInterface;
+﻿namespace RedHerring.Studio.UserInterface;
 
 public sealed class Menu
 {
-	private readonly AMenuNode _root = new MenuRootNode();
+	private readonly MenuNode _root;
 	
 	// on click cache - to avoid calling actions directly from menu items
 	private readonly Dictionary<string, Action?> _onClickActions  = new();
 	private          string?                     _menuItemClicked = null;
-	
+
+	public Menu(MenuStyle style)
+	{
+		_root = new MenuRootNode(style);
+	}
+
 	public void Update()
 	{
 		_menuItemClicked = null;
-
 		_root.Update();
+	}
 
+	public void InvokeClickActions()
+	{
 		if (_menuItemClicked != null)
 		{
 			_onClickActions[_menuItemClicked]?.Invoke();
+			_menuItemClicked = null;
 		}
 	}
-	
+
 	public void AddItem(
 		string path,
 		Action onClick,

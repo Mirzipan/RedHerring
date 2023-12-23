@@ -1,4 +1,5 @@
 ﻿using Migration;
+using RedHerring.Studio.Models.Project.FileSystem;
 using SixLabors.ImageSharp.Formats.Png;
 
 namespace RedHerring.Studio.Models.Project.Importers;
@@ -6,6 +7,8 @@ namespace RedHerring.Studio.Models.Project.Importers;
 [Serializable, SerializedClassId("png-importer-id")]
 public sealed class PngImporterSettings : ImporterSettings
 {
+    public override ProjectNodeType NodeType => ProjectNodeType.AssetImage;
+    
     public PngBitDepth BitDepth = PngBitDepth.Bit8;
     public PngColorType ColorType = PngColorType.RgbWithAlpha;
     public PngCompressionLevel Compression = PngCompressionLevel.BestSpeed;

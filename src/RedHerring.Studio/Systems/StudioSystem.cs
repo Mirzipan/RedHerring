@@ -42,12 +42,12 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	private StudioModel    _studioModel = null!;
 	
 	#region User Interface
-	private readonly DockSpace      _dockSpace       = new();
-	private readonly Menu           _menu            = new();
-	private readonly StatusBar      _statusBar       = new();
+	private readonly DockSpace    _dockSpace       = new();
+	private readonly Menu         _menu            = new(MenuStyle.MainMenu);
+	private readonly StatusBar    _statusBar       = new();
 	private          ObjectDialog _projectSettings = null!;
 	private          ObjectDialog _studioSettings  = null!;
-	private readonly MessageBox     _messageBox      = new();
+	private readonly MessageBox   _messageBox      = new();
 	#endregion
     
 	#region Lifecycle
@@ -97,6 +97,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_dockSpace.Update();
         
 		_menu.Update();
+		_menu.InvokeClickActions();
         
 		UpdateStatusBarMessage();
 		_statusBar.Update();

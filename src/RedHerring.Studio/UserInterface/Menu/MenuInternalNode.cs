@@ -2,9 +2,9 @@
 
 namespace RedHerring.Studio.UserInterface;
 
-public class MenuInternalNode : AMenuNode
+public class MenuInternalNode : MenuNode
 {
-	protected readonly List<AMenuNode> _children = new();
+	protected readonly List<MenuNode> _children = new();
 
 	public MenuInternalNode(string name) : base(name)
 	{
@@ -14,7 +14,7 @@ public class MenuInternalNode : AMenuNode
 	{
 		if (Gui.BeginMenu(Name))
 		{
-			foreach (AMenuNode child in _children)
+			foreach (MenuNode child in _children)
 			{
 				child.Update();
 			}
