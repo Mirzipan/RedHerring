@@ -109,6 +109,14 @@ namespace Migration
 				}
 			}
 
+			{
+				NonMigratableIdAttribute non_migratable_id = type.GetAttribute<NonMigratableIdAttribute>(false);
+				if (non_migratable_id?.CustomId != null)
+				{
+					return non_migratable_id.CustomId;
+				}
+			}
+			
 			return type.Namespace + "." + type.Name;
 		}
 

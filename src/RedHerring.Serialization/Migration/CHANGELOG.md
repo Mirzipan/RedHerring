@@ -2,6 +2,12 @@
 Only major and minor versions are here.
 
 ------------------
+### Version v1.4.0
+#### Added
+- added support for custom ids to not migrated classes
+- added sync versions of serialization functions
+
+------------------
 ### Version v1.3.0
 #### Added
 - added support for root class migration
@@ -19,4 +25,4 @@ Only major and minor versions are here.
 ------------------
 ### Version v1.0.0
 #### Added
-- Initial stable release
+- initial stable release

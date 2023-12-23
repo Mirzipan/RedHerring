@@ -10,8 +10,11 @@ public sealed class SceneImporterSettings : ImporterSettings
 }
 
 #region Migration
+[MigratableInterface(typeof(SceneImporterSettings))]
+public interface ISceneImporterSettingsMigratable : IImporterSettingsMigratable;
+
 [Serializable, LatestVersion(typeof(SceneImporterSettings))]
-public class SceneImporterSettings_000 : ImporterSettings_000
+public class SceneImporterSettings_000 : ImporterSettings_000, ISceneImporterSettingsMigratable
 {
 	public List<ISceneImporterMeshSettingsMigratable> Meshes;
 }

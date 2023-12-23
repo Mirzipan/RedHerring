@@ -1,7 +1,4 @@
 //#define MIGRATION_SERIALIZER_LOG
-
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -16,7 +13,66 @@ namespace Migration
 		// serialize data with given format
 		public static async Task<byte[]> SerializeAsync<TData>(TData data, SerializedDataFormat data_format, Assembly assembly = null)
 		{
-			// serialize data
+			byte[] serialized_data = SerializeData(data, data_format, assembly);
+			
+			if (data_format.IsGZip())
+			{
+				serialized_data = await GZipWrapper.CompressAsync(serialized_data);
+			}
+
+			return serialized_data;
+		}
+
+		public static byte[] Serialize<TData>(TData data, SerializedDataFormat data_format, Assembly assembly = null)
+		{
+			byte[] serialized_data = SerializeData(data, data_format, assembly);
+			
+			if (data_format.IsGZip())
+			{
+				serialized_data = GZipWrapper.Compress(serialized_data);
+			}
+
+			return serialized_data;
+		}
+		
+		// deserialize data from input, types_hash must be stored separately and it's the same hash the MigrationManager provides
+		public static async Task<TData> DeserializeAsync<TData, TDataMigratable>(
+			byte[]               types_hash,
+			byte[]               input,
+			SerializedDataFormat data_format,
+			MigrationManager     migration_manager,
+			bool                 force_migration = false,
+			Assembly             assembly        = null
+		)
+		{
+			if (data_format.IsGZip())
+			{
+				input = await GZipWrapper.DecompressAsync(input);
+			}
+
+			return DeserializeData<TData, TDataMigratable>(types_hash, input, data_format, migration_manager, force_migration, assembly);
+		}
+
+		public static TData Deserialize<TData, TDataMigratable>(
+			byte[]               types_hash,
+			byte[]               input,
+			SerializedDataFormat data_format,
+			MigrationManager     migration_manager,
+			bool                 force_migration = false,
+			Assembly             assembly        = null
+		)
+		{
+			if (data_format.IsGZip())
+			{
+				input = GZipWrapper.Decompress(input);
+			}
+
+			return DeserializeData<TData, TDataMigratable>(types_hash, input, data_format, migration_manager, force_migration, assembly);
+		}
+		
+		//-------------------------------------------------------------------------------------------------------------------
+		private static byte[] SerializeData<TData>(TData data, SerializedDataFormat data_format, Assembly assembly = null)
+		{
 			BaseSerializationBinder model_serialization_binder = new DataSerializationBinder(assembly ?? ThisAssembly);
 			SerializationContext model_serialization_context = new SerializationContext
 			                                                   {
@@ -24,23 +80,19 @@ namespace Migration
 			                                                   };
 
 			byte[] serialized_data = SerializationUtility.SerializeValue(data, data_format.ToOdinDataFormat(), model_serialization_context);
-
-			if (data_format.IsGZip())
-			{
-				serialized_data = await GZipCompress(serialized_data);
-			}
-
 			return serialized_data;
 		}
 
-		// deserialize data from input, types_hash must be stored separately and it's the same hash the MigrationManager provides
-		public static async Task<TData> DeserializeAsync<TData, TDataMigratable>(byte[] types_hash, byte[] input, SerializedDataFormat data_format, MigrationManager migration_manager, bool force_migration = false, Assembly assembly = null)
+		//-------------------------------------------------------------------------------------------------------------------
+		private static TData DeserializeData<TData, TDataMigratable>(
+			byte[]               types_hash,
+			byte[]               input,
+			SerializedDataFormat data_format,
+			MigrationManager     migration_manager,
+			bool                 force_migration = false,
+			Assembly             assembly        = null
+		)
 		{
-			if (data_format.IsGZip())
-			{
-				input = await GZipDecompress(input);
-			}
-
 			if (force_migration || !migration_manager.TypesHash.SequenceEqual(types_hash))
 			{
 				#if MIGRATION_SERIALIZER_LOG
@@ -91,38 +143,6 @@ namespace Migration
 
 			TData deserialized_data = SerializationUtility.DeserializeValue<TData>(input, data_format.ToOdinDataFormat(), model_deserialization_context);
 			return deserialized_data;
-		}
-
-		// gzip wrapper .. move to separate class?
-		private static async Task<byte[]> GZipCompress(byte[] bytes)
-		{
-			MemoryStream stream = new MemoryStream();
-			GZipStream   zip    = new GZipStream(stream, CompressionMode.Compress);
-			Task         task   = zip.WriteAsync(bytes, 0, bytes.Length);
-			await task;
-			if (task.IsCanceled || task.IsFaulted)
-			{
-				throw task.Exception;
-			}
-
-			zip.Dispose();
-			return stream.GetBuffer();
-		}
-
-		private static async Task<byte[]> GZipDecompress(byte[] bytes)
-		{
-			MemoryStream stream    = new MemoryStream(bytes);
-			MemoryStream outStream = new MemoryStream();
-			GZipStream   zip       = new GZipStream(stream, CompressionMode.Decompress);
-			Task         task      = zip.CopyToAsync(outStream);
-			await task;
-			if (task.IsCanceled || task.IsFaulted)
-			{
-				throw task.Exception;
-			}
-
-			zip.Dispose();
-			return outStream.GetBuffer();
 		}
 	}
 }

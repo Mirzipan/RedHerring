@@ -2,6 +2,6 @@
   "Id":"Migration",
   "Name":"Migration",
   "Description" : "Universal data migration for Unity. Uses Odin serializer.",
-  "Version":"1.3.0",
+  "Version":"1.4.1",
   "Dependencies":[]
 }

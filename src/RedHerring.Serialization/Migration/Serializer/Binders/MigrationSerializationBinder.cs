@@ -4,8 +4,9 @@ using System.Reflection;
 
 namespace Migration
 {
-	// Maps migratable classes to themselves and lists of migratable interfaces to the same lists, just for my custom class naming and custom ids.
+	// Maps migratable classes to themselves and lists of migratable interfaces to the same lists. For classes with custom ids.
 	// Includes all versions of all classes.
+	// Used in transfer between serialized data and migration data.
 	
 	// For example, class without custom id:
 	//   MyClass_001       <-> MyClass_001
@@ -31,7 +32,6 @@ namespace Migration
 				foreach (Type migratable_interface in migratable_interfaces)
 				{
 					Type migratable_interface_list = list_generic_type.MakeGenericType(migratable_interface);
-					
 					mapping.Add(migratable_interface_list, migratable_interface_list);
 				}
 			}
@@ -51,6 +51,18 @@ namespace Migration
 				foreach (Type migratable_class in migratable_classes)
 				{
 					mapping.Add(migratable_class, migratable_class);
+				}
+			}
+			
+			// non migratable classes
+			{
+				IEnumerable<Type> non_migratable_classes = MigrationManager.GetTypesWithAttribute(assembly, typeof(NonMigratableIdAttribute));
+				foreach (Type non_migratable_class in non_migratable_classes)
+				{
+					mapping.Add(non_migratable_class, non_migratable_class);
+
+					Type non_migratable_class_list = list_generic_type.MakeGenericType(non_migratable_class);
+					mapping.Add(non_migratable_class_list, non_migratable_class_list);
 				}
 			}
 			

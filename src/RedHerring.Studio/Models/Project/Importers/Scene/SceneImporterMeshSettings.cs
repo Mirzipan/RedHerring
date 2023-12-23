@@ -16,7 +16,7 @@ public sealed class SceneImporterMeshSettings
 }
 
 #region Migration
-[MigratableInterface(typeof(SceneImporterSettings))]
+[MigratableInterface(typeof(SceneImporterMeshSettings))]
 public interface ISceneImporterMeshSettingsMigratable
 {
 }

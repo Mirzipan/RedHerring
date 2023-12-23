@@ -14,8 +14,11 @@ public sealed class PngImporterSettings : ImporterSettings
 }
 
 #region Migration
+[MigratableInterface(typeof(PngImporterSettings))]
+public interface IPngImporterSettingsMigratable : IImporterSettingsMigratable;
+
 [Serializable, LatestVersion(typeof(PngImporterSettings))]
-public class PngImporterSettings_000 : ImporterSettings_000
+public class PngImporterSettings_000 : ImporterSettings_000, IPngImporterSettingsMigratable
 {
     public PngBitDepth BitDepth;
     public PngColorType ColorType;

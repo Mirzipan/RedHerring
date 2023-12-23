@@ -135,60 +135,61 @@ namespace Migration
 
 		private object MigrateValueToLatestVersion(object value, Type value_type)
 		{
-			if (m_NextTypeMapping.TryGetValue(value_type, out Type next_type))
+			if (!m_NextTypeMapping.TryGetValue(value_type, out Type next_type))
 			{
-				if (next_type == typeof(LatestVersionType))
-				{
-					// already latest version
-					return null;
-				}
-					
-				// migrate
-				while (m_NextTypeMapping.TryGetValue(value_type, out next_type) && next_type != typeof(LatestVersionType))
-				{
-#if MIGRATION_LOG
-					Debug.Log($"Migrating {value.GetType().Name} -> {next_type.Name}");
-#endif
-					
-					// in any case - get allocate next function
-					MethodInfo allocate_method = value.GetType().GetMethod("AllocateNext");
-
-					object     next_value;
-					if (next_type == typeof(ObsoleteVersionType) || allocate_method != null)
-					{
-						// obsolete but with undefined next type or obsolete with AllocateNext method -> call AllocateNext and determine next type
-						if (allocate_method == null)
-						{
-							MigrationPlatform.LogError($"Cannot migrate class {value_type.Name}, public method 'object AllocateNext()' is missing!");
-							break;
-						}
-
-						next_value = allocate_method.Invoke(value, null);
-						next_type  = next_value.GetType();
-					}
-					else
-					{
-						// obsolete with defined next type and without AllocateNext method -> allocate next and call Migrate
-						next_value     = Activator.CreateInstance(next_type);
-						MethodInfo migrate_method = next_value.GetType().GetMethod("Migrate", new[] {value_type});
-						if (migrate_method == null)
-						{
-							MigrationPlatform.LogError($"Cannot migrate class {value_type.Name} to {next_type.Name}, public method 'void Migrate({value_type.Name})' is missing!");
-							break;
-						}
-
-						migrate_method.Invoke(next_value, new[] {value});
-					}
-
-					// move to next
-					value      = next_value;
-					value_type = next_type;
-				}
-
+				// not found in mapping, cannot migrate
 				return value;
 			}
-		
-			return null;
+
+			if (next_type == typeof(LatestVersionType))
+			{
+				// already latest version
+				return value;
+			}
+					
+			// migrate
+			while (m_NextTypeMapping.TryGetValue(value_type, out next_type) && next_type != typeof(LatestVersionType))
+			{
+#if MIGRATION_LOG
+				Debug.Log($"Migrating {value.GetType().Name} -> {next_type.Name}");
+#endif
+					
+				// in any case - get allocate next function
+				MethodInfo allocate_method = value.GetType().GetMethod("AllocateNext");
+
+				object next_value;
+				if (next_type == typeof(ObsoleteVersionType) || allocate_method != null)
+				{
+					// obsolete but with undefined next type or obsolete with AllocateNext method -> call AllocateNext and determine next type
+					if (allocate_method == null)
+					{
+						MigrationPlatform.LogError($"Cannot migrate class {value_type.Name}, public method 'object AllocateNext()' is missing!");
+						break;
+					}
+
+					next_value = allocate_method.Invoke(value, null);
+					next_type  = next_value.GetType();
+				}
+				else
+				{
+					// obsolete with defined next type and without AllocateNext method -> allocate next and call Migrate
+					next_value = Activator.CreateInstance(next_type);
+					MethodInfo migrate_method = next_value.GetType().GetMethod("Migrate", new[] {value_type});
+					if (migrate_method == null)
+					{
+						MigrationPlatform.LogError($"Cannot migrate class {value_type.Name} to {next_type.Name}, public method 'void Migrate({value_type.Name})' is missing!");
+						break;
+					}
+
+					migrate_method.Invoke(next_value, new[] {value});
+				}
+
+				// move to next
+				value      = next_value;
+				value_type = next_type;
+			}
+
+			return value;
 		}
 
 		private void Init(Assembly assembly = null)
