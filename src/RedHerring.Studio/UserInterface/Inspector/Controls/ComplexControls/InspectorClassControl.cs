@@ -2,6 +2,7 @@
 using System.Reflection;
 using ImGuiNET;
 using RedHerring.Alexandria.Extensions;
+using RedHerring.Render.ImGui;
 using RedHerring.Studio.UserInterface.Attributes;
 using Gui = ImGuiNET.ImGui;
 
@@ -305,11 +306,18 @@ public sealed class InspectorClassControl : InspectorControl
 		{
 			Gui.PushID(_deleteButtonId);
 			Gui.SameLine();
-			if (Gui.SmallButton("clear reference")) // TODO - maybe a symbol, but must be clear that it's not delete
+			if (Gui.SmallButton(FontAwesome6.Eraser))
 			{
 				DeleteValue();
 			}
 			Gui.PopID();
+		}
+
+		Type? valueType = Bindings[0].GetValue()?.GetType();
+		if (valueType != null)
+		{
+			Gui.SameLine();
+			Gui.Text(valueType.Name);
 		}
 
 		if(treeNodeOpen)

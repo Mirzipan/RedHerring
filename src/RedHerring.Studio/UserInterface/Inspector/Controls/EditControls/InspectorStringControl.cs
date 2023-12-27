@@ -17,7 +17,9 @@ public sealed class InspectorStringControl : InspectorSingleInputControl<string>
 		{
 			Gui.SetKeyboardFocusHere();
 		}
-		
+
+		Value ??= "";
+        
 		Gui.InputText(LabelId, ref Value, MaxLength, _isReadOnly ? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None);
 		return Gui.IsItemDeactivatedAfterEdit();
 	}
