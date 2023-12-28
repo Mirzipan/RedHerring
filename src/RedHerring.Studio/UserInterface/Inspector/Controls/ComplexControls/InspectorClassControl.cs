@@ -317,7 +317,9 @@ public sealed class InspectorClassControl : InspectorControl
 		if (valueType != null)
 		{
 			Gui.SameLine();
+			Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
 			Gui.Text(valueType.Name);
+			Gui.PopStyleVar();
 		}
 
 		if(treeNodeOpen)
