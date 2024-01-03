@@ -4,6 +4,23 @@
 
 This document tracks more or less important decisions about the engine, in order to allow easy referencing in the future.
 
+## [2024-01-03]
+
+### Definitions
+*Decided by: Mirzipan*
+
+Definitions will use `Guid` as their identifier, to be more in line with the rest of the assets.
+In addition to that, it is not necessary to have `Definitions` as an engine system, as it does not come with any inherent benefits (they are neither `Drawable` not `Updatable`).
+The whole definition system is likely to receive future overhauls, such as automagic generation of serialized versions of definitions via Roslyn.
+
+### Rendering
+*Decided by: Assemblerbot, Mirzipan*
+
+Given that `Veldrid` is no longer being maintained, we are looking into other suitable replacements.
+So far, the best candidate seems to be `bgfx`, which covers all necessary platforms and graphics backends, and is already battle-tested.
+The only downside so far is that it is in C++ and there is no good wrapper, so it will be necessary to use the provided bare bones bindings.
+This might not be a big issue though, as we have no plans to expose any of its internals to anything outside of the `Renderer` project.
+
 ## [2023-11-19]
 
 ### Input Changes
