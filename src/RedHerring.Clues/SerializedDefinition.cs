@@ -3,8 +3,6 @@
 [Serializable]
 public abstract class SerializedDefinition
 {
-    public string PrimaryId;
-    public string SecondaryId;
-    
+    public string Id;
     public bool IsDefault;
 }

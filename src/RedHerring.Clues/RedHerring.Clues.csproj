@@ -10,7 +10,7 @@
     <ItemGroup>
       <ProjectReference Include="..\RedHerring.Alexandria\RedHerring.Alexandria.csproj" />
       <ProjectReference Include="..\RedHerring.Deduction\RedHerring.Deduction.csproj" />
-      <ProjectReference Include="..\RedHerring\RedHerring.csproj" />
+      <ProjectReference Include="..\RedHerring.Infusion\RedHerring.Infusion.csproj" />
     </ItemGroup>
 
 </Project>

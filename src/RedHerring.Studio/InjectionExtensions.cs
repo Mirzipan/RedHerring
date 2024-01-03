@@ -9,7 +9,7 @@ public static class InjectionExtensions
 {
     public static ContainerDescription AddDefinitions(this ContainerDescription @this)
     {
-        return @this.AddSystem<DefinitionSystem>();
+        return @this.AddSingleton<Definitions>();
     }
 
     public static ContainerDescription AddStudio(this ContainerDescription @this)

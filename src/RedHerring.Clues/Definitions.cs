@@ -1,10 +1,8 @@
-﻿using RedHerring.Alexandria.Identifiers;
-using RedHerring.Core;
-using RedHerring.Infusion.Attributes;
+﻿using RedHerring.Infusion.Attributes;
 
 namespace RedHerring.Clues;
 
-public sealed class DefinitionSystem : EngineSystem
+public sealed class Definitions : IDisposable
 {
     [Infuse]
     private DefinitionIndexer _indexer = null!;
@@ -14,29 +12,20 @@ public sealed class DefinitionSystem : EngineSystem
 
     #region Lifecycle
 
-    protected override void Init()
+    public void Dispose()
     {
-    }
-
-    protected override ValueTask<int> Load()
-    {
-        using var loader = new UnsortedDefinitionProcessor(_indexer);
-        // TODO: get serialized definitions from somewhere, probably a JSON
-        loader.Process(_data);
-
-        PopulateDefaults();
-        
-        return ValueTask.FromResult(0);
-    }
-
-    protected override ValueTask<int> Unload()
-    {
-        return ValueTask.FromResult(0);
+        _indexer.Dispose();
+        _data.Dispose();
     }
 
     #endregion Lifecycle
 
     #region Queries
+
+    public DefinitionProcessor CreateProcessor()
+    {
+        return new UnsortedDefinitionProcessor(_indexer, Process);
+    }
 
     /// <summary>
     /// Returns all definitions of a given type.
@@ -54,7 +43,7 @@ public sealed class DefinitionSystem : EngineSystem
     /// <param name="id"></param>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>Definition of type and id, if found, null otherwise</returns>
-    public T? ById<T>(CompositeId id) where T : Definition
+    public T? ById<T>(Guid id) where T : Definition
     {
         return _data.ById<T>(id);
     }
@@ -66,7 +55,7 @@ public sealed class DefinitionSystem : EngineSystem
     /// <param name="definition"></param>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>True if definition exists</returns>
-    public bool TryById<T>(CompositeId id, out T? definition) where T : Definition
+    public bool TryById<T>(Guid id, out T? definition) where T : Definition
     {
         return (definition = _data.ById<T>(id)) is not null;
     }
@@ -77,7 +66,7 @@ public sealed class DefinitionSystem : EngineSystem
     /// <param name="id"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public bool Contains<T>(CompositeId id) where T : Definition
+    public bool Contains<T>(Guid id) where T : Definition
     {
         return _data.Contains<T>(id);
     }
@@ -96,6 +85,13 @@ public sealed class DefinitionSystem : EngineSystem
     #endregion Queries
 
     #region Private
+
+    private void Process(DefinitionProcessor processor)
+    {
+        processor.Process(_data);
+
+        PopulateDefaults();
+    }
 
     private void PopulateDefaults()
     {

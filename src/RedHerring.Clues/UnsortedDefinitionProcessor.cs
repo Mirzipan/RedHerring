@@ -1,4 +1,5 @@
-﻿using RedHerring.Alexandria.Extensions.Collections;
+﻿using RedHerring.Alexandria.Extensions;
+using RedHerring.Alexandria.Extensions.Collections;
 
 namespace RedHerring.Clues;
 
@@ -6,22 +7,26 @@ public sealed class UnsortedDefinitionProcessor : DefinitionProcessor, IDisposab
 {
     private List<SerializedDefinition> _serializedData = new();
     private DefinitionIndexer _indexer;
+    private Action<DefinitionProcessor> _onDispose;
     
     #region Lifecycle
 
-    public UnsortedDefinitionProcessor(DefinitionIndexer indexer)
+    internal UnsortedDefinitionProcessor(DefinitionIndexer indexer, Action<DefinitionProcessor> onDispose)
     {
         _indexer = indexer;
+        _onDispose = onDispose;
     }
 
     public void Dispose()
     {
+        _onDispose.SafeInvoke(this);
+        
         _serializedData.Clear();
     }
 
     #endregion Lifecycle
 
-    #region ILoadDefinition
+    #region DefinitionProcessor
 
     public void AddSerialized(SerializedDefinition definition) => _serializedData.Add(definition);
     public void AddSerialized(IEnumerable<SerializedDefinition> definitions) => _serializedData.AddRange(definitions);
@@ -61,7 +66,7 @@ public sealed class UnsortedDefinitionProcessor : DefinitionProcessor, IDisposab
         _serializedData.Clear();
     }
 
-    #endregion ILoadDefinition
+    #endregion DefinitionProcessor
 
     #region Private
 

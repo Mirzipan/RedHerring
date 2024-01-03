@@ -5,7 +5,7 @@ namespace RedHerring.Clues;
 
 public sealed class DefinitionSet : IDisposable
 {
-    private readonly Dictionary<Type, Dictionary<ulong, Definition>> _data = new();
+    private readonly Dictionary<Type, Dictionary<Guid, Definition>> _data = new();
     
     #region Lifecycle
 
@@ -104,7 +104,7 @@ public sealed class DefinitionSet : IDisposable
     /// <param name="id"></param>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>Definition of type and id, if found, null otherwise</returns>
-    public T? ById<T>(CompositeId id) where T : Definition
+    public T? ById<T>(Guid id) where T : Definition
     {
         Type type = typeof(T);
         var collection = GetOrCreateCollection(type);
@@ -113,7 +113,7 @@ public sealed class DefinitionSet : IDisposable
             return null;
         }
         
-        if (!collection.TryGetValue(id.Value, out var result))
+        if (!collection.TryGetValue(id, out var result))
         {
             return null;
         }
@@ -127,21 +127,21 @@ public sealed class DefinitionSet : IDisposable
     /// <param name="id"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public bool Contains<T>(CompositeId id) where T : Definition
+    public bool Contains<T>(Guid id) where T : Definition
     {
         Type type = typeof(T);
-        return GetOrCreateCollection(type)?.ContainsKey(id.Value) ?? false;
+        return GetOrCreateCollection(type)?.ContainsKey(id) ?? false;
     }
 
     #endregion Queries
     
     #region Private
 
-    private Dictionary<ulong, Definition>? GetOrCreateCollection(Type collectionType, bool allowCreation = false)
+    private Dictionary<Guid, Definition>? GetOrCreateCollection(Type collectionType, bool allowCreation = false)
     {
         if (!_data.TryGetValue(collectionType, out var innerDefinitions) && allowCreation)
         {
-            return _data[collectionType] = new Dictionary<ulong, Definition>();
+            return _data[collectionType] = new Dictionary<Guid, Definition>();
         }
 
         return innerDefinitions;
@@ -149,12 +149,12 @@ public sealed class DefinitionSet : IDisposable
         
     private void AddDefinition(Definition definition, Type type)
     {
-        GetOrCreateCollection(type, true)?.Add(definition.Id.Value, definition);
+        GetOrCreateCollection(type, true)?.Add(definition.Id, definition);
     }
 
     private bool RemoveDefinition(Definition definition, Type type)
     {
-        return GetOrCreateCollection(type)?.Remove(definition.Id.Value) ?? false;
+        return GetOrCreateCollection(type)?.Remove(definition.Id) ?? false;
     }
 
     #endregion Private
