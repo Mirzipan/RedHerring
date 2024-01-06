@@ -5,7 +5,7 @@ namespace RedHerring.Studio.UserInterface;
 
 public sealed class InspectorIntControl : InspectorSingleInputControl<int>
 {
-	public InspectorIntControl(Inspector inspector, string id) : base(inspector, id)
+	public InspectorIntControl(IInspectorCommandTarget commandTarget, string id) : base(commandTarget, id)
 	{
 	}
 

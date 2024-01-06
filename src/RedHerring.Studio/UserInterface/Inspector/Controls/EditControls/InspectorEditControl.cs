@@ -15,7 +15,7 @@ public abstract class InspectorEditControl<T> : InspectorControl
 	
 	protected bool _isReadOnly = false;
 	
-	protected InspectorEditControl(Inspector inspector, string id) : base(inspector, id)
+	protected InspectorEditControl(IInspectorCommandTarget commandTarget, string id) : base(commandTarget, id)
 	{
 		_multipleValuesLabelId = $"{MultipleValuesButtonLabel}##{Id}";
 	}
@@ -62,7 +62,7 @@ public abstract class InspectorEditControl<T> : InspectorControl
 
 	protected void SubmitOrUpdateValue(bool submitted, bool controlIsActive)
 	{
-		if (submitted)
+		if (!_isReadOnly && submitted)
 		{
 			SetValue(Value);
 			return;
@@ -91,7 +91,7 @@ public abstract class InspectorEditControl<T> : InspectorControl
 	{
 		if (_isReadOnly)
 		{
-			Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f); // workaround to readonly input style
+			Gui.PushStyleVar(ImGuiStyleVar.Alpha, Gui.GetStyle().DisabledAlpha); // workaround to readonly input style
 		}
 	}
 

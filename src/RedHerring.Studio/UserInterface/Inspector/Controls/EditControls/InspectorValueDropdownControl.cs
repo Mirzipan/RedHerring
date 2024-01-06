@@ -9,7 +9,7 @@ public abstract class InspectorValueDropdownControl<T> : InspectorSingleInputCon
 {
 	protected string[] _items = null!;
 
-	protected InspectorValueDropdownControl(Inspector inspector, string id) : base(inspector, id)
+	protected InspectorValueDropdownControl(IInspectorCommandTarget commandTarget, string id) : base(commandTarget, id)
 	{
 	}
 
@@ -59,14 +59,14 @@ public abstract class InspectorValueDropdownControl<T> : InspectorSingleInputCon
 				}
 
 				_items = new string[itemsSourceList.Count];
-				for(int i=0;i <itemsSourceList.Count;++i)
+				for(int i=0;i<itemsSourceList.Count;++i)
 				{
 					_items[i] = itemsSourceList[i]?.ToString() ?? "null";
 				}
 				return;
 			}
 		}
-		
+
 		_items = Array.Empty<string>();
 	}
 }

@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Reflection;
+﻿using System.Reflection;
 using ImGuiNET;
 using RedHerring.Alexandria.Extensions;
-using RedHerring.Render.ImGui;
 using RedHerring.Studio.UserInterface.Attributes;
 using Gui = ImGuiNET.ImGui;
 
@@ -38,7 +36,7 @@ public sealed class InspectorClassControl : InspectorControl
 
 	private Type[]? _assignableTypes = null;
 
-	public InspectorClassControl(Inspector inspector, string id) : base(inspector, id)
+	public InspectorClassControl(IInspectorCommandTarget commandTarget, string id) : base(commandTarget, id)
 	{
 		_instantiationButtonId = id + ".button";
 		_instantiationPopupId  = id + ".popup";
@@ -48,7 +46,7 @@ public sealed class InspectorClassControl : InspectorControl
 	#region Build
 	private void Rebuild()
 	{
-		Console.WriteLine($"Rebuild called on class {Id}");
+		//Console.WriteLine($"Rebuild called on class {Id}");
 		
 		RemoveAllControls();
 		if(Bindings.Count == 0)
@@ -108,7 +106,7 @@ public sealed class InspectorClassControl : InspectorControl
 			
 			string controlId = $"{Id}.{field.Name}";
 			
-			InspectorControl control = (InspectorControl) Activator.CreateInstance(controlType, _inspector, controlId)!;
+			InspectorControl control = (InspectorControl) Activator.CreateInstance(controlType, _commandTarget, controlId)!;
 			_controls.Add(control);
 
 			control.InitFromSource(source, sourceFieldValue, field);
@@ -129,7 +127,7 @@ public sealed class InspectorClassControl : InspectorControl
 			
 			string controlId = $"{Id}.{method.Name}()";
 
-			InspectorButtonControl button = new (_inspector, controlId, buttonAttribute.Title ?? method.Name.PrettyCamelCase(), sourceFieldValue, method);
+			InspectorButtonControl button = new (_commandTarget, controlId, buttonAttribute.Title ?? method.Name.PrettyCamelCase(), sourceFieldValue, method);
 			_controls.Add(button);
 		}
 	}
@@ -271,7 +269,7 @@ public sealed class InspectorClassControl : InspectorControl
 
 		if (_isNullSource)
 		{
-			Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
+			Gui.PushStyleVar(ImGuiStyleVar.Alpha, Gui.GetStyle().DisabledAlpha);
 			Gui.Text("[null]");
 			Gui.PopStyleVar();
 			Gui.SameLine();
@@ -306,20 +304,11 @@ public sealed class InspectorClassControl : InspectorControl
 		{
 			Gui.PushID(_deleteButtonId);
 			Gui.SameLine();
-			if (Gui.SmallButton(FontAwesome6.Eraser))
+			if (Gui.SmallButton("clear reference")) // TODO - maybe a symbol, but must be clear that it's not delete
 			{
 				DeleteValue();
 			}
 			Gui.PopID();
-		}
-
-		Type? valueType = Bindings[0].GetValue()?.GetType();
-		if (valueType != null)
-		{
-			Gui.SameLine();
-			Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
-			Gui.Text(valueType.Name);
-			Gui.PopStyleVar();
 		}
 
 		if(treeNodeOpen)
@@ -411,7 +400,7 @@ public sealed class InspectorClassControl : InspectorControl
 	
 	private void InstantiateClass(Type type)
 	{
-		_inspector.Commit(new InspectorInstantiateClassCommand(Bindings, type));
+		_commandTarget.Commit(new InspectorInstantiateClassCommand(Bindings, type));
 		_sourceFieldValues.Clear(); // force refresh
 	}
 
@@ -427,7 +416,7 @@ public sealed class InspectorClassControl : InspectorControl
 
 	private void DeleteValue()
 	{
-		_inspector.Commit(new InspectorDeleteClassCommand(Bindings));
+		_commandTarget.Commit(new InspectorDeleteClassCommand(Bindings));
 		_sourceFieldValues.Clear(); // force refresh
 	}
 	#endregion

@@ -2,7 +2,7 @@
 
 namespace RedHerring.Studio.UserInterface;
 
-public sealed class Inspector
+public sealed class Inspector : IInspectorCommandTarget
 {
 	private readonly List<object>           _sources = new();
 	private          InspectorClassControl? _contentControl;

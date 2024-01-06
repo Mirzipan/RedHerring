@@ -7,7 +7,7 @@ public class InspectorEnumControl : InspectorSingleInputControl<Enum>
 {
 	private string[] _items = null!;
 	
-	public InspectorEnumControl(Inspector inspector, string id) : base(inspector, id)
+	public InspectorEnumControl(IInspectorCommandTarget commandTarget, string id) : base(commandTarget, id)
 	{
 	}
 
@@ -19,8 +19,8 @@ public class InspectorEnumControl : InspectorSingleInputControl<Enum>
 	
 	protected override bool InputControl(bool makeItemActive)
 	{
-		int localValue = Convert.ToInt32(Value!);
-		bool submit = Gui.Combo(LabelId, ref localValue, _items, _items.Length);
+		int  localValue = Convert.ToInt32(Value!);
+		bool submit     = Gui.Combo(LabelId, ref localValue, _items, _items.Length);
 		Value = (Enum?)Enum.ToObject(Value!.GetType(), localValue);
 		
 		return submit || makeItemActive;

@@ -3,7 +3,6 @@ using ImGuiNET;
 using Gui = ImGuiNET.ImGui;
 
 using System.Reflection;
-using RedHerring.Alexandria.Extensions;
 using RedHerring.Render.ImGui;
 using RedHerring.Studio.UserInterface.Attributes;
 
@@ -37,6 +36,7 @@ public sealed class InspectorListControl : InspectorControl
 	private bool _isMultipleValues = false;
 	private bool _isNullSource     = false;
 	private bool _isReadOnly       = false;
+	private bool _isTableStyle     = false;
 	
 	private readonly string                  _buttonCreateElementId;
 	private readonly List<ControlDescriptor> _controls = new();
@@ -45,7 +45,7 @@ public sealed class InspectorListControl : InspectorControl
 
 	private int _draggedIndex = -1; // to avoid using unsafe context
 
-	public InspectorListControl(Inspector inspector, string id) : base(inspector, id)
+	public InspectorListControl(IInspectorCommandTarget commandTarget, string id) : base(commandTarget, id)
 	{
 		_buttonCreateElementId = id + ".create";
 	}
@@ -54,12 +54,14 @@ public sealed class InspectorListControl : InspectorControl
 	{
 		base.InitFromSource(sourceOwner, source, sourceField, sourceIndex);
 		_isReadOnly = sourceField != null && (sourceField.IsInitOnly || sourceField.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null);
+		_isTableStyle = sourceField?.GetCustomAttribute<TableListAttribute>() != null;
 	}
 
 	public override void AdaptToSource(object? sourceOwner, object source, FieldInfo? sourceField = null)
 	{
 		base.AdaptToSource(sourceOwner, source, sourceField);
-		_isReadOnly |= sourceField != null && (sourceField.IsInitOnly || sourceField.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null);
+		_isReadOnly   |= sourceField != null && (sourceField.IsInitOnly || sourceField.GetCustomAttribute<ReadOnlyInInspectorAttribute>() != null);
+		_isTableStyle |= sourceField?.GetCustomAttribute<TableListAttribute>() != null;
 	}
 	
 	public override void Update()
@@ -77,27 +79,69 @@ public sealed class InspectorListControl : InspectorControl
 
 		if (_isReadOnly)
 		{
-			if (Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowOverlap))
+			if (_isTableStyle)
 			{
-				for(int i = 0; i < _controls.Count; ++i)
-				{
-					if(_controls[i].Control == null)
-					{
-						continue;
-					}
-
-					_controls[i].Control!.Update();
-					
-				}
-				Gui.TreePop();
+				UpdateReadOnlyTableStyle();
 			}
-
+			else
+			{
+				UpdateReadOnlyTreeStyle();
+			}
 			return;
 		}
 		
 		bool createNewElement   = false;
 		int  deleteElementIndex = -1;
 
+		if (_isTableStyle)
+		{
+			UpdateEditableTableStyle(list, ref createNewElement, ref deleteElementIndex);
+		}
+		else
+		{
+			UpdateEditableTreeStyle(list, ref createNewElement, ref deleteElementIndex);
+		}
+
+		if (createNewElement)
+		{
+			//Console.WriteLine("Create new element");
+			_commandTarget.Commit(new InspectorCreateListElementCommand(Bindings));
+		}
+
+		if (deleteElementIndex != -1)
+		{
+			//Console.WriteLine($"Delete element {deleteElementIndex}");
+			_commandTarget.Commit(new InspectorDeleteListElementCommand(Bindings, deleteElementIndex));
+		}
+	}
+
+	private void UpdateReadOnlyTreeStyle()
+	{
+		if (Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowOverlap))
+		{
+			for(int i = 0; i < _controls.Count; ++i)
+			{
+				if(_controls[i].Control == null)
+				{
+					continue;
+				}
+
+				_controls[i].Control!.Update();
+					
+			}
+			Gui.TreePop();
+		}
+	}
+
+	private void UpdateReadOnlyTableStyle()
+	{
+		// TODO
+		Type? elementType = Bindings[0].GetElementType();
+		int   d           = 0;
+	}
+
+	private void UpdateEditableTreeStyle(IList list, ref bool createNewElement, ref int deleteElementIndex)
+	{
 		if (Gui.TreeNodeEx(LabelId, ImGuiTreeNodeFlags.AllowOverlap))
 		{
 			if (!_isReadOnly)
@@ -141,18 +185,11 @@ public sealed class InspectorListControl : InspectorControl
 		{
 			createNewElement = NewElementButtonOnTheSameLine(list.IsFixedSize);
 		}
+	}
 
-		if (createNewElement)
-		{
-			Console.WriteLine("Create new element");
-			_inspector.Commit(new InspectorCreateListElementCommand(Bindings));
-		}
-
-		if (deleteElementIndex != -1)
-		{
-			Console.WriteLine($"Delete element {deleteElementIndex}");
-			_inspector.Commit(new InspectorDeleteListElementCommand(Bindings, deleteElementIndex));
-		}
+	private void UpdateEditableTableStyle(IList list, ref bool createNewElement, ref int deleteElementIndex)
+	{
+		
 	}
 
 	private bool SourceFieldValuesChanged()
@@ -190,7 +227,7 @@ public sealed class InspectorListControl : InspectorControl
 
 	private void Rebuild()
 	{
-		Console.WriteLine($"Rebuild called on list {Id}");
+		//Console.WriteLine($"Rebuild called on list {Id}");
 		_controls.Clear();
 		
 		if (Bindings.Count > 1)
@@ -249,7 +286,7 @@ public sealed class InspectorListControl : InspectorControl
 			return null;
 		}
 		
-		return (InspectorControl) Activator.CreateInstance(controlType, _inspector, $"{Id}[{index}]")!;
+		return (InspectorControl) Activator.CreateInstance(controlType, _commandTarget, $"{Id}[{index}]")!;
 	}
 
 	#region Drag&drop
@@ -258,7 +295,8 @@ public sealed class InspectorListControl : InspectorControl
 		Gui.PushID(dragAndDropId);
 		
 		Gui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
-		Gui.Button(TextIcon.ReorderList);
+		//Icon.ReorderList();
+		ImGui.Button(FontAwesome6.Bars);
 		Gui.PopStyleVar();
 
 		if (Gui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoDisableHover))
@@ -277,7 +315,7 @@ public sealed class InspectorListControl : InspectorControl
 				if (_draggedIndex >= 0 && _draggedIndex < _controls.Count)
 				{
 					Console.WriteLine($"Swap {_draggedIndex} with {index}");
-					_inspector.Commit(new InspectorSwapListElementsCommand(Bindings, _draggedIndex, index));
+					_commandTarget.Commit(new InspectorSwapListElementsCommand(Bindings, _draggedIndex, index));
 				}
 
 				_draggedIndex = -1;

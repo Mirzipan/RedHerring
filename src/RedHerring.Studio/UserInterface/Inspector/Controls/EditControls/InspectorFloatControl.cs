@@ -5,7 +5,7 @@ namespace RedHerring.Studio.UserInterface;
 
 public sealed class InspectorFloatControl : InspectorSingleInputControl<float>
 {
-	public InspectorFloatControl(Inspector inspector, string id) : base(inspector, id)
+	public InspectorFloatControl(IInspectorCommandTarget commandTarget, string id) : base(commandTarget, id)
 	{
 	}
 

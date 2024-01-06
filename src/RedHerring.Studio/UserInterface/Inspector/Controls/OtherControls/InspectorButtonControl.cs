@@ -20,7 +20,7 @@ public sealed class InspectorButtonControl : InspectorControl
 	
 	private List<Binding> _bindings = new();
 
-	public InspectorButtonControl(Inspector inspector, string id, string label, object source, MethodInfo method) : base(inspector, id)
+	public InspectorButtonControl(IInspectorCommandTarget commandTarget, string id, string label, object source, MethodInfo method) : base(commandTarget, id)
 	{
 		Label   = label;
 		LabelId = $"{Label}##{Id}";

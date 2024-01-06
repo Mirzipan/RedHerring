@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Reflection;
+﻿using System.Reflection;
 using RedHerring.Alexandria.Extensions;
 using RedHerring.Studio.UserInterface.Attributes;
 
@@ -10,15 +9,15 @@ public abstract class InspectorControl
 	protected static readonly object UnboundValue   = new(); // mark that there is no value to update
 	protected static readonly object MultipleValues = new(); // mark that there are multiple values
 
-	protected readonly Inspector              _inspector;
-	public readonly    string                 Id;
-	public             string?                Label    = null;
-	public             string                 LabelId  = null!;
-	public readonly    List<InspectorBinding> Bindings = new();
+	protected readonly IInspectorCommandTarget _commandTarget;
+	public readonly    string                  Id;
+	public             string?                 Label    = null;
+	public             string                  LabelId  = null!;
+	public readonly    List<InspectorBinding>  Bindings = new();
 
-	protected InspectorControl(Inspector inspector, string id)
+	protected InspectorControl(IInspectorCommandTarget commandTarget, string id)
 	{
-		_inspector = inspector;
+		_commandTarget = commandTarget;
 		Id         = id;
 		LabelId    = $"##{id}";
 	}
@@ -122,7 +121,7 @@ public abstract class InspectorControl
 		}
 
 		Console.WriteLine($"Submitted value {value} from control {Id}");
-		_inspector.Commit(new InspectorModifyValueCommand(Bindings, value));
+		_commandTarget.Commit(new InspectorModifyValueCommand(Bindings, value));
 	}
 	#endregion
 }
