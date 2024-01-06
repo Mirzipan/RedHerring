@@ -2,6 +2,7 @@
 using RedHerring.Game;
 using RedHerring.Platforms;
 using RedHerring.Render;
+using RedHerring.Studio.Systems;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Extensions.Veldrid;
@@ -38,11 +39,12 @@ internal class Program
         
         _window = Window.Create(opts);
         
-        _window.Load += OnLoad;
-        _window.Update += OnUpdate;
-        _window.Render += OnDraw;
-        _window.Closing += OnClose;
-        _window.Resize += OnResize;
+        _window.Load         += OnLoad;
+        _window.Update       += OnUpdate;
+        _window.Render       += OnDraw;
+        _window.Closing      += OnClose;
+        _window.Resize       += OnResize;
+        _window.FocusChanged += OnFocusChanged;
 
         _window.Run();
     }
@@ -107,6 +109,11 @@ internal class Program
     private static void OnEngineExit()
     {
         _window?.Close();
+    }
+
+    private static void OnFocusChanged(bool hasFocus)
+    {
+        _sessionContext?.Container.Resolve<StudioSystem>()?.FocusChanged(hasFocus);
     }
 
     #endregion Bindings

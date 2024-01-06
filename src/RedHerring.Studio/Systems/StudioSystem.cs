@@ -122,6 +122,17 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	{
 	}
 
+	public void FocusChanged(bool hasFocus)
+	{
+		if (hasFocus)
+		{
+			_studioModel.Project.ResumeWatchers();
+		}
+		else
+		{
+			_studioModel.Project.PauseWatchers();
+		}
+	}
 	#endregion Lifecycle
 
 	#region Private
