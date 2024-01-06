@@ -2,12 +2,12 @@ del /Q Studio\*
 rmdir /Q /S Studio\runtimes
 rmdir /Q /S Studio\Template
 
-xcopy src\RedHerring.Studio\bin\Release\net7.0\*.dll Studio\
-xcopy src\RedHerring.Studio\bin\Release\net7.0\*.exe Studio\
-xcopy src\RedHerring.Studio\bin\Release\net7.0\*.json Studio\
+xcopy src\RedHerring.Studio\bin\Release\net8.0\*.dll Studio\
+xcopy src\RedHerring.Studio\bin\Release\net8.0\*.exe Studio\
+xcopy src\RedHerring.Studio\bin\Release\net8.0\*.json Studio\
 
 mkdir Studio\runtimes
-xcopy src\RedHerring.Studio\bin\Release\net7.0\runtimes Studio\runtimes\ /S
+xcopy src\RedHerring.Studio\bin\Release\net8.0\runtimes Studio\runtimes\ /S
 
 mkdir Studio\Template
 
