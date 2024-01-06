@@ -9,10 +9,8 @@ using RedHerring.Infusion.Attributes;
 using RedHerring.Render.ImGui;
 using RedHerring.Studio.Constants;
 using RedHerring.Studio.Models;
-using RedHerring.Studio.Models.Project;
 using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.Tests;
-using RedHerring.Studio.TaskProcessing;
 using RedHerring.Studio.Tools;
 using RedHerring.Studio.UserInterface;
 using RedHerring.Studio.UserInterface.Dialogs;
@@ -42,12 +40,13 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	private StudioModel    _studioModel = null!;
 	
 	#region User Interface
-	private readonly DockSpace    _dockSpace       = new();
-	private readonly Menu         _menu            = new(MenuStyle.MainMenu);
-	private readonly StatusBar    _statusBar       = new();
-	private          ObjectDialog _projectSettings = null!;
-	private          ObjectDialog _studioSettings  = null!;
-	private readonly MessageBox   _messageBox      = new();
+	private readonly DockSpace               _dockSpace       = new();
+	private readonly Menu                    _menu            = new(MenuStyle.MainMenu);
+	private readonly StatusBar               _statusBar       = new();
+	private          ObjectDialog            _projectSettings = null!;
+	private          ObjectDialog            _studioSettings  = null!;
+	private readonly MessageBox              _messageBox      = new();
+	private StatusBarMessageHandler _statusBarMessageHandler = null!;
 	#endregion
     
 	#region Lifecycle
@@ -61,7 +60,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_inputReceiver.Bind(InputAction.Undo, Undo);
 		_inputReceiver.Bind(InputAction.Redo, Redo);
 
-		_newProjectDialog = new NewProjectDialog(_studioModel);
+		_statusBarMessageHandler = new StatusBarMessageHandler(_statusBar, _studioModel);
+		_newProjectDialog        = new NewProjectDialog(_studioModel);
 	}
 
 	protected override async ValueTask<int> Load()
@@ -98,8 +98,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
         
 		_menu.Update();
 		_menu.InvokeClickActions();
-        
-		UpdateStatusBarMessage();
+
+		_statusBarMessageHandler.Update();
 		_statusBar.Update();
 
 		_projectSettings.Update();
@@ -112,24 +112,6 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		//Gui.ShowDemoWindow();
 	}
 
-	private void UpdateStatusBarMessage()
-	{
-		int workerThreadsCount = _studioModel.TaskProcessor.WorkerThreadsCount;
-		int remainingTasks     = _studioModel.TaskProcessor.GetRemainingTasks();
-		int availableThreads   = _studioModel.TaskProcessor.AvailableWorkerThreads;
-		
-		if (remainingTasks > 0)
-		{
-			_statusBar.Message = $"Processing {remainingTasks} tasks on {workerThreadsCount} threads.";
-		}
-		else
-		{
-			_statusBar.Message = $"Ready. {availableThreads} of {workerThreadsCount} threads available.";
-		}
-		
-		_statusBar.MessageColor = remainingTasks == 0 && availableThreads == workerThreadsCount ? StatusBar.Color.Info : StatusBar.Color.Warning;
-	}
-    
 	public bool BeginDraw() => true;
 
 	public void Draw(GameTime gameTime)
@@ -168,7 +150,6 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_menu.AddItem($"View/{FontAwesome6.CircleInfo} Inspector", OnViewInspectorClicked);
 
 		_menu.AddItem("Debug/Modal window",        () => Gui.OpenPopup("MessageBox"));
-		_menu.AddItem("Debug/Task processor test", OnDebugTaskProcessorTestClicked);
 		_menu.AddItem("Debug/Serialization test",  OnDebugSerializationTestClicked);
 		_menu.AddItem("Debug/Importer test",       OnDebugImporterTestClicked);
 		_menu.AddItem("Debug/Inspector test",      OnDebugInspectorTestClicked);
@@ -218,14 +199,6 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	private void OnViewInspectorClicked()
 	{
 		_toolManager.Activate(ToolInspector.ToolName);
-	}
-
-	private void OnDebugTaskProcessorTestClicked()
-	{
-		for(int i=0;i <20;++i)
-		{
-			_studioModel.TaskProcessor.EnqueueTask(new TestTask(i), 0);
-		}
 	}
 
 	private void OnDebugSerializationTestClicked()

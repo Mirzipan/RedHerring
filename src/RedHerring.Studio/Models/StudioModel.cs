@@ -5,7 +5,6 @@ using RedHerring.Studio.Models.Project;
 using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.ViewModels;
 using RedHerring.Studio.Models.ViewModels.Console;
-using RedHerring.Studio.TaskProcessing;
 
 namespace RedHerring.Studio.Models;
 
@@ -33,9 +32,6 @@ public class StudioModel
 	private readonly SelectionViewModel _selection = new();
 	public SelectionViewModel Selection => _selection;
 
-	private readonly TaskProcessor _taskProcessor = new(_threadsCount);
-	public           TaskProcessor TaskProcessor => _taskProcessor;
-
 	public StudioModel(ImporterRegistry importerRegistry)
 	{
 		_project = new ProjectModel(_migrationManager, importerRegistry);
@@ -43,7 +39,6 @@ public class StudioModel
 
 	public void Cancel()
 	{
-		_taskProcessor.Cancel();
 		Project.Close();
 		Project.Cancel();
 	}
@@ -62,14 +57,6 @@ public class StudioModel
 		catch (Exception e)
 		{
 			ConsoleViewModel.Log($"Exception: {e}", ConsoleItemType.Exception);
-		}
-	}
-
-	public void RunTests()
-	{
-		for(int i=0;i <20;++i)
-		{
-			_taskProcessor.EnqueueTask(new TestTask(i), 0);
 		}
 	}
 

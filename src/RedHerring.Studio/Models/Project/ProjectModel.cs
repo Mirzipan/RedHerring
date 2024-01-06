@@ -36,6 +36,7 @@ public sealed class ProjectModel
 	private readonly ConcurrentQueue<ProjectTask> _waitingWatcherTasks = new();
 	
 	private readonly ProjectThread _thread = new ();
+	public           int           TasksCount => _thread.TasksCount;
 	
 	public ProjectModel(MigrationManager migrationManager, ImporterRegistry importerRegistry)
 	{

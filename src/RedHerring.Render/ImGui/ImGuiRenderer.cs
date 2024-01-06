@@ -450,7 +450,7 @@ public sealed class ImGuiRenderer : IDisposable
         io.DeltaTime = deltaSeconds; // DeltaTime is in seconds.
     }
 
-    private unsafe void UpdateImGuiInput(Input input)
+    private void UpdateImGuiInput(Input input)
     {
         ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
 

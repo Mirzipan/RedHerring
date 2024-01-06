@@ -8,6 +8,8 @@ public sealed class ProjectThread
 	private readonly EventWaitHandle              _waitHandle              = new AutoResetEvent(false);
 	private readonly ConcurrentQueue<ProjectTask> _tasks                   = new();
 	
+	public int TasksCount => _tasks.Count;
+	
 	public ProjectThread()
 	{
 		Start();
