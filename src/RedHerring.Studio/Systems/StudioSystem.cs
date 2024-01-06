@@ -160,6 +160,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_menu.AddItem($"View/{FontAwesome6.Terminal} Console",   OnViewConsoleClicked);
 		_menu.AddItem($"View/{FontAwesome6.CircleInfo} Inspector", OnViewInspectorClicked);
 
+		_menu.AddItem("Project/Update engine files", OnProjectUpdateEngineFilesClicked, () => _studioModel.Project.IsOpened);
+		
 		_menu.AddItem("Debug/Modal window",        () => Gui.OpenPopup("MessageBox"));
 		_menu.AddItem("Debug/Serialization test",  OnDebugSerializationTestClicked);
 		_menu.AddItem("Debug/Importer test",       OnDebugImporterTestClicked);
@@ -212,6 +214,11 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_toolManager.Activate(ToolInspector.ToolName);
 	}
 
+	private void OnProjectUpdateEngineFilesClicked()
+	{
+		_studioModel.Project.UpdateEngineFiles();
+	}
+	
 	private void OnDebugSerializationTestClicked()
 	{
 		SerializationTests.Test();

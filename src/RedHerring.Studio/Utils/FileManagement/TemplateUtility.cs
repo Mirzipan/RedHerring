@@ -18,8 +18,6 @@ public static class TemplateUtility
 		File.Move(Path.Combine(targetPath, "Template.sln"), Path.Combine(targetPath, $"{projectName}.sln"));
 		
 		FileUtility.ReplaceTextInFilesRecursive(targetPath, fileName => fileName.EndsWith(".cs"), "Template", projectName);
-
-		UpdateFromTemplate(targetPath);
 	}
 
 	// check if libraries in target path are up to date with template
@@ -60,7 +58,7 @@ public static class TemplateUtility
 	}
 	
 	// update just libraries in target path from template
-	public static void UpdateFromTemplate(string targetPath)
+	public static void UpdateLibrariesFromTemplate(string targetPath)
 	{
 		string sourceLibrariesPath = Path.Combine(_templatePath, _librariesPath);
 		string targetLibrariesPath = Path.Combine(targetPath,    _librariesPath);
