@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Reflection;
+using System.Security.Cryptography;
 using Migration;
 using RedHerring.Studio.Models.Project.FileSystem;
 using RedHerring.Studio.Models.Project.Importers;
@@ -14,7 +15,8 @@ public sealed class ProjectModel
 	private const           string _settingsFileName  = "Project.json";
 	private static readonly char[] _slash             = {'/', '\\'};
 
-	public static Assembly Assembly => typeof(ProjectModel).Assembly; 
+	public static           Assembly      Assembly => typeof(ProjectModel).Assembly; 
+	private static readonly HashAlgorithm _hashAlgorithm = SHA1.Create();
 
 	private readonly MigrationManager _migrationManager;
 	private readonly ImporterRegistry _importerRegistry;
@@ -122,19 +124,31 @@ public sealed class ProjectModel
 	#endregion
 	
 	#region Import
+	public void ClearResources()
+	{
+		EnqueueProjectTask(CreateClearResourcesTask(_projectSettings!.AbsoluteResourcesPath));
+
+		lock (ProjectTreeLock)
+		{
+			_assetsFolder!.TraverseRecursive(
+				node => EnqueueProjectTask(CreateResetMetaHashTask(_assetsFolder!, node.RelativePath)),
+				TraverseFlags.Directories | TraverseFlags.Files,
+				default
+			);
+		}
+	}
+
 	public void ImportAll()
 	{
 		lock (ProjectTreeLock)
 		{
-			_assetsFolder!.TraverseRecursive(ImportProjectAssetNode, TraverseFlags.Files, default);
+			_assetsFolder!.TraverseRecursive(
+				node => EnqueueProjectTask(CreateImportTask(_assetsFolder!, node.RelativePath)),
+				TraverseFlags.Files,
+				default
+			);
 		}
 	}
-
-	private void ImportProjectAssetNode(ProjectNode node)
-	{
-		_thread.Enqueue(CreateImportTask(_assetsFolder!, node.RelativePath));
-	}
-
 	#endregion
 	
 	#region Folder watchers
@@ -599,34 +613,76 @@ public sealed class ProjectModel
 					ProjectNode? node = root.FindNode(path);
 					if (node != null && node.Exists)
 					{
-						node.InitMeta(_migrationManager, cancellationToken);
+						node.InitMeta(_migrationManager, _importerRegistry, cancellationToken);
 					}
 				}
 			}
 		);
 	}
 
+	private ProjectTask CreateResetMetaHashTask(ProjectRootNode root, string path)
+	{
+		return new ProjectTask(
+			cancellationToken =>
+			{
+				lock (ProjectTreeLock)
+				{
+					ProjectNode? node = root.FindNode(path);
+					if (node != null && node.Exists)
+					{
+						node.ResetMetaHash();
+					}
+				}
+			}
+		);
+	}
+	
 	private ProjectTask CreateImportTask(ProjectRootNode root, string path)
 	{
 		return new ProjectTask(
 			cancellationToken =>
 			{
+				// check node
 				ProjectAssetFileNode? node = root.FindNode(path) as ProjectAssetFileNode;
-				if (node == null)
+				if (node == null || node.Meta == null)
 				{
 					return;
 				}
 
+				// check file
+				if (!File.Exists(node.AbsolutePath))
+				{
+					return;
+				}
+
+				// calculate hash
+				string? hash = null;
+				try
+				{
+					using FileStream file = new(node.AbsolutePath, FileMode.Open);
+					hash = Convert.ToBase64String(_hashAlgorithm.ComputeHash(file)); // how to cancel compute hash?
+				}
+				catch (Exception e)
+				{
+					return;
+				}
+
+				// check hash
+				if (node.Meta.Hash == hash)
+				{
+					return;
+				}
+
+				// import
 				Importer importer = _importerRegistry.GetImporter(node.Extension);
 				node.Meta!.ImporterSettings ??= importer.CreateSettings();
-				node.SetNodeType(node.Meta.ImporterSettings.NodeType);
 
 				string resourcePath = Path.Combine(_projectSettings!.AbsoluteResourcesPath, node.RelativePath);
 
 				try
 				{
 					using Stream   stream = File.OpenRead(node.AbsolutePath);
-					ImporterResult result = importer.Import(stream, node.Meta.ImporterSettings, resourcePath, cancellationToken);
+					ImporterResult result = importer.Import(stream, node.Meta.ImporterSettings, resourcePath, _migrationManager, cancellationToken);
 
 					if (result == ImporterResult.FinishedSettingsChanged)
 					{
@@ -636,7 +692,11 @@ public sealed class ProjectModel
 				catch (Exception e)
 				{
 					ConsoleViewModel.LogError($"While importing file {node.AbsolutePath} an exception occured: {e}");
+					return;
 				}
+
+				// update hash
+				node.Meta.SetHash(hash);
 			}
 		);
 	}
@@ -682,6 +742,21 @@ public sealed class ProjectModel
 			cancellationToken =>
 			{
 				TemplateUtility.UpdateLibrariesFromTemplate(projectRootPath);
+			}
+		);
+	}
+
+	private ProjectTask CreateClearResourcesTask(string absoluteResourcesPath)
+	{
+		return new ProjectTask(
+			cancellationToken =>
+			{
+				if (Directory.Exists(absoluteResourcesPath))
+				{
+					Directory.Delete(absoluteResourcesPath, true);
+				}
+
+				Directory.CreateDirectory(absoluteResourcesPath);
 			}
 		);
 	}

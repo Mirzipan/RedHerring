@@ -8,7 +8,7 @@ namespace RedHerring.Studio.Models.Project.FileSystem;
 public class Metadata
 {
 	[ReadOnlyInInspector] public string? Guid = null;
-	[HideInInspector]     public string? Hash = null;
+	[ReadOnlyInInspector] public string? Hash = null;
 	
 	public ImporterSettings? ImporterSettings = null;
 

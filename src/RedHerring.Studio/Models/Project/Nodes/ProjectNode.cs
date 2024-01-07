@@ -1,4 +1,5 @@
 using Migration;
+using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.UserInterface.Attributes;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
@@ -27,8 +28,13 @@ public abstract class ProjectNode
 		HasMetaFile  = hasMetaFile;
 	}
 
-	public abstract void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken);
+	public abstract void InitMeta(MigrationManager migrationManager, ImporterRegistry importerRegistry, CancellationToken cancellationToken);
 
+	public void ResetMetaHash()
+	{
+		Meta?.SetHash(null);
+	}
+	
 	public void UpdateMetaFile()
 	{
 		string metaPath = $"{AbsolutePath}.meta";
@@ -41,7 +47,7 @@ public abstract class ProjectNode
 		Type = type;
 	}
 
-	protected void CreateMetaFile(MigrationManager migrationManager, string? hash)
+	protected void CreateMetaFile(MigrationManager migrationManager)
 	{
 		string metaPath = $"{AbsolutePath}.meta";
 		
@@ -54,11 +60,10 @@ public abstract class ProjectNode
 		}
 		
 		// write if needed
-		if(meta == null || meta.Hash != hash)
+		if(meta == null)
 		{
 			meta ??= new Metadata();
 			meta.UpdateGuid();
-			meta.SetHash(hash);
 
 			byte[] json = MigrationSerializer.SerializeAsync(meta, SerializedDataFormat.JSON, StudioModel.Assembly).GetAwaiter().GetResult();
 			File.WriteAllBytes(metaPath, json);

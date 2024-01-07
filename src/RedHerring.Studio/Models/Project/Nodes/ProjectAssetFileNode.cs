@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Migration;
+using RedHerring.Studio.Models.Project.Importers;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
 
@@ -14,22 +15,22 @@ public sealed class ProjectAssetFileNode : ProjectNode
 	{
 	}
 
-	public override void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken)
+	public override void InitMeta(MigrationManager migrationManager, ImporterRegistry importerRegistry, CancellationToken cancellationToken)
 	{
-		// calculate file hash
-		string hash;
-		try
+		CreateMetaFile(migrationManager);
+
+		if (Meta == null)
 		{
-			using FileStream file = new(AbsolutePath, FileMode.Open);
-			hash = Convert.ToBase64String(_hashAlgorithm.ComputeHash(file)); // how to cancel compute hash?
-		}
-		catch (Exception e)
-		{
-			hash = "";
+			return;
 		}
 
-		// init meta
-		CreateMetaFile(migrationManager, hash);
+		if (Meta.ImporterSettings == null)
+		{
+			Importer importer = importerRegistry.GetImporter(Extension);
+			Meta.ImporterSettings = importer.CreateSettings();
+		}
+
+		SetNodeType(Meta.ImporterSettings.NodeType);
 	}
 
 	public override void TraverseRecursive(Action<ProjectNode> process, TraverseFlags flags, CancellationToken cancellationToken)

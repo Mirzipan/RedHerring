@@ -1,4 +1,5 @@
 ﻿using Migration;
+using RedHerring.Studio.Models.Project.Importers;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
 
@@ -8,7 +9,7 @@ public sealed class ProjectRootNode : ProjectFolderNode
 	{
 	}
 
-	public override void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken)
+	public override void InitMeta(MigrationManager migrationManager, ImporterRegistry importerRegistry, CancellationToken cancellationToken)
 	{
 		Meta = new Metadata
 		       {

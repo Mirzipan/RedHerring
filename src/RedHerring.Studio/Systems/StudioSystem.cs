@@ -161,6 +161,9 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_menu.AddItem($"View/{FontAwesome6.CircleInfo} Inspector", OnViewInspectorClicked);
 
 		_menu.AddItem("Project/Update engine files", OnProjectUpdateEngineFilesClicked, () => _studioModel.Project.IsOpened);
+		_menu.AddItem("Project/Clear Resources",     OnProjectClearResourcesClicked,    () => _studioModel.Project.IsOpened);
+		_menu.AddItem("Project/Reimport all",        OnProjectReimportAllClicked,       () => _studioModel.Project.IsOpened);
+		_menu.AddItem("Project/Import changed",      OnProjectImportChangedClicked,     () => _studioModel.Project.IsOpened);
 		
 		_menu.AddItem("Debug/Modal window",        () => Gui.OpenPopup("MessageBox"));
 		_menu.AddItem("Debug/Serialization test",  OnDebugSerializationTestClicked);
@@ -217,6 +220,22 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	private void OnProjectUpdateEngineFilesClicked()
 	{
 		_studioModel.Project.UpdateEngineFiles();
+	}
+
+	private void OnProjectClearResourcesClicked()
+	{
+		_studioModel.Project.ClearResources();
+	}
+
+	private void OnProjectReimportAllClicked()
+	{
+		_studioModel.Project.ClearResources();
+		_studioModel.Project.ImportAll();
+	}
+
+	private void OnProjectImportChangedClicked()
+	{
+		_studioModel.Project.ImportAll();
 	}
 	
 	private void OnDebugSerializationTestClicked()

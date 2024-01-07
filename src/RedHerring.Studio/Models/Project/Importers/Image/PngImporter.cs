@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using Migration;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing.Processors.Quantization;
 
@@ -9,7 +10,8 @@ public sealed class PngImporter : AssetImporter<PngImporterSettings>
 {
     protected override PngImporterSettings CreateImporterSettings() => new();
 
-    protected override ImporterResult Import(Stream stream, PngImporterSettings settings, string resourcePath, CancellationToken cancellationToken)
+    protected override ImporterResult Import(Stream stream, PngImporterSettings settings, string resourcePath, MigrationManager migrationManager,
+        CancellationToken                           cancellationToken)
     {
         using Image image = Image.Load(stream);
         

@@ -1,5 +1,6 @@
 using Assimp;
 using Assimp.Configs;
+using Migration;
 using OdinSerializer;
 using RedHerring.Render.Models;
 using Silk.NET.Maths;
@@ -12,7 +13,8 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 {
 	protected override SceneImporterSettings CreateImporterSettings() => new();
 	
-	protected override ImporterResult Import(Stream stream, SceneImporterSettings settings, string resourcePath, CancellationToken cancellationToken)
+	protected override ImporterResult Import(Stream stream, SceneImporterSettings settings, string resourcePath, MigrationManager migrationManager,
+		CancellationToken                           cancellationToken)
 	{
 		AssimpContext context = new();
 		context.SetConfig(new NormalSmoothingAngleConfig(66.0f)); // just for testing
