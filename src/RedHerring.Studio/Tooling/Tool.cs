@@ -15,14 +15,9 @@ public abstract class Tool
 	protected abstract string Name { get; }
 	public ToolId Id => new(Name, UniqueId);
 	
-	protected Tool(StudioModel studioModel)
-		: this(studioModel, _uniqueToolIdGenerator++)
-	{
-	}
-
 	protected Tool(StudioModel studioModel, int uniqueId)
 	{
-		UniqueId     = uniqueId;
+		UniqueId     = uniqueId != -1 ? uniqueId : _uniqueToolIdGenerator++;
 		NameId = $"{Name}##{UniqueId}";
 		StudioModel  = studioModel;
 	}

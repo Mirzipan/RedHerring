@@ -8,7 +8,7 @@ using static RedHerring.Studio.Utils.ImGuiExtensions;
 
 namespace RedHerring.Studio.Systems;
 
-public sealed partial class StudioCamera
+public sealed class ToolDebug_StudioCamera
 {
     private static readonly string[] Actions = 
     { 
@@ -25,7 +25,14 @@ public sealed partial class StudioCamera
     [Infuse]
     private Input _input = null!;
 
-    private void DebugDraw()
+    private readonly StudioCamera _camera;
+
+    public ToolDebug_StudioCamera(StudioCamera camera)
+    {
+        _camera = camera;
+    }
+
+    public void Draw()
     {
         bool open = false;
 
@@ -42,26 +49,26 @@ public sealed partial class StudioCamera
         Separator();
         Spacing();
 
-        Text($"Position: {_position}");
-        Text($"Target: {_target}");
-        Text($"Up: {_up}");
-        Text($"Speed: {_movementSpeed}");
+        Text($"Position: {_camera.Position}");
+        Text($"Target: {_camera.Target}");
+        Text($"Up: {_camera.Up}");
+        Text($"Speed: {_camera.MovementSpeed}");
 
         Spacing();
         Separator();
         Spacing();
 
-        Text($"FOV: {_fieldOfView}");
-        Text($"Clip Plane Near: {_clipPlaneNear}");
-        Text($"Clip Plane Far: {_clipPlaneFar}");
+        Text($"FOV: {_camera.FieldOfView}");
+        Text($"Clip Plane Near: {_camera.ClipPlaneNear}");
+        Text($"Clip Plane Far: {_camera.ClipPlaneFar}");
 
         Spacing();
         Separator();
         Spacing();
 
-        Matrix("World", _worldMatrix);
-        Matrix("View", _viewMatrix);
-        Matrix("Projection", _projectionMatrix);
+        Matrix("World", _camera.WorldMatrix);
+        Matrix("View", _camera.ViewMatrix);
+        Matrix("Projection", _camera.ProjectionMatrix);
         
         End();
     }

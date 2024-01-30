@@ -29,6 +29,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	[Infuse] private ImporterRegistry _importerRegistry = null!;
 	[Infuse] private StudioCamera     _camera           = null!;
 
+	public StudioCamera Camera => _camera;
+	
 	private NewProjectDialog _newProjectDialog = null!;
 	
 	public bool IsEnabled   => true;
@@ -71,7 +73,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		// inits
 		InitInput();
 		InitMenu();
-		_toolManager.Init(_studioModel);
+		_toolManager.Init(_studioModel, this);
 
 		// load settings and restore state
 		LoadSettings();
@@ -156,9 +158,10 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_menu.AddItem("Edit/Studio settings..",  OnEditStudioSettingsClicked);
 
 		// TODO - tools should be generated from tool manager
-		_menu.AddItem($"View/{FontAwesome6.FolderTree} Project",   OnViewProjectClicked);
-		_menu.AddItem($"View/{FontAwesome6.Terminal} Console",   OnViewConsoleClicked);
-		_menu.AddItem($"View/{FontAwesome6.CircleInfo} Inspector", OnViewInspectorClicked);
+		_menu.AddItem($"View/{ToolProjectView.ToolName}",   OnViewProjectClicked);
+		_menu.AddItem($"View/{ToolConsole.ToolName}",     OnViewConsoleClicked);
+		_menu.AddItem($"View/{ToolInspector.ToolName}", OnViewInspectorClicked);
+		_menu.AddItem($"View/{ToolDebug.ToolName}", OnViewDebugClicked);
 
 		_menu.AddItem("Project/Update engine files", OnProjectUpdateEngineFilesClicked, () => _studioModel.Project.IsOpened);
 		_menu.AddItem("Project/Clear Resources",     OnProjectClearResourcesClicked,    () => _studioModel.Project.IsOpened);
@@ -215,6 +218,11 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	private void OnViewInspectorClicked()
 	{
 		_toolManager.Activate(ToolInspector.ToolName);
+	}
+
+	private void OnViewDebugClicked()
+	{
+		_toolManager.Activate(ToolDebug.ToolName);
 	}
 
 	private void OnProjectUpdateEngineFilesClicked()

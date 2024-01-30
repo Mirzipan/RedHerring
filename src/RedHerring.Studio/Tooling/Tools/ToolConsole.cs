@@ -11,10 +11,6 @@ public sealed class ToolConsole : Tool
 	public const       string ToolName = FontAwesome6.Terminal + " Console";
 	protected override string Name => ToolName;
 
-	public ToolConsole(StudioModel studioModel) : base(studioModel)
-	{
-	}
-
 	public ToolConsole(StudioModel studioModel, int uniqueId) : base(studioModel, uniqueId)
 	{
 	}

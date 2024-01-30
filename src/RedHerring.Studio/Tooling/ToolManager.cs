@@ -1,5 +1,6 @@
 ﻿using RedHerring.Deduction;
 using RedHerring.Studio.Models;
+using RedHerring.Studio.Systems;
 
 namespace RedHerring.Studio.Tools;
 
@@ -9,22 +10,24 @@ public sealed class ToolManager : IIndexAttributes
 	private readonly Dictionary<string, Type> _toolsByName = new();
 	private readonly List<Tool>              _activeTools = new();
 
-	private StudioModel _studioModel;
+	private StudioModel  _studioModel;
+	private StudioSystem _studioSystem;
 	
-	public void Init(StudioModel studioModel)
+	public void Init(StudioModel studioModel, StudioSystem studioSystem)
 	{
-		_studioModel    = studioModel;
+		_studioModel  = studioModel;
+		_studioSystem = studioSystem;
 	}
 
 	public Tool? Activate(string toolName, int uniqueId = -1)
 	{
-		Tool? tool = uniqueId == -1
-				? (Tool?) Activator.CreateInstance(_toolsByName[toolName], _studioModel)
-				: (Tool?) Activator.CreateInstance(_toolsByName[toolName], _studioModel, uniqueId);
+		Tool? tool = (Tool?) Activator.CreateInstance(_toolsByName[toolName], _studioModel, uniqueId); // if uniqueId == -1, new id is generated in constructor
 		if (tool == null)
 		{
 			return null;
 		}
+
+		//_studioSystem.Resove(); TODO
 		
 		_activeTools.Add(tool);
 		return tool;

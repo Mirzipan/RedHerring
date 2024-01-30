@@ -25,7 +25,7 @@ public sealed class ToolProjectView : Tool
 	private          ProjectNode? _contextMenuActivatedAt = null;
 
 	//private readonly CreateScriptDialog _createScriptDialog;
-    
+
 	public ToolProjectView(StudioModel studioModel, int uniqueId) : base(studioModel, uniqueId)
 	{
 		CreateContextMenu();

@@ -26,6 +26,11 @@ public static class TemplateUtility
 		string sourceLibrariesPath = Path.Combine(_templatePath, _librariesPath);
 		string targetLibrariesPath = Path.Combine(targetPath,    _librariesPath);
 
+		if (!Directory.Exists(sourceLibrariesPath) || !Directory.Exists(targetLibrariesPath))
+		{
+			return false; // nothing to update, folder structure is different
+		}
+		
 		DirectoryInfo sourceDirectory = new DirectoryInfo(sourceLibrariesPath);
 		
 		foreach (FileInfo fileInfo in sourceDirectory.GetFiles())

@@ -11,7 +11,7 @@ using RedHerring.Studio.Constants;
 
 namespace RedHerring.Studio.Systems;
 
-public sealed partial class StudioCamera : EngineSystem, Drawable
+public sealed class StudioCamera : EngineSystem, Drawable
 {
     public const float FieldOfViewMin = MathF.PI / 4;
     public const float ClipPlaneNearMin = 0.01f;
@@ -73,6 +73,19 @@ public sealed partial class StudioCamera : EngineSystem, Drawable
         }
     }
 
+    public Matrix4x4 WorldMatrix
+    {
+        get 
+        {
+            if (_isDirty)
+            {
+                CalculateMatrices();
+            }
+
+            return _worldMatrix;
+        }
+    }
+    
     public Matrix4x4 ViewMatrix
     {
         get 
@@ -134,7 +147,6 @@ public sealed partial class StudioCamera : EngineSystem, Drawable
     public void Draw(GameTime gameTime)
     {
         SubmitToRenderer();
-        DebugDraw();
     }
 
     public void EndDraw()
