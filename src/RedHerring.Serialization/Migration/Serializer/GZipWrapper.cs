@@ -8,51 +8,59 @@ namespace Migration
 	{
 		internal static async Task<byte[]> CompressAsync(byte[] bytes)
 		{
-			MemoryStream stream = new MemoryStream();
-			GZipStream   zip    = new GZipStream(stream, CompressionMode.Compress);
-			Task         task   = zip.WriteAsync(bytes, 0, bytes.Length);
-			await task;
-			if (task.IsCanceled || task.IsFaulted)
+			using MemoryStream     stream = new MemoryStream();
 			{
-				throw task.Exception;
-			}
+				await using GZipStream zip  = new GZipStream(stream, CompressionMode.Compress);
+				Task                   task = zip.WriteAsync(bytes, 0, bytes.Length);
+				await task;
+				if (task.IsCanceled || task.IsFaulted)
+				{
+					throw task.Exception;
+				}
 
-			await zip.DisposeAsync();
+				await zip.FlushAsync();
+			}
 			return stream.GetBuffer();
 		}
 
 		internal static byte[] Compress(byte[] bytes)
 		{
-			MemoryStream stream = new MemoryStream();
-			GZipStream   zip    = new GZipStream(stream, CompressionMode.Compress);
-			zip.Write(bytes, 0, bytes.Length);
-			zip.Dispose();
+			using MemoryStream stream = new MemoryStream();
+			{
+				using GZipStream zip = new GZipStream(stream, CompressionMode.Compress);
+				zip.Write(bytes, 0, bytes.Length);
+				zip.Flush();
+			}
 			return stream.GetBuffer();
 		}
 		
 		internal static async Task<byte[]> DecompressAsync(byte[] bytes)
 		{
-			MemoryStream stream    = new MemoryStream(bytes);
-			MemoryStream outStream = new MemoryStream();
-			GZipStream   zip       = new GZipStream(stream, CompressionMode.Decompress);
-			Task         task      = zip.CopyToAsync(outStream);
-			await task;
-			if (task.IsCanceled || task.IsFaulted)
+			using MemoryStream     stream    = new MemoryStream(bytes);
+			using MemoryStream     outStream = new MemoryStream();
 			{
-				throw task.Exception;
-			}
+				await using GZipStream zip  = new GZipStream(stream, CompressionMode.Decompress);
+				Task                   task = zip.CopyToAsync(outStream);
+				await task;
+				if (task.IsCanceled || task.IsFaulted)
+				{
+					throw task.Exception;
+				}
 
-			await zip.DisposeAsync();
+				await zip.FlushAsync();
+			}
 			return outStream.GetBuffer();
 		}
 
 		internal static byte[] Decompress(byte[] bytes)
 		{
-			MemoryStream stream    = new MemoryStream(bytes);
-			MemoryStream outStream = new MemoryStream();
-			GZipStream   zip       = new GZipStream(stream, CompressionMode.Decompress);
-			zip.CopyTo(outStream);
-			zip.Dispose();
+			using MemoryStream stream    = new MemoryStream(bytes);
+			using MemoryStream outStream = new MemoryStream();
+			{
+				using GZipStream zip = new GZipStream(stream, CompressionMode.Decompress);
+				zip.CopyTo(outStream);
+				zip.Flush();
+			}
 			return outStream.GetBuffer();
 		}
 	}

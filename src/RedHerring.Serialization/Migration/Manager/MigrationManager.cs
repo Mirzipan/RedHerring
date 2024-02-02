@@ -125,7 +125,13 @@ namespace Migration
 					Migrate(field_object);
 				}
 
-				field_object = MigrateValueToLatestVersion(field_object, field_object_type);
+				object new_field_object = MigrateValueToLatestVersion(field_object, field_object_type);
+				if (field_object is IDisposable disposable)
+				{
+					disposable.Dispose();
+				}
+
+				field_object = new_field_object;
 				if (field_object != null)
 				{
 					field.SetValue(data, field_object);
@@ -187,6 +193,11 @@ namespace Migration
 				// move to next
 				value      = next_value;
 				value_type = next_type;
+
+				if (next_value is IDisposable disposable)
+				{
+					disposable.Dispose();
+				}
 			}
 
 			return value;
