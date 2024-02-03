@@ -20,11 +20,11 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 		AssimpContext context = new();
 		context.SetConfig(new NormalSmoothingAngleConfig(settings.NormalSmoothingAngle));
 
-		Scene scene = context.ImportFileFromStream(stream,
+		Scene assimpScene = context.ImportFileFromStream(stream,
 			PostProcessSteps.Triangulate
 		);
 		
-		if(!scene.HasMeshes)
+		if(!assimpScene.HasMeshes)
 		{
 			return ImporterResult.Finished;
 		}
@@ -32,13 +32,13 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 		Directory.CreateDirectory(Path.GetDirectoryName(resourcePath)!);
 
 		Model model = new();
-		
-		// TODO - far from finished
+
+		// meshes ---------------------------------------
 		bool settingsChanged = false;
-		for (int i = 0; i < scene.Meshes.Count; ++i)
+		for (int i = 0; i < assimpScene.Meshes.Count; ++i)
 		{
 			// update settings
-			Assimp.Mesh assimpMesh = scene.Meshes[i];
+			Assimp.Mesh assimpMesh = assimpScene.Meshes[i];
 			if (i == settings.Meshes.Count)
 			{
 				settings.Meshes.Add(new SceneImporterMeshSettings(assimpMesh.Name));
@@ -133,16 +133,63 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 			}
 		}
 
+		// hierarchy ----------------------------------------
+		if (assimpScene.RootNode != null)
+		{
+			model.Root = new ModelNode();
+			ImportNode(model.Root, assimpScene.RootNode);
+			ImportChildNodesRecursive(model.Root, assimpScene.RootNode);
+		}
+		
+		// import
 		byte[] json = SerializationUtility.SerializeValue(model, DataFormat.Binary);
 		File.WriteAllBytes($"{resourcePath}.scene", json);
 
 		// cut the rest
-		if (settings.Meshes.Count > scene.Meshes.Count)
+		if (settings.Meshes.Count > assimpScene.Meshes.Count)
 		{
-			settings.Meshes.RemoveRange(scene.Meshes.Count, settings.Meshes.Count - scene.Meshes.Count);
+			settings.Meshes.RemoveRange(assimpScene.Meshes.Count, settings.Meshes.Count - assimpScene.Meshes.Count);
 			settingsChanged = true;
 		}
 
 		return settingsChanged ? ImporterResult.FinishedSettingsChanged : ImporterResult.Finished;
+	}
+
+	private void ImportChildNodesRecursive(ModelNode targetNode, Assimp.Node source)
+	{
+		if (source.Children == null)
+		{
+			return;
+		}
+
+		foreach (Node sourceChild in source.Children)
+		{
+			targetNode.Children ??= new List<ModelNode>();
+
+			ModelNode child = new();
+			ImportNode(child, sourceChild);
+			targetNode.Children.Add(child);
+
+			ImportChildNodesRecursive(child, sourceChild);
+		}
+	}
+
+	private void ImportNode(ModelNode targetNode, Assimp.Node source)
+	{
+		targetNode.Name = source.Name;
+
+		source.Transform.Decompose(out Assimp.Vector3D scale, out Assimp.Quaternion rotation, out Assimp.Vector3D translation);
+		targetNode.Translation = new Vector3D<float>(translation.X, translation.Y, translation.Z);
+		targetNode.Rotation    = new Quaternion<float>(rotation.X, rotation.Y, rotation.Z, rotation.W);
+		targetNode.Scale       = new Vector3D<float>(scale.X, scale.Y, scale.Z);
+
+		if (source.HasMeshes)
+		{
+			targetNode.MeshIndices = new List<int>();
+			for (int i = 0; i < source.MeshIndices.Count; ++i)
+			{
+				targetNode.MeshIndices.Add(source.MeshIndices[i]);
+			}
+		}
 	}
 }
