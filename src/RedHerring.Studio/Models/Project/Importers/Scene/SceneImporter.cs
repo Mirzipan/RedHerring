@@ -2,6 +2,7 @@ using Assimp;
 using Assimp.Configs;
 using Migration;
 using OdinSerializer;
+using RedHerring.Numbers;
 using RedHerring.Render.Models;
 using Silk.NET.Maths;
 using Mesh = RedHerring.Render.Models.Mesh;
@@ -17,7 +18,7 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 		CancellationToken                           cancellationToken)
 	{
 		AssimpContext context = new();
-		context.SetConfig(new NormalSmoothingAngleConfig(66.0f)); // just for testing
+		context.SetConfig(new NormalSmoothingAngleConfig(settings.NormalSmoothingAngle));
 
 		Scene scene = context.ImportFileFromStream(stream,
 			PostProcessSteps.Triangulate
@@ -30,6 +31,8 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 		
 		Directory.CreateDirectory(Path.GetDirectoryName(resourcePath)!);
 
+		Model model = new();
+		
 		// TODO - far from finished
 		bool settingsChanged = false;
 		for (int i = 0; i < scene.Meshes.Count; ++i)
@@ -48,47 +51,90 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 			}
 
 			// check
-			if (!settings.Meshes[i].Import)
-			{
-				continue;
-			}
+			// if (!settings.Meshes[i].Import)
+			// {
+			// 	continue;
+			// }
 
 			// import
-			Model model = new();
+			Mesh  mesh  = new();
+			mesh.Name = assimpMesh.Name;
+			model.Meshes.Add(mesh);
+
+			// positions
+			if (assimpMesh.HasVertices)
+			{
+				mesh.Positions = assimpMesh.Vertices.Select(v => new Vector3D<float>(v.X, v.Y, v.Z)).ToList();
+			}
+
+			// normals
+			if (assimpMesh.HasNormals)
+			{
+				mesh.Normals = assimpMesh.Normals.Select(n => new Vector3D<float>(n.X, n.Y, n.Z)).ToList();
+			}
 			
-			model.Vertices = new(assimpMesh.VertexCount);
-			foreach (Assimp.Vector3D vertex in assimpMesh.Vertices)
+			// tangents and bitangents
+			if (assimpMesh.HasTangentBasis)
 			{
-				model.Vertices.Add(new Vector3D<float>(vertex.X, vertex.Y, vertex.Z));
+				mesh.Tangents   = assimpMesh.Tangents.Select(t => new Vector3D<float>(t.X,   t.Y, t.Z)).ToList();
+				mesh.BiTangents = assimpMesh.BiTangents.Select(b => new Vector3D<float>(b.X, b.Y, b.Z)).ToList();
 			}
 
-			model.Normals = new(assimpMesh.VertexCount);
-			foreach (Assimp.Vector3D normal in assimpMesh.Normals)
+			// UV
+			if (assimpMesh.TextureCoordinateChannelCount > 0)
 			{
-				model.Normals.Add(new Vector3D<float>(normal.X, normal.Y, normal.Z));
-			}
+				mesh.TextureCoordinateChannels = new List<MeshTextureCoordinateChannel>();
+				for (int channelIndex = 0; channelIndex < assimpMesh.TextureCoordinateChannelCount; ++channelIndex)
+				{
+					MeshTextureCoordinateChannel channel = new ();
+					
+					if (assimpMesh.UVComponentCount[channelIndex] == 2)
+					{
+						channel.UV = assimpMesh.TextureCoordinateChannels[channelIndex].Select(uv => new Vector2D<float>(uv.X, uv.Y)).ToList();
+					}
+					else if (assimpMesh.UVComponentCount[channelIndex] == 3)
+					{
+						channel.UVW = assimpMesh.TextureCoordinateChannels[channelIndex].Select(uv => new Vector3D<float>(uv.X, uv.Y, uv.Z)).ToList();
+					}
+					else
+					{
+						continue;
+					}
 
-			model.Indices = new(assimpMesh.Faces.Count * 3);
-			foreach(Assimp.Face face in assimpMesh.Faces)
-			{
-				model.Indices.Add(face.Indices[0]);
-				model.Indices.Add(face.Indices[1]);
-				model.Indices.Add(face.Indices[2]);
+					mesh.TextureCoordinateChannels.Add(channel);
+				}
 			}
-
-			Mesh mesh = new()
-			            {
-				            Name          = assimpMesh.Name,
-				            MaterialIndex = 0,
-				            IndexStart    = 0,
-				            TriStart      = 0,
-				            TriCount      = model.Indices.Count / 3
-			            };
-			model.Meshes = new() { mesh };
 			
-			byte[] json = SerializationUtility.SerializeValue(model, DataFormat.JSON);
-			File.WriteAllBytes($"{resourcePath}_{mesh.Name}_.mesh", json);
+			// colors
+			if (assimpMesh.VertexColorChannelCount > 0)
+			{
+				mesh.VertexColorChannels = new List<MeshVertexColorChannel>();
+				for (int channelIndex = 0; channelIndex < assimpMesh.VertexColorChannelCount; ++channelIndex)
+				{
+					MeshVertexColorChannel channel = new();
+					mesh.VertexColorChannels.Add(channel);
+					channel.Colors = assimpMesh.VertexColorChannels[channelIndex].Select(color => new Color4(color.R, color.G, color.B, color.A)).ToList();
+				}
+			}
+			
+			// TODO - rest: bones, animation, morphing
+
+			// faces
+			if (assimpMesh.HasFaces)
+			{
+				if (mesh.Positions is not null && mesh.Positions.Count <= 0xffff)
+				{
+					mesh.UShortIndices = assimpMesh.GetUnsignedIndices().Select(idx => (ushort)idx).ToList();
+				}
+				else
+				{
+					mesh.UIntIndices = assimpMesh.GetUnsignedIndices().ToList();
+				}
+			}
 		}
+
+		byte[] json = SerializationUtility.SerializeValue(model, DataFormat.Binary);
+		File.WriteAllBytes($"{resourcePath}.scene", json);
 
 		// cut the rest
 		if (settings.Meshes.Count > scene.Meshes.Count)
