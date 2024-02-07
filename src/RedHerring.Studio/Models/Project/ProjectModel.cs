@@ -786,7 +786,7 @@ public sealed class ProjectModel
 		string metaPath = node.AbsolutePath + ".meta";
 
 		// default
-		string id    = node.RelativePath;
+		string id    = node.RelativePath.GetHashCode().ToString(); // TODO - this is nonsense, but just for test
 		string field = "";
 
 		// read meta
@@ -807,7 +807,7 @@ public sealed class ProjectModel
 			using StreamWriter stream = File.CreateText(metaPath);
 			stream.WriteLine("meta");
 			stream.WriteLine("{");
-			stream.WriteLine($"	id=\"{id}\" // identifier of this asset, can be changed");
+			stream.WriteLine($"	id=\"{id}\" // unique identifier of this asset, can be changed to something human readable");
 			stream.WriteLine($"	field=\"{field}\" // field name for direct access, if empty field is not generated");
 			stream.WriteLine("}");
 		}
@@ -818,9 +818,46 @@ public sealed class ProjectModel
 	{
 		PauseWatchers();
 
+		lock (ProjectTreeLock)
+		{
+			ProjectAssetDatabase assetDatabase = new();
+			
+			_assetsFolder!.TraverseRecursive(
+				node => ImportAsset(node, assetDatabase),
+				TraverseFlags.Directories | TraverseFlags.Files,
+				default
+			);
+
+			assetDatabase.Write(Path.Join(_scriptsFolder!.AbsolutePath, "AssetDatabase.cs"));
+		}
+		
 		ResumeWatchers();
 	}
 
+	private void ImportAsset(ProjectNode node, ProjectAssetDatabase assetDatabase)
+	{
+		string metaPath = node.AbsolutePath + ".meta";
+
+		// default
+		string id    = node.RelativePath;
+		string field = "";
+
+		// read meta
+		if (File.Exists(metaPath))
+		{
+			string content = File.ReadAllText(metaPath);
+
+			UdlParser parser = new();
+			UdlNode?  tree   = parser.ParseUTF8(content);
+			
+			// TODO - functions for accessing UdlTree
+			id    = tree?.Children?.FirstOrDefault(x => x.Identifier == "id")?.StringValue    ?? id;
+			field = tree?.Children?.FirstOrDefault(x => x.Identifier == "field")?.StringValue ?? field;
+		}
+
+		assetDatabase.AddItem(id, field, node.RelativePath);
+	}
+	
 	//------------------------------------------------------------------------------------------------------
 	#endregion
 }
