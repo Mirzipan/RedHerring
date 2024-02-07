@@ -1,4 +1,5 @@
 ﻿using Migration;
+using RedHerring.Studio.Definitions;
 using RedHerring.Studio.Tools;
 using RedHerring.Studio.UserInterface.Attributes;
 
@@ -34,7 +35,8 @@ public sealed class StudioSettings
 
 	public void ApplyTheme()
 	{
-		Array.Find(_themes, theme => theme.Name == Theme)?.Apply();
+		Clues.Definitions.Default<ThemeDefinition>()?.Apply();
+		//Array.Find(_themes, theme => theme.Name == Theme)?.Apply();
 	}
 }
 
