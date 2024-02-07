@@ -3,7 +3,7 @@ using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.UserInterface.Attributes;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
-
+/*
 [Serializable, SerializedClassId("metadata-class-id")]
 public class Metadata
 {
@@ -73,3 +73,4 @@ public class Metadata_002 : IMetadataMigratable
 	}
 }
 #endregion
+*/

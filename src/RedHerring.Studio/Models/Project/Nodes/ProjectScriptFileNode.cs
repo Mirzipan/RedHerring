@@ -22,21 +22,21 @@ public class ProjectScriptFileNode : ProjectNode
 
 	public override void InitMeta(MigrationManager migrationManager, ImporterRegistry importerRegistry, CancellationToken cancellationToken)
 	{
-		string guid = RelativePath;
-		
-		// try to parse file header
-		ProjectScriptFileHeader.FileId? fileId = ProjectScriptFileHeader.ReadFromFile(AbsolutePath);
-		if(fileId != null)
-		{
-			guid = fileId.Guid;
-			SetNodeType(ProjectNodeType.ScriptDefinitionTemplate);
-		}
-
-		Meta = new Metadata
-		       {
-			       Guid = guid,
-			       Hash = "",
-		       };
+		// string guid = RelativePath;
+		//
+		// // try to parse file header
+		// ProjectScriptFileHeader.FileId? fileId = ProjectScriptFileHeader.ReadFromFile(AbsolutePath);
+		// if(fileId != null)
+		// {
+		// 	guid = fileId.Guid;
+		// 	SetNodeType(ProjectNodeType.ScriptDefinitionTemplate);
+		// }
+		//
+		// Meta = new Metadata
+		//        {
+		// 	       Guid = guid,
+		// 	       Hash = "",
+		//        };
 	}
 
 	public override void TraverseRecursive(Action<ProjectNode> process, TraverseFlags flags, CancellationToken cancellationToken)

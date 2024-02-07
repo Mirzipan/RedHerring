@@ -100,12 +100,12 @@ public sealed class ToolProjectView : Tool
 	
 	private bool UpdateNode(ProjectNode node, ImGuiTreeNodeFlags flags)
 	{
-		if (node.Meta == null)
-		{
-			return false;
-		}
+		// if (node.Meta == null)
+		// {
+		// 	return false;
+		// }
 
-		string id = node.Meta.Guid!;
+		string id = node.RelativePath; //node.Meta.Guid!;
 
 		if (StudioModel.Selection.IsSelected(id))
 		{

@@ -642,61 +642,61 @@ public sealed class ProjectModel
 		return new ProjectTask(
 			cancellationToken =>
 			{
-				// check node
-				ProjectAssetFileNode? node = root.FindNode(path) as ProjectAssetFileNode;
-				if (node == null || node.Meta == null)
-				{
-					return;
-				}
-
-				// check file
-				if (!File.Exists(node.AbsolutePath))
-				{
-					return;
-				}
-
-				// calculate hash
-				string? hash = null;
-				try
-				{
-					using FileStream file = new(node.AbsolutePath, FileMode.Open);
-					hash = Convert.ToBase64String(_hashAlgorithm.ComputeHash(file)); // how to cancel compute hash?
-				}
-				catch (Exception e)
-				{
-					return;
-				}
-
-				// check hash
-				if (node.Meta.Hash == hash)
-				{
-					return;
-				}
-
-				// import
-				Importer importer = _importerRegistry.GetImporter(node.Extension);
-				node.Meta!.ImporterSettings ??= importer.CreateSettings();
-
-				string resourcePath = Path.Combine(_projectSettings!.AbsoluteResourcesPath, node.RelativePath);
-
-				try
-				{
-					using Stream   stream = File.OpenRead(node.AbsolutePath);
-					ImporterResult result = importer.Import(stream, node.Meta.ImporterSettings, resourcePath, _migrationManager, cancellationToken);
-
-					if (result == ImporterResult.FinishedSettingsChanged)
-					{
-						node.UpdateMetaFile();
-					}
-				}
-				catch (Exception e)
-				{
-					ConsoleViewModel.LogError($"While importing file {node.AbsolutePath} an exception occured: {e}");
-					return;
-				}
-
-				// update hash
-				node.Meta.SetHash(hash);
+				// // check node
+				// ProjectAssetFileNode? node = root.FindNode(path) as ProjectAssetFileNode;
+				// if (node == null || node.Meta == null)
+				// {
+				// 	return;
+				// }
+				//
+				// // check file
+				// if (!File.Exists(node.AbsolutePath))
+				// {
+				// 	return;
+				// }
+				//
+				// // calculate hash
+				// string? hash = null;
+				// try
+				// {
+				// 	using FileStream file = new(node.AbsolutePath, FileMode.Open);
+				// 	hash = Convert.ToBase64String(_hashAlgorithm.ComputeHash(file)); // how to cancel compute hash?
+				// }
+				// catch (Exception e)
+				// {
+				// 	return;
+				// }
+				//
+				// // check hash
+				// if (node.Meta.Hash == hash)
+				// {
+				// 	return;
+				// }
+				//
+				// // import
+				// Importer importer = _importerRegistry.GetImporter(node.Extension);
+				// node.Meta!.ImporterSettings ??= importer.CreateSettings();
+				//
+				// string resourcePath = Path.Combine(_projectSettings!.AbsoluteResourcesPath, node.RelativePath);
+				//
+				// try
+				// {
+				// 	using Stream   stream = File.OpenRead(node.AbsolutePath);
+				// 	ImporterResult result = importer.Import(stream, node.Meta.ImporterSettings, resourcePath, _migrationManager, cancellationToken);
+				//
+				// 	if (result == ImporterResult.FinishedSettingsChanged)
+				// 	{
+				// 		node.UpdateMetaFile();
+				// 	}
+				// }
+				// catch (Exception e)
+				// {
+				// 	ConsoleViewModel.LogError($"While importing file {node.AbsolutePath} an exception occured: {e}");
+				// 	return;
+				// }
+				//
+				// // update hash
+				// node.Meta.SetHash(hash);
 			}
 		);
 	}
