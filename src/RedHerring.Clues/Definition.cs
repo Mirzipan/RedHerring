@@ -1,6 +1,5 @@
 ﻿namespace RedHerring.Clues;
 
-[DeserializedFrom(typeof(SerializedDefinition))]
 public abstract class Definition : IDisposable
 {
     private Guid _id;
@@ -11,10 +10,10 @@ public abstract class Definition : IDisposable
 
     #region Lifecycle
 
-    public virtual void Init(SerializedDefinition data)
+    public Definition(Guid id, bool isDefault)
     {
-        _id = new Guid(data.Id);
-        _isDefault = data.IsDefault;
+        _id = id;
+        _isDefault = isDefault;
     }
 
     public virtual void Dispose()

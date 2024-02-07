@@ -1,20 +1,20 @@
-﻿using RedHerring.Infusion.Attributes;
-
-namespace RedHerring.Clues;
+﻿namespace RedHerring.Clues;
 
 public sealed class Definitions : IDisposable
 {
-    [Infuse]
-    private DefinitionIndexer _indexer = null!;
-    
-    private readonly DefinitionSet _data = new();
-    private readonly Dictionary<Type, Definition> _defaults = new();
+    private static DefinitionSet _data = new();
+    private static readonly Dictionary<Type, Definition> _defaults = new();
 
     #region Lifecycle
 
+    public static void Init(DefinitionSet set)
+    {
+        _data = set;
+        PopulateDefaults();
+    }
+
     public void Dispose()
     {
-        _indexer.Dispose();
         _data.Dispose();
     }
 
@@ -22,17 +22,12 @@ public sealed class Definitions : IDisposable
 
     #region Queries
 
-    public DefinitionProcessor CreateProcessor()
-    {
-        return new UnsortedDefinitionProcessor(_indexer, Process);
-    }
-
     /// <summary>
     /// Returns all definitions of a given type.
     /// </summary>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>Definition of type, if found, null otherwise</returns>
-    public IEnumerable<T> ByType<T>() where T : Definition
+    public static IEnumerable<T> ByType<T>() where T : Definition
     {
         return _data.ByType<T>();
     }
@@ -43,7 +38,7 @@ public sealed class Definitions : IDisposable
     /// <param name="id"></param>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>Definition of type and id, if found, null otherwise</returns>
-    public T? ById<T>(Guid id) where T : Definition
+    public static T? ById<T>(Guid id) where T : Definition
     {
         return _data.ById<T>(id);
     }
@@ -55,7 +50,7 @@ public sealed class Definitions : IDisposable
     /// <param name="definition"></param>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>True if definition exists</returns>
-    public bool TryById<T>(Guid id, out T? definition) where T : Definition
+    public static bool TryById<T>(Guid id, out T? definition) where T : Definition
     {
         return (definition = _data.ById<T>(id)) is not null;
     }
@@ -66,7 +61,7 @@ public sealed class Definitions : IDisposable
     /// <param name="id"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public bool Contains<T>(Guid id) where T : Definition
+    public static bool Contains<T>(Guid id) where T : Definition
     {
         return _data.Contains<T>(id);
     }
@@ -76,7 +71,7 @@ public sealed class Definitions : IDisposable
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public T? Default<T>() where T : Definition
+    public static T? Default<T>() where T : Definition
     {
         Type type = typeof(T);
         return _defaults.TryGetValue(type, out var result) ? (T)result : null;
@@ -86,14 +81,7 @@ public sealed class Definitions : IDisposable
 
     #region Private
 
-    private void Process(DefinitionProcessor processor)
-    {
-        processor.Process(_data);
-
-        PopulateDefaults();
-    }
-
-    private void PopulateDefaults()
+    private static void PopulateDefaults()
     {
         foreach (var entry in _data.All())
         {
