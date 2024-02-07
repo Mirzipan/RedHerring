@@ -167,6 +167,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_menu.AddItem("Project/Clear Resources",     OnProjectClearResourcesClicked,    () => _studioModel.Project.IsOpened);
 		_menu.AddItem("Project/Reimport all",        OnProjectReimportAllClicked,       () => _studioModel.Project.IsOpened);
 		_menu.AddItem("Project/Import changed",      OnProjectImportChangedClicked,     () => _studioModel.Project.IsOpened);
+		_menu.AddItem("Project/NEW Update",      OnProjectNewUpdateClicked,     () => _studioModel.Project.IsOpened);
+		_menu.AddItem("Project/NEW Import",      OnProjectNewImportClicked,     () => _studioModel.Project.IsOpened);
 		
 		_menu.AddItem("Debug/Modal window",        () => Gui.OpenPopup("MessageBox"));
 		_menu.AddItem("Debug/Serialization test",  OnDebugSerializationTestClicked);
@@ -245,7 +247,17 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	{
 		_studioModel.Project.ImportAll();
 	}
-	
+
+	private void OnProjectNewUpdateClicked()
+	{
+		_studioModel.Project.UpdateAssets();
+	}
+
+	private void OnProjectNewImportClicked()
+	{
+		_studioModel.Project.ImportAssets();
+	}
+
 	private void OnDebugSerializationTestClicked()
 	{
 		SerializationTests.Test();

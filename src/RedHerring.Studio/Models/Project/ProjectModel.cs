@@ -5,6 +5,7 @@ using Migration;
 using RedHerring.Studio.Models.Project.FileSystem;
 using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.ViewModels.Console;
+using UniversalDeclarativeLanguage;
 
 namespace RedHerring.Studio.Models.Project;
 
@@ -760,5 +761,66 @@ public sealed class ProjectModel
 			}
 		);
 	}
+	#endregion
+	
+	#region New asset pipeline
+	//------------------------------------------------------------------------------------------------------
+	public void UpdateAssets()
+	{
+		PauseWatchers();
+
+		lock (ProjectTreeLock)
+		{
+			_assetsFolder!.TraverseRecursive(
+				CreateOrUpdateMeta,
+				TraverseFlags.Directories | TraverseFlags.Files,
+				default
+			);
+		}
+		
+		ResumeWatchers();
+	}
+
+	private void CreateOrUpdateMeta(ProjectNode node)
+	{
+		string metaPath = node.AbsolutePath + ".meta";
+
+		// default
+		string id    = node.RelativePath;
+		string field = "";
+
+		// read meta
+		if (File.Exists(metaPath))
+		{
+			string content = File.ReadAllText(metaPath);
+
+			UdlParser parser = new();
+			UdlNode?  tree   = parser.ParseUTF8(content);
+			
+			// TODO - functions for accessing UdlTree
+			id = tree?.Children?.FirstOrDefault(x => x.Identifier == "id")?.StringValue ?? id;
+			field = tree?.Children?.FirstOrDefault(x => x.Identifier == "field")?.StringValue ?? field;
+		}
+
+		// write meta
+		{
+			using StreamWriter stream = File.CreateText(metaPath);
+			stream.WriteLine("meta");
+			stream.WriteLine("{");
+			stream.WriteLine($"	id=\"{id}\" // identifier of this asset, can be changed");
+			stream.WriteLine($"	field=\"{field}\" // field name for direct access, if empty field is not generated");
+			stream.WriteLine("}");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------------
+	public void ImportAssets()
+	{
+		PauseWatchers();
+
+		ResumeWatchers();
+	}
+
+	//------------------------------------------------------------------------------------------------------
 	#endregion
 }
