@@ -14,12 +14,9 @@ public sealed class StudioSettings
 	public int WorkerThreadsCount = 4;
 
 	[ValueDropdown(nameof(_themes)), OnCommitValue(nameof(ApplyTheme))] public string Theme = DefaultTheme;
-	[HideInInspector, NonSerialized] private static StudioTheme[] _themes = // TODO - maybe from some attributes? 
-		{ 
-			new ("Crimson Rivers", Render.ImGui.Theme.CrimsonRivers),
-			new ("Embrace the Darkness", Render.ImGui.Theme.EmbraceTheDarkness),
-			new ("Bloodsucker", Render.ImGui.Theme.Bloodsucker)
-		};
+
+	[HideInInspector, NonSerialized]
+	private static StudioTheme[] _themes = Clues.Definitions.ByType<ThemeDefinition>().Select(e => new StudioTheme(e.Name, e.Apply)).ToArray();
 	
 	#region Data storage
 	[HideInInspector] public string?       UiLayout;
@@ -35,8 +32,7 @@ public sealed class StudioSettings
 
 	public void ApplyTheme()
 	{
-		Clues.Definitions.Default<ThemeDefinition>()?.Apply();
-		//Array.Find(_themes, theme => theme.Name == Theme)?.Apply();
+		Array.Find(_themes, e => e.Name == Theme)?.Apply();
 	}
 }
 
