@@ -2,7 +2,7 @@
 
 namespace RedHerring.Studio.Definitions;
 
-public partial class ThemeDefinition
+public abstract partial class ThemeDefinition
 {
     public static readonly ThemeDefinition EmbraceTheDarkness = new EmbraceTheDarknessTheme();
     public static readonly ThemeDefinition CrimsonRivers = new CrimsonRiversTheme();
