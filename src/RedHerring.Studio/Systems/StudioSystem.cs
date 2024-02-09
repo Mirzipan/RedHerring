@@ -78,8 +78,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		// load settings and restore state
 		LoadSettings();
 		
-		// debug
-		_projectSettings = new ObjectDialog("Project settings", _studioModel.CommandHistory, _studioModel.Project.ProjectSettings);
+		// dialogs
+		CreateProjectSettings();
 		_studioSettings  = new ObjectDialog("Studio settings",  _studioModel.CommandHistory, _studioModel.StudioSettings);
 
 		return 0;
@@ -143,6 +143,12 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	{
 		_inputReceiver.Push();
 	}
+
+	private void CreateProjectSettings()
+	{
+		_projectSettings = new ObjectDialog("Project settings", _studioModel.CommandHistory, _studioModel.Project.ProjectSettings);
+	}
+
 	#endregion Private
 
 	#region Menu
@@ -154,7 +160,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 
 		_menu.AddItem("Edit/Undo",               _studioModel.CommandHistory.Undo);
 		_menu.AddItem("Edit/Redo",               _studioModel.CommandHistory.Redo);
-		_menu.AddItem("Edit/Project settings..", OnEditProjectSettingsClicked);
+		_menu.AddItem("Edit/Project settings..", OnEditProjectSettingsClicked, () => _studioModel.Project.IsOpened);
 		_menu.AddItem("Edit/Studio settings..",  OnEditStudioSettingsClicked);
 
 		// TODO - tools should be generated from tool manager
@@ -167,8 +173,6 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_menu.AddItem("Project/Clear Resources",     OnProjectClearResourcesClicked,    () => _studioModel.Project.IsOpened);
 		_menu.AddItem("Project/Reimport all",        OnProjectReimportAllClicked,       () => _studioModel.Project.IsOpened);
 		_menu.AddItem("Project/Import changed",      OnProjectImportChangedClicked,     () => _studioModel.Project.IsOpened);
-		_menu.AddItem("Project/NEW Update",      OnProjectNewUpdateClicked,     () => _studioModel.Project.IsOpened);
-		_menu.AddItem("Project/NEW Import",      OnProjectNewImportClicked,     () => _studioModel.Project.IsOpened);
 		
 		_menu.AddItem("Debug/Modal window",        () => Gui.OpenPopup("MessageBox"));
 		_menu.AddItem("Debug/Serialization test",  OnDebugSerializationTestClicked);
@@ -199,6 +203,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 
 	private void OnEditProjectSettingsClicked()
 	{
+		CreateProjectSettings();
 		_projectSettings.Open();
 	}
 
@@ -246,16 +251,6 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	private void OnProjectImportChangedClicked()
 	{
 		_studioModel.Project.ImportAll();
-	}
-
-	private void OnProjectNewUpdateClicked()
-	{
-		_studioModel.Project.UpdateAssets();
-	}
-
-	private void OnProjectNewImportClicked()
-	{
-		_studioModel.Project.ImportAssets();
 	}
 
 	private void OnDebugSerializationTestClicked()

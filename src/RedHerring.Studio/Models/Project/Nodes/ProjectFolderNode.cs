@@ -23,11 +23,11 @@ public class ProjectFolderNode : ProjectNode
 		}
 		else
 		{
-			// Meta = new Metadata
-			//        {
-			// 	       Guid = RelativePath,
-			// 	       Hash = ""
-			//        };
+			Meta = new Metadata
+			       {
+				       Guid = RelativePath,
+				       Hash = ""
+			       };
 		}
 	}
 

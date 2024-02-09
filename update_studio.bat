@@ -14,6 +14,7 @@ mkdir Studio\Template
 xcopy Template\*.sln Studio\Template\ /S
 xcopy Template\*.csproj Studio\Template\ /S
 xcopy Template\*.cs Studio\Template\ /S
+xcopy Template\Project.json Studio\Template\ /S
 
 mkdir Studio\Template\Assets
 mkdir Studio\Template\Resources

@@ -11,10 +11,10 @@ public sealed class ProjectRootNode : ProjectFolderNode
 
 	public override void InitMeta(MigrationManager migrationManager, ImporterRegistry importerRegistry, CancellationToken cancellationToken)
 	{
-		// Meta = new Metadata
-		//        {
-		// 	       Guid = Name,
-		// 	       Hash = $"#{Name}" // # is not valid base64 symbol, so this hash will be unique no matter what Name is
-		//        };
+		Meta = new Metadata
+		       {
+			       Guid = Name,
+			       Hash = $"#{Name}" // # is not valid base64 symbol, so this hash will be unique no matter what Name is
+		       };
 	}
 }

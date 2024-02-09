@@ -3,12 +3,13 @@ using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.UserInterface.Attributes;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
-/*
-[Serializable, SerializedClassId("metadata-class-id")]
+
+[Serializable, SerializedClassId("0c8a6450-cc04-4456-8335-02d1aac7e7cd")]
 public class Metadata
 {
-	[ReadOnlyInInspector] public string? Guid = null;
-	[ReadOnlyInInspector] public string? Hash = null;
+	[ReadOnlyInInspector] public string? Guid  = null;
+	[ReadOnlyInInspector] public string? Hash  = null;
+	public                       string? ReferenceField = null;
 	
 	public ImporterSettings? ImporterSettings = null;
 
@@ -61,16 +62,17 @@ public class Metadata_002 : IMetadataMigratable
 {
 	public string? Guid;
 	public string? Hash;
+	public string? ReferenceField;
 	
 	[MigrateField] public IImporterSettingsMigratable? ImporterSettings;
 	
 	public void Migrate(Metadata_001 prev)
 	{
-		Guid = prev.Guid;
-		Hash = null; // to force reimport
+		Guid  = prev.Guid;
+		Hash  = null; // to force reimport
+		ReferenceField = null;
 		
 		ImporterSettings = null;
 	}
 }
 #endregion
-*/
