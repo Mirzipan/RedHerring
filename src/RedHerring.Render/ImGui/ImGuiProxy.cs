@@ -1,6 +1,7 @@
 ﻿using RedHerring.Alexandria;
 using RedHerring.Fingerprint;
 using Veldrid;
+using static ImGuiNET.ImGui;
 
 namespace RedHerring.Render.ImGui;
 
@@ -29,7 +30,7 @@ public static class ImGuiProxy
             height);
 
         FontLoader.Load(renderer!);
-        Theme.CrimsonRivers();
+        StyleColorsDark();
 
         _renderer = renderer;
     }
