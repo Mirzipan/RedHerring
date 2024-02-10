@@ -22,8 +22,8 @@ public class StudioModel
 	private StudioSettings  _studioSettings = new();
 	public  StudioSettings  StudioSettings => _studioSettings;
 
-	private CommandHistory _commandHistory = new();
-	public  CommandHistory CommandHistory => _commandHistory;
+	private CommandHistoryWithChange _commandHistory = new();
+	public  CommandHistoryWithChange CommandHistory => _commandHistory;
 	
 	// view models
 	private readonly ConsoleViewModel _console = new();

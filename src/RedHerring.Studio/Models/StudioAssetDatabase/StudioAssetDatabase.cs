@@ -35,7 +35,7 @@ public sealed class StudioAssetDatabase
 			using FileStream   stream = File.Open(path, FileMode.Create);
 			using StreamWriter writer = new(stream);
 
-			writer.WriteLine("// this file is generated in Mine Studio");
+			writer.WriteLine("// this file is generated in RedHerring Studio");
 			writer.WriteLine("using RedHerring.Assets;");
 			writer.WriteLine($"namespace {projectSettings.AssetDatabaseNamespace};");
 			writer.WriteLine($"public static class {projectSettings.AssetDatabaseClass}");

@@ -2,12 +2,12 @@
 
 public sealed class SelectionViewModel
 {
-	private Dictionary<string, WeakReference<object>> _selection       = new();
-	public event Action?                              SelectionChanged;
+	private readonly Dictionary<string, WeakReference<ISelectable>> _selection = new();
+	public event Action?                                            SelectionChanged;
 
-	public void Select(string path, object target)
+	public void Select(string path, ISelectable target)
 	{
-		_selection[path] = new WeakReference<object>(target);
+		_selection[path] = new WeakReference<ISelectable>(target);
 		SelectionChanged?.Invoke();
 	}
 	
@@ -17,7 +17,7 @@ public sealed class SelectionViewModel
 		SelectionChanged?.Invoke();
 	}
 
-	public void Flip(string path, object target)
+	public void Flip(string path, ISelectable target)
 	{
 		if (_selection.ContainsKey(path))
 		{
@@ -40,13 +40,13 @@ public sealed class SelectionViewModel
 		return _selection.ContainsKey(item);
 	}
 
-	public object? SelectedTarget(string item)
+	public ISelectable? SelectedTarget(string item)
 	{
-		return _selection.TryGetValue(item, out WeakReference<object>? targetRef) ? (targetRef.TryGetTarget(out object? target) ? target : null) : null;
+		return _selection.TryGetValue(item, out WeakReference<ISelectable>? targetRef) ? (targetRef.TryGetTarget(out ISelectable? target) ? target : null) : null;
 	}
 	
-	public IReadOnlyList<object> GetAllSelectedTargets()
+	public IReadOnlyList<ISelectable> GetAllSelectedTargets()
 	{
-		return _selection.Values.Select(reference => reference.TryGetTarget(out object? target) ? target : null).Where(target => target != null).ToList()!;
+		return _selection.Values.Select(reference => reference.TryGetTarget(out ISelectable? target) ? target : null).Where(target => target != null).ToList()!;
 	}
 }

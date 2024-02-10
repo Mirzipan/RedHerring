@@ -1,10 +1,11 @@
 using Migration;
 using RedHerring.Studio.Models.Project.Importers;
+using RedHerring.Studio.Models.ViewModels;
 using RedHerring.Studio.UserInterface.Attributes;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
 
-public abstract class ProjectNode
+public abstract class ProjectNode : ISelectable
 {
 	[ReadOnlyInInspector] public ProjectNodeType Type = ProjectNodeType.Uninitialized;
 
@@ -33,6 +34,11 @@ public abstract class ProjectNode
 	public void ResetMetaHash()
 	{
 		Meta?.SetHash(null);
+	}
+
+	public void ApplyChanges()
+	{
+		UpdateMetaFile();
 	}
 	
 	public void UpdateMetaFile()

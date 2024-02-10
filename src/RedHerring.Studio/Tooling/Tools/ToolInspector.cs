@@ -1,5 +1,6 @@
 ﻿using RedHerring.Render.ImGui;
 using RedHerring.Studio.Models;
+using RedHerring.Studio.Models.ViewModels;
 using RedHerring.Studio.UserInterface;
 using RedHerring.Studio.UserInterface.Attributes;
 using Gui = ImGuiNET.ImGui;
@@ -14,12 +15,15 @@ public sealed class ToolInspector : Tool
 	private readonly   Inspector _inspector;
 	private            bool      _subscribedToChange = false;
 
+	private readonly StudioModel _studioModel;
+
 	//private List<object> _tests = new(){new InspectorTest(), new InspectorTest2()}; // TODO debug
 	private List<object> _tests = new(){new InspectorTest()}; // TODO debug
 
 	public ToolInspector(StudioModel studioModel, int uniqueId) : base(studioModel, uniqueId)
 	{
-		_inspector = new Inspector(studioModel.CommandHistory);
+		_studioModel = studioModel;
+		_inspector   = new Inspector(studioModel.CommandHistory);
 	}
 	
 	public override void Update(out bool finished)
@@ -34,6 +38,7 @@ public sealed class ToolInspector : Tool
 		{
 			SubscribeToChange();
 			_inspector.Update();
+			ApplyChanges();
 			Gui.End();
 		}
 		else
@@ -44,6 +49,22 @@ public sealed class ToolInspector : Tool
 		return !isOpen;
 	}
 
+	private void ApplyChanges()
+	{
+		if (!_studioModel.CommandHistory.WasChange)
+		{
+			return;
+		}
+
+		IReadOnlyList<ISelectable> selection = StudioModel.Selection.GetAllSelectedTargets();
+		foreach (ISelectable selectable in selection)
+		{
+			selectable.ApplyChanges();
+		}
+
+		_studioModel.CommandHistory.ResetChange();
+	}
+	
 	private void SubscribeToChange()
 	{
 		if (_subscribedToChange)
