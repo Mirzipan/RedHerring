@@ -1,4 +1,5 @@
-﻿using RedHerring.Core;
+﻿using RedHerring.Clues;
+using RedHerring.Core;
 using RedHerring.Game;
 using RedHerring.Platforms;
 using RedHerring.Render;
@@ -108,6 +109,7 @@ internal class Program
 
     private static void OnEngineExit()
     {
+        Definitions.DestroyContext();
         _window?.Close();
     }
 

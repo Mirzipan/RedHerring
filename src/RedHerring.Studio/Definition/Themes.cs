@@ -1,6 +1,6 @@
 ﻿using RedHerring.Clues;
 
-namespace RedHerring.Studio.Definitions;
+namespace RedHerring.Studio.Definition;
 
 public abstract partial class ThemeDefinition
 {

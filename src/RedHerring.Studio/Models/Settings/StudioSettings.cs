@@ -1,5 +1,5 @@
 ﻿using Migration;
-using RedHerring.Studio.Definitions;
+using RedHerring.Studio.Definition;
 using RedHerring.Studio.Tools;
 using RedHerring.Studio.UserInterface.Attributes;
 

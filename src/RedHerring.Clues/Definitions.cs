@@ -1,19 +1,19 @@
 ﻿namespace RedHerring.Clues;
 
-public sealed class Definitions : IDisposable
+public static class Definitions
 {
     private static DefinitionSet _data = new();
-    private static readonly Dictionary<Type, Definition> _defaults = new();
+    private static readonly Dictionary<Type, Definition> Defaults = new();
 
     #region Lifecycle
-
-    public static void Init(DefinitionSet set)
+    
+    public static void CreateContext(DefinitionSet set)
     {
         _data = set;
         PopulateDefaults();
     }
 
-    public void Dispose()
+    public static void DestroyContext()
     {
         _data.Dispose();
     }
@@ -74,7 +74,7 @@ public sealed class Definitions : IDisposable
     public static T? Default<T>() where T : Definition
     {
         Type type = typeof(T);
-        return _defaults.TryGetValue(type, out var result) ? (T)result : null;
+        return Defaults.TryGetValue(type, out var result) ? (T)result : null;
     }
 
     #endregion Queries
@@ -91,7 +91,7 @@ public sealed class Definitions : IDisposable
             }
 
             var type = entry.GetType();
-            _defaults[type] = entry;
+            Defaults[type] = entry;
         }
     }
 

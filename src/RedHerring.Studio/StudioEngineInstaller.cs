@@ -1,7 +1,7 @@
 ﻿using RedHerring.Clues;
 using RedHerring.Core;
 using RedHerring.Infusion;
-using RedHerring.Studio.Definitions;
+using RedHerring.Studio.Definition;
 
 namespace RedHerring.Studio;
 
@@ -11,8 +11,7 @@ public class StudioEngineInstaller : BindingsInstaller
 	{
 		var set = new DefinitionSet();
 		ThemeDefinition.AddToSet(set);
-		Clues.Definitions.Init(set);
-		
+		Definitions.CreateContext(set);
 		description.AddCoreSystems();
 		description.AddGraphics();
 		description.AddInput();
