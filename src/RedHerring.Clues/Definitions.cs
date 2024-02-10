@@ -38,7 +38,7 @@ public static class Definitions
     /// <param name="id"></param>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>Definition of type and id, if found, null otherwise</returns>
-    public static T? ById<T>(Guid id) where T : Definition
+    public static T? ById<T>(DefinitionId id) where T : Definition
     {
         return _data.ById<T>(id);
     }
@@ -50,7 +50,7 @@ public static class Definitions
     /// <param name="definition"></param>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>True if definition exists</returns>
-    public static bool TryById<T>(Guid id, out T? definition) where T : Definition
+    public static bool TryById<T>(DefinitionId id, out T? definition) where T : Definition
     {
         return (definition = _data.ById<T>(id)) is not null;
     }
@@ -61,7 +61,7 @@ public static class Definitions
     /// <param name="id"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static bool Contains<T>(Guid id) where T : Definition
+    public static bool Contains<T>(DefinitionId id) where T : Definition
     {
         return _data.Contains<T>(id);
     }

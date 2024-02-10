@@ -1,8 +1,10 @@
-﻿namespace RedHerring.Studio.Definition;
+﻿using RedHerring.Clues;
+
+namespace RedHerring.Studio.Definition;
 
 public abstract partial class ThemeDefinition : Clues.Definition
 {
-    public ThemeDefinition(string name, bool isDefault) : base(Guid.NewGuid(), name, isDefault)
+    public ThemeDefinition(string name, bool isDefault) : base(new DefinitionId(name), name, isDefault)
     {
     }
 

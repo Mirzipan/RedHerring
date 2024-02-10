@@ -1,11 +1,10 @@
 ﻿using System.Reflection;
-using RedHerring.Alexandria.Identifiers;
 
 namespace RedHerring.Clues;
 
 public sealed class DefinitionSet : IDisposable
 {
-    private readonly Dictionary<Type, Dictionary<Guid, Definition>> _data = new();
+    private readonly Dictionary<Type, Dictionary<DefinitionId, Definition>> _data = new();
     
     #region Lifecycle
 
@@ -104,7 +103,7 @@ public sealed class DefinitionSet : IDisposable
     /// <param name="id"></param>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>Definition of type and id, if found, null otherwise</returns>
-    public T? ById<T>(Guid id) where T : Definition
+    public T? ById<T>(DefinitionId id) where T : Definition
     {
         Type type = typeof(T);
         var collection = GetOrCreateCollection(type);
@@ -127,7 +126,7 @@ public sealed class DefinitionSet : IDisposable
     /// <param name="id"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public bool Contains<T>(Guid id) where T : Definition
+    public bool Contains<T>(DefinitionId id) where T : Definition
     {
         Type type = typeof(T);
         return GetOrCreateCollection(type)?.ContainsKey(id) ?? false;
@@ -137,11 +136,11 @@ public sealed class DefinitionSet : IDisposable
     
     #region Private
 
-    private Dictionary<Guid, Definition>? GetOrCreateCollection(Type collectionType, bool allowCreation = false)
+    private Dictionary<DefinitionId, Definition>? GetOrCreateCollection(Type collectionType, bool allowCreation = false)
     {
         if (!_data.TryGetValue(collectionType, out var innerDefinitions) && allowCreation)
         {
-            return _data[collectionType] = new Dictionary<Guid, Definition>();
+            return _data[collectionType] = new Dictionary<DefinitionId, Definition>();
         }
 
         return innerDefinitions;
