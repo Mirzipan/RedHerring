@@ -2,12 +2,12 @@ namespace RedHerring.Assets;
 
 public readonly struct ResourceDescriptor
 {
-	public readonly ResourceSourceType ResourceSourceType;
+	public readonly ResourceSourceKind ResourceSourceKind;
 	public readonly string             SourceFilePath;
 
-	public ResourceDescriptor(ResourceSourceType resourceSourceType, string sourceFilePath)
+	public ResourceDescriptor(ResourceSourceKind resourceSourceKind, string sourceFilePath)
 	{
-		ResourceSourceType = resourceSourceType;
+		ResourceSourceKind = resourceSourceKind;
 		SourceFilePath     = sourceFilePath;
 	}
 }

@@ -20,7 +20,7 @@ public sealed class Resources
 		//debug
 		foreach(var pair in _resourceDictionary)
 		{
-			Console.WriteLine($"Resource: {pair.Key} in {pair.Value.SourceFilePath} as {pair.Value.ResourceSourceType}");
+			Console.WriteLine($"Resource: {pair.Key} in {pair.Value.SourceFilePath} as {pair.Value.ResourceSourceKind}");
 		}
 	}
 
@@ -32,11 +32,11 @@ public sealed class Resources
 			return null; // resource not found
 		}
 
-		switch (descriptor.ResourceSourceType)
+		switch (descriptor.ResourceSourceKind)
 		{
-			case ResourceSourceType.Zip:
+			case ResourceSourceKind.Zip:
 				return ReadResourceFromPackage(path, descriptor);
-			case ResourceSourceType.File:
+			case ResourceSourceKind.File:
 				return ReadResourceFromFile(path, descriptor);
 			default:
 				throw new ArgumentOutOfRangeException();
@@ -99,7 +99,7 @@ public sealed class Resources
 					continue;
 				}
 					
-				_resourceDictionary[entry.FullName] = new ResourceDescriptor(ResourceSourceType.Zip, package); // later packages should override resources stored in previous
+				_resourceDictionary[entry.FullName] = new ResourceDescriptor(ResourceSourceKind.Zip, package); // later packages should override resources stored in previous
 			}
 		}
 	}
@@ -127,7 +127,7 @@ public sealed class Resources
 			}
 
 			string relativeFilePath = absoluteFilePath.Substring(resourceDirectoryLength).Replace('\\', '/');
-			_resourceDictionary[relativeFilePath] = new ResourceDescriptor(ResourceSourceType.File, absoluteFilePath);
+			_resourceDictionary[relativeFilePath] = new ResourceDescriptor(ResourceSourceKind.File, absoluteFilePath);
 		}
 
 		foreach (string absoluteDirectoryPath in Directory.EnumerateDirectories(absolutePath))
