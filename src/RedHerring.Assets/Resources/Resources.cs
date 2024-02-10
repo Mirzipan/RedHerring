@@ -94,7 +94,7 @@ public sealed class Resources
 			
 			foreach (ZipArchiveEntry entry in archive.Entries)
 			{
-				if (entry.FullName.EndsWith("/"))
+				if (entry.FullName.EndsWith('/'))
 				{
 					continue;
 				}
@@ -132,7 +132,7 @@ public sealed class Resources
 
 		foreach (string absoluteDirectoryPath in Directory.EnumerateDirectories(absolutePath))
 		{
-			if (absoluteDirectoryPath.StartsWith("."))
+			if (absoluteDirectoryPath.StartsWith('.'))
 			{
 				continue;
 			}
