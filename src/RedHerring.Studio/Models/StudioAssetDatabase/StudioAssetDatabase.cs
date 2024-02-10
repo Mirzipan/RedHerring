@@ -53,10 +53,10 @@ public sealed class StudioAssetDatabase
 
 			writer.WriteLine();
 
-			writer.WriteLine("	public static Dictionary<AssetId, Reference> Assets = new() {");
+			writer.WriteLine("	public static Dictionary<Guid, Reference> Assets = new() {");
 			foreach (StudioAssetDatabaseItem item in _items.Values)
 			{
-				writer.WriteLine($"		{{new AssetId(\"{item.Guid}\"),new {item.ReferenceType}(@\"{item.Path}\")}},");
+				writer.WriteLine($"		{{new Guid(\"{item.Guid}\"),new {item.ReferenceType}(@\"{item.Path}\")}},");
 			}
 			writer.WriteLine("	};");
 			
