@@ -763,7 +763,7 @@ public sealed class ProjectModel
 						node.UpdateMetaFile();
 					}
 
-					_assetDatabase![node.Meta.Guid!] = new StudioAssetDatabaseItem(node.Meta.Guid!, node.Meta.ReferenceField, resourcePath, referenceClassName);
+					_assetDatabase![node.Meta.Guid!] = new StudioAssetDatabaseItem(node.Meta.Guid!, node.Meta.ReferenceField, node.RelativePath, referenceClassName);
 				}
 				catch (Exception e)
 				{
