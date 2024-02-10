@@ -1,4 +1,5 @@
 ﻿using RedHerring.Alexandria;
+using RedHerring.Assets;
 using RedHerring.Exceptions;
 using RedHerring.Game;
 using RedHerring.Render;
@@ -15,11 +16,12 @@ public sealed class Engine : NamedDisposer
     private int _updateCount;
     private int _frameCount;
     
-    public EngineContext Context { get; private set; } = null!;
-    public Renderer Renderer { get; private set; } = null!;
-    public Session? Session => _session;
-    public bool IsRunning { get; private set; }
-    public bool IsExiting { get; private set; }
+    public EngineContext Context   { get; private set; } = null!;
+    public Renderer      Renderer  { get; private set; } = null!;
+    public Session?      Session   => _session;
+    public Resources     Resources { get; private set; } = new();
+    public bool          IsRunning { get; private set; }
+    public bool          IsExiting { get; private set; }
 
     public GameTime UpdateTime => _updateTimeTracker.Time;
     public GameTime DrawTime => _drawTimeTracker.Time;
@@ -35,6 +37,8 @@ public sealed class Engine : NamedDisposer
 
         _updateTimeTracker = new GameTimeTracker();
         _drawTimeTracker = new GameTimeTracker();
+        
+        Resources.Init();
     }
 
     public void Run(SessionContext session)

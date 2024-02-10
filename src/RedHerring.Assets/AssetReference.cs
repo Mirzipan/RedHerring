@@ -1,5 +1,5 @@
 ﻿namespace RedHerring.Assets;
-
+/*
 public sealed record class AssetReference(AssetId Id)
 {
     #region Lifecycle
@@ -35,3 +35,4 @@ public sealed record class AssetReference(AssetId Id)
 
     #endregion Comparison
 }
+*/
