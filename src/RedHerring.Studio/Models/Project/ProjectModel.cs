@@ -447,8 +447,8 @@ public sealed class ProjectModel
 		// deleted folder or file
 		{
 			int    index      = eventRelativePath.LastIndexOfAny(_slash);
-			string parentPath = eventRelativePath.Substring(0, index);
-			string nodeName   = eventRelativePath.Substring(index + 1);
+			string parentPath = index == -1 ? "" : eventRelativePath.Substring(0, index);
+			string nodeName   = index == -1 ? eventRelativePath : eventRelativePath.Substring(index + 1);
 			EnqueueProjectTaskFromWatcher(CreateDeleteNodeTask(_assetsFolder!, parentPath, nodeName));
 		}
 	}
