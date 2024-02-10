@@ -4,6 +4,29 @@
 
 This document tracks more or less important decisions about the engine, in order to allow easy referencing in the future.
 
+## [2024-02-06]
+
+### Assets
+*Decided by: Assemblerbot, Mirzipan*
+
+After many trails and tribulations, we have arrived to a new way of handling assets.
+It embraces the fact that the engine is meant to be used predominantly with code-friendly people.
+Assets will all exist as direct references to instances whenever possible in a class that will be generated from resources.
+This will allow us to completely avoid a certain class of issues and bug that could arise from more traditional asset handling pipelines.
+
+### Definitions
+*Decided by: Assemblerbot, Mirzipan*
+
+In order to avoid having to serialize definitions at all, they will all exists as their own types instead.
+
+### Statics
+*Decided by: Assemblerbot, Mirzipan*
+
+Many parts of the engine need to be accessible pretty much everywhere (assets, input, definitions, etc...).
+This means we need to add boilerplate `[Infuse]` to many types, which is fine for engine types, but gets very annoying to do for many studio utilities.
+We know for sure that some registries, managers and other systems will only ever live once within the runtime, so as long as they are properly taken care of during startup and shutdown, the fact that they are static should not pose any issue.
+Some specific classes, such as `Input` and `Render` will serve as static, implementation-agnostic wrappers.
+
 ## [2024-01-03]
 
 ### Definitions
