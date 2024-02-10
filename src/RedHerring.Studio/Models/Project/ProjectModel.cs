@@ -704,7 +704,7 @@ public sealed class ProjectModel
 					// add to database
 					if (node != root)
 					{
-						_assetDatabase![node.Meta.Guid!] = new StudioAssetDatabaseItem(node.Meta.Guid!, node.Meta.ReferenceField, node.RelativePath, nameof(AssetReference)); // TODO - by resource type
+						_assetDatabase![node.Meta.Guid!] = new StudioAssetDatabaseItem(node.Meta.Guid!, node.Meta.ReferenceField, node.RelativePath, nameof(FolderReference));
 					}
 				}
 			}
@@ -756,14 +756,14 @@ public sealed class ProjectModel
 				try
 				{
 					using Stream   stream = File.OpenRead(node.AbsolutePath);
-					ImporterResult result = importer.Import(stream, node.Meta.ImporterSettings, resourcePath, _migrationManager, cancellationToken);
+					ImporterResult result = importer.Import(stream, node.Meta.ImporterSettings, resourcePath, _migrationManager, cancellationToken, out string referenceClassName);
 				
 					if (result == ImporterResult.FinishedSettingsChanged)
 					{
 						node.UpdateMetaFile();
 					}
 
-					_assetDatabase![node.Meta.Guid!] = new StudioAssetDatabaseItem(node.Meta.Guid!, node.Meta.ReferenceField, resourcePath, nameof(AssetReference)); // TODO - by resource type
+					_assetDatabase![node.Meta.Guid!] = new StudioAssetDatabaseItem(node.Meta.Guid!, node.Meta.ReferenceField, resourcePath, referenceClassName);
 				}
 				catch (Exception e)
 				{

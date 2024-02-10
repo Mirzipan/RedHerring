@@ -48,16 +48,15 @@ public sealed class StudioAssetDatabase
 					continue;
 				}
 
-				//writer.WriteLine($"	public static {item.ReferenceType} {item.Field} = new(@\"{item.Path}\");");
+				writer.WriteLine($"	public static {item.ReferenceType} {item.Field} = new(@\"{item.Path}\");");
 			}
 
 			writer.WriteLine();
 
-			writer.WriteLine("	public static Dictionary<AssetId, string> Assets = new() {");
+			writer.WriteLine("	public static Dictionary<AssetId, Reference> Assets = new() {");
 			foreach (StudioAssetDatabaseItem item in _items.Values)
 			{
-				//writer.WriteLine($"		{{new AssetId(\"{item.Guid}\"),new {item.ReferenceType}(@\"{item.Path}\")}},");
-				writer.WriteLine($"		{{new AssetId(\"{item.Guid}\"),@\"{item.Path}\"}},");
+				writer.WriteLine($"		{{new AssetId(\"{item.Guid}\"),new {item.ReferenceType}(@\"{item.Path}\")}},");
 			}
 			writer.WriteLine("	};");
 			
