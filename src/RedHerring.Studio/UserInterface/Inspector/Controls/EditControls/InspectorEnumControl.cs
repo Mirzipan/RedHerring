@@ -24,7 +24,7 @@ public class InspectorEnumControl : InspectorSingleInputControl<Enum>
 		int index = 0;
 		foreach (object? value in Enum.GetValues(Value!.GetType()))
 		{
-			int enumValue = (int) value;
+			int enumValue = Convert.ToInt32(value);
 			_enumToIndex[enumValue] = index;
 			_indexToEnum[index]     = enumValue;
 			++index;
