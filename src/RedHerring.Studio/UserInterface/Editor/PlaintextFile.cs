@@ -5,7 +5,7 @@ internal static class PlaintextFile
 {
     public static void Draw(IReadOnlyList<string> lines)
     {
-        for (int i = 1; i < lines.Count; i++)
+        for (int i = 0; i < lines.Count; i++)
         {
             string line = lines[i];
             Gui.Text(line);
