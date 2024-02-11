@@ -97,11 +97,24 @@ internal static class CSharpFile
 
     public static void Draw(IReadOnlyList<string> lines)
     {
+        // TODO(mirzi): push some monospace font here
+        
         bool singleLineComment = false;
         bool multilineComment = false;
-        
+
+        int lineNumberWidth = lines.Count switch
+        {
+            >= 1000 => 4,
+            >= 100 => 3,
+            >= 10 => 2,
+            >= 1 => 1,
+            _ => 1
+        };
+
         for (int i = 0; i < lines.Count; i++)
         {
+            DrawLineNumber(i, lineNumberWidth);
+
             string line = lines[i];
             string[] parts = line.Split(' ');
             if (parts.Length == 0)
@@ -152,5 +165,16 @@ internal static class CSharpFile
                 }
             }
         }
+    }
+
+    private static void DrawLineNumber(int i, int lineNumberWidth)
+    {
+        Gui.PushStyleColor(ImGuiCol.Text, CommentColor);
+        
+        string lineNumber = (i + 1).ToString().PadLeft(lineNumberWidth, ' ');
+        Gui.Text(lineNumber);
+        Gui.SameLine();
+        
+        Gui.PopStyleColor();
     }
 }
