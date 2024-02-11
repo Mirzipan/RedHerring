@@ -1,13 +1,13 @@
 ﻿using RedHerring.Studio.Commands;
 using RedHerring.Studio.Models.Project.FileSystem;
 using RedHerring.Studio.Models.ViewModels;
-using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface.Editor;
 
 public class TextEditor
 {
     private readonly List<string> _lines = new();
+    private TextFileKind _kind;
 
     private static int _uniqueIdGenerator = 0;
     private int _uniqueId = _uniqueIdGenerator++;
@@ -56,10 +56,23 @@ public class TextEditor
             return;
         }
 
-        for (int i = 1; i < _lines.Count; i++)
+        switch (_kind)
         {
-            string line = _lines[i];
-            Gui.Text(line);
+            case TextFileKind.Unknown:
+                PlaintextFile.Draw(_lines);
+                break;
+            case TextFileKind.PlainText:
+                PlaintextFile.Draw(_lines);
+                break;
+            case TextFileKind.Markdown:
+                MarkdownFile.Draw(_lines);
+                break;
+            case TextFileKind.CSharp:
+                CSharpFile.Draw(_lines);
+                break;
+            default:
+                PlaintextFile.Draw(_lines);
+                break;
         }
     }
 
@@ -76,6 +89,22 @@ public class TextEditor
         if (result.Code == ProjectScriptFileNode.LoadingResultCode.Ok)
         {
             _lines.AddRange(result.Lines!);
+            if (node.Extension == ".cs")
+            {
+                _kind = TextFileKind.CSharp;
+            }
+            else if (node.Extension == ".md" || node.Extension == ".markdown")
+            {
+                _kind = TextFileKind.Markdown;
+            }
+            else
+            {
+                _kind = TextFileKind.PlainText;
+            }
+        }
+        else
+        {
+            _kind = TextFileKind.Unknown;
         }
     }
 
