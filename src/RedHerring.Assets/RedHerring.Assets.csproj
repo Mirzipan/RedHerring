@@ -7,4 +7,8 @@
         <LangVersion>12</LangVersion>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\RedHerring.Render\RedHerring.Render.csproj" />
+    </ItemGroup>
+
 </Project>
