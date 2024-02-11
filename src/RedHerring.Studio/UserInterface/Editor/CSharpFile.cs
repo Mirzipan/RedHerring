@@ -8,6 +8,11 @@ namespace RedHerring.Studio.UserInterface.Editor;
 internal static class CSharpFile
 {
     private static readonly Vector4 KeywordColor = Color.DeepPink.ToVector4();
+    private static readonly Vector4 CommentColor = Color.Gray.ToVector4();
+
+    private const string SingleLineComment = @"//";
+    private const string MultilineCommentStart = @"/*";
+    private const string MultilineCommentEnd = @"*/";
 
     private static readonly List<string> Keywords = new()
     {
@@ -92,6 +97,9 @@ internal static class CSharpFile
 
     public static void Draw(IReadOnlyList<string> lines)
     {
+        bool singleLineComment = false;
+        bool multilineComment = false;
+        
         for (int i = 0; i < lines.Count; i++)
         {
             string line = lines[i];
@@ -101,11 +109,31 @@ internal static class CSharpFile
                 Gui.Text(line);
             }
             
+            singleLineComment = false;
+            
             for (int j = 0; j < parts.Length; j++)
             {
                 string part = parts[j].Trim();
                 bool isColorPushed = false;
-                if (Keywords.Contains(part))
+                if (part.StartsWith(SingleLineComment) || singleLineComment || multilineComment)
+                {
+                    Gui.PushStyleColor(ImGuiCol.Text, CommentColor);
+                    isColorPushed = true;
+                    singleLineComment = true;
+                }
+                else if (part.StartsWith(MultilineCommentStart))
+                {
+                    Gui.PushStyleColor(ImGuiCol.Text, CommentColor);
+                    isColorPushed = true;
+                    multilineComment = true;
+                }
+                else if (part.StartsWith(MultilineCommentEnd))
+                {
+                    Gui.PushStyleColor(ImGuiCol.Text, CommentColor);
+                    isColorPushed = true;
+                    multilineComment = false;
+                }
+                else if (Keywords.Contains(part))
                 {
                     Gui.PushStyleColor(ImGuiCol.Text, KeywordColor);
                     isColorPushed = true;
