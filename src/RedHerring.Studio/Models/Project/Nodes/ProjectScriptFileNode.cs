@@ -51,4 +51,57 @@ public class ProjectScriptFileNode : ProjectNode
 	{
 		return null;
 	}
+
+	public LoadingResult LoadFile()
+	{
+		try
+		{
+			string[] result = File.ReadAllLines(AbsolutePath);
+			return new LoadingResult(result);
+		}
+		catch (FileNotFoundException)
+		{
+			return new LoadingResult(LoadingResultCode.FileNotFound);
+		}
+		catch (Exception)
+		{
+			return new LoadingResult(LoadingResultCode.Failed);
+		}
+	}
+
+	public SavingResultCode SaveFile()
+	{
+		
+		return SavingResultCode.Ok;
+	}
+
+	public struct LoadingResult
+	{
+		public string[]? Lines;
+		public LoadingResultCode Code; 
+
+		internal LoadingResult(string[] lines)
+		{
+			Lines = lines;
+			Code = LoadingResultCode.Ok;
+		}
+
+		internal LoadingResult(LoadingResultCode code)
+		{
+			Code = code;
+		}
+	}
+
+	public enum LoadingResultCode
+	{
+		Ok = 0,
+		Failed = 1,
+		FileNotFound = 2,
+	}
+
+	public enum SavingResultCode
+	{
+		Ok = 0,
+		FileAccessFailed = 1,
+	}
 }
