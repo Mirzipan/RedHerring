@@ -25,10 +25,16 @@ public class FilePreview
     public void Init(object? source)
     {
         _lines.Clear();
+        ClearTextureBinding();
         
         if (source is ProjectScriptFileNode scriptFile)
         {
             LoadScriptFile(scriptFile);
+        }
+
+        if (source is ProjectAssetFileNode assetFile)
+        {
+            LoadAssetFile(assetFile);
         }
 
         Rebuild();
@@ -37,12 +43,7 @@ public class FilePreview
     public void Init(IReadOnlyList<ISelectable> sources)
     {
         _lines.Clear();
-
-        if (_textureBinding != IntPtr.Zero)
-        {
-            ImGuiProxy.RemoveImGuiBinding(_textureBinding);
-            _textureBinding = IntPtr.Zero;
-        }
+        ClearTextureBinding();
 
         for (int i = 0; i < sources.Count; i++)
         {
@@ -63,7 +64,16 @@ public class FilePreview
         rebuild:
         Rebuild();
     }
-    
+
+    private void ClearTextureBinding()
+    {
+        if (_textureBinding != IntPtr.Zero)
+        {
+            ImGuiProxy.RemoveImGuiBinding(_textureBinding);
+            _textureBinding = IntPtr.Zero;
+        }
+    }
+
     public void Update()
     {
         if (_lines.Count == 0)
@@ -131,10 +141,12 @@ public class FilePreview
 
     private void LoadAssetFile(ProjectAssetFileNode node)
     {
-        if (_textureBinding != IntPtr.Zero)
+        if (!TextureFile.IsTexture(node.Extension))
         {
-            ImGuiProxy.RemoveImGuiBinding(_textureBinding);
+            return;
         }
+        
+        ClearTextureBinding();
         
         _textureBinding = ImGuiProxy.GetOrCreateImGuiBinding(node.AbsolutePath);
     }
