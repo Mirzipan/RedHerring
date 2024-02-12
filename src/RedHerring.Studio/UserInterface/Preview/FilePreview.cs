@@ -1,12 +1,17 @@
-﻿using RedHerring.Render.ImGui;
+﻿using System.Numerics;
+using ImGuiNET;
+using RedHerring.Render.ImGui;
 using RedHerring.Studio.Commands;
 using RedHerring.Studio.Models.Project.FileSystem;
 using RedHerring.Studio.Models.ViewModels;
+using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface.Editor;
 
 public class FilePreview
 {
+    private string? _filePath;
+    
     private readonly List<string> _lines = new();
     private TextFileKind _kind;
 
@@ -24,9 +29,8 @@ public class FilePreview
 
     public void Init(object? source)
     {
-        _lines.Clear();
-        ClearTextureBinding();
-        
+        Clear();
+
         if (source is ProjectScriptFileNode scriptFile)
         {
             LoadScriptFile(scriptFile);
@@ -42,8 +46,7 @@ public class FilePreview
 
     public void Init(IReadOnlyList<ISelectable> sources)
     {
-        _lines.Clear();
-        ClearTextureBinding();
+        Clear();
 
         for (int i = 0; i < sources.Count; i++)
         {
@@ -65,15 +68,6 @@ public class FilePreview
         Rebuild();
     }
 
-    private void ClearTextureBinding()
-    {
-        if (_textureBinding != IntPtr.Zero)
-        {
-            ImGuiProxy.RemoveImGuiBinding(_textureBinding);
-            _textureBinding = IntPtr.Zero;
-        }
-    }
-
     public void Update()
     {
         if (_lines.Count == 0)
@@ -82,10 +76,13 @@ public class FilePreview
             {
                 return;
             }
-            
+
+            DrawInfoBar();
             TextureFile.Draw(_textureBinding);
             return;
         }
+
+        DrawInfoBar();
 
         switch (_kind)
         {
@@ -112,7 +109,46 @@ public class FilePreview
         _commandHistory.Commit(command);
     }
 
+    #region Draw
+
+    private void DrawInfoBar()
+    {
+        // var windowPos = Gui.GetWindowPos();
+        // var windowSize = Gui.GetWindowSize();
+        // var size = new Vector2(Gui.GetContentRegionAvail().X, 40);
+        //
+        // Gui.SetNextWindowPos(windowPos with { Y = windowPos.Y + windowSize.Y - 40 });
+        // Gui.SetNextWindowSize(size);
+        //
+        // if (Gui.BeginChild("Status Bar", size, ImGuiChildFlags.None, ImGuiWindowFlags.HorizontalScrollbar))
+        // {
+        //     Gui.Text("Path:");
+        //     Gui.SameLine();
+        //     Gui.Text(_filePath);
+        //     Gui.EndChild();
+        // }
+    }
+
+    #endregion Draw
+    
     #region Private
+    
+    private void Clear()
+    {
+        _filePath = null;
+        _lines.Clear();
+        
+        ClearTextureBinding();
+    }
+
+    private void ClearTextureBinding()
+    {
+        if (_textureBinding != IntPtr.Zero)
+        {
+            ImGuiProxy.RemoveImGuiBinding(_textureBinding);
+            _textureBinding = IntPtr.Zero;
+        }
+    }
 
     private void LoadScriptFile(ProjectScriptFileNode node)
     {
@@ -137,6 +173,8 @@ public class FilePreview
         {
             _kind = TextFileKind.Unknown;
         }
+
+        _filePath = node.RelativePath;
     }
 
     private void LoadAssetFile(ProjectAssetFileNode node)
@@ -149,6 +187,8 @@ public class FilePreview
         ClearTextureBinding();
         
         _textureBinding = ImGuiProxy.GetOrCreateImGuiBinding(node.AbsolutePath);
+        
+        _filePath = node.RelativePath;
     }
 
     private void Rebuild()

@@ -17,8 +17,7 @@ internal static class TextureFile
     
     public static void Draw(IntPtr binding)
     {
-        var size = Gui.GetWindowSize() - new Vector2(40);
-        var center = size / 2;
+        var size = Gui.GetContentRegionAvail();
         if (size.X > size.Y)
         {
             size.X = size.Y;
@@ -28,7 +27,7 @@ internal static class TextureFile
             size.Y = size.X;
         }
         
-        Gui.SetNextWindowPos(center);
         Gui.Image(binding, size);
+        
     }
 }
