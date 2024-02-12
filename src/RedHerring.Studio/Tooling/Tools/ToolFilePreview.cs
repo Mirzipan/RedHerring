@@ -7,20 +7,20 @@ using Gui = ImGuiNET.ImGui;
 namespace RedHerring.Studio.Tools;
 
 [Tool(ToolName)]
-public class ToolTextEditor : Tool
+public class ToolFilePreview : Tool
 {
-    public const string ToolName = FontAwesome6.Pencil + " Text Editor";
+    public const string ToolName = FontAwesome6.Eye + " Preview";
 
     private readonly StudioModel _studioModel;
-    private readonly TextEditor _editor;
+    private readonly FilePreview _editor;
     private bool _subscribedToChange = false;
 
     protected override string Name => ToolName;
 
-    public ToolTextEditor(StudioModel studioModel, int uniqueId) : base(studioModel, uniqueId)
+    public ToolFilePreview(StudioModel studioModel, int uniqueId) : base(studioModel, uniqueId)
     {
         _studioModel = studioModel;
-        _editor = new TextEditor(studioModel.CommandHistory);
+        _editor = new FilePreview(studioModel.CommandHistory);
     }
 
     public override void Update(out bool finished)

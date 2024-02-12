@@ -1,20 +1,23 @@
-﻿using RedHerring.Studio.Commands;
+﻿using RedHerring.Render.ImGui;
+using RedHerring.Studio.Commands;
 using RedHerring.Studio.Models.Project.FileSystem;
 using RedHerring.Studio.Models.ViewModels;
 
 namespace RedHerring.Studio.UserInterface.Editor;
 
-public class TextEditor
+public class FilePreview
 {
     private readonly List<string> _lines = new();
     private TextFileKind _kind;
+
+    private IntPtr _textureBinding;
 
     private static int _uniqueIdGenerator = 0;
     private int _uniqueId = _uniqueIdGenerator++;
 
     private CommandHistory _commandHistory;
 
-    public TextEditor(CommandHistory commandHistory)
+    public FilePreview(CommandHistory commandHistory)
     {
         _commandHistory = commandHistory;
     }
@@ -35,12 +38,24 @@ public class TextEditor
     {
         _lines.Clear();
 
+        if (_textureBinding != IntPtr.Zero)
+        {
+            ImGuiProxy.RemoveImGuiBinding(_textureBinding);
+            _textureBinding = IntPtr.Zero;
+        }
+
         for (int i = 0; i < sources.Count; i++)
         {
             var source = sources[i];
             if (source is ProjectScriptFileNode scriptFile)
             {
                 LoadScriptFile(scriptFile);
+                goto rebuild;
+            }
+
+            if (source is ProjectAssetFileNode assetFile)
+            {
+                LoadAssetFile(assetFile);
                 goto rebuild;
             }
         }
@@ -53,6 +68,12 @@ public class TextEditor
     {
         if (_lines.Count == 0)
         {
+            if (_textureBinding == IntPtr.Zero)
+            {
+                return;
+            }
+            
+            TextureFile.Draw(_textureBinding);
             return;
         }
 
@@ -106,6 +127,16 @@ public class TextEditor
         {
             _kind = TextFileKind.Unknown;
         }
+    }
+
+    private void LoadAssetFile(ProjectAssetFileNode node)
+    {
+        if (_textureBinding != IntPtr.Zero)
+        {
+            ImGuiProxy.RemoveImGuiBinding(_textureBinding);
+        }
+        
+        _textureBinding = ImGuiProxy.GetOrCreateImGuiBinding(node.AbsolutePath);
     }
 
     private void Rebuild()

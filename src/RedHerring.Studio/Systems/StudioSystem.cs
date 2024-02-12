@@ -167,7 +167,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_menu.AddItem($"View/{ToolProjectView.ToolName}",   OnViewProjectClicked);
 		_menu.AddItem($"View/{ToolConsole.ToolName}",     OnViewConsoleClicked);
 		_menu.AddItem($"View/{ToolInspector.ToolName}", OnViewInspectorClicked);
-		_menu.AddItem($"View/{ToolTextEditor.ToolName}", OnViewTextEditorClicked);
+		_menu.AddItem($"View/{ToolFilePreview.ToolName}", OnViewTextEditorClicked);
 		_menu.AddItem($"View/{ToolDebug.ToolName}", OnViewDebugClicked);
 
 		_menu.AddItem("Project/Update engine files", OnProjectUpdateEngineFilesClicked, () => _studioModel.Project.IsOpened);
@@ -230,7 +230,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 
 	private void OnViewTextEditorClicked()
 	{
-		_toolManager.Activate(ToolTextEditor.ToolName);
+		_toolManager.Activate(ToolFilePreview.ToolName);
 	}
 
 	private void OnViewDebugClicked()

@@ -8,23 +8,38 @@ namespace RedHerring.Render.ImGui;
 public static class ImGuiProxy
 {
     private static ImGuiRenderer? _renderer;
-    private static GraphicsDevice _device;
-    private static ResourceFactory _factory;
-
-    public static void SetDevice(GraphicsDevice device)
-    {
-        _device = device;
-        _factory = device.ResourceFactory;
-    }
+    private static Dictionary<IntPtr, Texture> _texturesById = new();
     
     public static void Update(GameTime time, Input input)
     {
         _renderer?.Update((float)time.Elapsed.TotalSeconds, input);
     }
 
+    public static IntPtr GetOrCreateImGuiBinding(string filePath)
+    {
+        if (_renderer is null)
+        {
+            return IntPtr.Zero;
+        }
+        
+        var texture = _renderer.LoadTextureFromFile(filePath);
+        IntPtr ptr = _renderer.GetOrCreateImGuiBinding(texture);
+        _texturesById[ptr] = texture;
+        return ptr;
+    }
+
+    public static void RemoveImGuiBinding(IntPtr binding)
+    {
+        if (_texturesById.TryGetValue(binding, out var texture))
+        {
+            RemoveImGuiBinding(texture);
+            _texturesById.Remove(binding);
+        }
+    }
+
     public static IntPtr GetOrCreateImGuiBinding(TextureView textureView)
     {
-        IntPtr? result = _renderer?.GetOrCreateImGuiBinding(_factory, textureView);
+        IntPtr? result = _renderer?.GetOrCreateImGuiBinding(textureView);
         return result ?? IntPtr.Zero;
     }
 
@@ -35,7 +50,7 @@ public static class ImGuiProxy
 
     public static IntPtr GetOrCreateImGuiBinding(Texture texture)
     {
-        IntPtr? result = _renderer?.GetOrCreateImGuiBinding(_factory, texture);
+        IntPtr? result = _renderer?.GetOrCreateImGuiBinding(texture);
         return result ?? IntPtr.Zero;
     }
 
@@ -46,6 +61,8 @@ public static class ImGuiProxy
     
     internal static void ResetImGuiRenderer(ref ImGuiRenderer? renderer, GraphicsDevice device, int width, int height)
     {
+        _texturesById.Clear();
+        
         if (renderer is not null)
         {
             renderer.ClearCachedImageResources();

@@ -2,6 +2,8 @@
 using System.Reflection;
 using ImGuiNET;
 using RedHerring.Fingerprint;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
 
 namespace RedHerring.Render.ImGui;
@@ -16,6 +18,7 @@ namespace RedHerring.Render.ImGui;
 public sealed class ImGuiRenderer : IDisposable
 {
     private GraphicsDevice _gd;
+    private ResourceFactory _factory;
     private readonly Assembly _assembly;
     private ColorSpaceHandling _colorSpaceHandling;
 
@@ -73,6 +76,7 @@ public sealed class ImGuiRenderer : IDisposable
         ColorSpaceHandling colorSpaceHandling)
     {
         _gd = gd;
+        _factory = gd.ResourceFactory;
         _assembly = typeof(ImGuiRenderer).GetTypeInfo().Assembly;
         _colorSpaceHandling = colorSpaceHandling;
         _windowWidth = width;
@@ -182,12 +186,12 @@ public sealed class ImGuiRenderer : IDisposable
     /// Gets or creates a handle for a texture to be drawn with ImGui.
     /// Pass the returned handle to Image() or ImageButton().
     /// </summary>
-    public IntPtr GetOrCreateImGuiBinding(ResourceFactory factory, TextureView textureView)
+    public IntPtr GetOrCreateImGuiBinding(TextureView textureView)
     {
         if (!_setsByView.TryGetValue(textureView, out ResourceSetInfo rsi))
         {
             ResourceSet resourceSet =
-                factory.CreateResourceSet(new ResourceSetDescription(_textureLayout, textureView));
+                _factory.CreateResourceSet(new ResourceSetDescription(_textureLayout, textureView));
             resourceSet.Name = $"ImGui.NET {textureView.Name} Resource Set";
             rsi = new ResourceSetInfo(GetNextImGuiBindingID(), resourceSet);
 
@@ -216,21 +220,41 @@ public sealed class ImGuiRenderer : IDisposable
         return (IntPtr)newId;
     }
 
+    public Texture LoadTextureFromFile(string filePath)
+    {
+        using (var image = Image.Load<Rgba32>(filePath))
+        {
+            uint width = (uint)image.Width;
+            uint height = (uint)image.Height;
+            
+            var description = TextureDescription.Texture2D(width, height, 1, 1, 
+                PixelFormat.R8_G8_B8_A8_UNorm,
+                TextureUsage.Sampled);
+            
+            Texture texture = _factory.CreateTexture(description);
+
+            byte[] pixelData = new byte[width * height * 4];
+            image.CopyPixelDataTo(pixelData);
+            _gd.UpdateTexture(texture, pixelData, 0, 0, 0, width, height, 1, 0, 0);
+            return texture;
+        }
+    }
+
     /// <summary>
     /// Gets or creates a handle for a texture to be drawn with ImGui.
     /// Pass the returned handle to Image() or ImageButton().
     /// </summary>
-    public IntPtr GetOrCreateImGuiBinding(ResourceFactory factory, Texture texture)
+    public IntPtr GetOrCreateImGuiBinding(Texture texture)
     {
         if (!_autoViewsByTexture.TryGetValue(texture, out TextureView textureView))
         {
-            textureView = factory.CreateTextureView(texture);
+            textureView = _factory.CreateTextureView(texture);
             textureView.Name = $"ImGui.NET {texture.Name} View";
             _autoViewsByTexture.Add(texture, textureView);
             _ownedResources.Add(textureView);
         }
 
-        return GetOrCreateImGuiBinding(factory, textureView);
+        return GetOrCreateImGuiBinding(textureView);
     }
 
     public void RemoveImGuiBinding(Texture texture)
