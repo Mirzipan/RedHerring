@@ -12,7 +12,7 @@ public sealed class Mesh
 	public BoundingBox    BoundingBox;
 	public BoundingSphere BoundingSphere;
 
-	public List<Vector3D<float>>?              Positions;
+	public List<Vector3D<float>>               Positions = null!;
 	public List<Vector3D<float>>?              Normals;
 	public List<Vector3D<float>>?              Tangents;
 	public List<Vector3D<float>>?              BiTangents;

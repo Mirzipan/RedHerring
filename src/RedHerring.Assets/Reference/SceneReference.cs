@@ -1,3 +1,4 @@
+using OdinSerializer;
 using RedHerring.Render.Models;
 
 namespace RedHerring.Assets;
@@ -13,15 +14,13 @@ public sealed class SceneReference : Reference<Scene>
 	{
 		try
 		{
-			// TODO - how to access engine from here?
-			// byte[]? bytes = Engine.Resources.ReadResource(Path);
-			// if (bytes is null)
-			// {
-			// 	return null;
-			// }
-			//
-			// return SerializationUtility.DeserializeValue<Model>(bytes, DataFormat.Binary);
-			return null;
+			byte[]? bytes = Resources.ReadResource(Path);
+			if (bytes is null)
+			{
+				return null;
+			}
+			
+			return SerializationUtility.DeserializeValue<Scene>(bytes, DataFormat.Binary);
 		}
 		catch (Exception e)
 		{

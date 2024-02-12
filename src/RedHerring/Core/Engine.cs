@@ -19,7 +19,6 @@ public sealed class Engine : NamedDisposer
     public EngineContext Context   { get; private set; } = null!;
     public Renderer      Renderer  { get; private set; } = null!;
     public Session?      Session   => _session;
-    public Resources     Resources { get; private set; } = new();
     public bool          IsRunning { get; private set; }
     public bool          IsExiting { get; private set; }
 

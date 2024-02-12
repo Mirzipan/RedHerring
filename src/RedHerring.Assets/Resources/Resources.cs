@@ -2,16 +2,16 @@ using System.IO.Compression;
 
 namespace RedHerring.Assets;
 
-public sealed class Resources
+public static class Resources
 {
 	private const string DefaultResourcePackageExtension = ".zip";
 	private const string ResourcesDirectory              = "Resources";
 	public static string RootPath                        = ResourcesDirectory;
 
-	private readonly List<string>                           _resourcePackages   = new();
-	private readonly Dictionary<string, ResourceDescriptor> _resourceDictionary = new();
+	private static List<string>                           _resourcePackages   = new();
+	private static Dictionary<string, ResourceDescriptor> _resourceDictionary = new();
 
-	public void Init()
+	public static void Init()
 	{
 		ScanResourcePackages();
 		BuildDictionaryFromPackages();
@@ -25,7 +25,7 @@ public sealed class Resources
 	}
 
 	#region Reading
-	public byte[]? ReadResource(string path)
+	public static byte[]? ReadResource(string path)
 	{
 		if (!_resourceDictionary.TryGetValue(path, out ResourceDescriptor descriptor))
 		{
@@ -43,12 +43,12 @@ public sealed class Resources
 		}
 	}
 
-	private byte[]? ReadResourceFromFile(string path, ResourceDescriptor descriptor)
+	private static byte[]? ReadResourceFromFile(string path, ResourceDescriptor descriptor)
 	{
 		return File.ReadAllBytes(descriptor.SourceFilePath);
 	}
 
-	private byte[]? ReadResourceFromPackage(string path, ResourceDescriptor descriptor)
+	private static byte[]? ReadResourceFromPackage(string path, ResourceDescriptor descriptor)
 	{
 		using ZipArchive archive = ZipFile.OpenRead(descriptor.SourceFilePath);
 		ZipArchiveEntry? entry   = archive.GetEntry(path);
@@ -66,7 +66,7 @@ public sealed class Resources
 	#endregion
 	
 	#region Scanning
-	private void ScanResourcePackages()
+	private static void ScanResourcePackages()
 	{
 		if (!Directory.Exists(RootPath))
 		{
@@ -86,7 +86,7 @@ public sealed class Resources
 		_resourcePackages.Sort();
 	}
 
-	private void BuildDictionaryFromPackages()
+	private static void BuildDictionaryFromPackages()
 	{
 		foreach(string package in _resourcePackages)
 		{
@@ -104,7 +104,7 @@ public sealed class Resources
 		}
 	}
 	
-	private void BuildDictionaryFromFiles()
+	private static void BuildDictionaryFromFiles()
 	{
 		if (!Directory.Exists(RootPath))
 		{
@@ -114,7 +114,7 @@ public sealed class Resources
 		BuildDictionaryFromFilesInDirectoryRecursive("");
 	}
 
-	private void BuildDictionaryFromFilesInDirectoryRecursive(string relativePath)
+	private static void BuildDictionaryFromFilesInDirectoryRecursive(string relativePath)
 	{
 		int resourceDirectoryLength = RootPath.Length + 1;
 		

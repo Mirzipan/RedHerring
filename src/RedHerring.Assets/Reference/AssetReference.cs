@@ -11,10 +11,8 @@ public sealed class AssetReference : Reference<byte[]>
 	{
 		try
 		{
-			// TODO - how to access engine from here?
-			//byte[]? bytes = Engine.Resources.ReadResource(Path);
-			//return bytes;
-			return null;
+			byte[]? bytes = Resources.ReadResource(Path);
+			return bytes;
 		}
 		catch (Exception e)
 		{

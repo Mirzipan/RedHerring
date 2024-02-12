@@ -41,8 +41,9 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 		bool settingsChanged = false;
 		for (int i = 0; i < assimpScene.Meshes.Count; ++i)
 		{
-			// update settings
 			Assimp.Mesh assimpMesh = assimpScene.Meshes[i];
+
+			// update settings
 			if (i == settings.Meshes.Count)
 			{
 				settings.Meshes.Add(new SceneImporterMeshSettings(assimpMesh.Name));
@@ -69,6 +70,10 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 			if (assimpMesh.HasVertices)
 			{
 				mesh.Positions = assimpMesh.Vertices.Select(v => new Vector3D<float>(v.X, v.Y, v.Z)).ToList();
+			}
+			else
+			{
+				mesh.Positions = new List<Vector3D<float>>();
 			}
 
 			// normals
