@@ -12,7 +12,7 @@ public class ToolFilePreview : Tool
     public const string ToolName = FontAwesome6.Eye + " Preview";
 
     private readonly StudioModel _studioModel;
-    private readonly FilePreview _editor;
+    private readonly FilePreview _preview;
     private bool _subscribedToChange = false;
 
     protected override string Name => ToolName;
@@ -20,7 +20,7 @@ public class ToolFilePreview : Tool
     public ToolFilePreview(StudioModel studioModel, int uniqueId) : base(studioModel, uniqueId)
     {
         _studioModel = studioModel;
-        _editor = new FilePreview(studioModel.CommandHistory);
+        _preview = new FilePreview(studioModel.CommandHistory);
     }
 
     public override void Update(out bool finished)
@@ -34,7 +34,7 @@ public class ToolFilePreview : Tool
         if (Gui.Begin(NameId, ref isOpen))
         {
             SubscribeToChange();
-            _editor.Update();
+            _preview.Update();
             ApplyChanges();
             Gui.End();
         }
@@ -87,6 +87,6 @@ public class ToolFilePreview : Tool
 
     private void OnSelectionChanged()
     {
-        _editor.Init(StudioModel.Selection.GetAllSelectedTargets());
+        _preview.Init(StudioModel.Selection.GetAllSelectedTargets());
     }
 }
