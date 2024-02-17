@@ -4,6 +4,14 @@ namespace RedHerring.Alexandria.Disposables;
 
 public static class DisposableExtensions
 {
+    public static void TryDispose(this object? @this)
+    {
+        if (@this is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
+    }
+    
     /// <summary>
     /// Adds this <see cref="IDisposable"/> to the disposer.
     /// </summary>

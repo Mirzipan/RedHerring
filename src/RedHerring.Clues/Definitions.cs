@@ -1,22 +1,37 @@
-﻿namespace RedHerring.Clues;
+﻿using RedHerring.Alexandria.Disposables;
+
+namespace RedHerring.Clues;
 
 public static class Definitions
 {
-    private static DefinitionSet _data = new();
-    private static readonly Dictionary<Type, Definition> Defaults = new();
+    private static DefinitionsContext? _context;
 
     #region Lifecycle
     
-    public static void CreateContext(DefinitionSet set)
+    public static DefinitionsContext CreateContext(DefinitionSet set)
     {
-        _data = set;
-        PopulateDefaults();
+        var previous = CurrentContext();
+        var context = new DefinitionsContext(set);
+        CurrentContext(previous ?? context);
+        
+        return context;
     }
 
-    public static void DestroyContext()
+    public static void DestroyContext(DefinitionsContext? context = null)
     {
-        _data.Dispose();
+        var previous = CurrentContext();
+        if (context is null)
+        {
+            context = previous;
+        }
+
+        CurrentContext(context != previous ? previous : null);
+        context.TryDispose();
     }
+
+    public static DefinitionsContext? CurrentContext() => _context;
+
+    public static void CurrentContext(DefinitionsContext? context) => _context = context;
 
     #endregion Lifecycle
 
@@ -29,7 +44,7 @@ public static class Definitions
     /// <returns>Definition of type, if found, null otherwise</returns>
     public static IEnumerable<T> ByType<T>() where T : Definition
     {
-        return _data.ByType<T>();
+        return _context is not null ? _context.Data.ByType<T>() : Enumerable.Empty<T>();
     }
 
     /// <summary>
@@ -40,7 +55,7 @@ public static class Definitions
     /// <returns>Definition of type and id, if found, null otherwise</returns>
     public static T? ById<T>(DefinitionId id) where T : Definition
     {
-        return _data.ById<T>(id);
+        return _context?.Data.ById<T>(id);
     }
 
     /// <summary>
@@ -52,7 +67,13 @@ public static class Definitions
     /// <returns>True if definition exists</returns>
     public static bool TryById<T>(DefinitionId id, out T? definition) where T : Definition
     {
-        return (definition = _data.ById<T>(id)) is not null;
+        if (_context is null)
+        {
+            definition = null;
+            return false;
+        }
+        
+        return (definition = _context.Data.ById<T>(id)) is not null;
     }
 
     /// <summary>
@@ -63,7 +84,7 @@ public static class Definitions
     /// <returns></returns>
     public static bool Contains<T>(DefinitionId id) where T : Definition
     {
-        return _data.Contains<T>(id);
+        return _context?.Data.Contains<T>(id) ?? false;
     }
 
     /// <summary>
@@ -74,26 +95,13 @@ public static class Definitions
     public static T? Default<T>() where T : Definition
     {
         Type type = typeof(T);
-        return Defaults.TryGetValue(type, out var result) ? (T)result : null;
+        if (_context is null)
+        {
+            return null;
+        }
+        
+        return _context.Defaults.TryGetValue(type, out var result) ? (T)result : null;
     }
 
     #endregion Queries
-
-    #region Private
-
-    private static void PopulateDefaults()
-    {
-        foreach (var entry in _data.All())
-        {
-            if (!entry.IsDefault)
-            {
-                continue;
-            }
-
-            var type = entry.GetType();
-            Defaults[type] = entry;
-        }
-    }
-
-    #endregion Private
 }
