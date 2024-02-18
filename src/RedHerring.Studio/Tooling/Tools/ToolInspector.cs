@@ -1,4 +1,5 @@
-﻿using RedHerring.Render.ImGui;
+﻿using ImGuiNET;
+using RedHerring.Render.ImGui;
 using RedHerring.Studio.Models;
 using RedHerring.Studio.Models.ViewModels;
 using RedHerring.Studio.UserInterface;
@@ -34,7 +35,7 @@ public sealed class ToolInspector : Tool
 	private bool UpdateUI()
 	{
 		bool isOpen = true;
-		if (Gui.Begin(NameId, ref isOpen))
+		if (Gui.Begin(NameId, ref isOpen, ImGuiWindowFlags.HorizontalScrollbar))
 		{
 			SubscribeToChange();
 			_inspector.Update();
