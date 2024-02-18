@@ -1,10 +1,13 @@
-﻿using System.Reflection;
+﻿using RedHerring.Deduction;
 
 namespace RedHerring.Clues;
 
 public sealed class DefinitionsContext : IDisposable
 {
     private readonly Dictionary<Type, Dictionary<DefinitionId, Definition>> _data = new();
+
+    // TODO(Mirzi): replace with a pooled list instead
+    private static readonly List<Type> TmpIndexedTypes = new List<Type>(16);
     
     internal DefinitionsContext()
     {
@@ -20,11 +23,19 @@ public sealed class DefinitionsContext : IDisposable
     {
         Type type = definition.GetType();
         AddDefinition(definition, type);
-                
-        var attributes = type.GetCustomAttributes<DefinitionTypeAttribute>();
-        foreach (var attribute in attributes)
+
+        var indexer = Findings.IndexerByType<DefinitionTypeIndexer>();
+        if (indexer is null)
         {
-            AddDefinition(definition, attribute.IndexedType);
+            return;
+        }
+        
+        // TODO(Mirzi): replace with a pooled list instead
+        TmpIndexedTypes.Clear();
+        indexer.IndexedAs(type, TmpIndexedTypes);
+        foreach (var entry in TmpIndexedTypes)
+        {
+            AddDefinition(definition, entry);
         }
     }
 
@@ -38,10 +49,18 @@ public sealed class DefinitionsContext : IDisposable
         Type type = definition.GetType();
         bool result = RemoveDefinition(definition, type);
             
-        var attributes = type.GetCustomAttributes<DefinitionTypeAttribute>();
-        foreach (var attribute in attributes)
+        var indexer = Findings.IndexerByType<DefinitionTypeIndexer>();
+        if (indexer is null)
         {
-            result |= RemoveDefinition(definition, attribute.IndexedType);
+            return result;
+        }
+        
+        // TODO(Mirzi): replace with a pooled list instead
+        TmpIndexedTypes.Clear();
+        indexer.IndexedAs(type, TmpIndexedTypes);
+        foreach (var entry in TmpIndexedTypes)
+        {
+            result |= RemoveDefinition(definition, entry);
         }
 
         return result;

@@ -80,7 +80,11 @@ internal class Program
             Name = "RedHerring Studio",
             Platform = _platform,
             Window = _window!,
-        }.WithAssemblies(AppDomain.CurrentDomain.GetAssemblies()).WithInstaller(render).WithInstaller(studio);
+        }
+            .WithAssemblies(AppDomain.CurrentDomain.GetAssemblies())
+            .WithAssembly(typeof(Definitions).Assembly) //TODO(Mirzi): this should not have to be added manually
+            .WithInstaller(render)
+            .WithInstaller(studio);
         _engine.Run(context);
 
         _sessionContext = new SessionContext();
