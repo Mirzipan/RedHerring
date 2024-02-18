@@ -8,7 +8,7 @@ public class Scene
     public Guid            AssetId;
     public BoundingBox     BoundingBox;
     public BoundingSphere  BoundingSphere;
-    public List<Mesh>      Meshes = new();
+    public List<SceneMesh>      Meshes = new();
     public List<Material>? Materials;
 
     public SceneNode? Root;

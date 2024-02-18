@@ -6,7 +6,6 @@ using RedHerring.Assets;
 using RedHerring.Numbers;
 using RedHerring.Render.Models;
 using Silk.NET.Maths;
-using Mesh = RedHerring.Render.Models.Mesh;
 using Scene = RedHerring.Render.Models.Scene;
 
 namespace RedHerring.Studio.Models.Project.Importers;
@@ -62,40 +61,40 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 			// }
 
 			// import
-			Mesh  mesh  = new();
-			mesh.Name = assimpMesh.Name;
-			scene.Meshes.Add(mesh);
+			SceneMesh  sceneMesh  = new();
+			sceneMesh.Name = assimpMesh.Name;
+			scene.Meshes.Add(sceneMesh);
 
 			// positions
 			if (assimpMesh.HasVertices)
 			{
-				mesh.Positions = assimpMesh.Vertices.Select(v => new Vector3D<float>(v.X, v.Y, v.Z)).ToList();
+				sceneMesh.Positions = assimpMesh.Vertices.Select(v => new Vector3D<float>(v.X, v.Y, v.Z)).ToList();
 			}
 			else
 			{
-				mesh.Positions = new List<Vector3D<float>>();
+				sceneMesh.Positions = new List<Vector3D<float>>();
 			}
 
 			// normals
 			if (assimpMesh.HasNormals)
 			{
-				mesh.Normals = assimpMesh.Normals.Select(n => new Vector3D<float>(n.X, n.Y, n.Z)).ToList();
+				sceneMesh.Normals = assimpMesh.Normals.Select(n => new Vector3D<float>(n.X, n.Y, n.Z)).ToList();
 			}
 			
 			// tangents and bitangents
 			if (assimpMesh.HasTangentBasis)
 			{
-				mesh.Tangents   = assimpMesh.Tangents.Select(t => new Vector3D<float>(t.X,   t.Y, t.Z)).ToList();
-				mesh.BiTangents = assimpMesh.BiTangents.Select(b => new Vector3D<float>(b.X, b.Y, b.Z)).ToList();
+				sceneMesh.Tangents   = assimpMesh.Tangents.Select(t => new Vector3D<float>(t.X,   t.Y, t.Z)).ToList();
+				sceneMesh.BiTangents = assimpMesh.BiTangents.Select(b => new Vector3D<float>(b.X, b.Y, b.Z)).ToList();
 			}
 
 			// UV
 			if (assimpMesh.TextureCoordinateChannelCount > 0)
 			{
-				mesh.TextureCoordinateChannels = new List<MeshTextureCoordinateChannel>();
+				sceneMesh.TextureCoordinateChannels = new List<SceneMeshTextureCoordinateChannel>();
 				for (int channelIndex = 0; channelIndex < assimpMesh.TextureCoordinateChannelCount; ++channelIndex)
 				{
-					MeshTextureCoordinateChannel channel = new ();
+					SceneMeshTextureCoordinateChannel channel = new ();
 					
 					if (assimpMesh.UVComponentCount[channelIndex] == 2)
 					{
@@ -110,18 +109,18 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 						continue;
 					}
 
-					mesh.TextureCoordinateChannels.Add(channel);
+					sceneMesh.TextureCoordinateChannels.Add(channel);
 				}
 			}
 			
 			// colors
 			if (assimpMesh.VertexColorChannelCount > 0)
 			{
-				mesh.VertexColorChannels = new List<MeshVertexColorChannel>();
+				sceneMesh.VertexColorChannels = new List<SceneMeshVertexColorChannel>();
 				for (int channelIndex = 0; channelIndex < assimpMesh.VertexColorChannelCount; ++channelIndex)
 				{
-					MeshVertexColorChannel channel = new();
-					mesh.VertexColorChannels.Add(channel);
+					SceneMeshVertexColorChannel channel = new();
+					sceneMesh.VertexColorChannels.Add(channel);
 					channel.Colors = assimpMesh.VertexColorChannels[channelIndex].Select(color => new Color4(color.R, color.G, color.B, color.A)).ToList();
 				}
 			}
@@ -131,13 +130,13 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 			// faces
 			if (assimpMesh.HasFaces)
 			{
-				if (mesh.Positions is not null && mesh.Positions.Count <= 0xffff)
+				if (sceneMesh.Positions is not null && sceneMesh.Positions.Count <= 0xffff)
 				{
-					mesh.UShortIndices = assimpMesh.GetUnsignedIndices().Select(idx => (ushort)idx).ToList();
+					sceneMesh.UShortIndices = assimpMesh.GetUnsignedIndices().Select(idx => (ushort)idx).ToList();
 				}
 				else
 				{
-					mesh.UIntIndices = assimpMesh.GetUnsignedIndices().ToList();
+					sceneMesh.UIntIndices = assimpMesh.GetUnsignedIndices().ToList();
 				}
 			}
 		}
