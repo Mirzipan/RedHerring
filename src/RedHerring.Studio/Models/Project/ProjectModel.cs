@@ -662,7 +662,7 @@ public sealed class ProjectModel
 					ProjectNode? node = root.FindNode(path);
 					if (node != null && node.Exists)
 					{
-						node.InitMeta(_migrationManager, _importerRegistry, cancellationToken);
+						node.InitMeta(_migrationManager, cancellationToken);
 					}
 				}
 			}

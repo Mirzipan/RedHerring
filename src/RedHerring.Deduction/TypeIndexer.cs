@@ -1,6 +1,6 @@
 ﻿namespace RedHerring.Deduction;
 
-public interface IIndexTypes : IIndexMetadata
+public interface TypeIndexer : MetadataIndexer
 {
     void Index(Type type);
 }

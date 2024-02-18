@@ -70,32 +70,6 @@ public static class InjectionExtensions
         @this.AddSystem(new InputSystem());
         return @this;
     }
-    
-    public static ContainerDescription AddMetadata(this ContainerDescription @this, AssemblyCollection collection)
-    {
-        var meta = new MetadataDatabase(collection);
-        meta.Process();
-        @this.AddSingleton(meta);
-
-        foreach (var indexer in meta.Indexers)
-        {
-            AddIndexer(@this, indexer);
-        }
-
-        return @this;
-    }
-    
-    public static ContainerDescription AddIndexer(this ContainerDescription @this, IIndexMetadata indexer)
-    {
-        var types = new List<Type> { indexer.GetType(), typeof(IIndexMetadata) };
-
-        AddTypeIfAssignableTo<IIndexAttributes>(types, indexer);
-        AddTypeIfAssignableTo<IIndexTypes>(types, indexer);
-        
-        @this.AddSingleton(indexer, types.ToArray());
-
-        return @this;
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AddTypeIfAssignableTo<T>(List<Type> destination, Type type)

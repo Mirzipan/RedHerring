@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Migration;
+using RedHerring.Deduction;
 using RedHerring.Studio.Models.Project.Importers;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
@@ -15,7 +16,7 @@ public sealed class ProjectAssetFileNode : ProjectNode
 	{
 	}
 
-	public override void InitMeta(MigrationManager migrationManager, ImporterRegistry importerRegistry, CancellationToken cancellationToken)
+	public override void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken)
 	{
 		CreateMetaFile(migrationManager);
 		
@@ -26,8 +27,16 @@ public sealed class ProjectAssetFileNode : ProjectNode
 		
 		if (Meta.ImporterSettings == null)
 		{
-			Importer importer = importerRegistry.GetImporter(Extension);
-			Meta.ImporterSettings = importer.CreateSettings();
+			var registry = Findings.IndexerByType<ImporterRegistry>();
+			if (registry is not null)
+			{
+				Importer importer = registry.GetImporter(Extension);
+				Meta.ImporterSettings = importer.CreateSettings();
+			}
+			else
+			{
+				// TODO(mirzi): we might have an issue
+			}
 		}
 		
 		SetNodeType(Meta.ImporterSettings.NodeType);

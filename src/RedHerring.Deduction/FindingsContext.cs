@@ -6,26 +6,26 @@ using RedHerring.Deduction.Exceptions;
 
 namespace RedHerring.Deduction;
 
-public sealed class MetadataDatabase : IDisposable
+public sealed class FindingsContext : IDisposable
 {
-    private static readonly Type AttributeIndexerType = typeof(IIndexAttributes);
-    private static readonly Type TypeIndexerType = typeof(IIndexTypes);
+    private static readonly Type AttributeIndexerType = typeof(AttributeIndexer);
+    private static readonly Type TypeIndexerType = typeof(TypeIndexer);
 
-    private readonly Dictionary<Type, IIndexMetadata> _indexersByType = new();
-    private readonly ListDictionary<Type, IIndexAttributes> _attributeIndexers = new();
-    private readonly List<IIndexTypes> _typeIndexers = new();
+    private readonly Dictionary<Type, MetadataIndexer> _indexersByType = new();
+    private readonly ListDictionary<Type, AttributeIndexer> _attributeIndexers = new();
+    private readonly List<TypeIndexer> _typeIndexers = new();
     private readonly AssemblyCollection _container;
 
-    public IEnumerable<IIndexMetadata> Indexers => _indexersByType.Values;
+    public IEnumerable<MetadataIndexer> Indexers => _indexersByType.Values;
 
     #region Lifecycle
 
-    public MetadataDatabase(AssemblyCollection container)
+    internal FindingsContext(AssemblyCollection container)
     {
         _container = container;
     }
 
-    public void Process()
+    internal void Process()
     {
         GatherIndexers();
         foreach (var type in _container.GetAllTypes())
@@ -34,7 +34,7 @@ public sealed class MetadataDatabase : IDisposable
         }
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         _container.Dispose();
         _indexersByType.Clear();
@@ -46,15 +46,13 @@ public sealed class MetadataDatabase : IDisposable
 
     #region Queries
 
-    public bool IndexerByType<T>(out IIndexMetadata? indexer) where T : IIndexMetadata
+    public T? IndexerByType<T>() where T : MetadataIndexer
     {
-        return IndexerByType(typeof(T), out indexer);
+        var indexer = IndexerByType(typeof(T));
+        return indexer is not null ? (T)indexer : default;
     }
 
-    public bool IndexerByType(Type type, out IIndexMetadata? indexer)
-    {
-        return _indexersByType.TryGetValue(type, out indexer);
-    }
+    public MetadataIndexer? IndexerByType(Type type) => _indexersByType.GetValueOrDefault(type);
 
     #endregion Queries
 
@@ -97,7 +95,7 @@ public sealed class MetadataDatabase : IDisposable
         var indexer = GetOrCreate(indexerType);
         if (indexer is not null)
         {
-            _typeIndexers.Add((IIndexTypes)indexer);
+            _typeIndexers.Add((TypeIndexer)indexer);
         }
     }
 
@@ -111,7 +109,7 @@ public sealed class MetadataDatabase : IDisposable
         var indexer = GetOrCreate(indexerType);
         if (indexer is not null)
         {
-            _attributeIndexers.Add(attributeType, (IIndexAttributes)indexer);
+            _attributeIndexers.Add(attributeType, (AttributeIndexer)indexer);
         }
     }
     
@@ -154,7 +152,7 @@ public sealed class MetadataDatabase : IDisposable
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private IIndexMetadata? GetOrCreate(Type type)
+    private MetadataIndexer? GetOrCreate(Type type)
     {
         if (_indexersByType.TryGetValue(type, out var indexer))
         {
@@ -163,7 +161,7 @@ public sealed class MetadataDatabase : IDisposable
 
         try
         {
-            indexer = (IIndexMetadata?)Activator.CreateInstance(type);
+            indexer = (MetadataIndexer?)Activator.CreateInstance(type);
         }
         catch
         {

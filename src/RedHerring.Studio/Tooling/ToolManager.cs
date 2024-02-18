@@ -5,7 +5,7 @@ using RedHerring.Studio.Systems;
 namespace RedHerring.Studio.Tools;
 
 [AttributeIndexer(typeof(ToolAttribute))]
-public sealed class ToolManager : IIndexAttributes
+public sealed class ToolManager : AttributeIndexer
 {
 	private readonly Dictionary<string, Type> _toolsByName = new();
 	private readonly List<Tool>              _activeTools = new();

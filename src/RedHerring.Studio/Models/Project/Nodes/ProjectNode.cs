@@ -29,7 +29,7 @@ public abstract class ProjectNode : ISelectable
 		HasMetaFile  = hasMetaFile;
 	}
 
-	public abstract void InitMeta(MigrationManager migrationManager, ImporterRegistry importerRegistry, CancellationToken cancellationToken);
+	public abstract void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken);
 
 	public void ResetMetaHash()
 	{

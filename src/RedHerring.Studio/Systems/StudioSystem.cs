@@ -25,9 +25,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	[Infuse] private InputSystem      _inputSystem      = null!;
 	[Infuse] private InputReceiver    _inputReceiver    = null!;
 	[Infuse] private GraphicsSystem   _graphicsSystem   = null!;
-	[Infuse] private MetadataDatabase _metadataDatabase = null!;
-	[Infuse] private ToolManager      _toolManager;
-	[Infuse] private ImporterRegistry _importerRegistry = null!;
+	[Infuse] private FindingsContext _findingsContext = null!;
 	[Infuse] private StudioCamera     _camera           = null!;
 
 	public StudioCamera Camera => _camera;
@@ -41,6 +39,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	public int  DrawOrder => int.MaxValue;
 
 	private StudioModel    _studioModel = null!;
+	private ImporterRegistry _importerRegistry = null!;
+	private ToolManager _toolManager = null!;
 	
 	#region User Interface
 	private readonly DockSpace               _dockSpace       = new();
@@ -55,6 +55,9 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	#region Lifecycle
 	protected override void Init()
 	{
+		_importerRegistry = Findings.IndexerByType<ImporterRegistry>()!;
+		_toolManager = Findings.IndexerByType<ToolManager>()!;
+
 		_studioModel = new StudioModel(_importerRegistry);
 		
 		_inputReceiver.Name             = "studio";
