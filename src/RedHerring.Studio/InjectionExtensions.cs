@@ -10,9 +10,9 @@ public static class InjectionExtensions
 {
     public static ContainerDescription AddDefinitions(this ContainerDescription @this)
     {
-        var set = new DefinitionSet();
-        ThemeDefinition.AddToSet(set);
-        @this.AddSingleton<DefinitionsContext>(Definitions.CreateContext(set));
+        var context = Definitions.CreateContext();
+        ThemeDefinition.AddToContext(context);
+        @this.AddSingleton<DefinitionsContext>(context);
         return @this;
     }
     

@@ -8,10 +8,10 @@ public abstract partial class ThemeDefinition
     public static readonly ThemeDefinition CrimsonRivers = new CrimsonRiversTheme();
     public static readonly ThemeDefinition Bloodsucker = new BloodsuckerTheme();
 
-    public static void AddToSet(DefinitionSet set)
+    public static void AddToContext(DefinitionsContext context)
     {
-        set.Add(EmbraceTheDarkness);
-        set.Add(CrimsonRivers);
-        set.Add(Bloodsucker);
+        context.Add(EmbraceTheDarkness);
+        context.Add(CrimsonRivers);
+        context.Add(Bloodsucker);
     }
 }

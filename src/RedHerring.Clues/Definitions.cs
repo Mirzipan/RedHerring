@@ -5,13 +5,14 @@ namespace RedHerring.Clues;
 public static class Definitions
 {
     private static DefinitionsContext? _context;
+    private static readonly Dictionary<Type, Definition> Defaults = new();
 
     #region Lifecycle
     
-    public static DefinitionsContext CreateContext(DefinitionSet set)
+    public static DefinitionsContext CreateContext()
     {
         var previous = CurrentContext();
-        var context = new DefinitionsContext(set);
+        var context = new DefinitionsContext();
         CurrentContext(previous ?? context);
         
         return context;
@@ -31,7 +32,11 @@ public static class Definitions
 
     public static DefinitionsContext? CurrentContext() => _context;
 
-    public static void CurrentContext(DefinitionsContext? context) => _context = context;
+    public static void CurrentContext(DefinitionsContext? context)
+    {
+        _context = context;
+        UpdateDefaults();
+    }
 
     #endregion Lifecycle
 
@@ -44,7 +49,7 @@ public static class Definitions
     /// <returns>Definition of type, if found, null otherwise</returns>
     public static IEnumerable<T> ByType<T>() where T : Definition
     {
-        return _context is not null ? _context.Data.ByType<T>() : Enumerable.Empty<T>();
+        return _context is not null ? _context.ByType<T>() : Enumerable.Empty<T>();
     }
 
     /// <summary>
@@ -55,7 +60,7 @@ public static class Definitions
     /// <returns>Definition of type and id, if found, null otherwise</returns>
     public static T? ById<T>(DefinitionId id) where T : Definition
     {
-        return _context?.Data.ById<T>(id);
+        return _context?.ById<T>(id);
     }
 
     /// <summary>
@@ -73,7 +78,7 @@ public static class Definitions
             return false;
         }
         
-        return (definition = _context.Data.ById<T>(id)) is not null;
+        return (definition = _context.ById<T>(id)) is not null;
     }
 
     /// <summary>
@@ -84,7 +89,7 @@ public static class Definitions
     /// <returns></returns>
     public static bool Contains<T>(DefinitionId id) where T : Definition
     {
-        return _context?.Data.Contains<T>(id) ?? false;
+        return _context?.Contains<T>(id) ?? false;
     }
 
     /// <summary>
@@ -100,8 +105,35 @@ public static class Definitions
             return null;
         }
         
-        return _context.Defaults.TryGetValue(type, out var result) ? (T)result : null;
+        return Defaults.TryGetValue(type, out var result) ? (T)result : null;
     }
 
     #endregion Queries
+
+    #region Public
+
+    /// <summary>
+    /// Caches the default definitions for the current context.
+    /// </summary>
+    public static void UpdateDefaults()
+    {
+        Defaults.Clear();
+        if (_context is null)
+        {
+            return;
+        }
+        
+        foreach (var entry in _context.All())
+        {
+            if (!entry.IsDefault)
+            {
+                continue;
+            }
+
+            var type = entry.GetType();
+            Defaults[type] = entry;
+        }
+    }
+
+    #endregion Public
 }
