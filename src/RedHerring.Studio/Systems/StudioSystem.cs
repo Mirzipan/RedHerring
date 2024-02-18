@@ -67,8 +67,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		_statusBarMessageHandler = new StatusBarMessageHandler(_statusBar, _studioModel);
 		_newProjectDialog        = new NewProjectDialog(_studioModel);
 
-		_studioModel.EventAggregator.Register<ProjectModel.OpenedEvent>(OnProjectOpened);
-		_studioModel.EventAggregator.Register<ProjectModel.ClosedEvent>(OnProjectClosed);
+		_studioModel.EventAggregator.Register<OnProjectOpened>(OnProjectOpened);
+		_studioModel.EventAggregator.Register<OnProjectClosed>(OnProjectClosed);
 	}
 
 	protected override async ValueTask<int> Load()
@@ -157,12 +157,12 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	#endregion Private
 
 	#region Event handlers
-	private void OnProjectOpened(ProjectModel.OpenedEvent obj)
+	private void OnProjectOpened(OnProjectOpened obj)
 	{
 		Context.Window.Title = $"{Program.Title} - {_studioModel.Project.ProjectSettings.ProjectFolderPath}";
 	}
 
-	private void OnProjectClosed(ProjectModel.ClosedEvent obj)
+	private void OnProjectClosed(OnProjectClosed obj)
 	{
 		Context.Window.Title = Program.Title;
 	}

@@ -33,8 +33,8 @@ public class StudioModel
 	public SelectionViewModel Selection => _selection;
 
 	// events
-	private readonly StudioModelEventAggregator          _eventAggregator = new();
-	public           IStudioModelEventAggregatorReadOnly EventAggregator => _eventAggregator;
+	private readonly StudioEventAggregator _eventAggregator = new();
+	public           StudioEventAggregator EventAggregator => _eventAggregator;
 	
 	public StudioModel(ImporterRegistry importerRegistry)
 	{

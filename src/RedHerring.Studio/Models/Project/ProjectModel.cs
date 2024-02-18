@@ -14,13 +14,7 @@ namespace RedHerring.Studio.Models.Project;
 public sealed class ProjectModel
 {
 	#region Events
-	public struct OpenedEvent : IStudioModelEvent
-	{
-	}
 
-	public struct ClosedEvent : IStudioModelEvent
-	{
-	}
 	#endregion
 	
 	private const           string _assetsFolderName  = "Assets";
@@ -31,7 +25,7 @@ public sealed class ProjectModel
 	public static           Assembly      Assembly => typeof(ProjectModel).Assembly; 
 	private static readonly HashAlgorithm _hashAlgorithm = SHA1.Create();
 
-	private readonly StudioModelEventAggregator _eventAggregator;
+	private readonly StudioEventAggregator _eventAggregator;
 	
 	private readonly MigrationManager _migrationManager;
 	private readonly ImporterRegistry _importerRegistry;
@@ -60,7 +54,7 @@ public sealed class ProjectModel
 	private readonly ProjectThread _thread = new ();
 	public           int           TasksCount => _thread.TasksCount;
 	
-	public ProjectModel(MigrationManager migrationManager, ImporterRegistry importerRegistry, StudioModelEventAggregator eventAggregator)
+	public ProjectModel(MigrationManager migrationManager, ImporterRegistry importerRegistry, StudioEventAggregator eventAggregator)
 	{
 		_migrationManager = migrationManager;
 		_importerRegistry = importerRegistry;
@@ -83,7 +77,7 @@ public sealed class ProjectModel
 		_assetsFolder  = null;
 		_scriptsFolder = null;
 		_assetDatabase = null;
-		_eventAggregator.Trigger(new ClosedEvent());
+		_eventAggregator.Trigger(new OnProjectClosed());
 	}
 	
 	public void Open(string projectPath)
@@ -143,7 +137,7 @@ public sealed class ProjectModel
 
 		ImportAll();
 		
-		_eventAggregator.Trigger(new OpenedEvent());
+		_eventAggregator.Trigger(new OnProjectOpened());
 
 		CreateWatchers();
 	}
