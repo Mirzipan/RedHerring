@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using ImGuiNET;
-using RedHerring.Alexandria.Extensions;
 using RedHerring.Fingerprint.Shortcuts;
 using static ImGuiNET.ImGui;
 

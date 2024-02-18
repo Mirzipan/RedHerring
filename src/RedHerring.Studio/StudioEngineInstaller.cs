@@ -9,9 +9,7 @@ public class StudioEngineInstaller : BindingsInstaller
 {
 	public void InstallBindings(ContainerDescription description)
 	{
-		var set = new DefinitionSet();
-		ThemeDefinition.AddToSet(set);
-		Definitions.CreateContext(set);
+		description.AddDefinitions();
 		description.AddCoreSystems();
 		description.AddGraphics();
 		description.AddInput();
