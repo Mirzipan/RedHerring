@@ -1,4 +1,5 @@
-﻿using RedHerring.Deduction;
+﻿using RedHerring.Alexandria.Pooling;
+using RedHerring.Deduction;
 
 namespace RedHerring.Clues;
 
@@ -23,17 +24,16 @@ public sealed class DefinitionsContext : IDisposable
     {
         Type type = definition.GetType();
         AddDefinition(definition, type);
-
+        
         var indexer = Findings.IndexerByType<DefinitionTypeIndexer>();
         if (indexer is null)
         {
             return;
         }
         
-        // TODO(Mirzi): replace with a pooled list instead
-        TmpIndexedTypes.Clear();
-        indexer.IndexedAs(type, TmpIndexedTypes);
-        foreach (var entry in TmpIndexedTypes)
+        using var obj = ListPool<Type>.Borrow(out var list);
+        indexer.IndexedAs(type, list);
+        foreach (var entry in list)
         {
             AddDefinition(definition, entry);
         }
@@ -55,10 +55,9 @@ public sealed class DefinitionsContext : IDisposable
             return result;
         }
         
-        // TODO(Mirzi): replace with a pooled list instead
-        TmpIndexedTypes.Clear();
-        indexer.IndexedAs(type, TmpIndexedTypes);
-        foreach (var entry in TmpIndexedTypes)
+        using var obj = ListPool<Type>.Borrow(out var list);
+        indexer.IndexedAs(type, list);
+        foreach (var entry in list)
         {
             result |= RemoveDefinition(definition, entry);
         }
