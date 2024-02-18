@@ -32,9 +32,13 @@ public class StudioModel
 	private readonly SelectionViewModel _selection = new();
 	public SelectionViewModel Selection => _selection;
 
+	// events
+	private readonly StudioModelEventAggregator          _eventAggregator = new();
+	public           IStudioModelEventAggregatorReadOnly EventAggregator => _eventAggregator;
+	
 	public StudioModel(ImporterRegistry importerRegistry)
 	{
-		_project = new ProjectModel(_migrationManager, importerRegistry);
+		_project = new ProjectModel(_migrationManager, importerRegistry, _eventAggregator);
 	}
 
 	public void Cancel()

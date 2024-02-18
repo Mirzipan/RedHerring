@@ -13,6 +13,8 @@ namespace RedHerring.Studio;
 
 internal class Program
 {
+    public const string Title = "Red Herring Engine Studio"; 
+    
     private static IWindow? _window;
 
     private static Engine _engine = null!;
@@ -30,7 +32,7 @@ internal class Program
         
         var opts = new WindowOptions
         {
-            Title = "Red Herring Engine Studio",
+            Title = Title,
             Position = new Vector2D<int>(100, 100),
             Size = new Vector2D<int>(960, 540),
             API = _graphicsBackend.ToGraphicsAPI(),

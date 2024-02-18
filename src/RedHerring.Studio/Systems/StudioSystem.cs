@@ -9,6 +9,7 @@ using RedHerring.Infusion.Attributes;
 using RedHerring.Render.ImGui;
 using RedHerring.Studio.Constants;
 using RedHerring.Studio.Models;
+using RedHerring.Studio.Models.Project;
 using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.Tests;
 using RedHerring.Studio.Tools;
@@ -64,6 +65,9 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 
 		_statusBarMessageHandler = new StatusBarMessageHandler(_statusBar, _studioModel);
 		_newProjectDialog        = new NewProjectDialog(_studioModel);
+
+		_studioModel.EventAggregator.Register<ProjectModel.OpenedEvent>(OnProjectOpened);
+		_studioModel.EventAggregator.Register<ProjectModel.ClosedEvent>(OnProjectClosed);
 	}
 
 	protected override async ValueTask<int> Load()
@@ -151,6 +155,18 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 
 	#endregion Private
 
+	#region Event handlers
+	private void OnProjectOpened(ProjectModel.OpenedEvent obj)
+	{
+		Context.Window.Title = $"{Program.Title} - {_studioModel.Project.ProjectSettings.ProjectFolderPath}";
+	}
+
+	private void OnProjectClosed(ProjectModel.ClosedEvent obj)
+	{
+		Context.Window.Title = Program.Title;
+	}
+	#endregion
+	
 	#region Menu
 	private void InitMenu()
 	{
