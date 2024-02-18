@@ -6,7 +6,6 @@ using RedHerring.Core.Systems;
 using RedHerring.Deduction;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Infusion.Attributes;
-using RedHerring.Render.ImGui;
 using RedHerring.Studio.Constants;
 using RedHerring.Studio.Models;
 using RedHerring.Studio.Models.Project;
@@ -25,7 +24,6 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	[Infuse] private InputSystem      _inputSystem      = null!;
 	[Infuse] private InputReceiver    _inputReceiver    = null!;
 	[Infuse] private GraphicsSystem   _graphicsSystem   = null!;
-	[Infuse] private FindingsContext _findingsContext = null!;
 	[Infuse] private StudioCamera     _camera           = null!;
 
 	public StudioCamera Camera => _camera;
