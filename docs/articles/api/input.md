@@ -12,6 +12,7 @@ In order to avoid confusion, there are no alternate names for any values.
 Open questions:
 * Do we want to include axes as a part of key input? Their values could be returned via `AnalogValue()`.
 * How do we call the `Key` enum? At the point where we include just mouse and gamepad buttons, `Key` can still work as a good name, but if we included axes, it may be quite confusing to keep calling it that.
+* Make axes into a separate `Axis` enum?
 
 ```csharp
 [Flags]
