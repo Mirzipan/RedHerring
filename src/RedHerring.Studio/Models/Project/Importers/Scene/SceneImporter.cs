@@ -132,11 +132,11 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 			{
 				if (sceneMesh.Positions is not null && sceneMesh.Positions.Count <= 0xffff)
 				{
-					sceneMesh.UShortIndices = assimpMesh.GetUnsignedIndices().Select(idx => (ushort)idx).ToList();
+					sceneMesh.UShortIndices = assimpMesh.GetUnsignedIndices().Select(idx => (ushort)idx).ToArray();
 				}
 				else
 				{
-					sceneMesh.UIntIndices = assimpMesh.GetUnsignedIndices().ToList();
+					sceneMesh.UIntIndices = assimpMesh.GetUnsignedIndices().ToArray();
 				}
 			}
 		}

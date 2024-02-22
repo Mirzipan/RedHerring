@@ -5,6 +5,7 @@ using RedHerring.Fingerprint.Layers;
 using RedHerring.Infusion.Attributes;
 using RedHerring.Render;
 using RedHerring.Studio.Constants;
+using RedHerring.Studio.Debug;
 
 namespace RedHerring.Studio.Systems;
 
@@ -20,6 +21,9 @@ public class StudioGraphics : EngineSystem
     protected override void Init()
     {
         SetupInput();
+        
+        // debug
+        _renderer.AddFeature(new StudioTestRenderFeature());
     }
 
     protected override ValueTask<int> Load()
