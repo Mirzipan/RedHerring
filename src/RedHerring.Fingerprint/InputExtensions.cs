@@ -1,9 +1,25 @@
-﻿using RedHerring.Fingerprint.Shortcuts;
+﻿using System.Runtime.CompilerServices;
+using RedHerring.Fingerprint.Shortcuts;
 
 namespace RedHerring.Fingerprint;
 
 public static class InputExtensions
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static InputState State(this Input @this) => Interaction.State(@this);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsUp(this Input @this) => Interaction.IsUp(@this);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsPressed(this Input @this) => Interaction.IsPressed(@this);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsDown(this Input @this) => Interaction.IsDown(@this);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsReleased(this Input @this) => Interaction.IsReleased(@this);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float AnalogValue(this Input @this) => Interaction.AnalogValue(@this);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool AreDown(this Modifiers @this) => Interaction.AreDown(@this);
+    
     public static InteractionContext AddKeyboardBinding(this InteractionContext @this, string name, Key key, Modifiers modifiers = Modifiers.None)
     {
         Shortcut shortcut = new KeyboardShortcut(key, modifiers);
