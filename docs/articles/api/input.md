@@ -8,11 +8,8 @@ All buttons (keyboard, mouse, gamepad) exist within a single enum, to greatly si
 The division of keys into ones with an actual character representing them and ones that are just keycodes, is inspired by the approach used by SDL3.
 Names of keys are chosen so that the common part is always in the front, so `ShiftLeft` and `ShiftRight` instead of `LeftShift` or `LShift`.
 In order to avoid confusion, there are no alternate names for any values.
-
-Open questions:
-* Do we want to include axes as a part of key input? Their values could be returned via `AnalogValue()`.
-* How do we call the `Key` enum? At the point where we include just mouse and gamepad buttons, `Key` can still work as a good name, but if we included axes, it may be quite confusing to keep calling it that.
-* Make axes into a separate `Axis` enum?
+All axes prefer using coordinates in their names, so instead of `MouseHorizontal` or `MouseVertical`, it's `MouseX` and `MouseY`.
+Unified codes also include all axes as full axis, positive side, and negative side.
 
 ```csharp
 [Flags]
@@ -33,14 +30,37 @@ public enum Modifier
     Control = 1 << 1,
     Shift = 1 << 2,
     Super = 1 << 3,
+    
+    AltControl = Alt | Control,
+    AltShift = Alt | Shift,
+    AltSuper = Alt | Super,
+    ControlShift = Control | Shift,
+    ControlSuper = Control | Super,
+    ShiftSuper = Shift | Super,
+    
+    AltControlShift = Alt | Control | Shift,
+    AltControlSuper = Alt | Control | Super,
+    AltShiftSuper = Alt | Shift | Super,
+    ControlShiftSuper = Control | Shift | Super,
+        
+    All = Alt | Control | Shift | Super,
+}
+
+// if only positive is defined, works as a basic keypress shortuct.
+// if negative is also defined, the analog values for negative value will be inverted
+// if modifiers are defined, it works as multi-key shortcut
+public struct Shortcut
+{
+    public Input Positive;
+    public Input Negative;
+    public Modifier Modifiers;
 }
 
 // characters use their own codes
 // keys without characters are shifted by 0x40000000 (1 << 30)
 // mouse buttons are shifted by 0x04000000 (1 << 26)
 // gamepad buttons are shifted by 0x00400000 (1 << 22)
-
-public enum Key
+public enum Input
 {
     Unknown = 0x00, // characters start
     Backspace = 0x08,
@@ -64,9 +84,9 @@ public enum Key
     GamepadDPadDown = 0x0040000E,
     GamepadDPadLeft = 0x0040000F,
     ...
-    GamepadStickLeftLeft = 0x00400041, // gamepad axes start (optional)
+    GamepadStickLeftX = 0x00400041, // gamepad axes start (optional)
     GamepadStickLeftRight = 0x00400042,
-    GamepadStickLeftUp = 0x00400043,
+    GamepadStickLeftY = 0x00400043,
     GamepadStickLeftDown = 0x00400044,
     GamepadStickRightLeft = 0x00400045,
     GamepadStickRightRight = 0x00400046,
@@ -89,11 +109,15 @@ public enum Key
     Mouse12 = 0x0400000C, // mouse end
     ...
     MouseX = 0x04000041, // mouse axes start (optional)
-    MouseY = 0x04000042,
-    MouseDeltaX = 0x04000043,
-    MouseDeltaY = 0x04000044,
-    MouseWheelX = 0x04000045,
-    MouseWheelY = 0x04000046, // mouse axes end (optional)
+    MouseXPositive= 0x04000042,
+    MouseXNegative= 0x04000043,
+    MouseY = 0x04000044,
+    MouseYPositive= 0x04000045,
+    MouseYNegative= 0x04000046,
+    MouseDeltaX = 0x04000047,
+    MouseDeltaY = 0x04000048,
+    MouseWheelX = 0x04000049,
+    MouseWheelY = 0x0400004A, // mouse axes end (optional)
     ...
     CapsLock = 0x40000039, // characterless start
     ...
@@ -110,62 +134,72 @@ public enum Key
 ```csharp
 // keyboard
 {
-    bool isUp = Input.IsUp(Key.Enter);
-    bool isPressed = Input.IsPressed(Key.Enter);
-    bool isDown = Input.IsDown(Key.Enter);
-    bool isReleased = Input.IsReleased(Key.Enter);
+    bool isUp = Interaction.IsUp(Input.Enter);
+    bool isPressed = Interaction.IsPressed(Input.Enter);
+    bool isDown = Interaction.IsDown(Input.Enter);
+    bool isReleased = Interaction.IsReleased(Input.Enter);
     
-    KeyState state = Input[Key.Enter];
+    KeyState state = Interact[Input.Enter];
     
-    float analog = Input.AnalogValue(Key.Enter);
+    float analog = Interaction.AnalogValue(Input.Enter);
+    
+    // extension methods for Input enum
+    bool isUp = Input.Enter.IsUp();
+    bool isPressed = Input.Enter.IsPressed();
+    bool isDown = Input.Enter.IsDown();
+    bool isReleased = Input.Enter.IsReleased();
+    
+    float analog = Input.Enter.AnalogValue();
+    
+    bool isDown = (Modifier.Control | Modifier.Shift).IsDown(); 
 }
     
 // mouse
 {
-    bool isUp = Input.IsUp(Key.MouseLeft);
-    bool isPressed = Input.IsPressed(Key.MouseLeft);
-    bool isDown = Input.IsDown(Key.MouseLeft);
-    bool isReleased = Input.IsReleased(Key.MouseLeft);
+    bool isUp = Interaction.IsUp(Input.MouseLeft);
+    bool isPressed = Interaction.IsPressed(Input.MouseLeft);
+    bool isDown = Interaction.IsDown(Input.MouseLeft);
+    bool isReleased = Interaction.IsReleased(Input.MouseLeft);
     
-    KeyState state = Input[Key.MouseLeft];
+    KeyState state = Interact[Input.MouseLeft];
     
-    float analog = Input.AnalogValue(Key.MouseLeft);
+    float analog = Interaction.AnalogValue(Input.MouseLeft);
 }
 
 // gamepad
 {
-    bool isUp = Input.IsUp(Key.GamepadA);
-    bool isPressed = Input.IsPressed(Key.GamepadA);
-    bool isDown = Input.IsDown(Key.GamepadA);
-    bool isReleased = Input.IsReleased(Key.GamepadA);
+    bool isUp = Interaction.IsUp(Input.GamepadA);
+    bool isPressed = Interaction.IsPressed(Input.GamepadA);
+    bool isDown = Interaction.IsDown(Input.GamepadA);
+    bool isReleased = Interaction.IsReleased(Input.GamepadA);
     
-    KeyState state = Input[Key.GamepadA];
+    KeyState state = Interact[Input.GamepadA];
     
-    float analog = Input.AnalogValue(Key.GamepadA);
+    float analog = Interaction.AnalogValue(Input.GamepadA);
 }
 
 // general
 {
-    bool isAnyInputDown = Input.Any();
-    bool isAnyKeyboardKeyDown = Input.AnyKeyboardKey();
-    bool isAnyMouseButtonDown = Input.AnyMouseButton();
-    bool isAnyGamepadButtonDown = Input.AnyGamepadButton();
+    bool isAnyInputDown = Interaction.Any();
+    bool isAnyKeyboardKeyDown = Interaction.AnyKeyboardKey();
+    bool isAnyMouseButtonDown = Interaction.AnyMouseButton();
+    bool isAnyGamepadButtonDown = Interaction.AnyGamepadButton();
     
-    bool areModifiersDown = Input[Modifier.Shift | Modifier.Control];
-    bool areModifiersDownAlt = Input.AreDown(Modifier.Shift | Modifier.Control);
-    Modifier modifiersDown = Input.Modifiers();
+    bool areModifiersDown = Interact[Modifier.Shift | Modifier.Control];
+    bool areModifiersDownAlt = Interaction.AreDown(Modifier.Shift | Modifier.Control);
+    Modifier modifiersDown = Interaction.Modifiers();
     
     List<Key> keysPressed = new List<Key>();
-    Input.KeysPressed(keysPressed);
+    Interaction.KeysPressed(keysPressed);
     
     List<Key> keysDown = new List<Key>();
-    Input.KeysDown(keysDown);
+    Interaction.KeysDown(keysDown);
     
     List<Key> keysReleased = new List<Key>();
-    Input.KeysReleased(keysReleased);
+    Interaction.KeysReleased(keysReleased);
     
     List<char> charactersTyped = new List<char>();
-    Input.Characters(charactersTyped);
+    Interaction.Characters(charactersTyped);
 }
 
 ```
@@ -180,7 +214,7 @@ public enum Key
 
 ```csharp
 {
-    var receiver = Input.CreateReceiver("layer_name"));
+    var receiver = Interaction.CreateReceiver("layer_name"));
     receiver.Bind("action_name", KeyState.Pressed, OnShortcutPressed);
 }
 
