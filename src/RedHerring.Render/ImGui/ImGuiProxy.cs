@@ -10,9 +10,9 @@ public static class ImGuiProxy
     private static ImGuiRenderer? _renderer;
     private static Dictionary<IntPtr, Texture> _texturesById = new();
     
-    public static void Update(GameTime time, Input input)
+    public static void Update(GameTime time, InteractionContext interactionContext)
     {
-        _renderer?.Update((float)time.Elapsed.TotalSeconds, input);
+        _renderer?.Update((float)time.Elapsed.TotalSeconds, interactionContext);
     }
 
     public static IntPtr GetOrCreateImGuiBinding(string filePath)

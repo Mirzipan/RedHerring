@@ -10,7 +10,7 @@ namespace RedHerring.Sandbox;
 public sealed class Configuration : EngineSystem
 {
     [Infuse]
-    private Input _input = null!;
+    private InteractionContext _interactionContext = null!;
 
     #region Lifecycle
 
@@ -31,12 +31,12 @@ public sealed class Configuration : EngineSystem
 
     private void Input()
     {
-        if (_input.Bindings is null)
+        if (_interactionContext.Bindings is null)
         {
-            _input.Bindings = new ShortcutBindings();
+            _interactionContext.Bindings = new ShortcutBindings();
         }
 
-        _input.Bindings.Add(new ShortcutBinding("toggle_menu", new KeyboardShortcut(Key.Escape)));
+        _interactionContext.Bindings.Add(new ShortcutBinding("toggle_menu", new KeyboardShortcut(Key.Escape)));
     }
 
     private void Theme()

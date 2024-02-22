@@ -17,16 +17,16 @@ namespace RedHerring.Core.Systems;
 public sealed class InputSystem : EngineSystem, Updatable, Drawable
 {
     [Infuse]
-    private Input _input = null!;
+    private InteractionContext _interactionContext = null!;
     [Infuse]
     private InputReceiver _receiver = null!;
 
     public bool IsEnabled => true;
     public int UpdateOrder => -1_000_000;
 
-    public Input Input => _input;
-    public KeyboardState? Keyboard => _input.Keyboard;
-    public MouseState? Mouse => _input.Mouse;
+    public InteractionContext InteractionContext => _interactionContext;
+    public KeyboardState? Keyboard => _interactionContext.Keyboard;
+    public MouseState? Mouse => _interactionContext.Mouse;
 
     private bool _debugDrawImGuiMetrics = false;
 
@@ -39,38 +39,38 @@ public sealed class InputSystem : EngineSystem, Updatable, Drawable
     public void Update(GameTime gameTime)
     {
         UpdateCursor();
-        ImGuiProxy.Update(gameTime, _input);
+        ImGuiProxy.Update(gameTime, _interactionContext);
         
-        _input.Tick();
+        _interactionContext.Tick();
     }
 
     #endregion Lifecycle
 
     #region Queries
 
-    public bool IsKeyPressed(Key key) => _input.IsKeyPressed(key);
-    public bool IsKeyDown(Key key) => _input.IsKeyDown(key);
-    public bool IsKeyReleased(Key key) => _input.IsKeyReleased(key);
-    public bool IsAnyKeyDown() => _input.IsAnyKeyDown();
-    public void GetKeysDown(IList<Key> keys) => _input.KeysDown(keys);
+    public bool IsKeyPressed(Key key) => _interactionContext.IsKeyPressed(key);
+    public bool IsKeyDown(Key key) => _interactionContext.IsKeyDown(key);
+    public bool IsKeyReleased(Key key) => _interactionContext.IsKeyReleased(key);
+    public bool IsAnyKeyDown() => _interactionContext.IsAnyKeyDown();
+    public void GetKeysDown(IList<Key> keys) => _interactionContext.KeysDown(keys);
     
-    public bool IsButtonPressed(MouseButton button) => _input.IsButtonPressed(button);
-    public bool IsButtonDown(MouseButton button) => _input.IsButtonDown(button);
-    public bool IsButtonReleased(MouseButton button) => _input.IsButtonReleased(button);
-    public bool IsAnyMouseButtonDown() => _input.IsAnyMouseButtonDown();
-    public void GetButtonsDown(IList<MouseButton> buttons) => _input.ButtonsDown(buttons);
-    public bool IsMouseMoved(MouseAxis axis) => _input.IsMouseMoved(axis);
-    public float GetAxis(MouseAxis axis) => _input.Axis(axis);
-    public Vector2 MousePosition => _input.MousePosition;
-    public Vector2 MouseDelta => _input.MouseDelta;
-    public float MouseWheelDelta => _input.MouseWheelDelta;
+    public bool IsButtonPressed(MouseButton button) => _interactionContext.IsButtonPressed(button);
+    public bool IsButtonDown(MouseButton button) => _interactionContext.IsButtonDown(button);
+    public bool IsButtonReleased(MouseButton button) => _interactionContext.IsButtonReleased(button);
+    public bool IsAnyMouseButtonDown() => _interactionContext.IsAnyMouseButtonDown();
+    public void GetButtonsDown(IList<MouseButton> buttons) => _interactionContext.ButtonsDown(buttons);
+    public bool IsMouseMoved(MouseAxis axis) => _interactionContext.IsMouseMoved(axis);
+    public float GetAxis(MouseAxis axis) => _interactionContext.Axis(axis);
+    public Vector2 MousePosition => _interactionContext.MousePosition;
+    public Vector2 MouseDelta => _interactionContext.MouseDelta;
+    public float MouseWheelDelta => _interactionContext.MouseWheelDelta;
     
-    public bool IsButtonPressed(GamepadButton button) => _input.IsButtonPressed(button);
-    public bool IsButtonDown(GamepadButton button) => _input.IsButtonDown(button);
-    public bool IsButtonReleased(GamepadButton button) => _input.IsButtonReleased(button);
-    public bool IsAnyButtonDown() => _input.IsAnyGamepadButtonDown();
-    public void GetButtonsDown(IList<GamepadButton> buttons) => _input.ButtonsDown(buttons);
-    public float GetAxis(GamepadAxis axis) => _input.Axis(axis);
+    public bool IsButtonPressed(GamepadButton button) => _interactionContext.IsButtonPressed(button);
+    public bool IsButtonDown(GamepadButton button) => _interactionContext.IsButtonDown(button);
+    public bool IsButtonReleased(GamepadButton button) => _interactionContext.IsButtonReleased(button);
+    public bool IsAnyButtonDown() => _interactionContext.IsAnyGamepadButtonDown();
+    public void GetButtonsDown(IList<GamepadButton> buttons) => _interactionContext.ButtonsDown(buttons);
+    public float GetAxis(GamepadAxis axis) => _interactionContext.Axis(axis);
 
     #endregion Queries
 
@@ -78,12 +78,12 @@ public sealed class InputSystem : EngineSystem, Updatable, Drawable
 
     public bool AddBinding(ShortcutBinding binding)
     {
-        if (_input.Bindings is null)
+        if (_interactionContext.Bindings is null)
         {
             return false;
         }
         
-        _input.Bindings.Add(binding);
+        _interactionContext.Bindings.Add(binding);
         return true;
     }
 
@@ -115,9 +115,9 @@ public sealed class InputSystem : EngineSystem, Updatable, Drawable
             _                           => throw new ArgumentOutOfRangeException()
         };
 
-        if (_input.Mouse is not null)
+        if (_interactionContext.Mouse is not null)
         {
-            _input.Mouse.Cursor = cursor;
+            _interactionContext.Mouse.Cursor = cursor;
         }
     }
 
@@ -129,7 +129,7 @@ public sealed class InputSystem : EngineSystem, Updatable, Drawable
     {
         _receiver.Name = "input_debug";
             
-        if (_input.Bindings is null)
+        if (_interactionContext.Bindings is null)
         {
             return;
         }
@@ -153,13 +153,13 @@ public sealed class InputSystem : EngineSystem, Updatable, Drawable
     {
         evt.Consumed = true;
         
-        if (_input.IsDebugging)
+        if (_interactionContext.IsDebugging)
         {
-            _input.DisableDebug();
+            _interactionContext.DisableDebug();
         }
         else
         {
-            _input.EnableDebug();
+            _interactionContext.EnableDebug();
         }
     }
 

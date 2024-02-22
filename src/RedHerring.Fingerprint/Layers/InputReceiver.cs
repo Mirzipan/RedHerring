@@ -8,7 +8,7 @@ public class InputReceiver
     private readonly Dictionary<string, ActionBinding> _bindings = new();
 
     [Infuse]
-    private readonly Input _input = null!;
+    private readonly InteractionContext _interactionContext = null!;
     
     public string? Name { get; set; }
     public OctoByte Layer { get; set; }
@@ -48,12 +48,12 @@ public class InputReceiver
 
     public void Push()
     {
-        _input.Layers.Push(this);
+        _interactionContext.Layers.Push(this);
     }
 
     public void Pop()
     {
-        _input.Layers.Pop(this);
+        _interactionContext.Layers.Pop(this);
     }
 
     #endregion Public

@@ -17,13 +17,13 @@ public sealed class GamepadButtonShortcut : Shortcut
 
     public void InputCodes(IList<InputCode> result) => result.Add(_code);
 
-    public float Value(Input input) => IsDown(input) ? 1f : 0f;
+    public float Value(InteractionContext interactionContext) => IsDown(interactionContext) ? 1f : 0f;
 
-    public bool IsPressed(Input input) => input.IsButtonPressed(_code.GamepadButton);
+    public bool IsPressed(InteractionContext interactionContext) => interactionContext.IsButtonPressed(_code.GamepadButton);
 
-    public bool IsDown(Input input) => input.IsButtonDown(_code.GamepadButton);
+    public bool IsDown(InteractionContext interactionContext) => interactionContext.IsButtonDown(_code.GamepadButton);
 
-    public bool IsReleased(Input input) => input.IsButtonReleased(_code.GamepadButton);
+    public bool IsReleased(InteractionContext interactionContext) => interactionContext.IsButtonReleased(_code.GamepadButton);
 
     public override string ToString()
     {

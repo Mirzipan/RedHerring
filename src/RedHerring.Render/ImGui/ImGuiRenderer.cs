@@ -429,10 +429,10 @@ public sealed class ImGuiRenderer : IDisposable
     /// <summary>
     /// Updates ImGui input and IO configuration state.
     /// </summary>
-    public void Update(float deltaSeconds, Input input)
+    public void Update(float deltaSeconds, InteractionContext interactionContext)
     {
         BeginUpdate(deltaSeconds);
-        UpdateImGuiInput(input);
+        UpdateImGuiInput(interactionContext);
         EndUpdate();
     }
 
@@ -474,11 +474,11 @@ public sealed class ImGuiRenderer : IDisposable
         io.DeltaTime = deltaSeconds; // DeltaTime is in seconds.
     }
 
-    private void UpdateImGuiInput(Input input)
+    private void UpdateImGuiInput(InteractionContext interactionContext)
     {
         ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
 
-        var mouse = input.Mouse;
+        var mouse = interactionContext.Mouse;
         if (mouse is not null)
         {
             io.AddMousePosEvent(mouse.Position.X, mouse.Position.Y);
@@ -491,7 +491,7 @@ public sealed class ImGuiRenderer : IDisposable
             }
         }
 
-        var keyboard = input.Keyboard;
+        var keyboard = interactionContext.Keyboard;
         if (keyboard is not null)
         {
             _inputChars.Clear();

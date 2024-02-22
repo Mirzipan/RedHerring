@@ -65,7 +65,7 @@ public static class InjectionExtensions
 
     public static ContainerDescription AddInput(this ContainerDescription @this)
     {
-        @this.AddSingleton(typeof(SilkInput), typeof(SilkInput), typeof(Input));
+        @this.AddSingleton(typeof(SilkInteractionContext), typeof(SilkInteractionContext), typeof(InteractionContext));
         @this.AddSingleton(typeof(InputReceiver));
         @this.AddSystem(new InputSystem());
         return @this;

@@ -52,52 +52,52 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
         }
     }
 
-    public float Value(Input input)
+    public float Value(InteractionContext interactionContext)
     {
         return Evaluation switch
         {
-            CompositeShortcutEvaluation.Conjunction => ConjunctValue(input),
-            CompositeShortcutEvaluation.Disjunction => DisjunctValue(input),
+            CompositeShortcutEvaluation.Conjunction => ConjunctValue(interactionContext),
+            CompositeShortcutEvaluation.Disjunction => DisjunctValue(interactionContext),
             _ => 0f,
         };
     }
 
-    public bool IsPressed(Input input)
+    public bool IsPressed(InteractionContext interactionContext)
     {
         return Evaluation switch
         {
-            CompositeShortcutEvaluation.Conjunction => AreAllPressed(input),
-            CompositeShortcutEvaluation.Disjunction => AreAnyPressed(input),
+            CompositeShortcutEvaluation.Conjunction => AreAllPressed(interactionContext),
+            CompositeShortcutEvaluation.Disjunction => AreAnyPressed(interactionContext),
             _ => false,
         };
     }
 
-    public bool IsDown(Input input)
+    public bool IsDown(InteractionContext interactionContext)
     {
         return Evaluation switch
         {
-            CompositeShortcutEvaluation.Conjunction => AreAllDown(input),
-            CompositeShortcutEvaluation.Disjunction => AreAnyDown(input),
+            CompositeShortcutEvaluation.Conjunction => AreAllDown(interactionContext),
+            CompositeShortcutEvaluation.Disjunction => AreAnyDown(interactionContext),
             _ => false,
         };
     }
 
-    public bool IsReleased(Input input)
+    public bool IsReleased(InteractionContext interactionContext)
     {
         return Evaluation switch
         {
-            CompositeShortcutEvaluation.Conjunction => AreAllReleased(input),
-            CompositeShortcutEvaluation.Disjunction => AreAnyReleased(input),
+            CompositeShortcutEvaluation.Conjunction => AreAllReleased(interactionContext),
+            CompositeShortcutEvaluation.Disjunction => AreAnyReleased(interactionContext),
             _ => false,
         };
     }
 
-    private float ConjunctValue(Input input)
+    private float ConjunctValue(InteractionContext interactionContext)
     {
         float result = 0f;
         foreach (var entry in Items)
         {
-            float value = entry.Value(input);
+            float value = entry.Value(interactionContext);
             if (value.Approximately(0f))
             {
                 return 0f;
@@ -109,12 +109,12 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
         return result;
     }
 
-    private float DisjunctValue(Input input)
+    private float DisjunctValue(InteractionContext interactionContext)
     {
         float result = 0f;
         foreach (var entry in Items)
         {
-            float value = entry.Value(input);
+            float value = entry.Value(interactionContext);
             if (!value.Approximately(0f))
             {
                 result = value;
@@ -126,7 +126,7 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
 
     #region Conjuction
 
-    private bool AreAllPressed(Input input)
+    private bool AreAllPressed(InteractionContext interactionContext)
     {
         if (Items.Count == 0)
         {
@@ -137,12 +137,12 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
         for (int i = 0; i < Items.Count; i++)
         {
             var item = Items[i];
-            if (!item.IsDown(input))
+            if (!item.IsDown(interactionContext))
             {
                 return false;
             }
 
-            if (item.IsPressed(input))
+            if (item.IsPressed(interactionContext))
             {
                 onePressed = true;
             }
@@ -151,7 +151,7 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
         return onePressed;
     }
 
-    private bool AreAllDown(Input input)
+    private bool AreAllDown(InteractionContext interactionContext)
     {
         if (Items.Count == 0)
         {
@@ -161,7 +161,7 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
         for (int i = 0; i < Items.Count; i++)
         {
             var item = Items[i];
-            if (!item.IsDown(input))
+            if (!item.IsDown(interactionContext))
             {
                 return false;
             }
@@ -170,7 +170,7 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
         return true;
     }
 
-    private bool AreAllReleased(Input input)
+    private bool AreAllReleased(InteractionContext interactionContext)
     {
         if (Items.Count == 0)
         {
@@ -181,11 +181,11 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
         for (int i = 0; i < Items.Count; i++)
         {
             var item = Items[i];
-            if (item.IsReleased(input))
+            if (item.IsReleased(interactionContext))
             {
                 oneReleased = true;
             }
-            else if (!item.IsDown(input))
+            else if (!item.IsDown(interactionContext))
             {
                 return false;
             }
@@ -198,7 +198,7 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
 
     #region Disjunction
 
-    private bool AreAnyPressed(Input input)
+    private bool AreAnyPressed(InteractionContext interactionContext)
     {
         if (Items.Count == 0)
         {
@@ -207,7 +207,7 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
         
         for (int i = 0; i < Items.Count; i++)
         {
-            if (Items[i].IsPressed(input))
+            if (Items[i].IsPressed(interactionContext))
             {
                 return true;
             }
@@ -216,7 +216,7 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
         return false;
     }
 
-    private bool AreAnyDown(Input input)
+    private bool AreAnyDown(InteractionContext interactionContext)
     {
         if (Items.Count == 0)
         {
@@ -225,7 +225,7 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
         
         for (int i = 0; i < Items.Count; i++)
         {
-            if (Items[i].IsDown(input))
+            if (Items[i].IsDown(interactionContext))
             {
                 return true;
             }
@@ -234,7 +234,7 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
         return false;
     }
 
-    private bool AreAnyReleased(Input input)
+    private bool AreAnyReleased(InteractionContext interactionContext)
     {
         if (Items.Count == 0)
         {
@@ -243,7 +243,7 @@ public class CompositeShortcut : Collection<Shortcut>, Shortcut
         
         for (int i = 0; i < Items.Count; i++)
         {
-            if (Items[i].IsReleased(input))
+            if (Items[i].IsReleased(interactionContext))
             {
                 return true;
             }

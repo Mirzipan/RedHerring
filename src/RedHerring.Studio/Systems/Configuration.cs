@@ -8,7 +8,7 @@ namespace RedHerring.Studio.Systems;
 internal sealed class Configuration : EngineSystem
 {
     [Infuse]
-    private Input _input = null!;
+    private InteractionContext _interactionContext = null!;
     
     protected override void Init()
     {
@@ -17,19 +17,19 @@ internal sealed class Configuration : EngineSystem
 
     private void Input()
     {
-        _input.AddKeyboardBinding(InputAction.Undo, Key.U);
-        _input.AddKeyboardBinding(InputAction.Redo, Key.Z);
+        _interactionContext.AddKeyboardBinding(InputAction.Undo, Key.U);
+        _interactionContext.AddKeyboardBinding(InputAction.Redo, Key.Z);
         
-        _input.AddKeyboardBinding(InputAction.MoveLeft, Key.A);
-        _input.AddKeyboardBinding(InputAction.MoveRight, Key.D);
-        _input.AddKeyboardBinding(InputAction.MoveUp, Key.Space);
-        _input.AddKeyboardBinding(InputAction.MoveDown, Key.C);
-        _input.AddKeyboardBinding(InputAction.MoveForward, Key.W);
-        _input.AddKeyboardBinding(InputAction.MoveBackward, Key.S);
+        _interactionContext.AddKeyboardBinding(InputAction.MoveLeft, Key.A);
+        _interactionContext.AddKeyboardBinding(InputAction.MoveRight, Key.D);
+        _interactionContext.AddKeyboardBinding(InputAction.MoveUp, Key.Space);
+        _interactionContext.AddKeyboardBinding(InputAction.MoveDown, Key.C);
+        _interactionContext.AddKeyboardBinding(InputAction.MoveForward, Key.W);
+        _interactionContext.AddKeyboardBinding(InputAction.MoveBackward, Key.S);
 
-        _input.AddMouseBinding(InputAction.MoveSpeedIncrease, MouseAxis.WheelUp);
-        _input.AddMouseBinding(InputAction.MoveSpeedDecrease, MouseAxis.WheelDown);
+        _interactionContext.AddMouseBinding(InputAction.MoveSpeedIncrease, MouseAxis.WheelUp);
+        _interactionContext.AddMouseBinding(InputAction.MoveSpeedDecrease, MouseAxis.WheelDown);
         
-        _input.AddKeyboardBinding(InputAction.ReloadShaders, Key.F10, Modifiers.Shift);
+        _interactionContext.AddKeyboardBinding(InputAction.ReloadShaders, Key.F10, Modifiers.Shift);
     }
 }

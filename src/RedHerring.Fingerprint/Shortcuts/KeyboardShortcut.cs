@@ -16,13 +16,13 @@ public sealed class KeyboardShortcut : Shortcut
 
     public void InputCodes(IList<InputCode> result) => result.Add(_code);
 
-    public float Value(Input input) => IsDown(input) ? 1f : 0f;
+    public float Value(InteractionContext interactionContext) => IsDown(interactionContext) ? 1f : 0f;
 
-    public bool IsPressed(Input input) => input.AreModifiersDown(_modifiers) && input.IsKeyPressed(_code.Key);
+    public bool IsPressed(InteractionContext interactionContext) => interactionContext.AreModifiersDown(_modifiers) && interactionContext.IsKeyPressed(_code.Key);
 
-    public bool IsDown(Input input) => input.AreModifiersDown(_modifiers) && input.IsKeyDown(_code.Key);
+    public bool IsDown(InteractionContext interactionContext) => interactionContext.AreModifiersDown(_modifiers) && interactionContext.IsKeyDown(_code.Key);
 
-    public bool IsReleased(Input input) => input.AreModifiersDown(_modifiers) && input.IsKeyReleased(_code.Key);
+    public bool IsReleased(InteractionContext interactionContext) => interactionContext.AreModifiersDown(_modifiers) && interactionContext.IsKeyReleased(_code.Key);
 
     public override string ToString()
     {

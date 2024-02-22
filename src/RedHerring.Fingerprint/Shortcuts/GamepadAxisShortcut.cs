@@ -19,13 +19,13 @@ public sealed class GamepadAxisShortcut : Shortcut
         result.Add(_code);
     }
 
-    public float Value(Input input) => input.AreModifiersDown(_modifiers) ? input.Axis(_code.GamepadAxis) : 0f;
+    public float Value(InteractionContext interactionContext) => interactionContext.AreModifiersDown(_modifiers) ? interactionContext.Axis(_code.GamepadAxis) : 0f;
 
-    public bool IsPressed(Input input) => false;
+    public bool IsPressed(InteractionContext interactionContext) => false;
 
-    public bool IsDown(Input input) => Value(input) != 0;
+    public bool IsDown(InteractionContext interactionContext) => Value(interactionContext) != 0;
 
-    public bool IsReleased(Input input) => false;
+    public bool IsReleased(InteractionContext interactionContext) => false;
 
     public override string ToString()
     {

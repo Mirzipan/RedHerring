@@ -18,16 +18,16 @@ internal class InputProcessor
 
     private readonly Dictionary<Shortcut, InputState> _triggeredShortcuts = new();
 
-    private readonly Input _input;
+    private readonly InteractionContext _interactionContext;
     private readonly InputLayers _layers;
     private readonly ActionsState _actionsState;
 
     #region Lifecycle
 
-    public InputProcessor(Input input, ActionsState actionsState)
+    public InputProcessor(InteractionContext interactionContext, ActionsState actionsState)
     {
-        _input = input;
-        _layers = input.Layers;
+        _interactionContext = interactionContext;
+        _layers = interactionContext.Layers;
         _actionsState = actionsState;
     }
     
@@ -47,7 +47,7 @@ internal class InputProcessor
     {
         _triggeredShortcuts.Clear();
 
-        var bindings = _input.Bindings;
+        var bindings = _interactionContext.Bindings;
         if (bindings is null || bindings.Count == 0)
         {
             return false;
@@ -68,7 +68,7 @@ internal class InputProcessor
         foreach (var pair in _triggeredShortcuts)
         {
             var actions = bindings.ActionsForShortcut(pair.Key);
-            QueueInput(actions!, pair.Value, pair.Key.Value(_input));
+            QueueInput(actions!, pair.Value, pair.Key.Value(_interactionContext));
             foreach (string action in actions!)
             {
                 _actionsState.Add(action, pair.Value);
@@ -81,17 +81,17 @@ internal class InputProcessor
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private InputState GetShortcutState(Shortcut shortcut)
     {
-        if (shortcut.IsPressed(_input))
+        if (shortcut.IsPressed(_interactionContext))
         {
             return InputState.Pressed | InputState.Down;
         }
 
-        if (shortcut.IsDown(_input))
+        if (shortcut.IsDown(_interactionContext))
         {
             return InputState.Down;
         }
 
-        if (shortcut.IsReleased(_input))
+        if (shortcut.IsReleased(_interactionContext))
         {
             return InputState.Released;
         }

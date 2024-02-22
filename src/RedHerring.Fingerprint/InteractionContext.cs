@@ -5,7 +5,7 @@ using RedHerring.Fingerprint.States;
 
 namespace RedHerring.Fingerprint;
 
-public interface Input
+public interface InteractionContext
 {
     void Tick();
     bool IsDebugging { get; }

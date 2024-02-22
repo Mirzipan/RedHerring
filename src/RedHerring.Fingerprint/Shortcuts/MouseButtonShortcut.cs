@@ -15,13 +15,13 @@ public sealed class MouseButtonShortcut : Shortcut
 
     public void InputCodes(IList<InputCode> result) => result.Add(_code);
 
-    public float Value(Input input) => IsDown(input) ? 1f : 0f;
+    public float Value(InteractionContext interactionContext) => IsDown(interactionContext) ? 1f : 0f;
 
-    public bool IsPressed(Input input) => input.AreModifiersDown(_modifiers) && input.IsButtonPressed(_code.MouseButton);
+    public bool IsPressed(InteractionContext interactionContext) => interactionContext.AreModifiersDown(_modifiers) && interactionContext.IsButtonPressed(_code.MouseButton);
 
-    public bool IsDown(Input input) => input.AreModifiersDown(_modifiers) && input.IsButtonDown(_code.MouseButton);
+    public bool IsDown(InteractionContext interactionContext) => interactionContext.AreModifiersDown(_modifiers) && interactionContext.IsButtonDown(_code.MouseButton);
 
-    public bool IsReleased(Input input) => input.AreModifiersDown(_modifiers) && input.IsButtonReleased(_code.MouseButton);
+    public bool IsReleased(InteractionContext interactionContext) => interactionContext.AreModifiersDown(_modifiers) && interactionContext.IsButtonReleased(_code.MouseButton);
 
     public override string ToString()
     {

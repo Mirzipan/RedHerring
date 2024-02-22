@@ -15,5 +15,5 @@ public class ShortcutBinding
     public string? Name { get; set; }
     public Shortcut? Shortcut { get; set; }
 
-    public float Value(Input input) => Shortcut?.Value(input) ?? 0f;
+    public float Value(InteractionContext interactionContext) => Shortcut?.Value(interactionContext) ?? 0f;
 }

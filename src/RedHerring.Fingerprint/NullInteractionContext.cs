@@ -5,7 +5,7 @@ using RedHerring.Fingerprint.States;
 
 namespace RedHerring.Fingerprint;
 
-public sealed class NullInput : Input
+public sealed class NullInteractionContext : InteractionContext
 {
     private InputLayers _layers = new();
     private ActionsState _actions = new();

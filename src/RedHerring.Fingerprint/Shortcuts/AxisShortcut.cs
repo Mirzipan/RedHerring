@@ -21,16 +21,16 @@ public class AxisShortcut : Shortcut
         PositiveShortcut?.InputCodes(result);
     }
 
-    public float Value(Input input)
+    public float Value(InteractionContext interactionContext)
     {
-        float negative = NegativeShortcut?.Value(input) ?? 0f;
-        float positive = PositiveShortcut?.Value(input) ?? 0f;
+        float negative = NegativeShortcut?.Value(interactionContext) ?? 0f;
+        float positive = PositiveShortcut?.Value(interactionContext) ?? 0f;
         return positive - negative;
     }
 
-    public bool IsPressed(Input input) => false;
+    public bool IsPressed(InteractionContext interactionContext) => false;
 
-    public bool IsDown(Input input) => false;
+    public bool IsDown(InteractionContext interactionContext) => false;
 
-    public bool IsReleased(Input input) => false;
+    public bool IsReleased(InteractionContext interactionContext) => false;
 }

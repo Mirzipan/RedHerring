@@ -9,7 +9,7 @@ using Silk.NET.Windowing;
 
 namespace RedHerring.Fingerprint;
 
-public partial class SilkInput: Input, IDisposable
+public partial class SilkInteractionContext: InteractionContext, IDisposable
 {
     private IInputContext _inputContext;
 
@@ -35,7 +35,7 @@ public partial class SilkInput: Input, IDisposable
     
     #region Lifecycle
 
-    public SilkInput(IView view)
+    public SilkInteractionContext(IView view)
     {
         SdlInput.RegisterPlatform();
 
