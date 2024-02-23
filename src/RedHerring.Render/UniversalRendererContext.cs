@@ -13,7 +13,7 @@ using ImGuiRenderer = RedHerring.Render.ImGui.ImGuiRenderer;
 
 namespace RedHerring.Render;
 
-public sealed class UniversalRenderer : NamedDisposer, Renderer
+public sealed class UniversalRendererContext : NamedDisposer, RendererContext
 {
     public readonly Thread Thread;
     
@@ -35,7 +35,7 @@ public sealed class UniversalRenderer : NamedDisposer, Renderer
 
     #region Lifecycle
 
-    public UniversalRenderer(IView view, GraphicsBackend backend, bool useSeparateThread, string? name = null) : base(name)
+    public UniversalRendererContext(IView view, GraphicsBackend backend, bool useSeparateThread, string? name = null) : base(name)
     {
         if (useSeparateThread)
         {

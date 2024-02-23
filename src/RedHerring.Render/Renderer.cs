@@ -1,22 +1,42 @@
-﻿using System.Numerics;
-using RedHerring.Render.Features;
-using Silk.NET.Maths;
+using RedHerring.Alexandria.Disposables;
+using Silk.NET.Windowing;
+using Veldrid;
 
 namespace RedHerring.Render;
 
-public interface Renderer
+public static class Renderer
 {
-    RenderFeatureCollection Features { get; }
-    void AddFeature(RenderFeature feature);
-    void Init();
-    void Close();
-    bool BeginDraw();
-    void Draw();
-    void EndDraw();
-    void Resize(Vector2D<int> size);
+	private static RendererContext? _context;
 
-    void SetCameraViewMatrix(Matrix4x4 world, Matrix4x4 view, Matrix4x4 projection, float fieldOfView, float clipPlaneNear,
-        float clipPlaneFar);
+	#region Lifecycle
+    
+	public static RendererContext CreateContext(IView? view, GraphicsBackend backend, bool useSeparateThread)
+	{
+		var previous = CurrentContext();
+		RendererContext context = view is not null ? new UniversalRendererContext(view, backend, useSeparateThread) : new NullRendererContext();
+		CurrentContext(previous ?? context);
+        
+		return context;
+	}
 
-    void ReloadShaders();
+	public static void DestroyContext(RendererContext? context = null)
+	{
+		var previous = CurrentContext();
+		if (context is null)
+		{
+			context = previous;
+		}
+
+		CurrentContext(context != previous ? previous : null);
+		context.TryDispose();
+	}
+
+	public static RendererContext? CurrentContext() => _context;
+
+	public static void CurrentContext(RendererContext? context)
+	{
+		_context = context;
+	}
+
+	#endregion Lifecycle
 }

@@ -12,7 +12,7 @@ namespace RedHerring.Studio.Systems;
 public class StudioGraphics : EngineSystem
 {
     [Infuse]
-    private Renderer _renderer = null!;
+    private RendererContext _rendererContext = null!;
     [Infuse]
     private InputReceiver _receiver = null!;
 
@@ -23,7 +23,7 @@ public class StudioGraphics : EngineSystem
         SetupInput();
         
         // debug
-        _renderer.AddFeature(new StudioTestRenderFeature());
+        _rendererContext.AddFeature(new StudioTestRenderFeature());
     }
 
     protected override ValueTask<int> Load()
@@ -58,7 +58,7 @@ public class StudioGraphics : EngineSystem
     private void OnReloadShaders(ref ActionEvent evt)
     {
         evt.Consumed = true;
-        _renderer.ReloadShaders();
+        _rendererContext.ReloadShaders();
     }
 
     #endregion Bindings

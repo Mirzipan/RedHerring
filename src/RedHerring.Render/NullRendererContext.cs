@@ -6,7 +6,7 @@ using Veldrid;
 
 namespace RedHerring.Render;
 
-public class NullRenderer : Renderer
+public class NullRendererContext : RendererContext
 {
     public RenderFeatureCollection Features { get; } = new();
     public void AddFeature(RenderFeature feature)
