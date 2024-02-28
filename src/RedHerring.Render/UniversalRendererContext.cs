@@ -24,13 +24,15 @@ public sealed class UniversalRendererContext : NamedDisposer, RendererContext
     private RenderFeatureCollection _features;
     private RenderEnvironment _environment = new();
     private ImGuiRenderer? _imGui;
+    private Shared _shared = new();
     
     private Vector2D<int> _size;
     
     public GraphicsDevice Device => _graphicsDevice;
     public CommandList CommandList => _commandList;
     public RenderFeatureCollection Features => _features;
-    
+    public Shared Shared => _shared; 
+
     // TODO graphics context
 
     #region Lifecycle
@@ -98,6 +100,8 @@ public sealed class UniversalRendererContext : NamedDisposer, RendererContext
 
     protected override void Destroy()
     {
+        _shared.Dispose();
+        
         _features.ReloadShaders(_graphicsDevice, _commandList);
         _features.Dispose();
         

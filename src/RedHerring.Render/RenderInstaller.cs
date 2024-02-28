@@ -18,7 +18,7 @@ public class RenderInstaller : BindingsInstaller
 
     public void InstallBindings(ContainerDescription description)
     {
-        var renderer = new UniversalRendererContext(_view, Backend, UseSeparateRenderThread);
+        var renderer = Renderer.CreateContext(_view, Backend, UseSeparateRenderThread);
         description.AddSingleton(renderer, typeof(RendererContext));
     }
     

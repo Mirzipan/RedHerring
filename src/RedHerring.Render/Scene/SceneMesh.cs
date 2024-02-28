@@ -26,8 +26,8 @@ public sealed class SceneMesh
 	
 	public int VertexCount => Positions.Count;
 	
-	private int _vertexSize = -1;
-	public  int VertexSize => _vertexSize == -1 ? _vertexSize = CalculateVertexSize() : _vertexSize;
+	[NonSerialized] private int _vertexSize = 0;
+	public int VertexSize => _vertexSize == 0 ? _vertexSize = CalculateVertexSize() : _vertexSize;
 
 	public byte[] BuildVertexBufferData(out VertexLayoutDescription vertexLayoutDescription)
 	{

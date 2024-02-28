@@ -7,6 +7,8 @@ namespace RedHerring.Render;
 public interface RendererContext
 {
     RenderFeatureCollection Features { get; }
+    Shared                  Shared   { get; }
+
     void AddFeature(RenderFeature feature);
     void Init();
     void Close();

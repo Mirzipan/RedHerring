@@ -1,14 +1,14 @@
 ﻿using System.Numerics;
-using RedHerring.Alexandria;
 using RedHerring.Render.Features;
 using Silk.NET.Maths;
-using Veldrid;
 
 namespace RedHerring.Render;
 
 public class NullRendererContext : RendererContext
 {
     public RenderFeatureCollection Features { get; } = new();
+    public Shared Shared => throw new NullReferenceException("Shared resources are not available in NullRendererContext!");
+
     public void AddFeature(RenderFeature feature)
     {
     }

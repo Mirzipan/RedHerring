@@ -8,10 +8,14 @@ public sealed class SharedMesh : IDisposable
 	// geometry
 	private DeviceBuffer?           _vertexBuffer = null;
 	private DeviceBuffer?           _indexBuffer  = null;
+	private IndexFormat             _indexFormat;
+	private uint                     _indexCount;
 	private VertexLayoutDescription _vertextLayoutDescription;
 
 	public DeviceBuffer?           VertexBuffer            => _vertexBuffer;
 	public DeviceBuffer?           IndexBuffer             => _indexBuffer;
+	public IndexFormat             IndexFormat             => _indexFormat;
+	public uint                     IndexCount              => _indexCount;
 	public VertexLayoutDescription VertexLayoutDescription => _vertextLayoutDescription;
     
 	public void Init(GraphicsDevice graphicsDevice, SceneMesh sceneMesh)
@@ -38,6 +42,8 @@ public sealed class SharedMesh : IDisposable
 			);
 
 			_indexBuffer = graphicsDevice.ResourceFactory.CreateBuffer(indexBufferDescription);
+			_indexFormat = IndexFormat.UInt16;
+			_indexCount  = (uint)sceneMesh.UShortIndices.Length;
 
 			graphicsDevice.UpdateBuffer(_indexBuffer, 0, sceneMesh.UShortIndices);
 		}
@@ -50,6 +56,8 @@ public sealed class SharedMesh : IDisposable
 			);
 
 			_indexBuffer = graphicsDevice.ResourceFactory.CreateBuffer(indexBufferDescription);
+			_indexFormat = IndexFormat.UInt32;
+			_indexCount  = (uint)sceneMesh.UIntIndices.Length;
 
 			graphicsDevice.UpdateBuffer(_indexBuffer, 0, sceneMesh.UIntIndices);
 		}
