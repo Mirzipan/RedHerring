@@ -72,19 +72,19 @@ public class StudioTestRenderFeature : RenderFeature, IDisposable
 		InitPipeline(device);
 		InitCommandList(device);
 
-		_cameraPosition    = new Vector3(0, 0, -100);
+		_cameraPosition    = new Vector3(0, 0, -3);
 		_cameraDirection   = new Vector3(0, 0, 1);
 		_cameraUp          = new Vector3(0, 1, 0);
 		_cameraAspectRatio = 1f; // will be updated in Resize
 		_cameraVerticalFOV = MathF.PI * 0.4f;
 		_cameraNearPlane   = 1f;
-		_cameraFarPlane    = 200f;
+		_cameraFarPlane    = 100f;
 
-		_objectPosition = Vector3.Zero;
+		_objectPosition = new Vector3(0,0,2);
 		_objectRotation = Quaternion.Identity;
 		_objectColor    = Color4.OrangeRed;
 
-		_lightDirection = Vector3.Normalize(new Vector3(-1, -1, -1));
+		_lightDirection = Vector3.Normalize(new Vector3(-1, -1, 1));
 		_lightColor     = Color4.White;
 		_ambientColor   = Color4.DarkGray;
 	}
@@ -244,12 +244,12 @@ public class StudioTestRenderFeature : RenderFeature, IDisposable
 	private void UpdateCamera()
 	{
 		_projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfViewLeftHanded(_cameraVerticalFOV, _cameraAspectRatio, _cameraNearPlane, _cameraFarPlane);
-		_viewMatrix       = Matrix4x4.CreateLookAt(_cameraPosition, _cameraPosition + _cameraDirection, _cameraUp);
+		_viewMatrix       = Matrix4x4.CreateLookAtLeftHanded(_cameraPosition, _cameraPosition + _cameraDirection, _cameraUp);
 	}
 
 	private void UpdateObject()
 	{
-		float t = _time;
+		float t = _time; 
 		_objectRotation = Quaternion.CreateFromYawPitchRoll(t * 1f, t * 0.7f, t * 0.6f);
 		_worldMatrix    = Matrix4x4.CreateFromQuaternion(_objectRotation) * Matrix4x4.CreateTranslation(_objectPosition);
 		

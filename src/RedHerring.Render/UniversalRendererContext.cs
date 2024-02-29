@@ -56,8 +56,9 @@ public sealed class UniversalRendererContext : NamedDisposer, RendererContext
         
         _graphicsDevice = view.CreateGraphicsDevice(new GraphicsDeviceOptions
         {
-            PreferDepthRangeZeroToOne = true,
+            PreferDepthRangeZeroToOne         = true,
             PreferStandardClipSpaceYDirection = true,
+            SwapchainDepthFormat              = PixelFormat.D24_UNorm_S8_UInt
         }, backend);
 
         _resourceFactory = _graphicsDevice.ResourceFactory;
@@ -117,6 +118,7 @@ public sealed class UniversalRendererContext : NamedDisposer, RendererContext
         _commandList.Begin();
         _commandList.SetFramebuffer(_graphicsDevice.SwapchainFramebuffer);
         _commandList.ClearColorTarget(0, RgbaFloat.Black);
+        _commandList.ClearDepthStencil(1f, 0);
         
         // TODO reset command list
         // TODO clear states
