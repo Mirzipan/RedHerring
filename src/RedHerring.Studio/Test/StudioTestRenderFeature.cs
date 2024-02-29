@@ -42,6 +42,9 @@ public class StudioTestRenderFeature : RenderFeature, IDisposable
 	private Vector3   _cameraDirection;
 	private Vector3   _cameraUp;
 	private float     _cameraAspectRatio;
+	private float     _cameraVerticalFOV;
+	private float     _cameraNearPlane;
+	private float     _cameraFarPlane;
 	private Matrix4x4 _viewMatrix;
 	private Matrix4x4 _projectionMatrix;
 
@@ -69,9 +72,13 @@ public class StudioTestRenderFeature : RenderFeature, IDisposable
 		InitPipeline(device);
 		InitCommandList(device);
 
-		_cameraPosition  = new Vector3(0, 0, -50);
-		_cameraDirection = new Vector3(0, 0, 1);
-		_cameraUp        = new Vector3(0, 1, 0);
+		_cameraPosition    = new Vector3(0, 0, -100);
+		_cameraDirection   = new Vector3(0, 0, 1);
+		_cameraUp          = new Vector3(0, 1, 0);
+		_cameraAspectRatio = 1f; // will be updated in Resize
+		_cameraVerticalFOV = MathF.PI * 0.4f;
+		_cameraNearPlane   = 1f;
+		_cameraFarPlane    = 200f;
 
 		_objectPosition = Vector3.Zero;
 		_objectRotation = Quaternion.Identity;
@@ -236,7 +243,7 @@ public class StudioTestRenderFeature : RenderFeature, IDisposable
 	#region Update
 	private void UpdateCamera()
 	{
-		_projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfViewLeftHanded(MathF.PI * 0.5f, _cameraAspectRatio, 1f, 100f);
+		_projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfViewLeftHanded(_cameraVerticalFOV, _cameraAspectRatio, _cameraNearPlane, _cameraFarPlane);
 		_viewMatrix       = Matrix4x4.CreateLookAt(_cameraPosition, _cameraPosition + _cameraDirection, _cameraUp);
 	}
 
