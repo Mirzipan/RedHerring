@@ -1,7 +1,8 @@
 using OdinSerializer;
+using RedHerring.Assets;
 using RedHerring.Render.Models;
 
-namespace RedHerring.Assets;
+namespace RedHerring.Render;
 
 [Serializable]
 public sealed class SceneReference : Reference<Scene>

@@ -2,11 +2,12 @@ using Assimp;
 using Assimp.Configs;
 using Migration;
 using OdinSerializer;
-using RedHerring.Assets;
 using RedHerring.Numbers;
+using RedHerring.Render;
 using RedHerring.Render.Models;
 using Silk.NET.Maths;
 using Scene = RedHerring.Render.Models.Scene;
+using Vector3D = Assimp.Vector3D;
 
 namespace RedHerring.Studio.Models.Project.Importers;
 
@@ -40,7 +41,7 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 		bool settingsChanged = false;
 		for (int i = 0; i < assimpScene.Meshes.Count; ++i)
 		{
-			Assimp.Mesh assimpMesh = assimpScene.Meshes[i];
+			Mesh assimpMesh = assimpScene.Meshes[i];
 
 			// update settings
 			if (i == settings.Meshes.Count)
@@ -163,7 +164,7 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 		return settingsChanged ? ImporterResult.FinishedSettingsChanged : ImporterResult.Finished;
 	}
 
-	private void ImportChildNodesRecursive(SceneNode targetNode, Assimp.Node source)
+	private void ImportChildNodesRecursive(SceneNode targetNode, Node source)
 	{
 		if (source.Children == null)
 		{
@@ -182,11 +183,11 @@ public class SceneImporter : AssetImporter<SceneImporterSettings>
 		}
 	}
 
-	private void ImportNode(SceneNode targetNode, Assimp.Node source)
+	private void ImportNode(SceneNode targetNode, Node source)
 	{
 		targetNode.Name = source.Name;
 
-		source.Transform.Decompose(out Assimp.Vector3D scale, out Assimp.Quaternion rotation, out Assimp.Vector3D translation);
+		source.Transform.Decompose(out Vector3D scale, out Quaternion rotation, out Vector3D translation);
 		targetNode.Translation = new Vector3D<float>(translation.X, translation.Y, translation.Z);
 		targetNode.Rotation    = new Quaternion<float>(rotation.X, rotation.Y, rotation.Z, rotation.W);
 		targetNode.Scale       = new Vector3D<float>(scale.X, scale.Y, scale.Z);

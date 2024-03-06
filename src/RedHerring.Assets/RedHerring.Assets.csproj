@@ -8,10 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RedHerring.Render\RedHerring.Render.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Reference Include="OdinSerializer">
         <HintPath>..\Libraries\OdinSerializer\OdinSerializer.dll</HintPath>
       </Reference>
