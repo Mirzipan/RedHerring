@@ -1,19 +1,47 @@
 ﻿using System.Runtime.CompilerServices;
 using RedHerring.Alexandria.Disposables;
+using RedHerring.Fingerprint.Layers;
+using Silk.NET.Input;
 using Silk.NET.Windowing;
 
 namespace RedHerring.Fingerprint;
 
 public static class Interaction
 {
+    private static InputDevices _devices = new NullDevices();
     private static InteractionContext? _context;
+    private static Processor _processor = new();
 
     #region Lifecycle
+
+    public static void Init(IView? view)
+    {
+        if (view is not null)
+        {
+            _devices = new SilkDevices(view);
+        }
+        
+        _devices.InputEvent += OnInputChanged;
+        _devices.CharacterTyped += OnCharacterTyped;
+        
+        CreateContext();
+    }
+
+    public static void NextFrame()
+    {
+        _devices.NextFrame();
+
+        if (_context is not null)
+        {
+            _processor.NextFrame(_context);
+            _context.NextFrame();
+        }
+    }
     
-    public static InteractionContext CreateContext(IView? view)
+    public static InteractionContext CreateContext()
     {
         var previous = CurrentContext();
-        InteractionContext context = view is not null ? new SilkInteractionContext(view) : new NullInteractionContext();
+        InteractionContext context = new InteractionContext();
         CurrentContext(previous ?? context);
         
         return context;
@@ -46,37 +74,44 @@ public static class Interaction
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsUp(Input input) => !IsDown(input);
-    public static bool IsPressed(Input input) => false;
-    public static bool IsDown(Input input) => false;
-    public static bool IsReleased(Input input) => false;
+    public static bool IsPressed(Input input) => _context?.IsPressed(input) ?? false;
+    public static bool IsDown(Input input) => _context?.IsDown(input) ?? false;
+    public static bool IsReleased(Input input) => _context?.IsReleased(input) ?? false;
 
-    public static float AnalogValue(Input input) => 0.00f;
+    public static float AnalogValue(Input input) => _context?.AnalogValue(input) ?? 0.00f;
 
-    public static Modifiers Modifiers() => Fingerprint.Modifiers.None;
-    public static bool AreDown(Modifiers modifiers) => false;
+    public static Modifier Modifiers() => Modifier.None;
+    public static bool AreDown(Modifier modifiers) => _context?.AreDown(modifiers) ?? false;
+    public static bool Any() => _context?.Any() ?? false;
+    public static bool AnyKeyboardKey() =>  _context?.AnyKeyboardKey() ?? false;
+    public static bool AnyMouseButton() =>  _context?.AnyMouseButton() ?? false;
+    public static bool AnyMouseAxis() =>  _context?.AnyMouseAxis() ?? false;
+    public static bool AnyGamepadButton() =>  _context?.AnyGamepadButton() ?? false;
+    public static bool AnyGamepadAxis() =>  _context?.AnyGamepadAxis() ?? false;
 
-    public static bool Any() => false;
-    public static bool AnyKeyboardKey() => false;
-    public static bool AnyMouseButton() => false;
-    public static bool AnyMouseAxis() => false;
-    public static bool AnyGamepadButton() => false;
-    public static bool AnyGamepadAxis() => false;
-
-    public static void Pressed(List<Input> result)
-    {
-    }
-    
-    public static void Down(List<Input> result)
-    {
-    }
-    
-    public static void Released(List<Input> result)
-    {
-    }
-    
-    public static void Characters(List<char> result)
-    {
-    }
+    public static void Pressed(List<Input> result) => _context?.Pressed(result);
+    public static void Down(List<Input> result) => _context?.Down(result);
+    public static void Released(List<Input> result) => _context?.Released(result);
+    public static void Characters(List<char> result) => _context?.Characters(result);
 
     #endregion Queries
+
+    #region Manipulation
+
+    public static void Cursor(StandardCursor cursor)
+    {
+        //
+    }
+
+    private static void OnInputChanged(InputEvent evt)
+    {
+        _context?.OnInputChanged(evt);
+    }
+
+    private static void OnCharacterTyped(int deviceId, char character)
+    {
+        _context?.OnCharacterTyped(deviceId, character);
+    }
+
+    #endregion Manipulation
 }

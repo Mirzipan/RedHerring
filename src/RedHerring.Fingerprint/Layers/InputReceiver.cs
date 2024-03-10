@@ -6,9 +6,6 @@ namespace RedHerring.Fingerprint.Layers;
 public class InputReceiver
 {
     private readonly Dictionary<string, ActionBinding> _bindings = new();
-
-    [Infuse]
-    private readonly InteractionContext _interactionContext = null!;
     
     public string? Name { get; set; }
     public OctoByte Layer { get; set; }
@@ -48,12 +45,20 @@ public class InputReceiver
 
     public void Push()
     {
-        _interactionContext.Layers.Push(this);
+        var context = Interaction.CurrentContext();
+        if (context is not null)
+        {
+            context.Layers.Push(this);
+        }
     }
 
     public void Pop()
     {
-        _interactionContext.Layers.Pop(this);
+        var context = Interaction.CurrentContext();
+        if (context is not null)
+        {
+            context.Layers.Pop(this);
+        }
     }
 
     #endregion Public

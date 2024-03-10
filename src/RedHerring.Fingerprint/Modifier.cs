@@ -1,7 +1,7 @@
 ﻿namespace RedHerring.Fingerprint;
 
 [Flags]
-public enum Modifiers
+public enum Modifier
 {
     None = 0,
     Alt = 1 << 0,

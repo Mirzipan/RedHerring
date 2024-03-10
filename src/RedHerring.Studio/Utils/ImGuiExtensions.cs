@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using ImGuiNET;
+using RedHerring.Fingerprint;
 using RedHerring.Fingerprint.Shortcuts;
 using static ImGuiNET.ImGui;
 
@@ -70,7 +71,7 @@ public static class ImGuiExtensions
         TableNextColumn();
         
         var shortcut = bindings.PrimaryShortcut(action);
-        if (shortcut is null || shortcut.Shortcut is null)
+        if (shortcut is null || shortcut.Shortcut.Positive == Input.Unknown)
         {
             Text("<unmapped>");
             return;

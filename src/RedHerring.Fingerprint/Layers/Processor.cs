@@ -1,10 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
-using RedHerring.Fingerprint.Shortcuts;
-using RedHerring.Fingerprint.States;
 
 namespace RedHerring.Fingerprint.Layers;
 
-internal class InputProcessor
+internal class Processor
 {
     private record struct TriggeredInput(InputState State, float Value)
     {
@@ -18,24 +16,13 @@ internal class InputProcessor
 
     private readonly Dictionary<Shortcut, InputState> _triggeredShortcuts = new();
 
-    private readonly InteractionContext _interactionContext;
-    private readonly InputLayers _layers;
-    private readonly ActionsState _actionsState;
-
     #region Lifecycle
-
-    public InputProcessor(InteractionContext interactionContext, ActionsState actionsState)
-    {
-        _interactionContext = interactionContext;
-        _layers = interactionContext.Layers;
-        _actionsState = actionsState;
-    }
     
-    public void Tick()
+    public void NextFrame(InteractionContext context)
     {
-        if (GatherInput())
+        if (GatherInput(context))
         {
-            ConsumeInput();
+            ConsumeInput(context);
         }
     }
 
@@ -43,11 +30,11 @@ internal class InputProcessor
 
     #region Private
 
-    private bool GatherInput()
+    private bool GatherInput(InteractionContext context)
     {
         _triggeredShortcuts.Clear();
 
-        var bindings = _interactionContext.Bindings;
+        var bindings = context.Bindings;
         if (bindings is null || bindings.Count == 0)
         {
             return false;
@@ -56,47 +43,26 @@ internal class InputProcessor
         for (int i = 0; i < bindings.Count; i++)
         {
             var binding = bindings[i];
-            var state = GetShortcutState(binding.Shortcut!);
+            var state = context.State(binding.Shortcut);
             if (state == InputState.Up)
             {
                 continue;
             }
 
-            _triggeredShortcuts[binding.Shortcut!] = state;
+            _triggeredShortcuts[binding.Shortcut] = state;
         }
 
         foreach (var pair in _triggeredShortcuts)
         {
             var actions = bindings.ActionsForShortcut(pair.Key);
-            QueueInput(actions!, pair.Value, pair.Key.Value(_interactionContext));
+            QueueInput(actions!, pair.Value, context.AnalogValue(pair.Key));
             foreach (string action in actions!)
             {
-                _actionsState.Add(action, pair.Value);
+                context.Actions.Add(action, pair.Value);
             }
         }
 
         return _triggeredShortcuts.Count > 0;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private InputState GetShortcutState(Shortcut shortcut)
-    {
-        if (shortcut.IsPressed(_interactionContext))
-        {
-            return InputState.Pressed | InputState.Down;
-        }
-
-        if (shortcut.IsDown(_interactionContext))
-        {
-            return InputState.Down;
-        }
-
-        if (shortcut.IsReleased(_interactionContext))
-        {
-            return InputState.Released;
-        }
-
-        return InputState.Up;
     }
 
     private void QueueInput(IReadOnlyCollection<string> actions, InputState state, float value)
@@ -109,16 +75,17 @@ internal class InputProcessor
         }
     }
 
-    private void ConsumeInput()
+    private void ConsumeInput(InteractionContext context)
     {
-        if (_layers.Stack.Count == 0)
+        var layers = context.Layers;
+        if (layers.Stack.Count == 0)
         {
             goto clear;
         }
 
-        for (int i = _layers.Stack.Count - 1; i >= 0; i--)
+        for (int i = layers.Stack.Count - 1; i >= 0; i--)
         {
-            var receiver = _layers.Stack[i];
+            var receiver = layers.Stack[i];
             if (receiver is null)
             {
                 continue;
@@ -146,7 +113,7 @@ internal class InputProcessor
             {
                 continue;
             }
-
+            
             if (!receiver.TryGetBinding(entry.Name, out var binding) || (binding.State & shortcut.State) == 0)
             {
                 continue;

@@ -12,24 +12,24 @@ internal sealed class Configuration : EngineSystem
     
     protected override void Init()
     {
-        Input();
+        InitInput();
     }
 
-    private void Input()
+    private void InitInput()
     {
-        _interactionContext.AddKeyboardBinding(InputAction.Undo, Key.U);
-        _interactionContext.AddKeyboardBinding(InputAction.Redo, Key.Z);
+        _interactionContext.AddBinding(InputAction.Undo, Input.U);
+        _interactionContext.AddBinding(InputAction.Redo, Input.Z);
         
-        _interactionContext.AddKeyboardBinding(InputAction.MoveLeft, Key.A);
-        _interactionContext.AddKeyboardBinding(InputAction.MoveRight, Key.D);
-        _interactionContext.AddKeyboardBinding(InputAction.MoveUp, Key.Space);
-        _interactionContext.AddKeyboardBinding(InputAction.MoveDown, Key.C);
-        _interactionContext.AddKeyboardBinding(InputAction.MoveForward, Key.W);
-        _interactionContext.AddKeyboardBinding(InputAction.MoveBackward, Key.S);
+        _interactionContext.AddBinding(InputAction.MoveLeft, Input.A);
+        _interactionContext.AddBinding(InputAction.MoveRight, Input.D);
+        _interactionContext.AddBinding(InputAction.MoveUp, Input.Space);
+        _interactionContext.AddBinding(InputAction.MoveDown, Input.C);
+        _interactionContext.AddBinding(InputAction.MoveForward, Input.W);
+        _interactionContext.AddBinding(InputAction.MoveBackward, Input.S);
 
-        _interactionContext.AddMouseBinding(InputAction.MoveSpeedIncrease, MouseAxis.WheelUp);
-        _interactionContext.AddMouseBinding(InputAction.MoveSpeedDecrease, MouseAxis.WheelDown);
+        _interactionContext.AddBinding(InputAction.MoveSpeedIncrease, Input.MouseWheelYPositive);
+        _interactionContext.AddBinding(InputAction.MoveSpeedDecrease, Input.MouseWheelYNegative);
         
-        _interactionContext.AddKeyboardBinding(InputAction.ReloadShaders, Key.F10, Modifiers.Shift);
+        _interactionContext.AddBinding(InputAction.ReloadShaders, Input.F10, Modifier.Shift);
     }
 }

@@ -7,6 +7,8 @@ using RedHerring.Fingerprint;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Game;
 using RedHerring.Infusion;
+using Silk.NET.Windowing;
+
 // ReSharper disable SuspiciousTypeConversion.Global
 
 namespace RedHerring;
@@ -63,9 +65,11 @@ public static class InjectionExtensions
         return @this;
     }
 
-    public static ContainerDescription AddInput(this ContainerDescription @this)
+    public static ContainerDescription AddInput(this ContainerDescription @this, IView? view)
     {
-        @this.AddSingleton(typeof(SilkInteractionContext), typeof(SilkInteractionContext), typeof(InteractionContext));
+        Interaction.Init(view);
+        var context = Interaction.CreateContext();
+        @this.AddSingleton<InteractionContext>(context);
         @this.AddSingleton(typeof(InputReceiver));
         @this.AddSystem(new InputSystem());
         return @this;

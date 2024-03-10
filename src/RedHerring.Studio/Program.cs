@@ -73,7 +73,7 @@ internal class Program
             Backend = _graphicsBackend,
             UseSeparateRenderThread = true,
         };
-        var studio = new StudioEngineInstaller();
+        var studio = new StudioEngineInstaller(_window);
         
         var context = new EngineContext
         {

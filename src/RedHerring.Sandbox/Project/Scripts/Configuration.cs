@@ -16,7 +16,7 @@ public sealed class Configuration : EngineSystem
 
     protected override void Init()
     {
-        Input();
+        InitInput();
     }
 
     protected override ValueTask<int> Load()
@@ -29,14 +29,14 @@ public sealed class Configuration : EngineSystem
 
     #region Private
 
-    private void Input()
+    private void InitInput()
     {
         if (_interactionContext.Bindings is null)
         {
             _interactionContext.Bindings = new ShortcutBindings();
         }
 
-        _interactionContext.Bindings.Add(new ShortcutBinding("toggle_menu", new KeyboardShortcut(Key.Escape)));
+        _interactionContext.Bindings.Add(new ShortcutBinding("toggle_menu", new Shortcut(Input.Escape)));
     }
 
     private void Theme()

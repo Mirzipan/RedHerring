@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Reflection;
 using ImGuiNET;
+using RedHerring.Alexandria.Pooling;
 using RedHerring.Fingerprint;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -46,7 +47,8 @@ public sealed class ImGuiRenderer : IDisposable
     private readonly Dictionary<IntPtr, ResourceSetInfo> _viewsById = new();
 
     // Input
-    private readonly List<char> _inputChars = new();
+    private readonly List<InputEvent> _inputEvents = new(64);
+    private readonly List<char> _inputChars = new(64);
     
     private readonly List<IDisposable> _ownedResources = new();
     private int _lastAssignedId = 100;
@@ -474,40 +476,67 @@ public sealed class ImGuiRenderer : IDisposable
         io.DeltaTime = deltaSeconds; // DeltaTime is in seconds.
     }
 
-    private void UpdateImGuiInput(InteractionContext interactionContext)
+    private void UpdateImGuiInput(InteractionContext context)
     {
         ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+        
+        io.AddMousePosEvent(context.AnalogValue(Input.MouseX), context.AnalogValue(Input.MouseY));
+        io.AddMouseWheelEvent(context.AnalogValue(Input.MouseWheelX), context.AnalogValue(Input.MouseWheelY));
 
-        var mouse = interactionContext.Mouse;
-        if (mouse is not null)
+        _inputEvents.Clear();
+        context.PumpEvents(_inputEvents);
+        for (int i = 0; i < _inputEvents.Count; i++)
         {
-            io.AddMousePosEvent(mouse.Position.X, mouse.Position.Y);
-            io.AddMouseWheelEvent(0f, mouse.ScrollWheel.Y);
-
-            for (int i = 0; i < mouse.ButtonsChanged.Count; i++)
+            var change = _inputEvents[i];
+            var source = change.Input.ToSource();
+            switch (source)
             {
-                var change = mouse.ButtonsChanged[i];
-                io.AddMouseButtonEvent((int)change.Button, change.IsDown);
+                case Source.Keyboard:
+                    io.AddKeyEvent(Convert.ToImGuiKey(change.Input), change.IsDown);
+                    break;
+                case Source.MouseButton:
+                    io.AddMouseButtonEvent(Convert.ToImGuiButton(change.Input), change.IsDown);
+                    break;
             }
         }
 
-        var keyboard = interactionContext.Keyboard;
-        if (keyboard is not null)
+        _inputChars.Clear();
+        context.Characters(_inputChars);
+        for (int i = 0; i < _inputChars.Count; i++)
         {
-            _inputChars.Clear();
-            keyboard.Chars(_inputChars);
-
-            for (int i = 0; i < _inputChars.Count; i++)
-            {
-                io.AddInputCharacter(_inputChars[i]);
-            }
-
-            for (int i = 0; i < keyboard.KeysChanged.Count; i++)
-            {
-                var change = keyboard.KeysChanged[i];
-                io.AddKeyEvent(Convert.ToImGuiKey(change.Key), change.IsDown);
-            }
+            io.AddInputCharacter(_inputChars[i]);
         }
+
+        // var mouse = interactionContext.Mouse;
+        // if (mouse is not null)
+        // {
+        //     io.AddMousePosEvent(mouse.Position.X, mouse.Position.Y);
+        //     io.AddMouseWheelEvent(0f, mouse.ScrollWheel.Y);
+        //
+        //     for (int i = 0; i < mouse.ButtonsChanged.Count; i++)
+        //     {
+        //         var change = mouse.ButtonsChanged[i];
+        //         io.AddMouseButtonEvent((int)change.Button, change.IsDown);
+        //     }
+        // }
+        //
+        // var keyboard = interactionContext.Keyboard;
+        // if (keyboard is not null)
+        // {
+        //     _inputChars.Clear();
+        //     keyboard.Chars(_inputChars);
+        //
+        //     for (int i = 0; i < _inputChars.Count; i++)
+        //     {
+        //         io.AddInputCharacter(_inputChars[i]);
+        //     }
+        //
+        //     for (int i = 0; i < keyboard.KeysChanged.Count; i++)
+        //     {
+        //         var change = keyboard.KeysChanged[i];
+        //         io.AddKeyEvent(Convert.ToImGuiKey(change.Key), change.IsDown);
+        //     }
+        // }
     }
 
     private unsafe void RenderImDrawData(ImDrawDataPtr drawData, GraphicsDevice gd, CommandList cl)

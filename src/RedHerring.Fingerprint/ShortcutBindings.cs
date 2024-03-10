@@ -46,10 +46,10 @@ public class ShortcutBindings : Collection<ShortcutBinding>
             _actionsToShortcuts[item.Name!] = bindings;
         }
 
-        if (!_shortcutsToActions.TryGetValue(item.Shortcut!, out var actions))
+        if (!_shortcutsToActions.TryGetValue(item.Shortcut, out var actions))
         {
             actions = new HashSet<string>();
-            _shortcutsToActions[item.Shortcut!] = actions;
+            _shortcutsToActions[item.Shortcut] = actions;
         }
         
         bindings.Add(item);
@@ -63,7 +63,7 @@ public class ShortcutBindings : Collection<ShortcutBinding>
             bindings.Remove(item);
         }
 
-        if (_shortcutsToActions.TryGetValue(item.Shortcut!, out var actions))
+        if (_shortcutsToActions.TryGetValue(item.Shortcut, out var actions))
         {
             actions.Remove(item.Name!);
         }

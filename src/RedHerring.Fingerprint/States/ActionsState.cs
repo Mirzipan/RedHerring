@@ -15,24 +15,24 @@ public class ActionsState
 
     public void Add(string action, InputState state) => _states[action] = state;
 
-    public bool IsActionUp(string action) => !_states.ContainsKey(action);
+    public bool IsUp(string action) => !_states.ContainsKey(action);
 
-    public bool IsActionPressed(string action)
+    public bool IsPressed(string action)
     {
         return _states.TryGetValue(action, out var state) && (state & InputState.Pressed) != 0;
     }
 
-    public bool IsActionDown(string action)
+    public bool IsDown(string action)
     {
         return _states.TryGetValue(action, out var state) && (state & InputState.Down) != 0;
     }
 
-    public bool IsActionReleased(string action)
+    public bool IsReleased(string action)
     {
         return _states.TryGetValue(action, out var state) && (state & InputState.Released) != 0;
     }
 
-    public bool IsAnyActionDown() => _states.Count > 0;
+    public bool Any() => _states.Count > 0;
 
     public void ActionsDown(IList<string> actions)
     {

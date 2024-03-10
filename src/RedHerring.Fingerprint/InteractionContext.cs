@@ -5,49 +5,209 @@ using RedHerring.Fingerprint.States;
 
 namespace RedHerring.Fingerprint;
 
-public interface InteractionContext
+public sealed class InteractionContext : IDisposable
 {
-    void Tick();
-    bool IsDebugging { get; }
-    void EnableDebug();
-    void DisableDebug();
+    private const int DefaultCapacity = 64;
     
-    KeyboardState? Keyboard { get; }
-    MouseState? Mouse { get; }
-    GamepadState? Gamepad { get; }
-    ActionsState Actions { get; }
+    private readonly List<Input> _pressed = new(DefaultCapacity);
+    private readonly List<Input> _down = new(DefaultCapacity);
+    private readonly List<Input> _released = new(DefaultCapacity);
+    private readonly List<float> _analogValues = new(DefaultCapacity);
     
-    Vector2 MousePosition { get; }
-    Vector2 MouseDelta { get; }
-    float MouseWheelDelta { get; }
-    ShortcutBindings? Bindings { get; set; }
-    InputLayers Layers { get; }
+    private readonly List<char> _chars = new(DefaultCapacity);
 
-    bool AreModifiersDown(Modifiers modifiers);
-    bool IsKeyPressed(Key key);
-    bool IsKeyDown(Key key);
-    bool IsKeyReleased(Key key);
-    bool IsAnyKeyDown();
-    void KeysDown(IList<Key> keys);
+    private readonly List<InputEvent> _events = new(DefaultCapacity);
     
-    bool IsButtonPressed(MouseButton button);
-    bool IsButtonDown(MouseButton button);
-    bool IsButtonReleased(MouseButton button);
-    bool IsAnyMouseButtonDown();
-    void ButtonsDown(IList<MouseButton> buttons);
-    bool IsMouseMoved(MouseAxis axis);
-    float Axis(MouseAxis axis);
+    private Modifier _modifiers = Modifier.None;
+    private Source _source = Source.None;
     
-    bool IsButtonPressed(GamepadButton button);
-    bool IsButtonDown(GamepadButton button);
-    bool IsButtonReleased(GamepadButton button);
-    bool IsAnyGamepadButtonDown();
-    void ButtonsDown(IList<GamepadButton> buttons);
-    float Axis(GamepadAxis axis);
+    private Vector2 _previousMousePosition;
+    private Vector2 _currentMousePosition;
 
-    bool IsActionPressed(string action);
-    bool IsActionDown(string action);
-    bool IsActionReleased(string action);
-    bool IsAnyActionDown();
-    void ActionsDown(IList<string> actions);
+    private ActionsState _actionsState;
+    
+    private bool _isDebugging;
+
+    public bool IsDebugging => _isDebugging;
+    public ActionsState Actions => _actionsState;
+    
+    public ShortcutBindings? Bindings { get; set; }
+    public InputLayers Layers { get; }
+    
+    #region Lifecycle
+
+    internal InteractionContext()
+    {
+        Layers = new InputLayers();
+        _actionsState = new ActionsState();
+
+        Bindings = new ShortcutBindings();
+    }
+
+    internal void NextFrame()
+    {
+        _previousMousePosition = _currentMousePosition;
+        _currentMousePosition = Vector2.Zero;
+        
+        _events.Clear();
+        
+        _pressed.Clear();
+        _released.Clear();
+        _chars.Clear();
+        
+        _actionsState.Reset();
+    }
+
+    public void Dispose()
+    {
+    }
+
+    #endregion Lifecycle
+
+    #region Public
+
+    public void EnableDebug()
+    {
+        _isDebugging = true;
+    }
+
+    public void DisableDebug()
+    {
+        _isDebugging = false;
+    }
+    
+    #endregion Public
+    
+    #region Queries
+
+    public Vector2 MousePosition => new(AnalogValue(Input.MouseX), AnalogValue(Input.MouseY));
+    public Vector2 MouseDelta => new(AnalogValue(Input.MouseXDelta), AnalogValue(Input.MouseYDelta));
+    public float MouseWheelDelta => AnalogValue(Input.MouseWheelY);
+    
+    public InputState State(Input input)
+    {
+        if (_down.Contains(input))
+        {
+            return _pressed.Contains(input) ? InputState.Pressed | InputState.Down : InputState.Down;
+        }
+
+        return _released.Contains(input) ? InputState.Released : InputState.Up;
+    }
+
+    public bool IsUp(Input input) => !IsDown(input);
+    public bool IsPressed(Input input) => _pressed.Contains(input);
+    public bool IsDown(Input input) => _down.Contains(input);
+    public bool IsReleased(Input input) => _released.Contains(input);
+
+    public float AnalogValue(Input input)
+    {
+        int index = _down.IndexOf(input);
+        return index >= 0 ? _analogValues[index] : 0.00f;
+    }
+    
+    public InputState State(Shortcut shortcut)
+    {
+        return shortcut.Negative == Input.Unknown && AreDown(shortcut.Modifiers) ? State(shortcut.Positive) : InputState.Up;
+    }
+
+    public bool IsUp(Shortcut shortcut)
+    {
+        return shortcut.Negative != Input.Unknown || !AreDown(shortcut.Modifiers) || IsUp(shortcut.Positive);
+    }
+
+    public bool IsPressed(Shortcut shortcut)
+    {
+        return shortcut.Negative == Input.Unknown && AreDown(shortcut.Modifiers) && IsPressed(shortcut.Positive);
+    }
+
+    public bool IsDown(Shortcut shortcut)
+    {
+        return shortcut.Negative == Input.Unknown && AreDown(shortcut.Modifiers) && IsDown(shortcut.Positive);
+    }
+
+    public bool IsReleased(Shortcut shortcut)
+    {
+        return shortcut.Negative == Input.Unknown && AreDown(shortcut.Modifiers) && IsReleased(shortcut.Positive);
+    }
+
+    public float AnalogValue(Shortcut shortcut)
+    {
+        return AreDown(shortcut.Modifiers) ? AnalogValue(shortcut.Positive) - AnalogValue(shortcut.Negative) : 0f;
+    }
+
+    public Modifier Modifiers() => _modifiers;
+
+    public bool AreDown(Modifier modifiers) => (modifiers & _modifiers) == modifiers;
+
+    public bool Any() => _source != Source.None;
+    public bool AnyKeyboardKey() => (_source & Source.Keyboard) != 0;
+    public bool AnyMouseButton() => (_source & Source.MouseButton) != 0;
+    public bool AnyMouseAxis() => (_source & Source.MouseAxis) != 0;
+    public bool AnyGamepadButton() => (_source & Source.GamepadButton) != 0;
+    public bool AnyGamepadAxis() => (_source & Source.GamepadAxis) != 0;
+
+    public void Pressed(List<Input> result) => result.AddRange(_pressed);
+    public void Down(List<Input> result) => result.AddRange(_down);
+    public void Released(List<Input> result) => result.AddRange(_released);
+    public void Characters(List<char> result) => result.AddRange(_chars);
+    public void PumpEvents(List<InputEvent> result) => result.AddRange(_events);
+
+    #endregion Queries
+
+    #region Private
+
+    #endregion Private
+
+    #region Internal
+
+    internal void OnInputChanged(InputEvent evt)
+    {
+        _events.Add(evt);
+        var source = evt.Input.ToSource();
+        var modifiers = evt.Input.ToModifiers();
+        
+        if (evt.IsDown)
+        {
+            _pressed.Add(evt.Input);
+            
+            _down.Add(evt.Input);
+            _analogValues.Add(evt.AnalogValue);
+
+            _source |= source;
+            _modifiers |= modifiers;
+        }
+        else
+        {
+            int index = _down.IndexOf(evt.Input);
+            if (index >= 0)
+            {
+                _down.RemoveAt(index);
+                _analogValues.RemoveAt(index);
+            }
+            
+            _released.Add(evt.Input);
+
+            if (source != Source.None)
+            {
+                _source &= ~source;
+            }
+            
+            if (modifiers != Modifier.None)
+            {
+                _modifiers &= ~modifiers;
+            }
+        }
+
+        if (_isDebugging)
+        {
+            Console.WriteLine($"device={evt.DeviceId} input={evt.Input} down={evt.IsDown} analog={evt.AnalogValue:0.####} modifiers={_modifiers}");
+        }
+    }
+
+    internal void OnCharacterTyped(int deviceId, char character)
+    {
+        _chars.Add(character);
+    }
+
+    #endregion Internal
 }
