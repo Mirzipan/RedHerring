@@ -326,7 +326,7 @@ public enum Input
     AcForward = 0x4000010F,
     AcStop = 0x40000110,
     AcRefresh = 0x40000111,
-    AcBoomarks = 0x40000112,
+    AcBookmarks = 0x40000112,
     BrightnessDown = 0x40000113,
     BrightnessUp = 0x40000114,
     DisplaySwitch = 0x40000115,

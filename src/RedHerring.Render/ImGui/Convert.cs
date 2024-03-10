@@ -302,7 +302,7 @@ internal static class Convert
             Input.AcForward => ImGuiKey.AppForward,
             Input.AcStop => ImGuiKey.None,
             Input.AcRefresh => ImGuiKey.None,
-            Input.AcBoomarks => ImGuiKey.None,
+            Input.AcBookmarks => ImGuiKey.None,
             Input.BrightnessDown => ImGuiKey.None,
             Input.BrightnessUp => ImGuiKey.None,
             Input.DisplaySwitch => ImGuiKey.None,
