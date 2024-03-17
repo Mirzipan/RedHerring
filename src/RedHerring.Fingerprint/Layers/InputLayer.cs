@@ -1,5 +1,4 @@
 ﻿using RedHerring.Alexandria.Identifiers;
-using RedHerring.Infusion.Attributes;
 
 namespace RedHerring.Fingerprint.Layers;
 
