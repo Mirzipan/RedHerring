@@ -91,9 +91,6 @@ internal static class Convert
             Input.GamepadBumperRight => ImGuiKey.GamepadR1,
             Input.GamepadBack => ImGuiKey.GamepadBack,
             Input.GamepadStart => ImGuiKey.GamepadStart,
-            Input.GamepadHome => ImGuiKey.None, // ??,
-            Input.GamepadStickLeft => ImGuiKey.GamepadL3, // ??
-            Input.GamepadStickRight => ImGuiKey.GamepadR3, // ??
             Input.GamepadDPadUp => ImGuiKey.GamepadDpadUp,
             Input.GamepadDPadRight => ImGuiKey.GamepadDpadRight,
             Input.GamepadDPadDown => ImGuiKey.GamepadDpadDown,

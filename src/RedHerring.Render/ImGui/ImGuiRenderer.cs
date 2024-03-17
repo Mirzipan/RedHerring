@@ -506,37 +506,6 @@ public sealed class ImGuiRenderer : IDisposable
         {
             io.AddInputCharacter(_inputChars[i]);
         }
-
-        // var mouse = interactionContext.Mouse;
-        // if (mouse is not null)
-        // {
-        //     io.AddMousePosEvent(mouse.Position.X, mouse.Position.Y);
-        //     io.AddMouseWheelEvent(0f, mouse.ScrollWheel.Y);
-        //
-        //     for (int i = 0; i < mouse.ButtonsChanged.Count; i++)
-        //     {
-        //         var change = mouse.ButtonsChanged[i];
-        //         io.AddMouseButtonEvent((int)change.Button, change.IsDown);
-        //     }
-        // }
-        //
-        // var keyboard = interactionContext.Keyboard;
-        // if (keyboard is not null)
-        // {
-        //     _inputChars.Clear();
-        //     keyboard.Chars(_inputChars);
-        //
-        //     for (int i = 0; i < _inputChars.Count; i++)
-        //     {
-        //         io.AddInputCharacter(_inputChars[i]);
-        //     }
-        //
-        //     for (int i = 0; i < keyboard.KeysChanged.Count; i++)
-        //     {
-        //         var change = keyboard.KeysChanged[i];
-        //         io.AddKeyEvent(Convert.ToImGuiKey(change.Key), change.IsDown);
-        //     }
-        // }
     }
 
     private unsafe void RenderImDrawData(ImDrawDataPtr drawData, GraphicsDevice gd, CommandList cl)
