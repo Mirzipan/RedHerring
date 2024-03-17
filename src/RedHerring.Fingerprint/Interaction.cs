@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Numerics;
 using RedHerring.Alexandria.Disposables;
 using RedHerring.Fingerprint.Layers;
 using Silk.NET.Input;
@@ -70,6 +70,10 @@ public static class Interaction
 
     #region Queries
 
+    public static Vector2 MousePosition => _context?.MousePosition ?? Vector2.Zero;
+    public static Vector2 MousePositionDelta => _context?.MousePositionDelta ?? Vector2.Zero;
+    public static Vector2 MouseWheelDelta = _context?.MouseWheelDelta ?? Vector2.Zero;
+    
     public static InputState State(Input input) => InputState.Up;
     public static bool IsPressed(Input input) => _context?.IsPressed(input) ?? false;
     public static bool IsDown(Input input) => _context?.IsDown(input) ?? false;

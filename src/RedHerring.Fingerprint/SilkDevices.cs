@@ -194,7 +194,7 @@ internal sealed class SilkDevices : InputDevices, IDisposable
     private void OnMouseScroll(IMouse mouse, ScrollWheel scrollDelta)
     {
         InputEvent?.Invoke(new InputEvent(mouse.Index, Input.MouseWheelX, false, 0.00f));
-        InputEvent?.Invoke(new InputEvent(mouse.Index, Input.MouseWheelY, false,0.00f));
+        InputEvent?.Invoke(new InputEvent(mouse.Index, Input.MouseWheelY, false, 0.00f));
         
         InputEvent?.Invoke(new InputEvent(mouse.Index, Input.MouseWheelX, true, scrollDelta.X));
         InputEvent?.Invoke(new InputEvent(mouse.Index, Input.MouseWheelY, true, scrollDelta.Y));

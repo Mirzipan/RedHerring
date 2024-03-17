@@ -24,6 +24,7 @@ public sealed class InteractionContext : IDisposable
     
     private Vector2 _previousMousePosition;
     private Vector2 _currentMousePosition;
+    private Vector2 _currentMouseWheelDelta;
     
     private bool _isDebugging;
 
@@ -44,6 +45,7 @@ public sealed class InteractionContext : IDisposable
     {
         _previousMousePosition = _currentMousePosition;
         _currentMousePosition = Vector2.Zero;
+        _currentMouseWheelDelta = Vector2.Zero;
         
         _events.Clear();
         
@@ -76,9 +78,9 @@ public sealed class InteractionContext : IDisposable
     
     #region Queries
 
-    public Vector2 MousePosition => new(AnalogValue(Input.MouseX), AnalogValue(Input.MouseY));
-    public Vector2 MouseDelta => new(AnalogValue(Input.MouseXDelta), AnalogValue(Input.MouseYDelta));
-    public float MouseWheelDelta => AnalogValue(Input.MouseWheelY);
+    public Vector2 MousePosition => _currentMousePosition;
+    public Vector2 MousePositionDelta => _currentMousePosition - _previousMousePosition;
+    public Vector2 MouseWheelDelta => _currentMouseWheelDelta;
     
     public InputState State(Input input)
     {
@@ -187,6 +189,22 @@ public sealed class InteractionContext : IDisposable
         
         if (evt.IsDown)
         {
+            switch (evt.Input)
+            {
+                case Input.MouseX:
+                    _currentMousePosition.X = evt.AnalogValue;
+                    break;
+                case Input.MouseY:
+                    _currentMousePosition.Y = evt.AnalogValue;
+                    break;
+                case Input.MouseWheelX:
+                    _currentMouseWheelDelta.X = evt.AnalogValue;
+                    break;
+                case Input.MouseWheelY:
+                    _currentMouseWheelDelta.Y = evt.AnalogValue;
+                    break;
+            }
+            
             _pressed.Add(evt.Input);
             
             _down.Add(evt.Input);

@@ -439,10 +439,10 @@ public sealed class ImGuiRenderer : IDisposable
     }
 
     /// <summary>
-    /// Called before we handle the input in <see cref="Update(float, InputSnapshot)"/>.
+    /// Called before we handle the input in <see cref="Update(float, InteractionContext)"/>.
     /// This render ImGui and update the state.
     /// </summary>
-    protected void BeginUpdate(float deltaSeconds)
+    private void BeginUpdate(float deltaSeconds)
     {
         if (_frameBegun)
         {
@@ -453,10 +453,10 @@ public sealed class ImGuiRenderer : IDisposable
     }
 
     /// <summary>
-    /// Called at the end of <see cref="Update(float, InputSnapshot)"/>.
+    /// Called at the end of <see cref="Update(float, InteractionContext)"/>.
     /// This tells ImGui that we are on the next frame.
     /// </summary>
-    protected void EndUpdate()
+    private void EndUpdate()
     {
         _frameBegun = true;
         ImGuiNET.ImGui.NewFrame();
@@ -479,9 +479,11 @@ public sealed class ImGuiRenderer : IDisposable
     private void UpdateImGuiInput(InteractionContext context)
     {
         ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
-        
-        io.AddMousePosEvent(context.AnalogValue(Input.MouseX), context.AnalogValue(Input.MouseY));
-        io.AddMouseWheelEvent(context.AnalogValue(Input.MouseWheelX), context.AnalogValue(Input.MouseWheelY));
+
+        Vector2 mousePos = context.MousePosition;
+        io.AddMousePosEvent(mousePos.X, mousePos.Y);
+        Vector2 wheelDelta = context.MouseWheelDelta;
+        io.AddMouseWheelEvent(wheelDelta.X, wheelDelta.Y);
 
         _inputEvents.Clear();
         context.PumpEvents(_inputEvents);
