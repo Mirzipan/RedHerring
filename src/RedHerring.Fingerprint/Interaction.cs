@@ -71,9 +71,6 @@ public static class Interaction
     #region Queries
 
     public static InputState State(Input input) => InputState.Up;
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsUp(Input input) => !IsDown(input);
     public static bool IsPressed(Input input) => _context?.IsPressed(input) ?? false;
     public static bool IsDown(Input input) => _context?.IsDown(input) ?? false;
     public static bool IsReleased(Input input) => _context?.IsReleased(input) ?? false;

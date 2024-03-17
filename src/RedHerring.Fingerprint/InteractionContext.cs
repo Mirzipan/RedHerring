@@ -89,8 +89,7 @@ public sealed class InteractionContext : IDisposable
 
         return _released.Contains(input) ? InputState.Released : InputState.Up;
     }
-
-    public bool IsUp(Input input) => !IsDown(input);
+    
     public bool IsPressed(Input input) => _pressed.Contains(input);
     public bool IsDown(Input input) => _down.Contains(input);
     public bool IsReleased(Input input) => _released.Contains(input);
@@ -105,12 +104,6 @@ public sealed class InteractionContext : IDisposable
     {
         return shortcut.Negative == Input.Unknown && AreDown(shortcut.Modifiers) ? State(shortcut.Positive) : InputState.Up;
     }
-
-    public bool IsUp(Shortcut shortcut)
-    {
-        return shortcut.Negative != Input.Unknown || !AreDown(shortcut.Modifiers) || IsUp(shortcut.Positive);
-    }
-
     public bool IsPressed(Shortcut shortcut)
     {
         return shortcut.Negative == Input.Unknown && AreDown(shortcut.Modifiers) && IsPressed(shortcut.Positive);
@@ -130,8 +123,6 @@ public sealed class InteractionContext : IDisposable
     {
         return AreDown(shortcut.Modifiers) ? AnalogValue(shortcut.Positive) - AnalogValue(shortcut.Negative) : 0f;
     }
-    
-    public bool IsUp(string action) => !_actions.ContainsKey(action);
 
     public bool IsPressed(string action)
     {

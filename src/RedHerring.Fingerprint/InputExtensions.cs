@@ -7,8 +7,6 @@ public static class InputExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InputState State(this Input @this) => Interaction.State(@this);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsUp(this Input @this) => Interaction.IsUp(@this);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsPressed(this Input @this) => Interaction.IsPressed(@this);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsDown(this Input @this) => Interaction.IsDown(@this);
@@ -21,8 +19,6 @@ public static class InputExtensions
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InputState State(this Input @this, InteractionContext context) => context.State(@this);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsUp(this Input @this, InteractionContext context) => context.IsUp(@this);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsPressed(this Input @this, InteractionContext context) => context.IsPressed(@this);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
