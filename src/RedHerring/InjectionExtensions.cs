@@ -70,7 +70,7 @@ public static class InjectionExtensions
         Interaction.Init(view);
         var context = Interaction.CreateContext();
         @this.AddSingleton<InteractionContext>(context);
-        @this.AddSingleton(typeof(InputReceiver));
+        @this.AddSingleton(typeof(InputLayer));
         @this.AddSystem(new InputSystem());
         return @this;
     }

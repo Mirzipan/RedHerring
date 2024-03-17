@@ -22,7 +22,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 {
 	[Infuse] private PathsSystem      _paths            = null!;
 	[Infuse] private InputSystem      _inputSystem      = null!;
-	[Infuse] private InputReceiver    _inputReceiver    = null!;
+	[Infuse] private InputLayer    _inputLayer    = null!;
 	[Infuse] private GraphicsSystem   _graphicsSystem   = null!;
 	[Infuse] private StudioCamera     _camera           = null!;
 
@@ -58,11 +58,11 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 
 		_studioModel = new StudioModel(_importerRegistry);
 		
-		_inputReceiver.Name             = "studio";
-		_inputReceiver.ConsumesAllInput = false;
+		_inputLayer.Name             = "studio";
+		_inputLayer.ConsumesAllInput = false;
         
-		_inputReceiver.Bind(InputAction.Undo, Undo);
-		_inputReceiver.Bind(InputAction.Redo, Redo);
+		_inputLayer.Bind(InputAction.Undo, Undo);
+		_inputLayer.Bind(InputAction.Redo, Redo);
 
 		_statusBarMessageHandler = new StatusBarMessageHandler(_statusBar, _studioModel);
 		_newProjectDialog        = new NewProjectDialog(_studioModel);
@@ -146,7 +146,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 
 	private void InitInput()
 	{
-		_inputReceiver.Push();
+		_inputLayer.Push();
 	}
 
 	private void CreateProjectSettings()

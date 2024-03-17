@@ -58,7 +58,7 @@ internal class Processor
             QueueInput(actions!, pair.Value, context.AnalogValue(pair.Key));
             foreach (string action in actions!)
             {
-                context.Actions.Add(action, pair.Value);
+                context.OnActionChanged(action, pair.Value);
             }
         }
 
@@ -104,7 +104,7 @@ internal class Processor
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ConsumeInput(InputReceiver receiver)
+    private void ConsumeInput(InputLayer inputLayer)
     {
         foreach (var entry in _unconsumed)
         {
@@ -114,7 +114,7 @@ internal class Processor
                 continue;
             }
             
-            if (!receiver.TryGetBinding(entry.Name, out var binding) || (binding.State & shortcut.State) == 0)
+            if (!inputLayer.TryGetBinding(entry.Name, out var binding) || (binding.State & shortcut.State) == 0)
             {
                 continue;
             }

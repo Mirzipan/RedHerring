@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
-using RedHerring.Fingerprint.States;
 
 namespace RedHerring.Fingerprint;
 
@@ -17,19 +16,18 @@ public sealed class InteractionContext : IDisposable
     private readonly List<char> _chars = new(DefaultCapacity);
 
     private readonly List<InputEvent> _events = new(DefaultCapacity);
+
+    private readonly Dictionary<string, InputState> _actions = new(DefaultCapacity);
     
     private Modifier _modifiers = Modifier.None;
     private Source _source = Source.None;
     
     private Vector2 _previousMousePosition;
     private Vector2 _currentMousePosition;
-
-    private ActionsState _actionsState;
     
     private bool _isDebugging;
 
     public bool IsDebugging => _isDebugging;
-    public ActionsState Actions => _actionsState;
     
     public ShortcutBindings? Bindings { get; set; }
     public InputLayers Layers { get; }
@@ -39,8 +37,6 @@ public sealed class InteractionContext : IDisposable
     internal InteractionContext()
     {
         Layers = new InputLayers();
-        _actionsState = new ActionsState();
-
         Bindings = new ShortcutBindings();
     }
 
@@ -55,7 +51,7 @@ public sealed class InteractionContext : IDisposable
         _released.Clear();
         _chars.Clear();
         
-        _actionsState.Reset();
+        _actions.Clear();
     }
 
     public void Dispose()
@@ -134,6 +130,33 @@ public sealed class InteractionContext : IDisposable
     {
         return AreDown(shortcut.Modifiers) ? AnalogValue(shortcut.Positive) - AnalogValue(shortcut.Negative) : 0f;
     }
+    
+    public bool IsUp(string action) => !_actions.ContainsKey(action);
+
+    public bool IsPressed(string action)
+    {
+        return _actions.TryGetValue(action, out var state) && (state & InputState.Pressed) != 0;
+    }
+
+    public bool IsDown(string action)
+    {
+        return _actions.TryGetValue(action, out var state) && (state & InputState.Down) != 0;
+    }
+
+    public bool IsReleased(string action)
+    {
+        return _actions.TryGetValue(action, out var state) && (state & InputState.Released) != 0;
+    }
+
+    public bool AnyAction() => _actions.Count > 0;
+
+    public void ActionsDown(IList<string> actions)
+    {
+        foreach (var pair in _actions)
+        {
+            actions.Add(pair.Key);
+        }
+    }
 
     public Modifier Modifiers() => _modifiers;
 
@@ -159,6 +182,11 @@ public sealed class InteractionContext : IDisposable
     #endregion Private
 
     #region Internal
+
+    internal void OnActionChanged(string action, InputState state)
+    {
+        _actions[action] = state;
+    }
 
     internal void OnInputChanged(InputEvent evt)
     {

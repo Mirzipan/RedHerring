@@ -25,7 +25,7 @@ public sealed class StudioCamera : EngineSystem, Drawable
     [Infuse]
     private RendererContext _rendererContext = null!;
     [Infuse]
-    private InputReceiver _receiver = null!;
+    private InputLayer _layer = null!;
 
     private Matrix4x4 _worldMatrix;
     private Matrix4x4 _viewMatrix;
@@ -156,13 +156,13 @@ public sealed class StudioCamera : EngineSystem, Drawable
     public void Activate()
     {
         _isActive = true;
-        _receiver.Push();
+        _layer.Push();
     }
 
     public void Deactivate()
     {
         _isActive = false;
-        _receiver.Pop();
+        _layer.Pop();
     }
 
     #endregion Lifecycle
@@ -209,19 +209,19 @@ public sealed class StudioCamera : EngineSystem, Drawable
 
     private void SetupInput()
     {
-        _receiver.Name = "studio camera";
-        _receiver.Layer = new OctoByte("camera");
-        _receiver.ConsumesAllInput = false;
+        _layer.Name = "studio camera";
+        _layer.Layer = new OctoByte("camera");
+        _layer.ConsumesAllInput = false;
         
-        _receiver.Bind(InputAction.MoveLeft, InputState.Down, OnMoveLeft);
-        _receiver.Bind(InputAction.MoveRight, InputState.Down, OnMoveRight);
-        _receiver.Bind(InputAction.MoveUp, InputState.Down, OnMoveUp);
-        _receiver.Bind(InputAction.MoveDown, InputState.Down, OnMoveDown);
-        _receiver.Bind(InputAction.MoveForward, InputState.Down, OnMoveForward);
-        _receiver.Bind(InputAction.MoveBackward, InputState.Down, OnMoveBackward);
+        _layer.Bind(InputAction.MoveLeft, InputState.Down, OnMoveLeft);
+        _layer.Bind(InputAction.MoveRight, InputState.Down, OnMoveRight);
+        _layer.Bind(InputAction.MoveUp, InputState.Down, OnMoveUp);
+        _layer.Bind(InputAction.MoveDown, InputState.Down, OnMoveDown);
+        _layer.Bind(InputAction.MoveForward, InputState.Down, OnMoveForward);
+        _layer.Bind(InputAction.MoveBackward, InputState.Down, OnMoveBackward);
         
-        _receiver.Bind(InputAction.MoveSpeedIncrease, InputState.Down, OnMoveSpeedIncrease);
-        _receiver.Bind(InputAction.MoveSpeedDecrease, InputState.Down, OnMoveSpeedDecrease);
+        _layer.Bind(InputAction.MoveSpeedIncrease, InputState.Down, OnMoveSpeedIncrease);
+        _layer.Bind(InputAction.MoveSpeedDecrease, InputState.Down, OnMoveSpeedDecrease);
     }
 
     private void SubmitToRenderer()

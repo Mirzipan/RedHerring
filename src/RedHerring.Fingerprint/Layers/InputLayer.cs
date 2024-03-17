@@ -3,7 +3,7 @@ using RedHerring.Infusion.Attributes;
 
 namespace RedHerring.Fingerprint.Layers;
 
-public class InputReceiver
+public class InputLayer
 {
     private readonly Dictionary<string, ActionBinding> _bindings = new();
     

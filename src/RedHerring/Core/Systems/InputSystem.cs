@@ -13,7 +13,7 @@ namespace RedHerring.Core.Systems;
 public sealed class InputSystem : EngineSystem, Updatable, Drawable
 {
     [Infuse]
-    private InputReceiver _receiver = null!;
+    private InputLayer _layer = null!;
 
     public bool IsEnabled => true;
     public int UpdateOrder => -1_000_000;
@@ -81,7 +81,7 @@ public sealed class InputSystem : EngineSystem, Updatable, Drawable
 
     private void AddDebugBindings()
     {
-        _receiver.Name = "input_debug";
+        _layer.Name = "input_debug";
             
         var context = Interaction.CurrentContext();
         if (context is null || context.Bindings is null)
@@ -92,9 +92,9 @@ public sealed class InputSystem : EngineSystem, Updatable, Drawable
         AddBinding(new ShortcutBinding("imgui_metrics", new Shortcut(Input.F11, Modifier.Shift)));
         AddBinding(new ShortcutBinding("dbg_draw", new Shortcut(Input.F12, Modifier.Shift)));
         
-        _receiver.Bind("imgui_metrics", InputState.Released, ToggleImGuiMetrics);
-        _receiver.Bind("dbg_draw", InputState.Released, ToggleDebugDraw);
-        _receiver.Push();
+        _layer.Bind("imgui_metrics", InputState.Released, ToggleImGuiMetrics);
+        _layer.Bind("dbg_draw", InputState.Released, ToggleDebugDraw);
+        _layer.Push();
     }
     
     private void ToggleImGuiMetrics(ref ActionEvent evt)

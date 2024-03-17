@@ -14,7 +14,7 @@ public class StudioGraphics : EngineSystem
     [Infuse]
     private RendererContext _rendererContext = null!;
     [Infuse]
-    private InputReceiver _receiver = null!;
+    private InputLayer _layer = null!;
 
     #region Lifecycle
 
@@ -28,13 +28,13 @@ public class StudioGraphics : EngineSystem
 
     protected override ValueTask<int> Load()
     {        
-        _receiver.Push();
+        _layer.Push();
         return ValueTask.FromResult(0);
     }
 
     protected override ValueTask<int> Unload()
     {        
-        _receiver.Pop();
+        _layer.Pop();
         return ValueTask.FromResult(0);
     }
 
@@ -44,11 +44,11 @@ public class StudioGraphics : EngineSystem
 
     private void SetupInput()
     {
-        _receiver.Name = "studio graphics";
-        _receiver.Layer = new OctoByte("graphics");
-        _receiver.ConsumesAllInput = false;
+        _layer.Name = "studio graphics";
+        _layer.Layer = new OctoByte("graphics");
+        _layer.ConsumesAllInput = false;
         
-        _receiver.Bind(InputAction.ReloadShaders, InputState.Released, OnReloadShaders);
+        _layer.Bind(InputAction.ReloadShaders, InputState.Released, OnReloadShaders);
     }
 
     #endregion Private
