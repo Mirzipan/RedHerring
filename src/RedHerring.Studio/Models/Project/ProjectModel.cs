@@ -656,7 +656,7 @@ public sealed class ProjectModel
 					ProjectNode? node = root.FindNode(path);
 					if (node != null && node.Exists)
 					{
-						node.InitMeta(_migrationManager, cancellationToken);
+						node.Init(_migrationManager, cancellationToken);
 					}
 				}
 			}
@@ -758,6 +758,23 @@ public sealed class ProjectModel
 				}
 				
 				// import
+				try
+				{
+					Importer importer = node.GetImporter<Importer>()!;
+					importer.Import(_projectSettings!.AbsoluteResourcesPath, out string? resourcePath);
+					if (resourcePath is not null)
+					{
+						_assetDatabase![node.Meta.Guid!] = new StudioAssetDatabaseItem(node.Meta.Guid!, node.Meta.ReferenceField, resourcePath, importer.ReferenceType);
+					}
+				}
+				catch (Exception e)
+				{
+					ConsoleViewModel.LogError($"While importing file {node.AbsolutePath} an exception occured: {e}");
+					return;
+				}
+
+				
+				/*
 				Importer importer = _importerRegistry.GetImporter(node.Extension);
 				node.Meta!.ImporterSettings ??= importer.CreateSettings();
 				
@@ -780,6 +797,7 @@ public sealed class ProjectModel
 					ConsoleViewModel.LogError($"While importing file {node.AbsolutePath} an exception occured: {e}");
 					return;
 				}
+				*/
 				
 				// update hash
 				node.Meta.SetHash(hash);

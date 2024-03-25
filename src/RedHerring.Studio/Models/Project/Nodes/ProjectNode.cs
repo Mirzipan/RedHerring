@@ -1,4 +1,5 @@
 using Migration;
+using RedHerring.Deduction;
 using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.ViewModels;
 using RedHerring.Studio.UserInterface.Attributes;
@@ -16,7 +17,8 @@ public abstract class ProjectNode : ISelectable
 
 	[ReadOnlyInInspector] public bool HasMetaFile;
 	
-	public Metadata? Meta;
+	public    Metadata? Meta;
+	protected Importer? Importer;
 
 	public          string Extension => System.IO.Path.GetExtension(AbsolutePath).ToLower(); // cache if needed
 	public abstract bool   Exists    { get; }
@@ -29,7 +31,7 @@ public abstract class ProjectNode : ISelectable
 		HasMetaFile  = hasMetaFile;
 	}
 
-	public abstract void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken);
+	public abstract void Init(MigrationManager migrationManager, CancellationToken cancellationToken);
 
 	public void ResetMetaHash()
 	{
@@ -52,7 +54,7 @@ public abstract class ProjectNode : ISelectable
 	{
 		Type = type;
 	}
-
+	
 	protected void CreateMetaFile(MigrationManager migrationManager)
 	{
 		string metaPath = $"{AbsolutePath}.meta";
@@ -77,6 +79,34 @@ public abstract class ProjectNode : ISelectable
 		 Meta = meta;
 	}
 
+	protected void InitImporter()
+	{
+		if (Meta is null)
+		{
+			return;
+		}
+		
+		if (Importer is null || Meta.ImporterSettings is null)
+		{
+			var registry = Findings.IndexerByType<ImporterRegistry>();
+			if (registry is not null)
+			{
+				Importer              = registry.CreateImporter(this);
+				Meta.ImporterSettings = Importer.CreateImportSettings();
+			}
+			else
+			{
+				// TODO(mirzi): we might have an issue
+				throw new NullReferenceException("Missing ImporterRegistry");
+			}
+		}
+	}
+
+	public T? GetImporter<T>() where T : Importer
+	{
+		return Importer as T;
+	}
+	
 	public abstract void TraverseRecursive(Action<ProjectNode> process, TraverseFlags flags, CancellationToken cancellationToken);
 
 	public abstract ProjectNode? FindNode(string path);

@@ -114,15 +114,15 @@ public sealed class ToolProjectView : Tool
 		
 		if(!_nodeLabels.TryGetValue((node, node.Type), out string? label))
 		{
-			if (node is ProjectFolderNode folder)
-			{
-				label = $"{TextIcon.Folder(folder.Children.Count == 0)} {node.Name}";
-			}
-			else
-			{
-				label = $"{TextIcon.File(node.RelativePath)} {node.Name}";
-			}
-
+			// if (node is ProjectFolderNode folder)
+			// {
+			// 	label = $"{TextIcon.Folder(folder.Children.Count == 0)} {node.Name}";
+			// }
+			// else
+			// {
+			// 	label = $"{TextIcon.File(node.RelativePath)} {node.Name}";
+			// }
+			label = $"{node.Type.ToIcon()} {node.Name}";
 			_nodeLabels.Add((node, node.Type), label);
 		}
 		

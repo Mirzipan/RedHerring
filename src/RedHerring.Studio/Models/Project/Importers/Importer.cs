@@ -1,15 +1,32 @@
-﻿using Migration;
+using RedHerring.Studio.Models.Project.FileSystem;
 
-namespace RedHerring.Studio.Models.Project.Importers;
+namespace RedHerring.Studio;
 
-public interface Importer
+public abstract class Importer
 {
-	ImporterSettings CreateSettings();
-	ImporterResult Import(
-		Stream            stream,
-		ImporterSettings  settings,
-		string            resourcePath,
-		MigrationManager  migrationManager,
-		CancellationToken cancellationToken,
-		out string        referenceClassName);
+	protected readonly ProjectNode Owner;
+	public abstract    string      ReferenceType { get; }
+
+	protected Importer(ProjectNode owner)
+	{
+		Owner = owner;
+	}
+
+	public abstract void UpdateCache();
+	public abstract void ClearCache();
+
+	public abstract void Import(string resourcesRootPath, out string? relativeResourcePath);
+
+	public abstract ImporterSettings CreateImportSettings();
+	public abstract bool             UpdateImportSettings(ImporterSettings settings); // returns true if settings were changed
+}
+
+public abstract class Importer<TData> : Importer
+{
+	protected Importer(ProjectNode owner) : base(owner)
+	{
+	}
+
+	public abstract TData? Load(); 
+	public abstract void   Save(TData                          data);
 }

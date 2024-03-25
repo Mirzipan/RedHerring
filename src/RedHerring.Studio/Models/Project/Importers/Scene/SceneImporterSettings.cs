@@ -1,17 +1,19 @@
 ﻿using Migration;
-using RedHerring.Studio.Models.Project.FileSystem;
 using RedHerring.Studio.UserInterface.Attributes;
 
-namespace RedHerring.Studio.Models.Project.Importers;
+namespace RedHerring.Studio;
 
-[Serializable, SerializedClassId("scene-importer-id")]
+[Serializable, SerializedClassId("ea019557-3078-4cf2-8bb1-f3ffe8d84e73")]
 public sealed class SceneImporterSettings : ImporterSettings
 {
-	public override ProjectNodeType NodeType => ProjectNodeType.AssetMesh;
-
 	public float NormalSmoothingAngle = 15f;
+	public bool  CompensateFBXScale   = false;
 	
 	[ReadOnlyInInspector] public List<SceneImporterMeshSettings> Meshes = new();
+
+	[ReadOnlyInInspector] public List<SceneImporterMaterialSettings> Materials = new();
+
+	[ReadOnlyInInspector] public SceneImporterHierarchyNodeSettings Root = new("Root");
 }
 
 #region Migration
@@ -21,8 +23,13 @@ public interface ISceneImporterSettingsMigratable : IImporterSettingsMigratable;
 [Serializable, LatestVersion(typeof(SceneImporterSettings))]
 public class SceneImporterSettings_000 : ImporterSettings_000, ISceneImporterSettingsMigratable
 {
-	public float NormalSmoothingAngle;
+	public float SmoothingAngle;
+	public bool  CompensateFBXScale;
 	
-	public List<ISceneImporterMeshSettingsMigratable> Meshes;
+	[MigrateField] public List<ISceneImporterMeshSettingsMigratable> Meshes;
+
+	[MigrateField] public List<ISceneImporterMaterialSettingsMigratable> Materials;
+
+	public ISceneImporterHierarchyNodeSettingsMigratable Root;
 }
 #endregion

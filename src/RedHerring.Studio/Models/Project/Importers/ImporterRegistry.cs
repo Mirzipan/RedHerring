@@ -1,32 +1,26 @@
 ﻿using RedHerring.Deduction;
+using RedHerring.Studio.Models.Project.FileSystem;
 
 namespace RedHerring.Studio.Models.Project.Importers;
 
 [AttributeIndexer(typeof(ImporterAttribute))]
 public sealed class ImporterRegistry : AttributeIndexer
 {
-	private Dictionary<string, Importer> _importers        = new();
-	private Importer                     _fallbackImporter = new CopyImporter();
+	private readonly Dictionary<ProjectNodeType, Type> _types    = new();
+	private readonly Type                              _fallback = typeof(CopyImporter);
 
-	public Importer GetImporter(string extension)
+	public Importer CreateImporter(ProjectNode node)
 	{
-		if (_importers.TryGetValue(extension, out Importer? importer))
-		{
-			return importer;
-		}
-
-		return _fallbackImporter;
+		Type   importerType = _types.TryGetValue(node.Type, out Type? type) ? type : _fallback;
+		object instance     = Activator.CreateInstance(importerType, node)!;
+		return (Importer) instance;
 	}
 	
 	public void Index(Attribute attribute, Type type)
 	{
 		if (attribute is ImporterAttribute importerAttribute)
 		{
-			Importer importer = (Importer) Activator.CreateInstance(type)!;
-			foreach (string extension in importerAttribute.Extensions)
-			{
-				_importers.Add(extension, importer);
-			}
+			_types.Add(importerAttribute.NodeType, type);
 		}
 	}
 }

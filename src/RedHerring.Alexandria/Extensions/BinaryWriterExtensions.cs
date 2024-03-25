@@ -1,19 +1,19 @@
-﻿using RedHerring.Numbers;
-using Silk.NET.Maths;
+﻿using System.Numerics;
+using RedHerring.Numbers;
 
 namespace RedHerring.Alexandria.Extensions;
 
 // Alexandria should not be dependent on Silk.NET.Maths 
 public static class BinaryWriterExtensions
 {
-	public static void Write(this BinaryWriter writer, Vector3D<float> vector)
+	public static void Write(this BinaryWriter writer, Vector3 vector)
 	{
 		writer.Write(vector.X);
 		writer.Write(vector.Y);
 		writer.Write(vector.Z);
 	}
 
-	public static void Write(this BinaryWriter writer, Vector2D<float> vector)
+	public static void Write(this BinaryWriter writer, Vector2 vector)
 	{
 		writer.Write(vector.X);
 		writer.Write(vector.Y);

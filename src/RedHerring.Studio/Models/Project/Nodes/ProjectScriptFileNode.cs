@@ -20,7 +20,7 @@ public class ProjectScriptFileNode : ProjectNode
 		SetNodeType(ProjectNodeType.ScriptFile);
 	}
 
-	public override void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken)
+	public override void Init(MigrationManager migrationManager, CancellationToken cancellationToken)
 	{
 		string guid = RelativePath;
 		
@@ -29,7 +29,7 @@ public class ProjectScriptFileNode : ProjectNode
 		if(fileId != null)
 		{
 			guid = fileId.Guid;
-			SetNodeType(ProjectNodeType.ScriptDefinitionTemplate);
+			SetNodeType(ProjectNodeType.ScriptFile);
 		}
 		
 		Meta = new Metadata
@@ -37,6 +37,9 @@ public class ProjectScriptFileNode : ProjectNode
 			       Guid = guid,
 			       Hash = "",
 		       };
+
+		InitImporter();
+		Importer!.UpdateCache();
 	}
 
 	public override void TraverseRecursive(Action<ProjectNode> process, TraverseFlags flags, CancellationToken cancellationToken)

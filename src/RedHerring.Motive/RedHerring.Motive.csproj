@@ -14,8 +14,4 @@
       <ProjectReference Include="..\RedHerring.Render\RedHerring.Render.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Vortice.Mathematics" Version="1.7.2" />
-    </ItemGroup>
-
 </Project>
