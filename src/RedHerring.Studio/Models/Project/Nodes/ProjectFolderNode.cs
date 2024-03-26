@@ -1,4 +1,5 @@
 using Migration;
+using RedHerring.Deduction;
 using RedHerring.Studio.Models.Project.Importers;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
@@ -15,7 +16,7 @@ public class ProjectFolderNode : ProjectNode
 		SetNodeType(type);
 	}
 
-	public override void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken)
+	public override void Init(MigrationManager migrationManager, CancellationToken cancellationToken)
 	{
 		if (HasMetaFile)
 		{
@@ -29,6 +30,9 @@ public class ProjectFolderNode : ProjectNode
 				       Hash = ""
 			       };
 		}
+
+		InitImporter();
+		Importer!.UpdateCache();
 	}
 
 	public override void TraverseRecursive(Action<ProjectNode> process, TraverseFlags flags, CancellationToken cancellationToken)

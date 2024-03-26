@@ -50,4 +50,23 @@ public sealed class PathsSystem : EngineSystem
 
 		_homePath = path!;
 	}
+
+	public static string ShaderCompilerPath()
+	{
+		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+		{
+			return "Tools\\win-x64\\glslc.exe";
+		}
+
+		if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+		{
+			return "Tools/osx/glslc";
+		}
+		
+		// if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+		// {
+		// }
+
+		throw new NotSupportedException();
+	}
 }

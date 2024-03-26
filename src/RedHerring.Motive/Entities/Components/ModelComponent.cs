@@ -1,5 +1,5 @@
-﻿using RedHerring.Render.Models;
-using Vortice.Mathematics;
+﻿using RedHerring.Numbers;
+using RedHerring.Render.Models;
 
 namespace RedHerring.Motive.Entities.Components;
 
@@ -50,17 +50,17 @@ public sealed class ModelComponent : EntityComponent
     {
         if (_model is null)
         {
-            BoundingBox = BoundingBox.Zero;
-            BoundingSphere = BoundingSphere.Zero;
+            BoundingBox = BoundingBox.Empty;
+            BoundingSphere = BoundingSphere.Empty;
             return;
         }
 
         foreach (var mesh in _model.Meshes)
         {
-            BoundingBox = BoundingBox.CreateMerged(BoundingBox, mesh.BoundingBox);
+            BoundingBox = BoundingBox.Include(BoundingBox, mesh.BoundingBox);
         }
         
-        BoundingSphere = BoundingSphere.CreateFromBoundingBox(BoundingBox);
+        BoundingSphere = BoundingSphere.FromBox(BoundingBox);
 
         _isDirty = false;
     }

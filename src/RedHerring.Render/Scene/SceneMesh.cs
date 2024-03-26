@@ -1,7 +1,7 @@
-﻿using RedHerring.Alexandria.Extensions;
-using Silk.NET.Maths;
+﻿using System.Numerics;
+using RedHerring.Alexandria.Extensions;
+using RedHerring.Numbers;
 using Veldrid;
-using Vortice.Mathematics;
 
 namespace RedHerring.Render.Models;
 
@@ -11,13 +11,12 @@ public sealed class SceneMesh
 	public string Name;
 	public int    MaterialIndex; // TODO
 
-	public BoundingBox    BoundingBox;
-	public BoundingSphere BoundingSphere;
+	public BoundingBox BoundingBox;
 
-	public List<Vector3D<float>>               Positions = null!;
-	public List<Vector3D<float>>?              Normals;
-	public List<Vector3D<float>>?              Tangents;
-	public List<Vector3D<float>>?              BiTangents;
+	public List<Vector3>                            Positions = null!;
+	public List<Vector3>?                           Normals;
+	public List<Vector3>?                           Tangents;
+	public List<Vector3>?                           BiTangents;
 	public List<SceneMeshTextureCoordinateChannel>? TextureCoordinateChannels;
 	public List<SceneMeshVertexColorChannel>?       VertexColorChannels;
 
@@ -27,8 +26,10 @@ public sealed class SceneMesh
 	public int VertexCount => Positions.Count;
 	
 	[NonSerialized] private int _vertexSize = 0;
-	public int VertexSize => _vertexSize == 0 ? _vertexSize = CalculateVertexSize() : _vertexSize;
+	public                  int VertexSize => _vertexSize == 0 ? _vertexSize = CalculateVertexSize() : _vertexSize;
 
+	public PrimitiveTopology Topology;
+	
 	public byte[] BuildVertexBufferData(out VertexLayoutDescription vertexLayoutDescription)
 	{
 		// prepare vertex data

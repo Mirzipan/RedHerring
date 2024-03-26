@@ -1,14 +1,14 @@
-﻿using Migration;
-using RedHerring.Studio.Models.Project.FileSystem;
+﻿/*
+using Migration;
 using SixLabors.ImageSharp.Formats.Png;
 
-namespace RedHerring.Studio.Models.Project.Importers;
+namespace RedHerring.Studio;
 
-[Serializable, SerializedClassId("png-importer-id")]
+[Serializable, SerializedClassId("79e3e75f-a6c2-465b-b815-fd68fb46972a")]
 public sealed class PngImporterSettings : ImporterSettings
 {
-    public override ProjectNodeType NodeType => ProjectNodeType.AssetImage;
-    
+	public override ProjectNodeType NodeType => ProjectNodeType.AssetImage;
+
     public PngBitDepth BitDepth = PngBitDepth.Bit8;
     public PngColorType ColorType = PngColorType.RgbWithAlpha;
     public PngCompressionLevel Compression = PngCompressionLevel.BestSpeed;
@@ -30,3 +30,4 @@ public class PngImporterSettings_000 : ImporterSettings_000, IPngImporterSetting
     public bool PreserveTransparentColors;
 }
 #endregion
+*/

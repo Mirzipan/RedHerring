@@ -1,25 +1,78 @@
-﻿using Migration;
 using RedHerring.Assets;
+using RedHerring.Studio.Models.Project.FileSystem;
+using RedHerring.Studio.Models.ViewModels.Console;
 
-namespace RedHerring.Studio.Models.Project.Importers;
+namespace RedHerring.Studio;
 
-// fallback importer if no other importer is found
 [Importer]
-public sealed class CopyImporter : AssetImporter<CopyImporterSettings>
+public sealed class CopyImporter : Importer<byte[]>
 {
-	protected override CopyImporterSettings CreateImporterSettings() => new();
-
-	protected override ImporterResult Import(Stream stream,            CopyImporterSettings settings, string resourcePath, MigrationManager migrationManager,
-		CancellationToken                           cancellationToken, out string           referenceClassName)
+	public override string ReferenceType => nameof(AssetReference);
+	
+	public CopyImporter(ProjectNode owner) : base(owner)
 	{
-		referenceClassName = nameof(AssetReference);
+	}
+
+	public override void UpdateCache()
+	{
+	}
+
+	public override byte[]? Load()
+	{
+		try
+		{
+			return File.ReadAllBytes(Owner.AbsolutePath);
+		}
+		catch (Exception e)
+		{
+			ConsoleViewModel.LogException(e.ToString());
+		}
+
+		return null;
+	}
+
+	public override void Save(byte[] data)
+	{
+		throw new InvalidOperationException();
+	}
+
+	public override void ClearCache()
+	{
+	}
+
+	public override void Import(string resourcesRootPath, out string? relativeResourcePath)
+	{
+		byte[]? data = Load();
 		
-		byte[] data = new byte[stream.Length];
-		int read   = stream.Read(data, 0, data.Length);
-		// TODO report error if read != result.Length?
+		if (data == null)
+		{
+			ConsoleViewModel.LogError($"Cannot import file {Owner.RelativePath}, file was not loaded!");
+			relativeResourcePath = null;
+			return;
+		}
+
+		string path = Path.Join(resourcesRootPath, Owner.RelativePath);
 		
-		Directory.CreateDirectory(Path.GetDirectoryName(resourcePath)!);
-		File.WriteAllBytes(resourcePath, data);
-		return ImporterResult.Finished;
+		try
+		{
+			Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+			File.WriteAllBytes(path, data);
+		}
+		catch (Exception e)
+		{
+			ConsoleViewModel.LogException(e.ToString());
+		}
+
+		relativeResourcePath = Owner.RelativePath;
+	}
+
+	public override ImporterSettings CreateImportSettings()
+	{
+		return new CopyImporterSettings();
+	}
+
+	public override bool UpdateImportSettings(ImporterSettings settings)
+	{
+		return false;
 	}
 }
