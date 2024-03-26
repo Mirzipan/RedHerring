@@ -7,6 +7,8 @@ using RedHerring.Fingerprint;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Game;
 using RedHerring.Infusion;
+using Silk.NET.Windowing;
+
 // ReSharper disable SuspiciousTypeConversion.Global
 
 namespace RedHerring;
@@ -63,37 +65,13 @@ public static class InjectionExtensions
         return @this;
     }
 
-    public static ContainerDescription AddInput(this ContainerDescription @this)
+    public static ContainerDescription AddInput(this ContainerDescription @this, IView? view)
     {
-        @this.AddSingleton(typeof(SilkInput), typeof(SilkInput), typeof(Input));
-        @this.AddSingleton(typeof(InputReceiver));
+        Interaction.Init(view);
+        var context = Interaction.CreateContext();
+        @this.AddSingleton<InteractionContext>(context);
+        @this.AddSingleton(typeof(InputLayer));
         @this.AddSystem(new InputSystem());
-        return @this;
-    }
-    
-    public static ContainerDescription AddMetadata(this ContainerDescription @this, AssemblyCollection collection)
-    {
-        var meta = new MetadataDatabase(collection);
-        meta.Process();
-        @this.AddSingleton(meta);
-
-        foreach (var indexer in meta.Indexers)
-        {
-            AddIndexer(@this, indexer);
-        }
-
-        return @this;
-    }
-    
-    public static ContainerDescription AddIndexer(this ContainerDescription @this, IIndexMetadata indexer)
-    {
-        var types = new List<Type> { indexer.GetType(), typeof(IIndexMetadata) };
-
-        AddTypeIfAssignableTo<IIndexAttributes>(types, indexer);
-        AddTypeIfAssignableTo<IIndexTypes>(types, indexer);
-        
-        @this.AddSingleton(indexer, types.ToArray());
-
         return @this;
     }
 

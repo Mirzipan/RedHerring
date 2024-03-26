@@ -28,7 +28,7 @@ public sealed class GameMenuComponent : SessionComponent, Drawable
                                                 | ImGuiWindowFlags.NoMove;
     
     [Infuse]
-    private InputReceiver _input;
+    private InputLayer _input;
     
     private bool _isVisible;
     private bool _isOpen = true;

@@ -1,15 +1,22 @@
 using System.Collections.Concurrent;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Cryptography;
 using Migration;
+using RedHerring.Assets;
 using RedHerring.Studio.Models.Project.FileSystem;
 using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.ViewModels.Console;
+using UniversalDeclarativeLanguage;
 
 namespace RedHerring.Studio.Models.Project;
 
 public sealed class ProjectModel
 {
+	#region Events
+
+	#endregion
+	
 	private const           string _assetsFolderName  = "Assets";
 	private const           string _scriptsFolderName = "GameLibrary";
 	private const           string _settingsFileName  = "Project.json";
@@ -18,6 +25,8 @@ public sealed class ProjectModel
 	public static           Assembly      Assembly => typeof(ProjectModel).Assembly; 
 	private static readonly HashAlgorithm _hashAlgorithm = SHA1.Create();
 
+	private readonly StudioEventAggregator _eventAggregator;
+	
 	private readonly MigrationManager _migrationManager;
 	private readonly ImporterRegistry _importerRegistry;
 	
@@ -32,8 +41,10 @@ public sealed class ProjectModel
 	private ProjectSettings? _projectSettings;
 	public  ProjectSettings ProjectSettings => _projectSettings!;
 
-	public bool IsOpened               => !string.IsNullOrEmpty(_projectSettings?.ProjectFolderPath);
-	public bool NeedsUpdateEngineFiles { get; private set; } = false;
+	private StudioAssetDatabase? _assetDatabase;
+	
+	public  bool                 IsOpened               => !string.IsNullOrEmpty(_projectSettings?.ProjectFolderPath);
+	public  bool                 NeedsUpdateEngineFiles { get; private set; } = false;
 	
 	private          FileSystemWatcher?           _assetsWatcher;
 	private          FileSystemWatcher?           _scriptsWatcher;
@@ -43,10 +54,11 @@ public sealed class ProjectModel
 	private readonly ProjectThread _thread = new ();
 	public           int           TasksCount => _thread.TasksCount;
 	
-	public ProjectModel(MigrationManager migrationManager, ImporterRegistry importerRegistry)
+	public ProjectModel(MigrationManager migrationManager, ImporterRegistry importerRegistry, StudioEventAggregator eventAggregator)
 	{
 		_migrationManager = migrationManager;
 		_importerRegistry = importerRegistry;
+		_eventAggregator  = eventAggregator;
 	}
 
 	public void Cancel()
@@ -62,7 +74,10 @@ public sealed class ProjectModel
 		_thread.ClearQueue();
 		
 		SaveSettings();
-		_assetsFolder = null;
+		_assetsFolder  = null;
+		_scriptsFolder = null;
+		_assetDatabase = null;
+		_eventAggregator.Trigger(new OnProjectClosed());
 	}
 	
 	public void Open(string projectPath)
@@ -90,6 +105,9 @@ public sealed class ProjectModel
 			// load / create settings
 			LoadSettings(projectPath);
 
+			// create asset database
+			_assetDatabase = new StudioAssetDatabase();
+			
 			// read assets
 			try
 			{
@@ -118,6 +136,8 @@ public sealed class ProjectModel
 		InitMeta();
 
 		ImportAll();
+		
+		_eventAggregator.Trigger(new OnProjectOpened());
 
 		CreateWatchers();
 	}
@@ -143,10 +163,18 @@ public sealed class ProjectModel
 		lock (ProjectTreeLock)
 		{
 			_assetsFolder!.TraverseRecursive(
-				node => EnqueueProjectTask(CreateImportTask(_assetsFolder!, node.RelativePath)),
+				node => EnqueueProjectTask(CreateImportFolderTask(_assetsFolder!, node.RelativePath)),
+				TraverseFlags.Directories,
+				default
+			);
+			
+			_assetsFolder!.TraverseRecursive(
+				node => EnqueueProjectTask(CreateImportFileTask(_assetsFolder!, node.RelativePath)),
 				TraverseFlags.Files,
 				default
 			);
+
+			EnqueueProjectTask(CreateSaveAssetDatabaseTask());
 		}
 	}
 	#endregion
@@ -290,7 +318,7 @@ public sealed class ProjectModel
 			return;
 		}
 
-		byte[] json = MigrationSerializer.SerializeAsync(_projectSettings, SerializedDataFormat.JSON, Assembly).GetAwaiter().GetResult();
+		byte[] json = MigrationSerializer.Serialize(_projectSettings, SerializedDataFormat.JSON, Assembly);
 		File.WriteAllBytes(Path.Join(_projectSettings.ProjectFolderPath, _settingsFileName), json);
 	}
 
@@ -305,9 +333,19 @@ public sealed class ProjectModel
 			                   };
 			return;
 		}
-		
-		byte[] json = File.ReadAllBytes(path);
-		ProjectSettings settings = MigrationSerializer.DeserializeAsync<ProjectSettings, IStudioSettingsMigratable>(_migrationManager.TypesHash, json, SerializedDataFormat.JSON, _migrationManager, false, Assembly).GetAwaiter().GetResult();
+
+		ProjectSettings? settings = null;
+		try
+		{
+			byte[] json = File.ReadAllBytes(path);
+			settings = MigrationSerializer.Deserialize<ProjectSettings, IStudioSettingsMigratable>(_migrationManager.TypesHash, json, SerializedDataFormat.JSON, _migrationManager, true, Assembly);
+		}
+		catch (Exception e)
+		{
+			ConsoleViewModel.LogException(e.ToString());
+		}
+
+		settings                   ??= new ProjectSettings();
 		settings.ProjectFolderPath = projectPath;
 		
 		_projectSettings = settings;
@@ -399,7 +437,7 @@ public sealed class ProjectModel
 					// created file
 					EnqueueProjectTaskFromWatcher(CreateNewAssetFileTask(_assetsFolder!, relativePath, path));
 					EnqueueProjectTaskFromWatcher(CreateInitMetaTask(_assetsFolder!, eventRelativePath));
-					EnqueueProjectTaskFromWatcher(CreateImportTask(_assetsFolder!, eventRelativePath));
+					EnqueueProjectTaskFromWatcher(CreateImportFileTask(_assetsFolder!, eventRelativePath));
 				}
 				break;
 			}
@@ -419,8 +457,8 @@ public sealed class ProjectModel
 		// deleted folder or file
 		{
 			int    index      = eventRelativePath.LastIndexOfAny(_slash);
-			string parentPath = eventRelativePath.Substring(0, index);
-			string nodeName   = eventRelativePath.Substring(index + 1);
+			string parentPath = index == -1 ? "" : eventRelativePath.Substring(0, index);
+			string nodeName   = index == -1 ? eventRelativePath : eventRelativePath.Substring(index + 1);
 			EnqueueProjectTaskFromWatcher(CreateDeleteNodeTask(_assetsFolder!, parentPath, nodeName));
 		}
 	}
@@ -503,11 +541,16 @@ public sealed class ProjectModel
 
 	private void OnScriptDeleted(string eventAbsolutePath, string eventRelativePath)
 	{
+		try
 		{
 			int    index      = eventRelativePath.LastIndexOfAny(_slash);
 			string parentPath = eventRelativePath.Substring(0, index);
 			string nodeName   = eventRelativePath.Substring(index + 1);
 			EnqueueProjectTaskFromWatcher(CreateDeleteNodeTask(_scriptsFolder!, parentPath, nodeName));
+		}
+		catch (Exception e)
+		{
+			// nothing to do, it could be changed in the meantime
 		}
 	}
 	#endregion
@@ -613,7 +656,7 @@ public sealed class ProjectModel
 					ProjectNode? node = root.FindNode(path);
 					if (node != null && node.Exists)
 					{
-						node.InitMeta(_migrationManager, _importerRegistry, cancellationToken);
+						node.InitMeta(_migrationManager, cancellationToken);
 					}
 				}
 			}
@@ -637,7 +680,48 @@ public sealed class ProjectModel
 		);
 	}
 	
-	private ProjectTask CreateImportTask(ProjectRootNode root, string path)
+	private ProjectTask CreateImportFolderTask(ProjectRootNode root, string path)
+	{
+		return new ProjectTask(
+			cancellationToken =>
+			{
+				lock (ProjectTreeLock)
+				{
+					// check node
+					ProjectFolderNode? node = root.FindNode(path) as ProjectFolderNode;
+					if (node == null || node.Meta == null)
+					{
+						return;
+					}
+
+					// check folder
+					if (!Directory.Exists(node.AbsolutePath))
+					{
+						return;
+					}
+
+					// just create folder
+					try
+					{
+						string resourcePath = Path.Join(_projectSettings!.AbsoluteResourcesPath, node.RelativePath);
+						Directory.CreateDirectory(resourcePath);
+					}
+					catch (Exception e)
+					{
+						ConsoleViewModel.LogException(e.ToString());
+					}
+					
+					// add to database
+					if (node != root)
+					{
+						_assetDatabase![node.Meta.Guid!] = new StudioAssetDatabaseItem(node.Meta.Guid!, node.Meta.ReferenceField, node.RelativePath, nameof(FolderReference));
+					}
+				}
+			}
+		);
+	}
+	
+	private ProjectTask CreateImportFileTask(ProjectRootNode root, string path)
 	{
 		return new ProjectTask(
 			cancellationToken =>
@@ -648,13 +732,13 @@ public sealed class ProjectModel
 				{
 					return;
 				}
-
+				
 				// check file
 				if (!File.Exists(node.AbsolutePath))
 				{
 					return;
 				}
-
+				
 				// calculate hash
 				string? hash = null;
 				try
@@ -666,35 +750,37 @@ public sealed class ProjectModel
 				{
 					return;
 				}
-
+				
 				// check hash
 				if (node.Meta.Hash == hash)
 				{
 					return;
 				}
-
+				
 				// import
 				Importer importer = _importerRegistry.GetImporter(node.Extension);
 				node.Meta!.ImporterSettings ??= importer.CreateSettings();
-
+				
 				string resourcePath = Path.Combine(_projectSettings!.AbsoluteResourcesPath, node.RelativePath);
-
+				
 				try
 				{
 					using Stream   stream = File.OpenRead(node.AbsolutePath);
-					ImporterResult result = importer.Import(stream, node.Meta.ImporterSettings, resourcePath, _migrationManager, cancellationToken);
-
+					ImporterResult result = importer.Import(stream, node.Meta.ImporterSettings, resourcePath, _migrationManager, cancellationToken, out string referenceClassName);
+				
 					if (result == ImporterResult.FinishedSettingsChanged)
 					{
 						node.UpdateMetaFile();
 					}
+
+					_assetDatabase![node.Meta.Guid!] = new StudioAssetDatabaseItem(node.Meta.Guid!, node.Meta.ReferenceField, node.RelativePath, referenceClassName);
 				}
 				catch (Exception e)
 				{
 					ConsoleViewModel.LogError($"While importing file {node.AbsolutePath} an exception occured: {e}");
 					return;
 				}
-
+				
 				// update hash
 				node.Meta.SetHash(hash);
 			}
@@ -757,6 +843,19 @@ public sealed class ProjectModel
 				}
 
 				Directory.CreateDirectory(absoluteResourcesPath);
+			}
+		);
+	}
+	
+	private ProjectTask CreateSaveAssetDatabaseTask()
+	{
+		return new ProjectTask(
+			cancellationToken =>
+			{
+				lock (ProjectTreeLock)
+				{
+					_assetDatabase!.Save(_projectSettings!);
+				}
 			}
 		);
 	}

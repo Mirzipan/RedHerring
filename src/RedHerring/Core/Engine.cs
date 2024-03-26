@@ -1,4 +1,5 @@
 ﻿using RedHerring.Alexandria;
+using RedHerring.Assets;
 using RedHerring.Exceptions;
 using RedHerring.Game;
 using RedHerring.Render;
@@ -15,11 +16,11 @@ public sealed class Engine : NamedDisposer
     private int _updateCount;
     private int _frameCount;
     
-    public EngineContext Context { get; private set; } = null!;
-    public Renderer Renderer { get; private set; } = null!;
-    public Session? Session => _session;
-    public bool IsRunning { get; private set; }
-    public bool IsExiting { get; private set; }
+    public EngineContext Context   { get; private set; } = null!;
+    public RendererContext      RendererContext  { get; private set; } = null!;
+    public Session?      Session   => _session;
+    public bool          IsRunning { get; private set; }
+    public bool          IsExiting { get; private set; }
 
     public GameTime UpdateTime => _updateTimeTracker.Time;
     public GameTime DrawTime => _drawTimeTracker.Time;
@@ -35,6 +36,8 @@ public sealed class Engine : NamedDisposer
 
         _updateTimeTracker = new GameTimeTracker();
         _drawTimeTracker = new GameTimeTracker();
+        
+        Resources.Init();
     }
 
     public void Run(SessionContext session)
@@ -94,11 +97,11 @@ public sealed class Engine : NamedDisposer
         ++_frameCount;
         _drawTimeTracker.Update(TimeSpan.FromSeconds(delta));
         
-        bool isDrawing = Renderer.BeginDraw();
+        bool isDrawing = RendererContext.BeginDraw();
         if (isDrawing)
         {
             Draw(DrawTime);
-            Renderer.EndDraw();
+            RendererContext.EndDraw();
         }
     }
 
@@ -138,7 +141,7 @@ public sealed class Engine : NamedDisposer
 
     public void Resize(Vector2D<int> size)
     {
-        Renderer?.Resize(size);
+        RendererContext?.Resize(size);
     }
 
     #endregion Public
@@ -150,13 +153,13 @@ public sealed class Engine : NamedDisposer
         Context.Init(this);
         await Context.Load();
 
-        if (Context.Container.HasBinding<Renderer>())
+        if (Context.Container.HasBinding<RendererContext>())
         {
-            Renderer = Context.Container.Resolve<Renderer>();
+            RendererContext = Context.Container.Resolve<RendererContext>();
         }
         else
         {
-            Renderer = new NullRenderer();
+            RendererContext = new NullRendererContext();
         }
     }
 
@@ -165,7 +168,7 @@ public sealed class Engine : NamedDisposer
         Context.Draw(time);
         Session?.Draw(time);
         
-        Renderer.Draw();
+        RendererContext.Draw();
     }
     
     private void Update(GameTime time)

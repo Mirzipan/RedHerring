@@ -1,8 +1,8 @@
 ﻿namespace RedHerring.Studio.Commands;
 
-public sealed class CommandHistory
+public class CommandHistory
 {
-    public int Capacity { get; set; } = byte.MaxValue;
+    public readonly int Capacity;
 
     private List<Command> _stack = new();
     private int _executionIndex;
@@ -11,8 +11,9 @@ public sealed class CommandHistory
     private LinkedListNode<Command?>? _current;
     private LinkedListNode<Command?> _root;
 
-    public CommandHistory()
+    public CommandHistory(int capacity = byte.MaxValue)
     {
+        Capacity        = capacity;
         _executionIndex = -1;
         
         _root = new LinkedListNode<Command?>(null);
@@ -20,7 +21,7 @@ public sealed class CommandHistory
         _current = _root;
     }
 
-    public void Commit(Command command)
+    public virtual void Commit(Command command)
     {
         command.Do();
 
@@ -36,7 +37,7 @@ public sealed class CommandHistory
         }
     }
     
-    public void Undo()
+    public virtual void Undo()
     {
         if (_executionIndex >= 0)
         {
@@ -47,7 +48,7 @@ public sealed class CommandHistory
         }
     }
 
-    public void Redo()
+    public virtual void Redo()
     {
         if (_executionIndex < _stack.Count - 1)
         {

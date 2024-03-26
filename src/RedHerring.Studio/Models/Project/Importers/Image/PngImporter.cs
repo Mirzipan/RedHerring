@@ -1,4 +1,5 @@
 ﻿using Migration;
+using RedHerring.Assets;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing.Processors.Quantization;
@@ -10,9 +11,11 @@ public sealed class PngImporter : AssetImporter<PngImporterSettings>
 {
     protected override PngImporterSettings CreateImporterSettings() => new();
 
-    protected override ImporterResult Import(Stream stream, PngImporterSettings settings, string resourcePath, MigrationManager migrationManager,
-        CancellationToken                           cancellationToken)
+    protected override ImporterResult Import(Stream stream,            PngImporterSettings settings, string resourcePath, MigrationManager migrationManager,
+        CancellationToken                           cancellationToken, out string          referenceClassName)
     {
+        referenceClassName = nameof(AssetReference); // TODO
+        
         using Image image = Image.Load(stream);
         
         Directory.CreateDirectory(Path.GetDirectoryName(resourcePath)!);

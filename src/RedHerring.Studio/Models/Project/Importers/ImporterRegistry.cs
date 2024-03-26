@@ -3,7 +3,7 @@
 namespace RedHerring.Studio.Models.Project.Importers;
 
 [AttributeIndexer(typeof(ImporterAttribute))]
-public sealed class ImporterRegistry : IIndexAttributes
+public sealed class ImporterRegistry : AttributeIndexer
 {
 	private Dictionary<string, Importer> _importers        = new();
 	private Importer                     _fallbackImporter = new CopyImporter();

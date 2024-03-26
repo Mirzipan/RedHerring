@@ -17,11 +17,6 @@ public static class CoreInstaller
         return @this.AddSystem(new GraphicsSystem());
     }
     
-    public static ContainerDescription AddInput(this ContainerDescription @this)
-    {
-        return @this.AddSystem(new InputSystem());
-    }
-    
     public static ContainerDescription AddAssets(this ContainerDescription @this)
     {
         return @this.AddSystem(new AssetsSystem());

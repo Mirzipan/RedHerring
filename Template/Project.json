@@ -1,0 +1,7 @@
+{
+    "$id": 0,
+    "$type": "0|7dc45fb0-41e7-45da-91ae-cd213e2400b5_1",
+    "AssetDatabaseSourcePath": "AssetDatabase.cs",
+    "AssetDatabaseNamespace": "MyGame",
+    "AssetDatabaseClass": "AssetDatabase"
+}

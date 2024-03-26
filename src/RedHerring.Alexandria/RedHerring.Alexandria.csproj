@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Silk.NET.Maths" Version="2.20.0" />
       <PackageReference Include="System.Reactive" Version="6.0.1-preview.1" />
     </ItemGroup>
 

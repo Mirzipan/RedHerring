@@ -64,6 +64,8 @@ public sealed class EngineContext : NamedDisposer
             var system = _systems[i];
             await system.RaiseUnload();
         }
+        
+        Findings.DestroyContext();
 
         return 0;
     }
@@ -159,7 +161,10 @@ public sealed class EngineContext : NamedDisposer
         var description = new ContainerDescription("Engine");
         description.AddSingleton(this);
         description.AddSingleton(_engine!);
-        description.AddMetadata(_indexedAssemblies);
+
+        Findings.CreateContext(_indexedAssemblies);
+        Findings.Process();
+        
         description.AddSingleton(Window, typeof(IView));
 
         foreach (var installer in _installers)

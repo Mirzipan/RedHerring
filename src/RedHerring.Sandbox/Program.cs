@@ -64,7 +64,7 @@ internal class Program
             Backend = _graphicsBackend,
             UseSeparateRenderThread = true,
         };
-        var engine = new EngineInstaller();
+        var engine = new EngineInstaller(_window);
         
         var context = new EngineContext
         {

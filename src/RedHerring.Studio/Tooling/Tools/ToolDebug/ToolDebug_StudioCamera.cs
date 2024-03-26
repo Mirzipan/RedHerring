@@ -23,7 +23,7 @@ public sealed class ToolDebug_StudioCamera
     };
     
     [Infuse]
-    private Input _input = null!;
+    private InteractionContext _interactionContext = null!;
 
     private readonly StudioCamera _camera;
 
@@ -75,11 +75,11 @@ public sealed class ToolDebug_StudioCamera
 
     private void PrintBindings()
     {
-        if (_input.Bindings is null)
+        if (_interactionContext.Bindings is null)
         {
             return;
         }
         
-        InputBindings("Camera Controls", _input.Bindings!, Actions);
+        InputBindings("Camera Controls", _interactionContext.Bindings!, Actions);
     }
 }

@@ -1,53 +1,340 @@
-﻿using System.Numerics;
-using RedHerring.Fingerprint.Layers;
-using RedHerring.Fingerprint.Shortcuts;
-using RedHerring.Fingerprint.States;
+﻿namespace RedHerring.Fingerprint;
 
-namespace RedHerring.Fingerprint;
-
-public interface Input
+/// <summary>
+/// Combined input for the following:
+/// 1 - 127 - Keyboard keys with character representation
+/// 
+/// </summary>
+public enum Input
 {
-    void Tick();
-    bool IsDebugging { get; }
-    void EnableDebug();
-    void DisableDebug();
-    
-    KeyboardState? Keyboard { get; }
-    MouseState? Mouse { get; }
-    GamepadState? Gamepad { get; }
-    ActionsState Actions { get; }
-    
-    Vector2 MousePosition { get; }
-    Vector2 MouseDelta { get; }
-    float MouseWheelDelta { get; }
-    ShortcutBindings? Bindings { get; set; }
-    InputLayers Layers { get; }
+    Unknown = 0,
 
-    bool AreModifiersDown(Modifiers modifiers);
-    bool IsKeyPressed(Key key);
-    bool IsKeyDown(Key key);
-    bool IsKeyReleased(Key key);
-    bool IsAnyKeyDown();
-    void KeysDown(IList<Key> keys);
+    #region Characters
     
-    bool IsButtonPressed(MouseButton button);
-    bool IsButtonDown(MouseButton button);
-    bool IsButtonReleased(MouseButton button);
-    bool IsAnyMouseButtonDown();
-    void ButtonsDown(IList<MouseButton> buttons);
-    bool IsMouseMoved(MouseAxis axis);
-    float Axis(MouseAxis axis);
-    
-    bool IsButtonPressed(GamepadButton button);
-    bool IsButtonDown(GamepadButton button);
-    bool IsButtonReleased(GamepadButton button);
-    bool IsAnyGamepadButtonDown();
-    void ButtonsDown(IList<GamepadButton> buttons);
-    float Axis(GamepadAxis axis);
+    Backspace = 8,
+    Tab = 9,
+    Return = 13,
+    Escape = 27,
+    Space = 32,
+    Exclaim = 33,
+    DoubleQuote = 34,
+    Hash = 35,
+    Dollar = 36,
+    Percent = 37,
+    Ampersand = 38,
+    Apostrophe = 39,
+    ParenthesisLeft = 40,
+    ParenthesisRight = 41,
+    Asterisk = 42,
+    Plus = 43,
+    Comma = 44,
+    Minus = 45,
+    Period = 46,
+    Slash = 47,
+    Number0 = 48,
+    Number1 = 49,
+    Number2 = 50,
+    Number3 = 51,
+    Number4 = 52,
+    Number5 = 53,
+    Number6 = 54,
+    Number7 = 55,
+    Number8 = 56,
+    Number9 = 57,
+    Colon = 58,
+    Semicolon = 59,
+    Less = 60,
+    Equal = 61,
+    Greater = 62,
+    Questionmark = 63,
+    At = 64,
+    BracketLeft = 91,
+    BackSlash = 92,
+    BracketRight = 93,
+    Caret = 94,
+    Underscore = 95,
+    Backquote = 96,
+    A = 97,
+    B = 98,
+    C = 99,
+    D = 100,
+    E = 101,
+    F = 102,
+    G = 103,
+    H = 104,
+    I = 105,
+    J = 106,
+    K = 107,
+    L = 108,
+    M = 109,
+    N = 110,
+    O = 111,
+    P = 112,
+    Q = 113,
+    R = 114,
+    S = 115,
+    T = 116,
+    U = 117,
+    V = 118,
+    W = 119,
+    X = 120,
+    Y = 121,
+    Z = 122,
+    Delete = 127,
 
-    bool IsActionPressed(string action);
-    bool IsActionDown(string action);
-    bool IsActionReleased(string action);
-    bool IsAnyActionDown();
-    void ActionsDown(IList<string> actions);
+    #endregion Characters
+
+    #region Gamepad
+    
+    GamepadButtonsOffset = 0x00400000,
+    GamepadFaceDown = 0x00400001,
+    GamepadA = GamepadFaceDown,
+    GamepadCross = GamepadFaceDown,
+    GamepadFaceRight = 0x00400002,
+    GamepadB = GamepadFaceRight,
+    GamepadCircle = GamepadFaceRight,
+    GamepadFaceLeft = 0x00400003,
+    GamepadX = GamepadFaceLeft,
+    GamepadSquare = GamepadFaceLeft,
+    GamepadFaceUp = 0x00400004,
+    GamepadY = GamepadFaceUp,
+    GamepadTriangle = GamepadFaceUp,
+    GamepadBumperLeft = 0x00400005,
+    GamepadBumperRight = 0x00400006,
+    GamepadBack = 0x00400007,
+    GamepadStart = 0x00400008,
+    GamepadHome = 0x00400009,
+    GamepadStickLeft = 0x0040000A,
+    GamepadStickRight = 0x0040000B,
+    GamepadDPadUp = 0x0040000C,
+    GamepadDPadRight = 0x0040000D,
+    GamepadDPadDown = 0x0040000E,
+    GamepadDPadLeft = 0x0040000F,
+    
+    GamepadAxesOffset = 0x00800000,
+    GamepadStickLeftX = 0x00800001,
+    GamepadStickLeftXPositive = 0x00800002,
+    GamepadStickLeftXNegative = 0x00800003,
+    GamepadStickLeftY = 0x00800004,
+    GamepadStickLeftYPositive = 0x00800005,
+    GamepadStickLeftYNegative = 0x00800006,
+    GamepadStickRightX = 0x00800007,
+    GamepadStickRightXPositive = 0x00800008,
+    GamepadStickRightXNegative = 0x00800009,
+    GamepadStickRightY = 0x0080000A,
+    GamepadStickRightYPositive = 0x0080000B,
+    GamepadStickRightYNegative = 0x0080000C,
+    GamepadTriggerLeft = 0x0080000D,
+    GamepadTriggerRight = 0x0080000E,
+    
+    #endregion Gamepad
+
+    #region Mouse
+
+    MouseButtonsOffset = 0x04000000,
+    MouseLeft = 0x04000001,
+    MouseRight = 0x04000002,
+    MouseMiddle = 0x04000003,
+    MouseButton4 = 0x04000004,
+    MouseButton5 = 0x04000005,
+    MouseButton6 = 0x04000006,
+    MouseButton7 = 0x04000007,
+    MouseButton8 = 0x04000008,
+    MouseButton9 = 0x04000009,
+    MouseButton10 = 0x0400000A,
+    MouseButton11 = 0x0400000B,
+    MouseButton12 = 0x0400000C,
+    
+    MouseAxesOffset = 0x08000000,
+    MouseX = 0x08000001,
+    MouseXPositive = 0x08000002,
+    MouseXNegative = 0x08000003,
+    MouseXDelta = 0x08000004,
+    MouseY = 0x08000005,
+    MouseYPositive = 0x08000006,
+    MouseYNegative = 0x08000007,
+    MouseYDelta = 0x08000008,
+    MouseWheelX = 0x08000009,
+    MouseWheelXPositive = 0x0800000A,
+    MouseWheelXNegative = 0x0800000B,
+    MouseWheelY = 0x0800000C,
+    MouseWheelYPositive = 0x0800000D,
+    MouseWheelYNegative = 0x0800000E,
+
+    #endregion Mouse
+
+    #region Keys
+
+    KeysOffset = 0x40000000,
+    CapsLock = 0x40000039,
+    F1 = 0x4000003A,
+    F2 = 0x4000003B,
+    F3 = 0x4000003C,
+    F4 = 0x4000003D,
+    F5 = 0x4000003E,
+    F6 = 0x4000003F,
+    F7 = 0x40000040,
+    F8 = 0x40000041,
+    F9 = 0x40000042,
+    F10 = 0x40000043,
+    F11 = 0x40000044,
+    F12 = 0x40000045,
+    PrintScreen = 0x40000046,
+    ScrollLock = 0x40000047,
+    Pause = 0x40000048,
+    Insert = 0x40000049,
+    Home = 0x4000004A,
+    PageUp = 0x4000004B,
+    End = 0x4000004D,
+    PageDown = 0x4000004E,
+    Right = 0x4000004F,
+    ArrowRight = Right,
+    Left = 0x40000050,
+    ArrowLeft = Left,
+    Down = 0x40000051,
+    ArrowDown = Down,
+    Up = 0x40000052,
+    ArrowUp = Up,
+    NumLock = 0x40000053,
+    KeypadDivide = 0x40000054,
+    KeypadMultiply = 0x40000055,
+    KeypadMinus = 0x40000056,
+    KeypadPlus = 0x40000057,
+    KeypadEnter = 0x40000058,
+    Keypad1 = 0x40000059,
+    Keypad2 = 0x4000005A,
+    Keypad3 = 0x4000005B,
+    Keypad4 = 0x4000005C,
+    Keypad5 = 0x4000005D,
+    Keypad6 = 0x4000005E,
+    Keypad7 = 0x4000005F,
+    Keypad8 = 0x40000060,
+    Keypad9 = 0x40000061,
+    Keypad0 = 0x40000062,
+    KeypadPeriod = 0x40000063,
+    Application = 0x40000065,
+    Power = 0x40000066,
+    KeypadEquals = 0x40000067,
+    F13 = 0x40000068,
+    F14 = 0x40000069,
+    F15 = 0x4000006A,
+    F16 = 0x4000006B,
+    F17 = 0x4000006C,
+    F18 = 0x4000006D,
+    F19 = 0x4000006E,
+    F20 = 0x4000006F,
+    F21 = 0x40000070,
+    F22 = 0x40000071,
+    F23 = 0x40000072,
+    F24 = 0x40000073,
+    Execute = 0x40000074,
+    Help = 0x40000075,
+    Menu = 0x40000076,
+    Select = 0x40000077,
+    Stop = 0x40000078,
+    Again = 0x40000079,
+    Undo = 0x4000007A,
+    Cut = 0x4000007B,
+    Copy = 0x4000007C,
+    Paste = 0x4000007D,
+    Find = 0x4000007E,
+    Mute = 0x4000007F,
+    VolumeUp = 0x40000080,
+    VolumeDown = 0x40000081,
+    KeypadComma = 0x40000085,
+    KeypadEqualsAs400 = 0x40000086,
+    AlterAse = 0x40000099,
+    SysReq = 0x4000009A,
+    Cancel = 0x4000009B,
+    Clear = 0x4000009C,
+    Prior = 0x4000009D,
+    Return2 = 0x4000009E,
+    Separator = 0x4000009F,
+    Out = 0x400000A0,
+    Oper = 0x400000A1,
+    ClearAgain = 0x400000A2,
+    CrSel = 0x400000A3,
+    ExSel = 0x400000A4,
+    Keypad00 = 0x400000B0,
+    Keypad000 = 0x400000B1,
+    ThousandsSeparator = 0x400000B2,
+    DecimalSeparator = 0x400000B3,
+    CurrencyUnit = 0x400000B4,
+    CurrencySubUnit = 0x400000B5,
+    KeypadParenthesisLeft = 0x400000B6,
+    KeypadParenthesisRight = 0x400000B7,
+    KeypadBraceLeft = 0x400000B8,
+    KeypadBraceRight = 0x400000B9,
+    KeypadTab = 0x400000BA,
+    KeypadBackspace = 0x400000BB,
+    KeypadA = 0x400000BC,
+    KeypadB = 0x400000BD,
+    KeypadC = 0x400000BE,
+    KeypadD = 0x400000BF,
+    KeypadE = 0x400000C0,
+    KeypadF = 0x400000C1,
+    KeypadXor = 0x400000C2,
+    KeypadPower = 0x400000C3,
+    KeypadPercent = 0x400000C4,
+    KeypadLess = 0x400000C5,
+    KeypadGreater = 0x400000C6,
+    KeypadAmpersand = 0x400000C7,
+    KeypadDoubleAmpersand = 0x400000C8,
+    KeypadVerticalBar = 0x400000C9,
+    KeypadDoubleVerticalBar = 0x400000CA,
+    KeypadColon = 0x400000CB,
+    KeypadHash = 0x400000CC,
+    KeypadSpace = 0x400000CD,
+    KeypadAt = 0x400000CE,
+    KeypadExclaim = 0x400000CF,
+    KeypadMemStore = 0x400000D0,
+    KeypadMemRecall = 0x400000D1,
+    KeypadMemClear = 0x400000D2,
+    KeypadMemAdd = 0x400000D3,
+    KeypadMemSubtract = 0x400000D4,
+    KeypadMemMultiply = 0x400000D5,
+    KeypadMemDivide = 0x400000D6,
+    KeypadPlusMinus = 0x400000D7,
+    KeypadClear = 0x400000D8,
+    KeypadClearEntry = 0x400000D9,
+    KeypadBinary = 0x400000DA,
+    KeypadOctal = 0x400000DB,
+    KeypadDecimal = 0x400000DC,
+    KeypadHexadecimal = 0x400000DD,
+    ControlLeft = 0x400000E0,
+    ShiftLeft = 0x400000E1,
+    AltLeft = 0x400000E2,
+    SuperLeft = 0x400000E3,
+    ControlRight = 0x400000E4,
+    ShiftRight = 0x400000E5,
+    AltRight = 0x400000E6,
+    SuperRight = 0x400000E7,
+    Mode = 0x40000101,
+    AudioNext = 0x40000102,
+    AudioPrevious = 0x40000103,
+    AudioStop = 0x40000104,
+    AudioPlay = 0x40000105,
+    AudioMute = 0x40000106,
+    MediaSelect = 0x40000107,
+    Browser = 0x40000108,
+    Mail = 0x40000109,
+    Calculator = 0x4000010A,
+    Computer = 0x4000010B,
+    AcSearch = 0x4000010C,
+    AcHome = 0x4000010D,
+    AcBack = 0x4000010E,
+    AcForward = 0x4000010F,
+    AcStop = 0x40000110,
+    AcRefresh = 0x40000111,
+    AcBookmarks = 0x40000112,
+    BrightnessDown = 0x40000113,
+    BrightnessUp = 0x40000114,
+    DisplaySwitch = 0x40000115,
+    KeyboardIlluminationToggle = 0x40000116,
+    KeyboardIlluminationDown = 0x40000117,
+    KeyboardIlluminationUp = 0x40000118,
+    Eject = 0x40000119,
+    Sleep = 0x4000011A,
+    
+    #endregion Keys
 }

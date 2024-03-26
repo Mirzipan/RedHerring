@@ -14,7 +14,8 @@ namespace RedHerring.Numbers;
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 public partial struct Color4 : IEquatable<Color4>, IFormattable
 {
-    internal const int Count = 4;
+    internal const int Count       = 4;
+    public const   int SizeInBytes = Count * sizeof(float);
 
     public float R;
     public float G;

@@ -12,6 +12,8 @@ public class TestWindows
 	{
 		ShowExampleAppDockSpace();
 		
+		
+		
 		// background dock area
 		// ImGuiStylePtr style        = Gui.GetStyle();
 		// Vector2       viewportSize = Gui.GetMainViewport().Size;

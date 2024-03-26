@@ -1,7 +1,10 @@
 ﻿using System.Numerics;
 using System.Reflection;
 using ImGuiNET;
+using RedHerring.Alexandria.Pooling;
 using RedHerring.Fingerprint;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
 
 namespace RedHerring.Render.ImGui;
@@ -16,6 +19,7 @@ namespace RedHerring.Render.ImGui;
 public sealed class ImGuiRenderer : IDisposable
 {
     private GraphicsDevice _gd;
+    private ResourceFactory _factory;
     private readonly Assembly _assembly;
     private ColorSpaceHandling _colorSpaceHandling;
 
@@ -43,7 +47,8 @@ public sealed class ImGuiRenderer : IDisposable
     private readonly Dictionary<IntPtr, ResourceSetInfo> _viewsById = new();
 
     // Input
-    private readonly List<char> _inputChars = new();
+    private readonly List<InputEvent> _inputEvents = new(64);
+    private readonly List<char> _inputChars = new(64);
     
     private readonly List<IDisposable> _ownedResources = new();
     private int _lastAssignedId = 100;
@@ -73,6 +78,7 @@ public sealed class ImGuiRenderer : IDisposable
         ColorSpaceHandling colorSpaceHandling)
     {
         _gd = gd;
+        _factory = gd.ResourceFactory;
         _assembly = typeof(ImGuiRenderer).GetTypeInfo().Assembly;
         _colorSpaceHandling = colorSpaceHandling;
         _windowWidth = width;
@@ -182,12 +188,12 @@ public sealed class ImGuiRenderer : IDisposable
     /// Gets or creates a handle for a texture to be drawn with ImGui.
     /// Pass the returned handle to Image() or ImageButton().
     /// </summary>
-    public IntPtr GetOrCreateImGuiBinding(ResourceFactory factory, TextureView textureView)
+    public IntPtr GetOrCreateImGuiBinding(TextureView textureView)
     {
         if (!_setsByView.TryGetValue(textureView, out ResourceSetInfo rsi))
         {
             ResourceSet resourceSet =
-                factory.CreateResourceSet(new ResourceSetDescription(_textureLayout, textureView));
+                _factory.CreateResourceSet(new ResourceSetDescription(_textureLayout, textureView));
             resourceSet.Name = $"ImGui.NET {textureView.Name} Resource Set";
             rsi = new ResourceSetInfo(GetNextImGuiBindingID(), resourceSet);
 
@@ -216,21 +222,41 @@ public sealed class ImGuiRenderer : IDisposable
         return (IntPtr)newId;
     }
 
+    public Texture LoadTextureFromFile(string filePath)
+    {
+        using (var image = Image.Load<Rgba32>(filePath))
+        {
+            uint width = (uint)image.Width;
+            uint height = (uint)image.Height;
+            
+            var description = TextureDescription.Texture2D(width, height, 1, 1, 
+                PixelFormat.R8_G8_B8_A8_UNorm,
+                TextureUsage.Sampled);
+            
+            Texture texture = _factory.CreateTexture(description);
+
+            byte[] pixelData = new byte[width * height * 4];
+            image.CopyPixelDataTo(pixelData);
+            _gd.UpdateTexture(texture, pixelData, 0, 0, 0, width, height, 1, 0, 0);
+            return texture;
+        }
+    }
+
     /// <summary>
     /// Gets or creates a handle for a texture to be drawn with ImGui.
     /// Pass the returned handle to Image() or ImageButton().
     /// </summary>
-    public IntPtr GetOrCreateImGuiBinding(ResourceFactory factory, Texture texture)
+    public IntPtr GetOrCreateImGuiBinding(Texture texture)
     {
         if (!_autoViewsByTexture.TryGetValue(texture, out TextureView textureView))
         {
-            textureView = factory.CreateTextureView(texture);
+            textureView = _factory.CreateTextureView(texture);
             textureView.Name = $"ImGui.NET {texture.Name} View";
             _autoViewsByTexture.Add(texture, textureView);
             _ownedResources.Add(textureView);
         }
 
-        return GetOrCreateImGuiBinding(factory, textureView);
+        return GetOrCreateImGuiBinding(textureView);
     }
 
     public void RemoveImGuiBinding(Texture texture)
@@ -405,18 +431,18 @@ public sealed class ImGuiRenderer : IDisposable
     /// <summary>
     /// Updates ImGui input and IO configuration state.
     /// </summary>
-    public void Update(float deltaSeconds, Input input)
+    public void Update(float deltaSeconds, InteractionContext interactionContext)
     {
         BeginUpdate(deltaSeconds);
-        UpdateImGuiInput(input);
+        UpdateImGuiInput(interactionContext);
         EndUpdate();
     }
 
     /// <summary>
-    /// Called before we handle the input in <see cref="Update(float, InputSnapshot)"/>.
+    /// Called before we handle the input in <see cref="Update(float, InteractionContext)"/>.
     /// This render ImGui and update the state.
     /// </summary>
-    protected void BeginUpdate(float deltaSeconds)
+    private void BeginUpdate(float deltaSeconds)
     {
         if (_frameBegun)
         {
@@ -427,10 +453,10 @@ public sealed class ImGuiRenderer : IDisposable
     }
 
     /// <summary>
-    /// Called at the end of <see cref="Update(float, InputSnapshot)"/>.
+    /// Called at the end of <see cref="Update(float, InteractionContext)"/>.
     /// This tells ImGui that we are on the next frame.
     /// </summary>
-    protected void EndUpdate()
+    private void EndUpdate()
     {
         _frameBegun = true;
         ImGuiNET.ImGui.NewFrame();
@@ -450,39 +476,37 @@ public sealed class ImGuiRenderer : IDisposable
         io.DeltaTime = deltaSeconds; // DeltaTime is in seconds.
     }
 
-    private void UpdateImGuiInput(Input input)
+    private void UpdateImGuiInput(InteractionContext context)
     {
         ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
 
-        var mouse = input.Mouse;
-        if (mouse is not null)
-        {
-            io.AddMousePosEvent(mouse.Position.X, mouse.Position.Y);
-            io.AddMouseWheelEvent(0f, mouse.ScrollWheel.Y);
+        Vector2 mousePos = context.MousePosition;
+        io.AddMousePosEvent(mousePos.X, mousePos.Y);
+        Vector2 wheelDelta = context.MouseWheelDelta;
+        io.AddMouseWheelEvent(wheelDelta.X, wheelDelta.Y);
 
-            for (int i = 0; i < mouse.ButtonsChanged.Count; i++)
+        _inputEvents.Clear();
+        context.PumpEvents(_inputEvents);
+        for (int i = 0; i < _inputEvents.Count; i++)
+        {
+            var change = _inputEvents[i];
+            var source = change.Input.ToSource();
+            switch (source)
             {
-                var change = mouse.ButtonsChanged[i];
-                io.AddMouseButtonEvent((int)change.Button, change.IsDown);
+                case Source.Keyboard:
+                    io.AddKeyEvent(Convert.ToImGuiKey(change.Input), change.IsDown);
+                    break;
+                case Source.MouseButton:
+                    io.AddMouseButtonEvent(Convert.ToImGuiButton(change.Input), change.IsDown);
+                    break;
             }
         }
 
-        var keyboard = input.Keyboard;
-        if (keyboard is not null)
+        _inputChars.Clear();
+        context.Characters(_inputChars);
+        for (int i = 0; i < _inputChars.Count; i++)
         {
-            _inputChars.Clear();
-            keyboard.Chars(_inputChars);
-
-            for (int i = 0; i < _inputChars.Count; i++)
-            {
-                io.AddInputCharacter(_inputChars[i]);
-            }
-
-            for (int i = 0; i < keyboard.KeysChanged.Count; i++)
-            {
-                var change = keyboard.KeysChanged[i];
-                io.AddKeyEvent(Convert.ToImGuiKey(change.Key), change.IsDown);
-            }
+            io.AddInputCharacter(_inputChars[i]);
         }
     }
 

@@ -14,7 +14,7 @@ public sealed class NewProjectDialog
 	private readonly ObjectDialog _dialog;
 	
 	[ShowInInspector, OnCommitValue(nameof(UpdateTargetPath))] private string _name              = "";
-	[ShowInInspector, ReadOnlyInInspector]                     private string _path              = "";
+	[ShowInInspector]                                          private string _path              = "";
 	[ShowInInspector, ReadOnlyInInspector]                     private string _targetPath        = "";
 	[ShowInInspector]                                          private bool   _openAfterCreation = true;
 

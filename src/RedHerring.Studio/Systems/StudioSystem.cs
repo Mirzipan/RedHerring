@@ -6,9 +6,9 @@ using RedHerring.Core.Systems;
 using RedHerring.Deduction;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Infusion.Attributes;
-using RedHerring.Render.ImGui;
 using RedHerring.Studio.Constants;
 using RedHerring.Studio.Models;
+using RedHerring.Studio.Models.Project;
 using RedHerring.Studio.Models.Project.Importers;
 using RedHerring.Studio.Models.Tests;
 using RedHerring.Studio.Tools;
@@ -22,11 +22,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 {
 	[Infuse] private PathsSystem      _paths            = null!;
 	[Infuse] private InputSystem      _inputSystem      = null!;
-	[Infuse] private InputReceiver    _inputReceiver    = null!;
+	[Infuse] private InputLayer    _inputLayer    = null!;
 	[Infuse] private GraphicsSystem   _graphicsSystem   = null!;
-	[Infuse] private MetadataDatabase _metadataDatabase = null!;
-	[Infuse] private ToolManager      _toolManager;
-	[Infuse] private ImporterRegistry _importerRegistry = null!;
 	[Infuse] private StudioCamera     _camera           = null!;
 
 	public StudioCamera Camera => _camera;
@@ -40,6 +37,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	public int  DrawOrder => int.MaxValue;
 
 	private StudioModel    _studioModel = null!;
+	private ImporterRegistry _importerRegistry = null!;
+	private ToolManager _toolManager = null!;
 	
 	#region User Interface
 	private readonly DockSpace               _dockSpace       = new();
@@ -54,16 +53,22 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	#region Lifecycle
 	protected override void Init()
 	{
+		_importerRegistry = Findings.IndexerByType<ImporterRegistry>()!;
+		_toolManager = Findings.IndexerByType<ToolManager>()!;
+
 		_studioModel = new StudioModel(_importerRegistry);
 		
-		_inputReceiver.Name             = "studio";
-		_inputReceiver.ConsumesAllInput = false;
+		_inputLayer.Name             = "studio";
+		_inputLayer.ConsumesAllInput = false;
         
-		_inputReceiver.Bind(InputAction.Undo, Undo);
-		_inputReceiver.Bind(InputAction.Redo, Redo);
+		_inputLayer.Bind(InputAction.Undo, Undo);
+		_inputLayer.Bind(InputAction.Redo, Redo);
 
 		_statusBarMessageHandler = new StatusBarMessageHandler(_statusBar, _studioModel);
 		_newProjectDialog        = new NewProjectDialog(_studioModel);
+
+		_studioModel.EventAggregator.Register<OnProjectOpened>(OnProjectOpened);
+		_studioModel.EventAggregator.Register<OnProjectClosed>(OnProjectClosed);
 	}
 
 	protected override async ValueTask<int> Load()
@@ -78,8 +83,8 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 		// load settings and restore state
 		LoadSettings();
 		
-		// debug
-		_projectSettings = new ObjectDialog("Project settings", _studioModel.CommandHistory, _studioModel.Project.ProjectSettings);
+		// dialogs
+		CreateProjectSettings();
 		_studioSettings  = new ObjectDialog("Studio settings",  _studioModel.CommandHistory, _studioModel.StudioSettings);
 
 		return 0;
@@ -141,10 +146,28 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 
 	private void InitInput()
 	{
-		_inputReceiver.Push();
+		_inputLayer.Push();
 	}
+
+	private void CreateProjectSettings()
+	{
+		_projectSettings = new ObjectDialog("Project settings", _studioModel.CommandHistory, _studioModel.Project.ProjectSettings);
+	}
+
 	#endregion Private
 
+	#region Event handlers
+	private void OnProjectOpened(OnProjectOpened obj)
+	{
+		Context.Window.Title = $"{Program.Title} - {_studioModel.Project.ProjectSettings.ProjectFolderPath}";
+	}
+
+	private void OnProjectClosed(OnProjectClosed obj)
+	{
+		Context.Window.Title = Program.Title;
+	}
+	#endregion
+	
 	#region Menu
 	private void InitMenu()
 	{
@@ -154,13 +177,14 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 
 		_menu.AddItem("Edit/Undo",               _studioModel.CommandHistory.Undo);
 		_menu.AddItem("Edit/Redo",               _studioModel.CommandHistory.Redo);
-		_menu.AddItem("Edit/Project settings..", OnEditProjectSettingsClicked);
+		_menu.AddItem("Edit/Project settings..", OnEditProjectSettingsClicked, () => _studioModel.Project.IsOpened);
 		_menu.AddItem("Edit/Studio settings..",  OnEditStudioSettingsClicked);
 
 		// TODO - tools should be generated from tool manager
 		_menu.AddItem($"View/{ToolProjectView.ToolName}",   OnViewProjectClicked);
 		_menu.AddItem($"View/{ToolConsole.ToolName}",     OnViewConsoleClicked);
 		_menu.AddItem($"View/{ToolInspector.ToolName}", OnViewInspectorClicked);
+		_menu.AddItem($"View/{ToolFilePreview.ToolName}", OnViewTextEditorClicked);
 		_menu.AddItem($"View/{ToolDebug.ToolName}", OnViewDebugClicked);
 
 		_menu.AddItem("Project/Update engine files", OnProjectUpdateEngineFilesClicked, () => _studioModel.Project.IsOpened);
@@ -197,6 +221,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 
 	private void OnEditProjectSettingsClicked()
 	{
+		CreateProjectSettings();
 		_projectSettings.Open();
 	}
 
@@ -218,6 +243,11 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	private void OnViewInspectorClicked()
 	{
 		_toolManager.Activate(ToolInspector.ToolName);
+	}
+
+	private void OnViewTextEditorClicked()
+	{
+		_toolManager.Activate(ToolFilePreview.ToolName);
 	}
 
 	private void OnViewDebugClicked()
@@ -245,7 +275,7 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	{
 		_studioModel.Project.ImportAll();
 	}
-	
+
 	private void OnDebugSerializationTestClicked()
 	{
 		SerializationTests.Test();

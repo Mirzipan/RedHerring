@@ -1,40 +1,55 @@
-﻿using RedHerring.Infusion.Attributes;
+﻿using RedHerring.Alexandria.Disposables;
 
 namespace RedHerring.Clues;
 
-public sealed class Definitions : IDisposable
+public static class Definitions
 {
-    [Infuse]
-    private DefinitionIndexer _indexer = null!;
-    
-    private readonly DefinitionSet _data = new();
-    private readonly Dictionary<Type, Definition> _defaults = new();
+    private static DefinitionsContext? _context;
+    private static readonly Dictionary<Type, Definition> Defaults = new();
 
     #region Lifecycle
-
-    public void Dispose()
+    
+    public static DefinitionsContext CreateContext()
     {
-        _indexer.Dispose();
-        _data.Dispose();
+        var previous = CurrentContext();
+        var context = new DefinitionsContext();
+        CurrentContext(previous ?? context);
+        
+        return context;
+    }
+
+    public static void DestroyContext(DefinitionsContext? context = null)
+    {
+        var previous = CurrentContext();
+        if (context is null)
+        {
+            context = previous;
+        }
+
+        CurrentContext(context != previous ? previous : null);
+        context.TryDispose();
+    }
+
+    public static DefinitionsContext? CurrentContext() => _context;
+
+    public static void CurrentContext(DefinitionsContext? context)
+    {
+        _context = context;
+        UpdateDefaults();
     }
 
     #endregion Lifecycle
 
     #region Queries
 
-    public DefinitionProcessor CreateProcessor()
-    {
-        return new UnsortedDefinitionProcessor(_indexer, Process);
-    }
-
     /// <summary>
     /// Returns all definitions of a given type.
     /// </summary>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>Definition of type, if found, null otherwise</returns>
-    public IEnumerable<T> ByType<T>() where T : Definition
+    public static IEnumerable<T> ByType<T>() where T : Definition
     {
-        return _data.ByType<T>();
+        return _context is not null ? _context.ByType<T>() : Enumerable.Empty<T>();
     }
 
     /// <summary>
@@ -43,9 +58,9 @@ public sealed class Definitions : IDisposable
     /// <param name="id"></param>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>Definition of type and id, if found, null otherwise</returns>
-    public T? ById<T>(Guid id) where T : Definition
+    public static T? ById<T>(DefinitionId id) where T : Definition
     {
-        return _data.ById<T>(id);
+        return _context?.ById<T>(id);
     }
 
     /// <summary>
@@ -55,9 +70,15 @@ public sealed class Definitions : IDisposable
     /// <param name="definition"></param>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>True if definition exists</returns>
-    public bool TryById<T>(Guid id, out T? definition) where T : Definition
+    public static bool TryById<T>(DefinitionId id, out T? definition) where T : Definition
     {
-        return (definition = _data.ById<T>(id)) is not null;
+        if (_context is null)
+        {
+            definition = null;
+            return false;
+        }
+        
+        return (definition = _context.ById<T>(id)) is not null;
     }
 
     /// <summary>
@@ -66,9 +87,9 @@ public sealed class Definitions : IDisposable
     /// <param name="id"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public bool Contains<T>(Guid id) where T : Definition
+    public static bool Contains<T>(DefinitionId id) where T : Definition
     {
-        return _data.Contains<T>(id);
+        return _context?.Contains<T>(id) ?? false;
     }
 
     /// <summary>
@@ -76,26 +97,33 @@ public sealed class Definitions : IDisposable
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public T? Default<T>() where T : Definition
+    public static T? Default<T>() where T : Definition
     {
         Type type = typeof(T);
-        return _defaults.TryGetValue(type, out var result) ? (T)result : null;
+        if (_context is null)
+        {
+            return null;
+        }
+        
+        return Defaults.TryGetValue(type, out var result) ? (T)result : null;
     }
 
     #endregion Queries
 
-    #region Private
+    #region Public
 
-    private void Process(DefinitionProcessor processor)
+    /// <summary>
+    /// Caches the default definitions for the current context.
+    /// </summary>
+    public static void UpdateDefaults()
     {
-        processor.Process(_data);
-
-        PopulateDefaults();
-    }
-
-    private void PopulateDefaults()
-    {
-        foreach (var entry in _data.All())
+        Defaults.Clear();
+        if (_context is null)
+        {
+            return;
+        }
+        
+        foreach (var entry in _context.All())
         {
             if (!entry.IsDefault)
             {
@@ -103,9 +131,9 @@ public sealed class Definitions : IDisposable
             }
 
             var type = entry.GetType();
-            _defaults[type] = entry;
+            Defaults[type] = entry;
         }
     }
 
-    #endregion Private
+    #endregion Public
 }

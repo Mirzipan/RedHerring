@@ -4,6 +4,12 @@ namespace RedHerring.Studio.Models.Project.Importers;
 
 public interface Importer
 {
-    ImporterSettings CreateSettings();
-    ImporterResult   Import(Stream stream, ImporterSettings settings, string resourcePath, MigrationManager migrationManager, CancellationToken cancellationToken);
+	ImporterSettings CreateSettings();
+	ImporterResult Import(
+		Stream            stream,
+		ImporterSettings  settings,
+		string            resourcePath,
+		MigrationManager  migrationManager,
+		CancellationToken cancellationToken,
+		out string        referenceClassName);
 }

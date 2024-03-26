@@ -5,10 +5,10 @@ namespace RedHerring.Motive.Entities.Components;
 
 public sealed class ModelComponent : EntityComponent
 {
-    private Model? _model;
+    private Scene? _model;
     private bool _isDirty;
     
-    public Model? Model
+    public Scene? Model
     {
         get => _model;
         set
@@ -31,7 +31,7 @@ public sealed class ModelComponent : EntityComponent
     {
     }
 
-    public ModelComponent(Model? model)
+    public ModelComponent(Scene? model)
     {
         _model = model;
         MarkAsDirty();

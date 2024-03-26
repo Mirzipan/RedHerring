@@ -1,15 +1,11 @@
-﻿using System.Numerics;
-using ImGuiNET;
+﻿using ImGuiNET;
 using RedHerring.Alexandria;
 using RedHerring.Fingerprint;
 using RedHerring.Fingerprint.Layers;
 using RedHerring.Fingerprint.Shortcuts;
-using RedHerring.Fingerprint.States;
 using RedHerring.Infusion.Attributes;
 using RedHerring.Render.ImGui;
 using Silk.NET.Input;
-using Key = RedHerring.Fingerprint.Key;
-using MouseButton = RedHerring.Fingerprint.MouseButton;
 using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Core.Systems;
@@ -17,16 +13,10 @@ namespace RedHerring.Core.Systems;
 public sealed class InputSystem : EngineSystem, Updatable, Drawable
 {
     [Infuse]
-    private Input _input = null!;
-    [Infuse]
-    private InputReceiver _receiver = null!;
+    private InputLayer _layer = null!;
 
     public bool IsEnabled => true;
     public int UpdateOrder => -1_000_000;
-
-    public Input Input => _input;
-    public KeyboardState? Keyboard => _input.Keyboard;
-    public MouseState? Mouse => _input.Mouse;
 
     private bool _debugDrawImGuiMetrics = false;
 
@@ -39,58 +29,25 @@ public sealed class InputSystem : EngineSystem, Updatable, Drawable
     public void Update(GameTime gameTime)
     {
         UpdateCursor();
-        ImGuiProxy.Update(gameTime, _input);
+
+        var context = Interaction.CurrentContext();
+        if (context is not null)
+        {
+            ImGuiProxy.Update(gameTime, context);
+        }
         
-        _input.Tick();
+        Interaction.NextFrame();
     }
 
     #endregion Lifecycle
-
-    #region Queries
-
-    public bool IsKeyPressed(Key key) => _input.IsKeyPressed(key);
-    public bool IsKeyDown(Key key) => _input.IsKeyDown(key);
-    public bool IsKeyReleased(Key key) => _input.IsKeyReleased(key);
-    public bool IsAnyKeyDown() => _input.IsAnyKeyDown();
-    public void GetKeysDown(IList<Key> keys) => _input.KeysDown(keys);
-    
-    public bool IsButtonPressed(MouseButton button) => _input.IsButtonPressed(button);
-    public bool IsButtonDown(MouseButton button) => _input.IsButtonDown(button);
-    public bool IsButtonReleased(MouseButton button) => _input.IsButtonReleased(button);
-    public bool IsAnyMouseButtonDown() => _input.IsAnyMouseButtonDown();
-    public void GetButtonsDown(IList<MouseButton> buttons) => _input.ButtonsDown(buttons);
-    public bool IsMouseMoved(MouseAxis axis) => _input.IsMouseMoved(axis);
-    public float GetAxis(MouseAxis axis) => _input.Axis(axis);
-    public Vector2 MousePosition => _input.MousePosition;
-    public Vector2 MouseDelta => _input.MouseDelta;
-    public float MouseWheelDelta => _input.MouseWheelDelta;
-    
-    public bool IsButtonPressed(GamepadButton button) => _input.IsButtonPressed(button);
-    public bool IsButtonDown(GamepadButton button) => _input.IsButtonDown(button);
-    public bool IsButtonReleased(GamepadButton button) => _input.IsButtonReleased(button);
-    public bool IsAnyButtonDown() => _input.IsAnyGamepadButtonDown();
-    public void GetButtonsDown(IList<GamepadButton> buttons) => _input.ButtonsDown(buttons);
-    public float GetAxis(GamepadAxis axis) => _input.Axis(axis);
-
-    #endregion Queries
 
     #region Manipulation
 
     public bool AddBinding(ShortcutBinding binding)
     {
-        if (_input.Bindings is null)
-        {
-            return false;
-        }
-        
-        _input.Bindings.Add(binding);
+        var context = Interaction.CurrentContext()!;
+        context.Bindings!.Add(binding);
         return true;
-    }
-
-    public bool AddBinding(string name, Shortcut shortcut)
-    {
-        var binding = new ShortcutBinding(name, shortcut);
-        return AddBinding(binding);
     }
 
     #endregion Manipulation
@@ -115,10 +72,7 @@ public sealed class InputSystem : EngineSystem, Updatable, Drawable
             _                           => throw new ArgumentOutOfRangeException()
         };
 
-        if (_input.Mouse is not null)
-        {
-            _input.Mouse.Cursor = cursor;
-        }
+        Interaction.Cursor(cursor);
     }
 
     #endregion Private
@@ -127,19 +81,20 @@ public sealed class InputSystem : EngineSystem, Updatable, Drawable
 
     private void AddDebugBindings()
     {
-        _receiver.Name = "input_debug";
+        _layer.Name = "input_debug";
             
-        if (_input.Bindings is null)
+        var context = Interaction.CurrentContext();
+        if (context is null || context.Bindings is null)
         {
             return;
         }
         
-        AddBinding(new ShortcutBinding("imgui_metrics", new KeyboardShortcut(Key.F11, Modifiers.Shift)));
-        AddBinding(new ShortcutBinding("dbg_draw", new KeyboardShortcut(Key.F12, Modifiers.Shift)));
+        AddBinding(new ShortcutBinding("imgui_metrics", new Shortcut(Input.F11, Modifier.Shift)));
+        AddBinding(new ShortcutBinding("dbg_draw", new Shortcut(Input.F12, Modifier.Shift)));
         
-        _receiver.Bind("imgui_metrics", InputState.Released, ToggleImGuiMetrics);
-        _receiver.Bind("dbg_draw", InputState.Released, ToggleDebugDraw);
-        _receiver.Push();
+        _layer.Bind("imgui_metrics", InputState.Released, ToggleImGuiMetrics);
+        _layer.Bind("dbg_draw", InputState.Released, ToggleDebugDraw);
+        _layer.Push();
     }
     
     private void ToggleImGuiMetrics(ref ActionEvent evt)
@@ -153,13 +108,19 @@ public sealed class InputSystem : EngineSystem, Updatable, Drawable
     {
         evt.Consumed = true;
         
-        if (_input.IsDebugging)
+        var context = Interaction.CurrentContext();
+        if (context is null)
         {
-            _input.DisableDebug();
+            return;
+        }
+        
+        if (context.IsDebugging)
+        {
+            context.DisableDebug();
         }
         else
         {
-            _input.EnableDebug();
+            context.EnableDebug();
         }
     }
 

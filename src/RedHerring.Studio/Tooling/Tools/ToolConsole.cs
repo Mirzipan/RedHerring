@@ -1,4 +1,5 @@
-﻿using RedHerring.Render.ImGui;
+﻿using ImGuiNET;
+using RedHerring.Render.ImGui;
 using RedHerring.Studio.Models;
 using RedHerring.Studio.Models.ViewModels.Console;
 using Gui = ImGuiNET.ImGui;
@@ -23,7 +24,7 @@ public sealed class ToolConsole : Tool
 	private bool UpdateUI()
 	{
 		bool isOpen = true;
-		if (Gui.Begin(NameId, ref isOpen))
+		if (Gui.Begin(NameId, ref isOpen, ImGuiWindowFlags.HorizontalScrollbar))
 		{
 			for(int i=0; i<StudioModel.Console.Count; ++i)
 			{

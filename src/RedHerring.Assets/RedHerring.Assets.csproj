@@ -7,4 +7,10 @@
         <LangVersion>12</LangVersion>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Reference Include="OdinSerializer">
+        <HintPath>..\Libraries\OdinSerializer\OdinSerializer.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

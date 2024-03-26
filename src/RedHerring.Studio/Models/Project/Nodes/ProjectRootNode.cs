@@ -9,7 +9,7 @@ public sealed class ProjectRootNode : ProjectFolderNode
 	{
 	}
 
-	public override void InitMeta(MigrationManager migrationManager, ImporterRegistry importerRegistry, CancellationToken cancellationToken)
+	public override void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken)
 	{
 		Meta = new Metadata
 		       {

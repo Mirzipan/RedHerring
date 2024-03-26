@@ -1,4 +1,5 @@
 ﻿using Migration;
+using RedHerring.Assets;
 
 namespace RedHerring.Studio.Models.Project.Importers;
 
@@ -8,9 +9,11 @@ public sealed class CopyImporter : AssetImporter<CopyImporterSettings>
 {
 	protected override CopyImporterSettings CreateImporterSettings() => new();
 
-	protected override ImporterResult Import(Stream stream, CopyImporterSettings settings, string resourcePath, MigrationManager migrationManager,
-		CancellationToken                           cancellationToken)
+	protected override ImporterResult Import(Stream stream,            CopyImporterSettings settings, string resourcePath, MigrationManager migrationManager,
+		CancellationToken                           cancellationToken, out string           referenceClassName)
 	{
+		referenceClassName = nameof(AssetReference);
+		
 		byte[] data = new byte[stream.Length];
 		int read   = stream.Read(data, 0, data.Length);
 		// TODO report error if read != result.Length?

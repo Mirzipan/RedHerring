@@ -4,17 +4,17 @@ namespace RedHerring.Fingerprint.Layers;
 
 public class InputLayers
 {
-    private readonly List<InputReceiver?> _stack = new();
+    private readonly List<InputLayer?> _stack = new();
     private readonly Dictionary<OctoByte, int> _fixedLayers = new();
 
-    public IReadOnlyList<InputReceiver?> Stack => _stack;
+    public IReadOnlyList<InputLayer?> Stack => _stack;
     
     public event LayerPushed? Pushed;
     public event LayerPopped? Popped;
 
     #region Queries
 
-    public InputReceiver? Peek() => _stack.Count != 0 ? _stack[^1] : null;
+    public InputLayer? Peek() => _stack.Count != 0 ? _stack[^1] : null;
 
     #endregion Queries
 
@@ -31,27 +31,27 @@ public class InputLayers
         }
     }
     
-    public void Push(InputReceiver receiver)
+    public void Push(InputLayer inputLayer)
     {
-        if (receiver.IsActive)
+        if (inputLayer.IsActive)
         {
             return;
         }
 
-        if (receiver.Layer.Value != 0)
+        if (inputLayer.Layer.Value != 0)
         {
-            SetAt(receiver.Layer, receiver);
+            SetAt(inputLayer.Layer, inputLayer);
         }
         else
         {
             PadBelow(_fixedLayers.Count);
-            Add(receiver);
+            Add(inputLayer);
         }
     }
 
-    public void Pop(InputReceiver receiver)
+    public void Pop(InputLayer inputLayer)
     {
-        int index = _stack.IndexOf(receiver);
+        int index = _stack.IndexOf(inputLayer);
         if (index < 0)
         {
             return;
@@ -79,19 +79,19 @@ public class InputLayers
 
     #region Internal
 
-    private void Add(InputReceiver receiver)
+    private void Add(InputLayer inputLayer)
     {
-        _stack.Add(receiver);
-        HandleAdded(receiver);
+        _stack.Add(inputLayer);
+        HandleAdded(inputLayer);
     }
 
-    private void SetAt(int index, InputReceiver receiver)
+    private void SetAt(int index, InputLayer inputLayer)
     {
-        _stack[index] = receiver;
-        HandleAdded(receiver);
+        _stack[index] = inputLayer;
+        HandleAdded(inputLayer);
     }
 
-    private void SetAt(OctoByte layer, InputReceiver receiver)
+    private void SetAt(OctoByte layer, InputLayer inputLayer)
     {
         if (!_fixedLayers.TryGetValue(layer, out int index))
         {
@@ -99,7 +99,7 @@ public class InputLayers
             return;
         }
 
-        if (_stack.Count > index && receiver == _stack[index])
+        if (_stack.Count > index && inputLayer == _stack[index])
         {
             // Trying to push layer to a position it already occupies
             return;
@@ -108,12 +108,12 @@ public class InputLayers
         if (_stack.Count > index)
         {
             ReplaceByNull(index);
-            SetAt(index, receiver);
+            SetAt(index, inputLayer);
         }
         else
         {
             PadBelow(index);
-            Add(receiver);
+            Add(inputLayer);
         }
     }
 
@@ -146,23 +146,23 @@ public class InputLayers
         }
     }
 
-    private void HandleAdded(InputReceiver receiver)
+    private void HandleAdded(InputLayer inputLayer)
     {
-        receiver.IsActive = true;
-        receiver.RaisePushed();
-        RaisePushed(receiver);
+        inputLayer.IsActive = true;
+        inputLayer.RaisePushed();
+        RaisePushed(inputLayer);
     }
 
-    private void HandleRemoved(InputReceiver receiver)
+    private void HandleRemoved(InputLayer inputLayer)
     {
-        receiver.IsActive = false;
-        receiver.RaisePopped();
-        RaisePopped(receiver);
+        inputLayer.IsActive = false;
+        inputLayer.RaisePopped();
+        RaisePopped(inputLayer);
     }
 
-    private void RaisePushed(InputReceiver receiver) => Pushed?.Invoke(receiver);
+    private void RaisePushed(InputLayer inputLayer) => Pushed?.Invoke(inputLayer);
     
-    private void RaisePopped(InputReceiver receiver) => Popped?.Invoke(receiver);
+    private void RaisePopped(InputLayer inputLayer) => Popped?.Invoke(inputLayer);
 
     #endregion Internal
 }

@@ -31,7 +31,7 @@ public sealed class ToolDebug : Tool
 	{
 		bool isOpen = true;
 		SetNextWindowSize(new Vector2(300, 200), ImGuiCond.FirstUseEver);
-		if (Begin(NameId, ref isOpen))
+		if (Begin(NameId, ref isOpen, ImGuiWindowFlags.HorizontalScrollbar))
 		{
 			if (CollapsingHeader("Studio camera"))
 			{

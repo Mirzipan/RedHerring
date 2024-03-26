@@ -1,10 +1,11 @@
 using Migration;
 using RedHerring.Studio.Models.Project.Importers;
+using RedHerring.Studio.Models.ViewModels;
 using RedHerring.Studio.UserInterface.Attributes;
 
 namespace RedHerring.Studio.Models.Project.FileSystem;
 
-public abstract class ProjectNode
+public abstract class ProjectNode : ISelectable
 {
 	[ReadOnlyInInspector] public ProjectNodeType Type = ProjectNodeType.Uninitialized;
 
@@ -28,11 +29,16 @@ public abstract class ProjectNode
 		HasMetaFile  = hasMetaFile;
 	}
 
-	public abstract void InitMeta(MigrationManager migrationManager, ImporterRegistry importerRegistry, CancellationToken cancellationToken);
+	public abstract void InitMeta(MigrationManager migrationManager, CancellationToken cancellationToken);
 
 	public void ResetMetaHash()
 	{
 		Meta?.SetHash(null);
+	}
+
+	public void ApplyChanges()
+	{
+		UpdateMetaFile();
 	}
 	
 	public void UpdateMetaFile()
@@ -51,25 +57,24 @@ public abstract class ProjectNode
 	{
 		string metaPath = $"{AbsolutePath}.meta";
 		
-		// read if possible
-		Metadata? meta = null;
-		if (File.Exists(metaPath))
-		{
-			byte[] json = File.ReadAllBytes(metaPath);
-			meta = MigrationSerializer.DeserializeAsync<Metadata, IMetadataMigratable>(null, json, SerializedDataFormat.JSON, migrationManager, true, StudioModel.Assembly).GetAwaiter().GetResult();
-		}
+		 Metadata? meta = null;
+		 if (File.Exists(metaPath))
+		 {
+		 	byte[] json = File.ReadAllBytes(metaPath);
+		 	meta = MigrationSerializer.DeserializeAsync<Metadata, IMetadataMigratable>(null, json, SerializedDataFormat.JSON, migrationManager, true, StudioModel.Assembly).GetAwaiter().GetResult();
+		 }
 		
-		// write if needed
-		if(meta == null)
-		{
-			meta ??= new Metadata();
-			meta.UpdateGuid();
-
-			byte[] json = MigrationSerializer.SerializeAsync(meta, SerializedDataFormat.JSON, StudioModel.Assembly).GetAwaiter().GetResult();
-			File.WriteAllBytes(metaPath, json);
-		}
-
-		Meta = meta;
+		 // write if needed
+		 if(meta == null)
+		 {
+		 	meta ??= new Metadata();
+		 	meta.UpdateGuid();
+		
+		 	byte[] json = MigrationSerializer.SerializeAsync(meta, SerializedDataFormat.JSON, StudioModel.Assembly).GetAwaiter().GetResult();
+		 	File.WriteAllBytes(metaPath, json);
+		 }
+		
+		 Meta = meta;
 	}
 
 	public abstract void TraverseRecursive(Action<ProjectNode> process, TraverseFlags flags, CancellationToken cancellationToken);

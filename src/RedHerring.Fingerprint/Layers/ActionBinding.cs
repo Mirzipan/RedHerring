@@ -1,3 +1,3 @@
 ﻿namespace RedHerring.Fingerprint.Layers;
 
-public record struct ActionBinding(InputState State, ActionEventHandler Handler);
+public readonly record struct ActionBinding(InputState State, ActionEventHandler Handler);

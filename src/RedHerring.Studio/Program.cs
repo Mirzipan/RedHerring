@@ -1,4 +1,5 @@
-﻿using RedHerring.Core;
+﻿using RedHerring.Clues;
+using RedHerring.Core;
 using RedHerring.Game;
 using RedHerring.Platforms;
 using RedHerring.Render;
@@ -12,6 +13,8 @@ namespace RedHerring.Studio;
 
 internal class Program
 {
+    public const string Title = "Red Herring Engine Studio"; 
+    
     private static IWindow? _window;
 
     private static Engine _engine = null!;
@@ -29,7 +32,7 @@ internal class Program
         
         var opts = new WindowOptions
         {
-            Title = "Red Herring Engine Studio",
+            Title = Title,
             Position = new Vector2D<int>(100, 100),
             Size = new Vector2D<int>(960, 540),
             API = _graphicsBackend.ToGraphicsAPI(),
@@ -70,14 +73,18 @@ internal class Program
             Backend = _graphicsBackend,
             UseSeparateRenderThread = true,
         };
-        var studio = new StudioEngineInstaller();
+        var studio = new StudioEngineInstaller(_window);
         
         var context = new EngineContext
         {
             Name = "RedHerring Studio",
             Platform = _platform,
             Window = _window!,
-        }.WithAssemblies(AppDomain.CurrentDomain.GetAssemblies()).WithInstaller(render).WithInstaller(studio);
+        }
+            .WithAssemblies(AppDomain.CurrentDomain.GetAssemblies())
+            .WithAssembly(typeof(Definitions).Assembly) //TODO(Mirzi): this should not have to be added manually
+            .WithInstaller(render)
+            .WithInstaller(studio);
         _engine.Run(context);
 
         _sessionContext = new SessionContext();
@@ -108,6 +115,7 @@ internal class Program
 
     private static void OnEngineExit()
     {
+        Definitions.DestroyContext();
         _window?.Close();
     }
 
