@@ -23,7 +23,7 @@ public class StudioGraphics : EngineSystem
         SetupInput();
         
         // debug
-        //_rendererContext.AddFeature(new StudioTestRenderFeature());
+        _rendererContext.AddFeature(new StudioTestRenderFeature());
     }
 
     protected override ValueTask<int> Load()
