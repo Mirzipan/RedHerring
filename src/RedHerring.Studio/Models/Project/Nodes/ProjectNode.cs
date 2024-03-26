@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Migration;
 using RedHerring.Deduction;
 using RedHerring.Studio.Models.Project.Importers;
@@ -20,7 +21,7 @@ public abstract class ProjectNode : ISelectable
 	public    Metadata? Meta;
 	protected Importer? Importer;
 
-	public          string Extension => System.IO.Path.GetExtension(AbsolutePath).ToLower(); // cache if needed
+	public          string Extension => Regex.Match(Path.GetFileName(AbsolutePath), @"\..*").Value.ToLower(); // something.abc.fbx => .abc.fbx //Path.GetExtension(AbsolutePath).ToLower(); // cache if needed
 	public abstract bool   Exists    { get; }
 
 	protected ProjectNode(string name, string absolutePath, string relativePath, bool hasMetaFile)
