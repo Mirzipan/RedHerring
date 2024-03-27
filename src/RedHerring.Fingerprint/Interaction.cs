@@ -21,7 +21,7 @@ public static class Interaction
             _devices = new SilkDevices(view);
         }
         
-        _devices.InputEvent += OnInputChanged;
+        _devices.InputChanged += OnInputChanged;
         _devices.CharacterTyped += OnCharacterTyped;
         
         CreateContext();
@@ -104,7 +104,7 @@ public static class Interaction
         //
     }
 
-    private static void OnInputChanged(InputEvent evt)
+    private static void OnInputChanged(InputChanged evt)
     {
         _context?.OnInputChanged(evt);
     }

@@ -13,12 +13,12 @@ internal sealed class SilkDevices : InputDevices, IDisposable
     private IMouse? _mouse;
     private IGamepad? _gamepad;
 
-    public event Action<InputEvent>? InputEvent;
+    public event Action<InputChanged>? InputChanged;
     public event Action<int, char>? CharacterTyped;
 
     #region Lifecycle
 
-    public SilkDevices(IView view)
+    public SilkDevices(IView view) 
     {
         SdlInput.RegisterPlatform();
         
@@ -126,14 +126,14 @@ internal sealed class SilkDevices : InputDevices, IDisposable
 
     private void OnKeyDown(IKeyboard keyboard, Key key, int scanCode)
     {
-        var evt = new InputEvent(keyboard.Index, Convert.FromKey(key), true, 1.00f);
-        InputEvent?.Invoke(evt);
+        var evt = new InputChanged(keyboard.Index, Convert.FromKey(key), true, 1.00f);
+        InputChanged?.Invoke(evt);
     }
 
     private void OnKeyUp(IKeyboard keyboard, Key key, int scanCode)
     {
-        var evt = new InputEvent(keyboard.Index, Convert.FromKey(key), false, 0.00f);
-        InputEvent?.Invoke(evt);
+        var evt = new InputChanged(keyboard.Index, Convert.FromKey(key), false, 0.00f);
+        InputChanged?.Invoke(evt);
     }
 
     private void OnKeyChar(IKeyboard keyboard, char character)
@@ -177,26 +177,26 @@ internal sealed class SilkDevices : InputDevices, IDisposable
 
     private void OnMouseMove(IMouse mouse, Vector2 position)
     {
-        InputEvent?.Invoke(new InputEvent(mouse.Index, Input.MouseX, true, position.X));
-        InputEvent?.Invoke(new InputEvent(mouse.Index, Input.MouseY, true, position.Y));
+        InputChanged?.Invoke(new InputChanged(mouse.Index, Input.MouseX, true, position.X));
+        InputChanged?.Invoke(new InputChanged(mouse.Index, Input.MouseY, true, position.Y));
     }
 
     private void OnMouseDown(IMouse mouse, MouseButton button)
     {
-        var evt = new InputEvent(mouse.Index, Convert.FromMouseButton(button), true, 1.00f);
-        InputEvent?.Invoke(evt);
+        var evt = new InputChanged(mouse.Index, Convert.FromMouseButton(button), true, 1.00f);
+        InputChanged?.Invoke(evt);
     }
 
     private void OnMouseUp(IMouse mouse, MouseButton button)
     {
-        var evt = new InputEvent(mouse.Index, Convert.FromMouseButton(button), false, 0.00f);
-        InputEvent?.Invoke(evt);
+        var evt = new InputChanged(mouse.Index, Convert.FromMouseButton(button), false, 0.00f);
+        InputChanged?.Invoke(evt);
     }
 
     private void OnMouseScroll(IMouse mouse, ScrollWheel scrollDelta)
     {
-        InputEvent?.Invoke(new InputEvent(mouse.Index, Input.MouseWheelX, true, scrollDelta.X));
-        InputEvent?.Invoke(new InputEvent(mouse.Index, Input.MouseWheelY, true, scrollDelta.Y));
+        InputChanged?.Invoke(new InputChanged(mouse.Index, Input.MouseWheelX, true, scrollDelta.X));
+        InputChanged?.Invoke(new InputChanged(mouse.Index, Input.MouseWheelY, true, scrollDelta.Y));
     }
 
     #endregion Mouse
@@ -235,14 +235,14 @@ internal sealed class SilkDevices : InputDevices, IDisposable
 
     private void OnButtonDown(IGamepad gamepad, Button button)
     {
-        var evt = new InputEvent(gamepad.Index, Convert.FromGamepadButton(button), true, 1.00f);
-        InputEvent?.Invoke(evt);
+        var evt = new InputChanged(gamepad.Index, Convert.FromGamepadButton(button), true, 1.00f);
+        InputChanged?.Invoke(evt);
     }
 
     private void OnButtonUp(IGamepad gamepad, Button button)
     {
-        var evt = new InputEvent(gamepad.Index, Convert.FromGamepadButton(button), false, 0.00f);
-        InputEvent?.Invoke(evt);
+        var evt = new InputChanged(gamepad.Index, Convert.FromGamepadButton(button), false, 0.00f);
+        InputChanged?.Invoke(evt);
     }
 
     private void OnThumbstickMoved(IGamepad gamepad, Thumbstick thumbstick)
@@ -254,8 +254,8 @@ internal sealed class SilkDevices : InputDevices, IDisposable
             _ => (Input.Unknown, Input.Unknown),
         };
         
-        InputEvent?.Invoke(new InputEvent(gamepad.Index, stickX, true, thumbstick.X));
-        InputEvent?.Invoke(new InputEvent(gamepad.Index, stickY, true, thumbstick.Y));
+        InputChanged?.Invoke(new InputChanged(gamepad.Index, stickX, true, thumbstick.X));
+        InputChanged?.Invoke(new InputChanged(gamepad.Index, stickY, true, thumbstick.Y));
     }
 
     private void OnTriggerMoved(IGamepad gamepad, Trigger trigger)
@@ -267,7 +267,7 @@ internal sealed class SilkDevices : InputDevices, IDisposable
             _ => Input.Unknown,
         };
         
-        InputEvent?.Invoke(new InputEvent(gamepad.Index, triggerInput, true, trigger.Position));
+        InputChanged?.Invoke(new InputChanged(gamepad.Index, triggerInput, true, trigger.Position));
     }
 
     #endregion Gamepad

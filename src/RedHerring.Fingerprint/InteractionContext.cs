@@ -22,7 +22,7 @@ public sealed class InteractionContext : IDisposable
     
     private readonly List<char> _chars = new(DefaultCapacity);
 
-    private readonly List<InputEvent> _events = new(DefaultCapacity);
+    private readonly List<InputChanged> _events = new(DefaultCapacity);
 
     private readonly Dictionary<string, InputState> _actions = new(DefaultCapacity);
     
@@ -181,7 +181,7 @@ public sealed class InteractionContext : IDisposable
     public void Down(List<Input> result) => result.AddRange(_down);
     public void Released(List<Input> result) => result.AddRange(_released);
     public void Characters(List<char> result) => result.AddRange(_chars);
-    public void PumpEvents(List<InputEvent> result) => result.AddRange(_events);
+    public void PumpEvents(List<InputChanged> result) => result.AddRange(_events);
 
     #endregion Queries
 
@@ -206,7 +206,7 @@ public sealed class InteractionContext : IDisposable
         _actions[action] = state;
     }
 
-    internal void OnInputChanged(InputEvent evt)
+    internal void OnInputChanged(InputChanged evt)
     {
         _events.Add(evt);
         var source = evt.Input.ToSource();
@@ -222,10 +222,16 @@ public sealed class InteractionContext : IDisposable
                 switch (evt.Input)
                 {
                     case Input.MouseX:
-                        _analogValues[MouseAxisIndex(Input.MouseXDelta)] = evt.AnalogValue - _lastMouseX;
+                        float deltaX = evt.AnalogValue - _lastMouseX;
+                        _analogValues[MouseAxisIndex(Input.MouseXDelta)] = deltaX;
+                        _analogValues[MouseAxisIndex(Input.MouseXPositive)] = MathF.Max(deltaX, 0.00f);
+                        _analogValues[MouseAxisIndex(Input.MouseXNegative)] = MathF.Min(deltaX, 0.00f);
                         break;
                     case Input.MouseY:
-                        _analogValues[MouseAxisIndex(Input.MouseYDelta)] = evt.AnalogValue - _lastMouseY;
+                        float deltaY = evt.AnalogValue - _lastMouseY;
+                        _analogValues[MouseAxisIndex(Input.MouseYDelta)] = deltaY;
+                        _analogValues[MouseAxisIndex(Input.MouseYPositive)] = MathF.Max(deltaY, 0.00f);
+                        _analogValues[MouseAxisIndex(Input.MouseYNegative)] = MathF.Min(deltaY, 0.00f);
                         break;
                 }
                 break;

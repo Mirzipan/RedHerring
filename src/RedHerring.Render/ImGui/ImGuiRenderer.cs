@@ -47,7 +47,7 @@ public sealed class ImGuiRenderer : IDisposable
     private readonly Dictionary<IntPtr, ResourceSetInfo> _viewsById = new();
 
     // Input
-    private readonly List<InputEvent> _inputEvents = new(64);
+    private readonly List<InputChanged> _inputEvents = new(64);
     private readonly List<char> _inputChars = new(64);
     
     private readonly List<IDisposable> _ownedResources = new();
