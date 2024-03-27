@@ -346,6 +346,11 @@ public sealed class SceneImporter : Importer<Assimp.Scene>
 			index => sceneImporterHierarchyNodeSettings.Children![index] = new SceneImporterHierarchyNodeSettings(node.Children[index].Name)
 		);
 
+		for (int i = 0; i < node.ChildCount; ++i)
+		{
+			settingsChanged |= UpdateImportSettingsHierarchyNode(node.Children[i], sceneImporterHierarchyNodeSettings.Children![i]);
+		}
+		
 		// meshes
 		settingsChanged |= ResizeAndUpdateList(
 			ref sceneImporterHierarchyNodeSettings.Meshes,
