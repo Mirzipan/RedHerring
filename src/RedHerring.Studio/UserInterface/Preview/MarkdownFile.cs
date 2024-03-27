@@ -3,12 +3,18 @@ using ImGuiNET;
 using RedHerring.Alexandria.Extensions;
 using RedHerring.Numbers;
 using RedHerring.Studio.UserInterface.Editor.Markdown;
-using Gui = ImGuiNET.ImGui;
+using static ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface.Editor;
 
 internal static class MarkdownFile
 {
+    private static readonly string[] Extensions =
+    [
+        ".md",
+        ".markdown",
+    ];
+    
     private static readonly Vector4[] HeadingColors = new[]
     {
         Color.OrangeRed.ToVector4(),
@@ -18,6 +24,11 @@ internal static class MarkdownFile
         Color.SkyBlue.ToVector4(),
         Color.PaleVioletRed.ToVector4(),
     };
+    
+    public static bool HasExtension(string extension)
+    {
+        return Extensions.Contains(extension);
+    }
     
     public static void Draw(IReadOnlyList<string> lines)
     {
@@ -82,13 +93,13 @@ internal static class MarkdownFile
                 }
             }
             
-            DrawLine(line, lineMeta);
+            TextLine(line, lineMeta);
 
             ResetLine(ref lineMeta);
         }
     }
 
-    private static void DrawLine(string line, Line lineMeta)
+    private static void TextLine(string line, Line lineMeta)
     {
         int indentStart = 0;
         if (lineMeta.IsUnorderedListStart)
@@ -98,7 +109,7 @@ internal static class MarkdownFile
 
         for (int i = indentStart; i < lineMeta.LeadingSpaceCount / 2; ++i)
         {
-            Gui.Indent();
+            Indent();
         }
         
         int textStart = lineMeta.LastRenderPosition + 1;
@@ -106,29 +117,29 @@ internal static class MarkdownFile
         if (lineMeta.IsUnorderedListStart)
         {
             // TODO(mirzi): magic
-            Gui.TextWrapped(line.AsSpan(textStart));
+            TextWrapped(line.AsSpan(textStart));
         }
         else if (lineMeta.IsHeading)
         {
             int index = (lineMeta.HeadingCount - 1).Clamp(0, HeadingColors.Length - 1);
-            Gui.PushStyleColor(ImGuiCol.Text, HeadingColors[index]);
+            PushStyleColor(ImGuiCol.Text, HeadingColors[index]);
             
-            Gui.TextWrapped(line.AsSpan(textStart));
+            TextWrapped(line.AsSpan(textStart));
             
-            Gui.PopStyleColor();
+            PopStyleColor();
         }
         else if (lineMeta.IsEmphasis)
         {
-            Gui.TextWrapped(line.AsSpan(textStart));
+            TextWrapped(line.AsSpan(textStart));
         }
         else
         {
-            Gui.TextWrapped(line);
+            TextWrapped(line);
         }
         
         for (int i = indentStart; i < lineMeta.LeadingSpaceCount / 2; ++i)
         {
-            Gui.Unindent();
+            Unindent();
         }
     }
 

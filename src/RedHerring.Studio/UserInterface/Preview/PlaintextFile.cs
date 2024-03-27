@@ -1,5 +1,6 @@
-﻿namespace RedHerring.Studio.UserInterface.Editor;
-using Gui = ImGuiNET.ImGui;
+﻿using static ImGuiNET.ImGui;
+
+namespace RedHerring.Studio.UserInterface.Editor;
 
 internal static class PlaintextFile
 {
@@ -8,7 +9,7 @@ internal static class PlaintextFile
         for (int i = 0; i < lines.Count; i++)
         {
             string line = lines[i];
-            Gui.Text(line);
+            Text(line);
         }
     }
 }

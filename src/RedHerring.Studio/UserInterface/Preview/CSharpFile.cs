@@ -1,12 +1,14 @@
 ﻿using System.Numerics;
 using ImGuiNET;
 using RedHerring.Numbers;
-using Gui = ImGuiNET.ImGui;
+using static ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface.Editor;
 
 internal static class CSharpFile
 {
+    private const string Extension = ".cs";
+    
     private static readonly Vector4 KeywordColor = Color.DeepPink.ToVector4();
     private static readonly Vector4 CommentColor = Color.Gray.ToVector4();
 
@@ -95,6 +97,8 @@ internal static class CSharpFile
         "while",
     };
 
+    public static bool HasExtension(string extension) => string.Compare(extension, Extension, StringComparison.OrdinalIgnoreCase) == 0;
+
     public static void Draw(IReadOnlyList<string> lines)
     {
         // TODO(mirzi): push some monospace font here
@@ -119,7 +123,7 @@ internal static class CSharpFile
             string[] parts = line.Split(' ');
             if (parts.Length == 0)
             {
-                Gui.Text(line);
+                Text(line);
             }
             
             singleLineComment = false;
@@ -130,38 +134,38 @@ internal static class CSharpFile
                 bool isColorPushed = false;
                 if (part.StartsWith(SingleLineComment) || singleLineComment || multilineComment)
                 {
-                    Gui.PushStyleColor(ImGuiCol.Text, CommentColor);
+                    PushStyleColor(ImGuiCol.Text, CommentColor);
                     isColorPushed = true;
                     singleLineComment = true;
                 }
                 else if (part.StartsWith(MultilineCommentStart))
                 {
-                    Gui.PushStyleColor(ImGuiCol.Text, CommentColor);
+                    PushStyleColor(ImGuiCol.Text, CommentColor);
                     isColorPushed = true;
                     multilineComment = true;
                 }
                 else if (part.StartsWith(MultilineCommentEnd))
                 {
-                    Gui.PushStyleColor(ImGuiCol.Text, CommentColor);
+                    PushStyleColor(ImGuiCol.Text, CommentColor);
                     isColorPushed = true;
                     multilineComment = false;
                 }
                 else if (Keywords.Contains(part))
                 {
-                    Gui.PushStyleColor(ImGuiCol.Text, KeywordColor);
+                    PushStyleColor(ImGuiCol.Text, KeywordColor);
                     isColorPushed = true;
                 }
                 
-                Gui.Text(parts[j]);
+                Text(parts[j]);
                 
                 if (isColorPushed)
                 {
-                    Gui.PopStyleColor();
+                    PopStyleColor();
                 }
 
                 if (j < parts.Length - 1)
                 {
-                    Gui.SameLine();
+                    SameLine();
                 }
             }
         }
@@ -169,12 +173,12 @@ internal static class CSharpFile
 
     private static void DrawLineNumber(int i, int lineNumberWidth)
     {
-        Gui.PushStyleColor(ImGuiCol.Text, CommentColor);
+        PushStyleColor(ImGuiCol.Text, CommentColor);
         
         string lineNumber = (i + 1).ToString().PadLeft(lineNumberWidth, ' ');
-        Gui.Text(lineNumber);
-        Gui.SameLine();
+        Text(lineNumber);
+        SameLine();
         
-        Gui.PopStyleColor();
+        PopStyleColor();
     }
 }

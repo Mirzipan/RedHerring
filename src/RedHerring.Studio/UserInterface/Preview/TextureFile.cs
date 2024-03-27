@@ -1,11 +1,10 @@
-﻿using System.Numerics;
-using Gui = ImGuiNET.ImGui;
+﻿using static ImGuiNET.ImGui;
 
 namespace RedHerring.Studio.UserInterface.Editor;
 
 internal static class TextureFile
 {
-    private static readonly string[] ValidExtensions =
+    private static readonly string[] Extensions =
     [
         ".png",
         ".jpg",
@@ -13,14 +12,14 @@ internal static class TextureFile
         ".tga",
     ];
     
-    public static bool IsTexture(string extension)
+    public static bool HasExtension(string extension)
     {
-        return ValidExtensions.Contains(extension);
+        return Extensions.Contains(extension);
     }
     
     public static void Draw(IntPtr binding)
     {
-        var size = Gui.GetContentRegionAvail();
+        var size = GetContentRegionAvail();
         if (size.X > size.Y)
         {
             size.X = size.Y;
@@ -30,6 +29,6 @@ internal static class TextureFile
             size.Y = size.X;
         }
         
-        Gui.Image(binding, size);
+        Image(binding, size);
     }
 }

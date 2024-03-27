@@ -9,7 +9,7 @@ namespace RedHerring.Studio.Models.Project.FileSystem;
 
 public abstract class ProjectNode : ISelectable
 {
-	[ReadOnlyInInspector] public ProjectNodeType Type = ProjectNodeType.Uninitialized;
+	[ReadOnlyInInspector] public ProjectNodeKind Kind = ProjectNodeKind.Uninitialized;
 
 	public          string Name { get; }
 	public readonly string AbsolutePath;
@@ -51,9 +51,9 @@ public abstract class ProjectNode : ISelectable
 		File.WriteAllBytes(metaPath, json);
 	}
 
-	public void SetNodeType(ProjectNodeType type)
+	public void SetNodeType(ProjectNodeKind kind)
 	{
-		Type = type;
+		Kind = kind;
 	}
 	
 	protected void CreateMetaFile(MigrationManager migrationManager)

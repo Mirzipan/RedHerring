@@ -5,10 +5,10 @@ namespace RedHerring.Studio;
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class ImporterAttribute : Attribute
 {
-	public readonly ProjectNodeType NodeType; 
+	public readonly ProjectNodeKind NodeKind; 
 	
-	public ImporterAttribute(ProjectNodeType nodeType = ProjectNodeType.Uninitialized)
+	public ImporterAttribute(ProjectNodeKind nodeKind = ProjectNodeKind.Uninitialized)
 	{
-		NodeType   = nodeType;
+		NodeKind   = nodeKind;
 	}
 }

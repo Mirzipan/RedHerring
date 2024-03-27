@@ -5,7 +5,7 @@ namespace RedHerring.Studio.Models.Project.FileSystem;
 
 public sealed class ProjectRootNode : ProjectFolderNode
 {
-	public ProjectRootNode(string name, string absolutePath, ProjectNodeType type) : base(name, absolutePath, "", false, type)
+	public ProjectRootNode(string name, string absolutePath, ProjectNodeKind kind) : base(name, absolutePath, "", false, kind)
 	{
 	}
 

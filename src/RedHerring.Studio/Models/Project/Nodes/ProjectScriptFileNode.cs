@@ -17,7 +17,7 @@ public class ProjectScriptFileNode : ProjectNode
 
 	public ProjectScriptFileNode(string name, string absolutePath, string relativePath) : base(name, absolutePath, relativePath, false)
 	{
-		SetNodeType(ProjectNodeType.ScriptFile);
+		SetNodeType(ProjectNodeKind.ScriptFile);
 	}
 
 	public override void Init(MigrationManager migrationManager, CancellationToken cancellationToken)
@@ -29,7 +29,7 @@ public class ProjectScriptFileNode : ProjectNode
 		if(fileId != null)
 		{
 			guid = fileId.Guid;
-			SetNodeType(ProjectNodeType.ScriptFile);
+			SetNodeType(ProjectNodeKind.ScriptFile);
 		}
 		
 		Meta = new Metadata

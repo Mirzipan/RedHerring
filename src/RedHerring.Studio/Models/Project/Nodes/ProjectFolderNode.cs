@@ -11,9 +11,9 @@ public class ProjectFolderNode : ProjectNode
 
 	public List<ProjectNode> Children { get; } = new();
 	
-	public ProjectFolderNode(string name, string absolutePath, string relativePath, bool hasMetaFile, ProjectNodeType type) : base(name, absolutePath, relativePath, hasMetaFile)
+	public ProjectFolderNode(string name, string absolutePath, string relativePath, bool hasMetaFile, ProjectNodeKind kind) : base(name, absolutePath, relativePath, hasMetaFile)
 	{
-		SetNodeType(type);
+		SetNodeType(kind);
 	}
 
 	public override void Init(MigrationManager migrationManager, CancellationToken cancellationToken)

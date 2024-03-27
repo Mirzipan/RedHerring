@@ -13,9 +13,10 @@ public class FilePreview
     private string? _filePath;
     
     private readonly List<string> _lines = new();
-    private TextFileKind _kind;
+    private FileKind _kind;
 
     private IntPtr _textureBinding;
+    private SceneDescription? _sceneDescription;
 
     private static int _uniqueIdGenerator = 0;
     private int _uniqueId = _uniqueIdGenerator++;
@@ -31,14 +32,14 @@ public class FilePreview
     {
         Clear();
 
-        if (source is ProjectScriptFileNode scriptFile)
+        switch (source)
         {
-            LoadScriptFile(scriptFile);
-        }
-
-        if (source is ProjectAssetFileNode assetFile)
-        {
-            LoadAssetFile(assetFile);
+            case ProjectScriptFileNode scriptFile:
+                LoadScriptFile(scriptFile);
+                break;
+            case ProjectAssetFileNode assetFile:
+                LoadAssetFile(assetFile);
+                break;
         }
 
         Rebuild();
@@ -51,16 +52,14 @@ public class FilePreview
         for (int i = 0; i < sources.Count; i++)
         {
             var source = sources[i];
-            if (source is ProjectScriptFileNode scriptFile)
+            switch (source)
             {
-                LoadScriptFile(scriptFile);
-                goto rebuild;
-            }
-
-            if (source is ProjectAssetFileNode assetFile)
-            {
-                LoadAssetFile(assetFile);
-                goto rebuild;
+                case ProjectScriptFileNode scriptFile:
+                    LoadScriptFile(scriptFile);
+                    goto rebuild;
+                case ProjectAssetFileNode assetFile:
+                    LoadAssetFile(assetFile);
+                    goto rebuild;
             }
         }
 
@@ -70,33 +69,31 @@ public class FilePreview
 
     public void Update()
     {
-        if (_lines.Count == 0)
-        {
-            if (_textureBinding == IntPtr.Zero)
-            {
-                return;
-            }
-
-            DrawInfoBar();
-            TextureFile.Draw(_textureBinding);
-            return;
-        }
-
-        DrawInfoBar();
-
         switch (_kind)
         {
-            case TextFileKind.Unknown:
+            case FileKind.Unknown:
                 PlaintextFile.Draw(_lines);
                 break;
-            case TextFileKind.PlainText:
+            case FileKind.PlainText:
                 PlaintextFile.Draw(_lines);
                 break;
-            case TextFileKind.Markdown:
+            case FileKind.Markdown:
                 MarkdownFile.Draw(_lines);
                 break;
-            case TextFileKind.CSharp:
+            case FileKind.CSharp:
                 CSharpFile.Draw(_lines);
+                break;
+            case FileKind.Texture:
+                if (_textureBinding != IntPtr.Zero)
+                {
+                    TextureFile.Draw(_textureBinding);
+                }
+                break;
+            case FileKind.Scene:
+                if (_sceneDescription is not null)
+                {
+                    SceneFile.Draw(_sceneDescription);
+                }
                 break;
             default:
                 PlaintextFile.Draw(_lines);
@@ -139,6 +136,7 @@ public class FilePreview
         _lines.Clear();
         
         ClearTextureBinding();
+        ClearSceneDescription();
     }
 
     private void ClearTextureBinding()
@@ -150,28 +148,36 @@ public class FilePreview
         }
     }
 
+    private void ClearSceneDescription()
+    {
+        if (_sceneDescription is not null)
+        {
+            _sceneDescription = null;
+        }
+    }
+
     private void LoadScriptFile(ProjectScriptFileNode node)
     {
         var result = node.LoadFile();
         if (result.Code == ProjectScriptFileNode.LoadingResultCode.Ok)
         {
             _lines.AddRange(result.Lines!);
-            if (node.Extension == ".cs")
+            if (CSharpFile.HasExtension(node.Extension))
             {
-                _kind = TextFileKind.CSharp;
+                _kind = FileKind.CSharp;
             }
-            else if (node.Extension == ".md" || node.Extension == ".markdown")
+            else if (MarkdownFile.HasExtension(node.Extension))
             {
-                _kind = TextFileKind.Markdown;
+                _kind = FileKind.Markdown;
             }
             else
             {
-                _kind = TextFileKind.PlainText;
+                _kind = FileKind.PlainText;
             }
         }
         else
         {
-            _kind = TextFileKind.Unknown;
+            _kind = FileKind.Unknown;
         }
 
         _filePath = node.RelativePath;
@@ -179,16 +185,29 @@ public class FilePreview
 
     private void LoadAssetFile(ProjectAssetFileNode node)
     {
-        if (!TextureFile.IsTexture(node.Extension))
+        if (TextureFile.HasExtension(node.Extension))
         {
+            ClearTextureBinding();
+        
+            _textureBinding = ImGuiProxy.GetOrCreateImGuiBinding(node.AbsolutePath);
+            
+            _kind = FileKind.Texture;
+            _filePath = node.RelativePath;
             return;
         }
-        
-        ClearTextureBinding();
-        
-        _textureBinding = ImGuiProxy.GetOrCreateImGuiBinding(node.AbsolutePath);
-        
-        _filePath = node.RelativePath;
+
+        if (SceneFile.HasExtension(node.Extension))
+        {
+            if (node.Meta?.ImporterSettings is not SceneImporterSettings)
+            {
+                return;
+            }
+
+            _sceneDescription = new SceneDescription((node.Meta.ImporterSettings as SceneImporterSettings)!);
+            _kind = FileKind.Scene;
+            _filePath = node.RelativePath;
+            return;
+        }
     }
 
     private void Rebuild()

@@ -16,7 +16,7 @@ public sealed class ProjectAssetFileNode : ProjectNode
 
 	public override void Init(MigrationManager migrationManager, CancellationToken cancellationToken)
 	{
-		SetNodeType(ProjectNodeTypeExtensions.FromAssetExtension(Extension));
+		SetNodeType(ProjectNodeKindExtensions.FromAssetExtension(Extension));
 		CreateMetaFile(migrationManager);
 		InitImporter();
 		Importer!.UpdateCache();

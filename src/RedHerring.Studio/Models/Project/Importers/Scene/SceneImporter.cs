@@ -10,7 +10,7 @@ using Veldrid;
 
 namespace RedHerring.Studio;
 
-[Importer(ProjectNodeType.AssetScene)]
+[Importer(ProjectNodeKind.AssetScene)]
 public sealed class SceneImporter : Importer<Assimp.Scene>
 {
 	public override string ReferenceType => nameof(SceneReference);

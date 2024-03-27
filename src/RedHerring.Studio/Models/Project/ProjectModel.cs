@@ -86,11 +86,11 @@ public sealed class ProjectModel
 		{
 			// create roots
 			string          assetsPath   = Path.Join(projectPath, _assetsFolderName);
-			ProjectRootNode assetsFolder = new ProjectRootNode(_assetsFolderName, assetsPath, ProjectNodeType.AssetFolder);
+			ProjectRootNode assetsFolder = new ProjectRootNode(_assetsFolderName, assetsPath, ProjectNodeKind.AssetFolder);
 			_assetsFolder = assetsFolder;
 
 			string          scriptsGameLibraryPath   = Path.Join(projectPath, _scriptsFolderName);
-			ProjectRootNode scriptsGameLibraryFolder = new ProjectRootNode(_scriptsFolderName, scriptsGameLibraryPath, ProjectNodeType.ScriptFolder);
+			ProjectRootNode scriptsGameLibraryFolder = new ProjectRootNode(_scriptsFolderName, scriptsGameLibraryPath, ProjectNodeKind.ScriptFolder);
 			_scriptsFolder = scriptsGameLibraryFolder;
 
 			// check
@@ -360,7 +360,7 @@ public sealed class ProjectModel
 		{
 			string            directory             = Path.GetFileName(directoryPath);
 			string            relativeDirectoryPath = Path.Combine(relativePath, directory);
-			ProjectFolderNode folderNode            = new(directory, directoryPath, relativeDirectoryPath, true, ProjectNodeType.AssetFolder);
+			ProjectFolderNode folderNode            = new(directory, directoryPath, relativeDirectoryPath, true, ProjectNodeKind.AssetFolder);
 			root.Children.Add(folderNode);
 			
 			RecursiveAssetScan(directoryPath, relativeDirectoryPath, folderNode, foundMetaFiles);
@@ -421,7 +421,7 @@ public sealed class ProjectModel
 				relativePath = Path.Join(relativePath, folderName);
 
 				// folder
-				EnqueueProjectTaskFromWatcher(CreateNewFolderNodeTask(_assetsFolder!, parentRelativePath, folderName, true, ProjectNodeType.AssetFolder));
+				EnqueueProjectTaskFromWatcher(CreateNewFolderNodeTask(_assetsFolder!, parentRelativePath, folderName, true, ProjectNodeKind.AssetFolder));
 				EnqueueProjectTaskFromWatcher(CreateInitMetaTask(_assetsFolder!, relativePath));
 			}
 			else
@@ -429,7 +429,7 @@ public sealed class ProjectModel
 				if (Directory.Exists(eventAbsolutePath))
 				{
 					// created directory
-					EnqueueProjectTaskFromWatcher(CreateNewFolderNodeTask(_assetsFolder!, relativePath, path, true, ProjectNodeType.AssetFolder));
+					EnqueueProjectTaskFromWatcher(CreateNewFolderNodeTask(_assetsFolder!, relativePath, path, true, ProjectNodeKind.AssetFolder));
 					EnqueueProjectTaskFromWatcher(CreateInitMetaTask(_assetsFolder!, eventRelativePath));
 				}
 				else
@@ -487,7 +487,7 @@ public sealed class ProjectModel
 		{
 			string            directory             = Path.GetFileName(directoryPath);
 			string            relativeDirectoryPath = Path.Combine(relativePath, directory);
-			ProjectFolderNode folderNode            = new(directory, directoryPath, relativeDirectoryPath, false, ProjectNodeType.ScriptFolder);
+			ProjectFolderNode folderNode            = new(directory, directoryPath, relativeDirectoryPath, false, ProjectNodeKind.ScriptFolder);
 			root.Children.Add(folderNode);
 			
 			RecursiveScriptScan(directoryPath, relativeDirectoryPath, folderNode);
@@ -519,14 +519,14 @@ public sealed class ProjectModel
 				relativePath = Path.Join(relativePath, folderName);
 
 				// folder
-				EnqueueProjectTaskFromWatcher(CreateNewFolderNodeTask(_scriptsFolder!, parentRelativePath, folderName, false, ProjectNodeType.ScriptFolder));
+				EnqueueProjectTaskFromWatcher(CreateNewFolderNodeTask(_scriptsFolder!, parentRelativePath, folderName, false, ProjectNodeKind.ScriptFolder));
 			}
 			else
 			{
 				if (Directory.Exists(eventAbsolutePath))
 				{
 					// created directory
-					EnqueueProjectTaskFromWatcher(CreateNewFolderNodeTask(_scriptsFolder!, relativePath, path, false, ProjectNodeType.ScriptFolder));
+					EnqueueProjectTaskFromWatcher(CreateNewFolderNodeTask(_scriptsFolder!, relativePath, path, false, ProjectNodeKind.ScriptFolder));
 				}
 				else
 				{
@@ -569,7 +569,7 @@ public sealed class ProjectModel
 		_thread.Enqueue(task);
 	}
 	
-	private ProjectTask CreateNewFolderNodeTask(ProjectRootNode root, string parentPath, string name, bool hasMetaFile, ProjectNodeType type)
+	private ProjectTask CreateNewFolderNodeTask(ProjectRootNode root, string parentPath, string name, bool hasMetaFile, ProjectNodeKind kind)
 	{
 		return new ProjectTask(
 			cancellationToken =>
@@ -585,7 +585,7 @@ public sealed class ProjectModel
 								Path.Join(parentNode.AbsolutePath, name),
 								Path.Join(parentNode.RelativePath, name),
 								hasMetaFile,
-								type
+								kind
 							);
 
 							parentNode.Children.Add(newNode);

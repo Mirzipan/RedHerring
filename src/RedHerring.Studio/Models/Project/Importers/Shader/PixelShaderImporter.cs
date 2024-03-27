@@ -2,7 +2,7 @@ using RedHerring.Studio.Models.Project.FileSystem;
 
 namespace RedHerring.Studio;
 
-[Importer(ProjectNodeType.AssetPixelShader)]
+[Importer(ProjectNodeKind.AssetPixelShader)]
 public sealed class PixelShaderImporter : ShaderImporter
 {
 	public PixelShaderImporter(ProjectNode owner) : base(owner)
