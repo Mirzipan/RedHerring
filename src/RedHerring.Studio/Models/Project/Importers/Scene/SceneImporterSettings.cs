@@ -8,10 +8,13 @@ public sealed class SceneImporterSettings : ImporterSettings
 {
 	public float NormalSmoothingAngle = 15f;
 	public bool  CompensateFBXScale   = false;
+	public bool ImportAnimations = true;
 	
 	[ReadOnlyInInspector] public List<SceneImporterMeshSettings> Meshes = new();
 
 	[ReadOnlyInInspector] public List<SceneImporterMaterialSettings> Materials = new();
+	
+	[ReadOnlyInInspector] public List<SceneImporterAnimationSettings> Animations = new();
 
 	[ReadOnlyInInspector] public SceneImporterHierarchyNodeSettings Root = new("Root");
 }

@@ -220,10 +220,41 @@ public sealed class SceneImporter : Importer<Assimp.Scene>
 			ImportNode(scene.Root, assimpScene.RootNode, settings);
 			ImportChildNodesRecursive(scene.Root, assimpScene.RootNode, settings);
 		}
+		
+		// anim
+		if (settings.ImportAnimations && assimpScene.HasAnimations)
+		{
+			for (int i = 0; i < assimpScene.AnimationCount; i++)
+			{
+				var animationSettings = settings.Animations[i];
+				if (!animationSettings.Import)
+				{
+					continue;
+				}
+				
+				var animation = assimpScene.Animations[i];
+				ImportAnimation(animation, settings, resourcesRootPath);
+			}
+		}
 
 		// import
 		byte[] json         = SerializationUtility.SerializeValue(scene, DataFormat.Binary);
 		relativeResourcePath = $"{Owner.RelativePath}.scene";
+		string absolutePath = Path.Join(resourcesRootPath, relativeResourcePath);
+		File.WriteAllBytes(absolutePath, json);
+	}
+
+	private void ImportAnimation(Assimp.Animation animation, SceneImporterSettings settings, string resourcesRootPath)
+	{
+		var rAnimation = new RedHerring.Render.Models.Animation();
+		rAnimation.Name = animation.Name;
+		
+		// TODO(Mirzi) maybe use something else, like frames per second?
+		rAnimation.DurationInTicks = animation.DurationInTicks;
+		rAnimation.TicksPerSecond = animation.TicksPerSecond;
+		
+		byte[] json = SerializationUtility.SerializeValue(rAnimation, DataFormat.Binary);
+		string relativeResourcePath = $"{Owner.RelativePath}_{animation.Name}.anim";
 		string absolutePath = Path.Join(resourcesRootPath, relativeResourcePath);
 		File.WriteAllBytes(absolutePath, json);
 	}
@@ -326,6 +357,15 @@ public sealed class SceneImporter : Importer<Assimp.Scene>
 			index => sceneSettings.Materials[index] = new SceneImporterMaterialSettings(scene.Materials[index].Name)
 		);
 		
+		// animations
+		settingsChanged |= ResizeAndUpdateList(
+			ref sceneSettings.Animations,
+			scene.AnimationCount,
+			(settingsAnimation, index) => string.CompareOrdinal(settingsAnimation.Name, scene.Animations[index].Name) != 0,
+			index => sceneSettings.Animations[index] = new SceneImporterAnimationSettings(scene.Animations[index].Name)
+		);
+
+		
 		//----- hierarchy
 		Node root = scene.RootNode ?? new Node();
 		sceneSettings.Root ??= new SceneImporterHierarchyNodeSettings(root.Name);
@@ -358,7 +398,7 @@ public sealed class SceneImporter : Importer<Assimp.Scene>
 			(meshIndex, index) => meshIndex != node.MeshIndices[index],
 			index => sceneImporterHierarchyNodeSettings.Meshes[index] = node.MeshIndices[index]
 		);
-
+		
 		return settingsChanged;
 	}
 
