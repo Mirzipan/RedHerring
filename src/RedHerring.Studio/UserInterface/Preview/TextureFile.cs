@@ -8,6 +8,9 @@ internal static class TextureFile
     private static readonly string[] ValidExtensions =
     [
         ".png",
+        ".jpg",
+        ".jpeg",
+        ".tga",
     ];
     
     public static bool IsTexture(string extension)
@@ -28,6 +31,5 @@ internal static class TextureFile
         }
         
         Gui.Image(binding, size);
-        
     }
 }
