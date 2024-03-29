@@ -54,13 +54,13 @@ public class StudioModel
 		
 		try
 		{
-			ConsoleViewModel.Log($"Opening project from {path}", ConsoleItemType.Info);
+			ConsoleViewModel.Log($"Opening project from {path}", ConsoleItemKind.Info);
 			Project.Open(path);
-			ConsoleViewModel.Log($"Project opened", ConsoleItemType.Success);
+			ConsoleViewModel.Log($"Project opened", ConsoleItemKind.Success);
 		}
 		catch (Exception e)
 		{
-			ConsoleViewModel.Log($"Exception: {e}", ConsoleItemType.Exception);
+			ConsoleViewModel.Log($"Exception: {e}", ConsoleItemKind.Exception);
 		}
 	}
 

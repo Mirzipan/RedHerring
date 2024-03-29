@@ -33,16 +33,16 @@ public sealed class ConsoleViewModel
 		_this = this;
 	}
 	
-	public static void Log(string? message, ConsoleItemType type)
+	public static void Log(string? message, ConsoleItemKind kind)
 	{
 		lock (_this._items)
 		{
-			_this._items.Add(new ConsoleItem(type, message));
+			_this._items.Add(new ConsoleItem(kind, message));
 		}
 	}
 
-	public static void LogInfo(string?      message) => Log(message, ConsoleItemType.Info);
-	public static void LogWarning(string?   message) => Log(message, ConsoleItemType.Warning);
-	public static void LogError(string?     message) => Log(message, ConsoleItemType.Error);
-	public static void LogException(string? message) => Log(message, ConsoleItemType.Exception);
+	public static void LogInfo(string?      message) => Log(message, ConsoleItemKind.Info);
+	public static void LogWarning(string?   message) => Log(message, ConsoleItemKind.Warning);
+	public static void LogError(string?     message) => Log(message, ConsoleItemKind.Error);
+	public static void LogException(string? message) => Log(message, ConsoleItemKind.Exception);
 }

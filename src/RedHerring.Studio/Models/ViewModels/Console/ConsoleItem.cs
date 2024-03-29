@@ -2,12 +2,14 @@
 
 public readonly struct ConsoleItem
 {
-	public readonly ConsoleItemType Type;
+	public readonly ConsoleItemKind Kind;
+	public readonly DateTime TimeStamp;
 	public readonly string          Message;
 
-	public ConsoleItem(ConsoleItemType type, string? message)
+	public ConsoleItem(ConsoleItemKind kind, string? message)
 	{
-		Type    = type;
-		Message = message ?? "null";
+		Kind    = kind;
+		TimeStamp = DateTime.Now;
+		Message = message ?? "<null>";
 	}
 }

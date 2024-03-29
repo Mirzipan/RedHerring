@@ -50,15 +50,15 @@ public sealed class NewProjectDialog
 	[Button("Create!")]
 	private void Create()
 	{
-		ConsoleViewModel.Log($"Creating new project at {_targetPath}", ConsoleItemType.Info);
+		ConsoleViewModel.Log($"Creating new project at {_targetPath}", ConsoleItemKind.Info);
 		try
 		{
 			TemplateUtility.InstantiateTemplate(_targetPath, _name);
 		}
 		catch(Exception e)
 		{
-			ConsoleViewModel.Log(e.Message,    ConsoleItemType.Exception);
-			ConsoleViewModel.Log(e.StackTrace, ConsoleItemType.Exception);
+			ConsoleViewModel.Log(e.Message,    ConsoleItemKind.Exception);
+			ConsoleViewModel.Log(e.StackTrace, ConsoleItemKind.Exception);
 			return;
 		}
 
