@@ -103,13 +103,12 @@ public abstract class ProjectNode : ISelectable
 			return;
 		}
 		
-		if (Importer is null || Meta.ImporterSettings is null)
+		if (Importer is null)
 		{
 			var registry = Findings.IndexerByType<ImporterRegistry>();
 			if (registry is not null)
 			{
 				Importer              = registry.CreateImporter(this);
-				Meta.ImporterSettings = Importer.CreateImportSettings();
 			}
 			else
 			{
@@ -117,6 +116,8 @@ public abstract class ProjectNode : ISelectable
 				throw new NullReferenceException("Missing ImporterRegistry");
 			}
 		}
+
+		Meta.ImporterSettings ??= Importer.CreateImportSettings();
 	}
 
 	public T? GetImporter<T>() where T : Importer

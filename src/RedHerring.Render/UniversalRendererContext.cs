@@ -58,7 +58,8 @@ public sealed class UniversalRendererContext : NamedDisposer, RendererContext
         {
             PreferDepthRangeZeroToOne         = true,
             PreferStandardClipSpaceYDirection = true,
-            SwapchainDepthFormat              = PixelFormat.D24_UNorm_S8_UInt
+            SwapchainDepthFormat              = PixelFormat.D32_Float_S8_UInt, // PixelFormat.D24_UNorm_S8_UInt,
+            ResourceBindingModel = ResourceBindingModel.Improved,
         }, backend);
 
         _resourceFactory = _graphicsDevice.ResourceFactory;

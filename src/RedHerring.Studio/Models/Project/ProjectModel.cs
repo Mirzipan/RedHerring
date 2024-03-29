@@ -137,7 +137,7 @@ public sealed class ProjectModel
 
 		InitMeta();
 
-		ImportAll(false);
+		//ImportAll(false);
 		
 		_eventAggregator.Trigger(new OnProjectOpened());
 
