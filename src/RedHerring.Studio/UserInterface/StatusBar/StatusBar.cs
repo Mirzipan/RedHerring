@@ -11,13 +11,15 @@ public class StatusBar
 	public enum Color
 	{
 		Info    = 0,
-		Warning = 1,
-		Error   = 2,
+		Busy   = 1,
+		Warning = 2,
+		Error   = 3,
 	}
 
 	private readonly Color4[] _messageColors =
 	{
 		Color4.LightGreen, // Info
+		Color4.LemonChiffon, // Busy
 		Color4.Gold, // Warning
 		Color4.Crimson, // Error
 	};

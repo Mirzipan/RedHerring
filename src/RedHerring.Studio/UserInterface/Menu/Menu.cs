@@ -49,4 +49,25 @@ public sealed class Menu
 			new MenuLeafNode(pathItems[^1], "", () => _menuItemClicked = path , isEnabled, isChecked)
 		);
 	}
+
+	public void AddSeparator(
+		string path
+	)
+	{
+		string[]         pathItems = path.Split("/");
+		MenuInternalNode node      = FindOrCreateNodeOnPath(pathItems);
+
+		node.AddSeparator();
+	}
+
+	private MenuInternalNode FindOrCreateNodeOnPath(string[] pathItems)
+	{
+		MenuInternalNode node = (MenuInternalNode)_root;
+		for (int i = 0; i < pathItems.Length - 1; ++i)
+		{
+			node = node.GetOrCreateInternalNode(pathItems[i])!;
+		}
+
+		return node;
+	}
 }

@@ -224,7 +224,7 @@ public sealed class ImGuiRenderer : IDisposable
 
     public Texture LoadTextureFromFile(string filePath)
     {
-        using (var image = Image.Load<Rgba32>(filePath))
+        using (var image = SixLabors.ImageSharp.Image.Load<Rgba32>(filePath))
         {
             uint width = (uint)image.Width;
             uint height = (uint)image.Height;

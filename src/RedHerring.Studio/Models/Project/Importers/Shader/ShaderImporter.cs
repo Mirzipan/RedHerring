@@ -34,6 +34,8 @@ public abstract class ShaderImporter : Importer
 			return;
 		}
 
+		Directory.CreateDirectory(Path.GetDirectoryName(targetPath)!);
+		
 		string arguments = $"-fentry-point={settings.EntryPoint} -fshader-stage={settings.ShaderStage} -o \"{targetPath}\" \"{Owner.AbsolutePath}\"";
 		ConsoleViewModel.LogInfo($"Executing: {_compilerAbsolutePath} {arguments}");
 		string outputLog = FileExecutionUtility.ExecuteFile(_compilerAbsolutePath, arguments);

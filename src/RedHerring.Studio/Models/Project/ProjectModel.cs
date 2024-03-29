@@ -29,6 +29,7 @@ public sealed class ProjectModel
 	
 	private readonly MigrationManager _migrationManager;
 	private readonly ImporterRegistry _importerRegistry;
+	public           MigrationManager MigrationManager => _migrationManager;
 	
 	public readonly object ProjectTreeLock = new(); // synchronization lock
 	
@@ -52,8 +53,9 @@ public sealed class ProjectModel
 	private readonly ConcurrentQueue<ProjectTask> _waitingWatcherTasks = new();
 	
 	private readonly ProjectThread _thread = new ();
-	public           int           TasksCount => _thread.TasksCount;
-	
+	public           int           TasksCount   => _thread.TasksCount;
+	public           bool          IsProcessing => _thread.IsProcessing;
+
 	public ProjectModel(MigrationManager migrationManager, ImporterRegistry importerRegistry, StudioEventAggregator eventAggregator)
 	{
 		_migrationManager = migrationManager;
@@ -135,7 +137,7 @@ public sealed class ProjectModel
 
 		InitMeta();
 
-		ImportAll();
+		ImportAll(false);
 		
 		_eventAggregator.Trigger(new OnProjectOpened());
 
@@ -158,7 +160,7 @@ public sealed class ProjectModel
 		}
 	}
 
-	public void ImportAll()
+	public void ImportAll(bool force)
 	{
 		lock (ProjectTreeLock)
 		{
@@ -169,12 +171,50 @@ public sealed class ProjectModel
 			);
 			
 			_assetsFolder!.TraverseRecursive(
-				node => EnqueueProjectTask(CreateImportFileTask(_assetsFolder!, node.RelativePath)),
+				node => EnqueueProjectTask(CreateImportFileTask(_assetsFolder!, node.RelativePath, force)),
 				TraverseFlags.Files,
 				default
 			);
 
 			EnqueueProjectTask(CreateSaveAssetDatabaseTask());
+		}
+	}
+
+	public void Import(ProjectNode node, bool force)
+	{
+		if (!node.Kind.IsAssetsRelated())
+		{
+			return;
+		}
+
+		if (node.Kind == ProjectNodeKind.AssetFolder)
+		{
+			ProjectFolderNode folderNode = (ProjectFolderNode)node;
+			ImportFolder(folderNode, force);
+			return;
+		}
+
+		lock (ProjectTreeLock)
+		{
+			EnqueueProjectTask(CreateImportFileTask(_assetsFolder!, node.RelativePath, force));
+		}
+	}
+
+	public void ImportFolder(ProjectFolderNode folderNode, bool force)
+	{
+		lock (ProjectTreeLock)
+		{
+			folderNode.TraverseRecursive(
+				node => EnqueueProjectTask(CreateImportFolderTask(_assetsFolder!, node.RelativePath)),
+				TraverseFlags.Directories,
+				default
+			);
+
+			folderNode.TraverseRecursive(
+				node => EnqueueProjectTask(CreateImportFileTask(_assetsFolder!, node.RelativePath, force)),
+				TraverseFlags.Files,
+				default
+			);
 		}
 	}
 	#endregion
@@ -437,7 +477,7 @@ public sealed class ProjectModel
 					// created file
 					EnqueueProjectTaskFromWatcher(CreateNewAssetFileTask(_assetsFolder!, relativePath, path));
 					EnqueueProjectTaskFromWatcher(CreateInitMetaTask(_assetsFolder!, eventRelativePath));
-					EnqueueProjectTaskFromWatcher(CreateImportFileTask(_assetsFolder!, eventRelativePath));
+					//EnqueueProjectTaskFromWatcher(CreateImportFileTask(_assetsFolder!, eventRelativePath, false));
 				}
 				break;
 			}
@@ -721,13 +761,17 @@ public sealed class ProjectModel
 		);
 	}
 	
-	private ProjectTask CreateImportFileTask(ProjectRootNode root, string path)
+	private ProjectTask CreateImportFileTask(ProjectRootNode root, string path, bool force)
 	{
 		return new ProjectTask(
 			cancellationToken =>
 			{
 				// check node
-				ProjectAssetFileNode? node = root.FindNode(path) as ProjectAssetFileNode;
+				ProjectAssetFileNode? node = null;
+				lock (ProjectTreeLock)
+				{
+					node = root.FindNode(path) as ProjectAssetFileNode;
+				}
 				if (node == null || node.Meta == null)
 				{
 					return;
@@ -752,7 +796,7 @@ public sealed class ProjectModel
 				}
 				
 				// check hash
-				if (node.Meta.Hash == hash)
+				if (!force && node.Meta.Hash == hash)
 				{
 					return;
 				}

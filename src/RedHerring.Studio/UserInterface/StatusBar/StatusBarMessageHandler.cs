@@ -34,7 +34,7 @@ public sealed class StatusBarMessageHandler
 
 	private void UpdateProjectVariables()
 	{
-		int count = _studioModel.Project.TasksCount;
+		int count = _studioModel.Project.TasksCount + (_studioModel.Project.IsProcessing ? 1 : 0);
 		if (count != _projectTasksCount)
 		{
 			_projectTasksCount = count;
@@ -57,7 +57,7 @@ public sealed class StatusBarMessageHandler
 			_message.Append(_projectTasksCount);
 			_message.Append(" tasks.");
 			_statusBar.Message      = _message.ToString();
-			_statusBar.MessageColor = StatusBar.Color.Info;
+			_statusBar.MessageColor = StatusBar.Color.Busy;
 			return;
 		}
 

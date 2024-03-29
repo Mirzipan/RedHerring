@@ -241,6 +241,7 @@ public sealed class SceneImporter : Importer<Assimp.Scene>
 		byte[] json         = SerializationUtility.SerializeValue(scene, DataFormat.Binary);
 		relativeResourcePath = $"{Owner.RelativePath}.scene";
 		string absolutePath = Path.Join(resourcesRootPath, relativeResourcePath);
+		Directory.CreateDirectory(Path.GetDirectoryName(absolutePath)!);
 		File.WriteAllBytes(absolutePath, json);
 	}
 

@@ -39,4 +39,9 @@ public class MenuInternalNode : MenuNode
 	{
 		_children.Add(node);
 	}
+
+	public void AddSeparator()
+	{
+		_children.Add(new MenuSeparator());
+	}
 }

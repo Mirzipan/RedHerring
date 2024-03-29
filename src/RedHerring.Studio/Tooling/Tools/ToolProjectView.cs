@@ -164,8 +164,9 @@ public sealed class ToolProjectView : Tool
 	#region Context menu
 	private void CreateContextMenu()
 	{
-		// _contextMenu.AddItem("Create/DefinitionTemplate", OnCreateDefinitionTemplate, CanCreateScript);
-		// _contextMenu.AddItem("Create/DefinitionAsset",    OnCreateDefinitionAsset,    CanCreateAsset);
+		_contextMenu.AddItem("Refresh meta", OnContextMenuRefresh,  IsAnythingSelected);
+		_contextMenu.AddItem("Reimport",     OnContextMenuReimport, IsAnythingSelected);
+		_contextMenu.AddSeparator("");
 		
 		_contextMenu.AddItem("Edit/Rename", OnContextMenuEditRename, IsChangeOfContextItemPossible);
 		_contextMenu.AddItem("Edit/Copy",   OnContextMenuEditCopy,   IsChangeOfContextItemPossible);
@@ -174,24 +175,16 @@ public sealed class ToolProjectView : Tool
 		_contextMenu.AddItem("Edit/Delete", OnContextMenuEditDelete, IsChangeOfContextItemPossible);
 	}
 
-	#region Create
-	// private void OnCreateDefinitionTemplate()
-	// {
-	// 	_createScriptDialog.Open("Definition template", _contextMenuActivatedAt!.RelativeDirectoryPath, OnCreateDefinitionTemplateFile);
-	// }
-	// private void OnCreateDefinitionTemplateFile(string path, string namespaceName, string className)
-	// {
-	// 	StudioModel.Project.PauseWatchers();
-	// 	
-	// 	DefinitionTemplate template = new(namespaceName, className);
-	// 	template.Write(path);
-	//
-	// 	StudioModel.Project.ResumeWatchers();
-	// }
-	// private void OnCreateDefinitionAsset()
-	// {
-	// 	// TODO
-	// }
+	#region Refresh
+	private void OnContextMenuRefresh()
+	{
+		_contextMenuActivatedAt!.RefreshMetaFile(StudioModel.Project.MigrationManager);
+	}
+
+	private void OnContextMenuReimport()
+	{
+		StudioModel.Project.Import(_contextMenuActivatedAt!, true);
+	}
 	#endregion
 
 	#region Edit
@@ -242,6 +235,11 @@ public sealed class ToolProjectView : Tool
 	private bool CanCreateAsset()
 	{
 		return _contextMenuActivatedAt != null && _contextMenuActivatedAt.Kind.IsAssetsRelated();
+	}
+
+	private bool IsAnythingSelected()
+	{
+		return _contextMenuActivatedAt is not null;
 	}
 	#endregion
 	

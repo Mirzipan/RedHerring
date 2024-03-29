@@ -268,12 +268,12 @@ public sealed class StudioSystem : EngineSystem, Updatable, Drawable
 	private void OnProjectReimportAllClicked()
 	{
 		_studioModel.Project.ClearResources();
-		_studioModel.Project.ImportAll();
+		_studioModel.Project.ImportAll(true);
 	}
 
 	private void OnProjectImportChangedClicked()
 	{
-		_studioModel.Project.ImportAll();
+		_studioModel.Project.ImportAll(false);
 	}
 
 	private void OnDebugSerializationTestClicked()

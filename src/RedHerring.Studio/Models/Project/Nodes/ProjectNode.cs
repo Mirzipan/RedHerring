@@ -44,6 +44,22 @@ public abstract class ProjectNode : ISelectable
 		UpdateMetaFile();
 	}
 	
+	public void RefreshMetaFile(MigrationManager migrationManager)
+	{
+		if (Meta is null)
+		{
+			CreateMetaFile(migrationManager);
+		}
+
+		ImporterSettings importSettings = Importer!.CreateImportSettings();
+		if (Meta!.ImporterSettings is null || importSettings.GetType() != Meta.ImporterSettings.GetType())
+		{
+			Meta.ImporterSettings = importSettings;
+		}
+
+		UpdateMetaFile();
+	}
+	
 	public void UpdateMetaFile()
 	{
 		string metaPath = $"{AbsolutePath}.meta";
