@@ -28,10 +28,13 @@ public class SceneImporterSettings_000 : ImporterSettings_000, ISceneImporterSet
 {
 	public float SmoothingAngle;
 	public bool  CompensateFBXScale;
+	public bool ImportAnimations;
 	
 	[MigrateField] public List<ISceneImporterMeshSettingsMigratable> Meshes;
 
 	[MigrateField] public List<ISceneImporterMaterialSettingsMigratable> Materials;
+
+	[MigrateField] public List<SceneImporterAnimationSettingsMigratable> Animations;
 
 	public ISceneImporterHierarchyNodeSettingsMigratable Root;
 }
