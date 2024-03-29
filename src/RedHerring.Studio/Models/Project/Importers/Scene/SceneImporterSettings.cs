@@ -9,6 +9,7 @@ public sealed class SceneImporterSettings : ImporterSettings
 	public float NormalSmoothingAngle = 15f;
 	public bool  CompensateFBXScale   = false;
 	public bool ImportAnimations = true;
+	public float AnimationDeviation = float.Epsilon;
 	
 	[ReadOnlyInInspector] public List<SceneImporterMeshSettings> Meshes = new();
 
@@ -29,6 +30,7 @@ public class SceneImporterSettings_000 : ImporterSettings_000, ISceneImporterSet
 	public float SmoothingAngle;
 	public bool  CompensateFBXScale;
 	public bool ImportAnimations;
+	public float AnimationDeviation;
 	
 	[MigrateField] public List<ISceneImporterMeshSettingsMigratable> Meshes;
 

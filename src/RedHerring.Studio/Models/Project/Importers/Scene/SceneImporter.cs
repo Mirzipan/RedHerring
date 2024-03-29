@@ -97,9 +97,16 @@ public sealed class SceneImporter : Importer<Assimp.Scene>
 		AssimpContext context = new AssimpContext();
 		context.SetConfig(new NormalSmoothingAngleConfig(settings.NormalSmoothingAngle));
 
+		PostProcessSteps postProcessSteps = PostProcessSteps.Triangulate;
+		if (settings.ImportAnimations && settings.AnimationDeviation > float.Epsilon)
+		{
+			postProcessSteps |= PostProcessSteps.FindInvalidData;
+			context.SetConfig(new AnimationAccuracyConfig(settings.AnimationDeviation));
+		}
+
 		Assimp.Scene? assimpScene = context.ImportFile(
 			Owner.AbsolutePath,
-			PostProcessSteps.Triangulate // always - only triangles are supported
+			postProcessSteps // always - only triangles are supported
 		);
 
 		if (assimpScene == null)

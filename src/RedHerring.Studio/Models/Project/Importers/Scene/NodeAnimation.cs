@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Assimp;
+using RedHerring.Numbers;
 using RedHerring.Render.Animations;
 using Animation = RedHerring.Render.Animations.Animation;
 using Quaternion = System.Numerics.Quaternion;
@@ -31,21 +32,24 @@ internal static class NodeAnimation
         for (int i = 0; i < source.PositionKeyCount; i++)
         {
             var key = source.PositionKeys[i];
-            destination.Positions.Add(new VectorKeyframe(key.Time, key.Value.ToVector3()));
+            var keyframe = new VectorKeyframe(key.Time, key.Value.ToVector3());
+            destination.Positions.Add(keyframe);
         }
 
         destination.Rotations.Clear();
         for (int i = 0; i < source.RotationKeyCount; i++)
         {
             var key = source.RotationKeys[i];
-            destination.Rotations.Add(new QuaternionKeyframe(key.Time, key.Value.ToQuaternion()));
+            var keyframe = new QuaternionKeyframe(key.Time, key.Value.ToQuaternion());
+            destination.Rotations.Add(keyframe);
         }
 
         destination.Scalings.Clear();
         for (int i = 0; i < source.ScalingKeyCount; i++)
         {
             var key = source.ScalingKeys[i];
-            destination.Scalings.Add(new VectorKeyframe(key.Time, key.Value.ToVector3()));
+            var keyframe = new VectorKeyframe(key.Time, key.Value.ToVector3());
+            destination.Scalings.Add(keyframe);
         }
     }
 

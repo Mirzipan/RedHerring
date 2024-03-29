@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace RedHerring.Numbers;
 
@@ -50,4 +51,15 @@ public static class QuaternionExtensions
         
         return new Vector3(0.0f - xTwoZ - wTwoY, wTwoX - yTwoZ, xTwoX + yTwoY - 1f);
     }
+
+    #region Equality
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Approximately(this Quaternion @this, Quaternion other, float tolerance = float.Epsilon)
+    {
+        var delta = @this - other;
+        return delta.LengthSquared() <= tolerance * tolerance;
+    }
+
+    #endregion Equality
 }
