@@ -7,6 +7,7 @@ using RedHerring.Render.Models;
 using RedHerring.Studio.Models.Project.FileSystem;
 using RedHerring.Studio.Models.ViewModels.Console;
 using Veldrid;
+using Animation = RedHerring.Render.Animations.Animation;
 
 namespace RedHerring.Studio;
 
@@ -247,14 +248,17 @@ public sealed class SceneImporter : Importer<Assimp.Scene>
 
 	private void ImportAnimation(Assimp.Animation animation, SceneImporterSettings settings, string resourcesRootPath)
 	{
-		var rAnimation = new RedHerring.Render.Models.Animation();
-		rAnimation.Name = animation.Name;
-		
-		// TODO(Mirzi) maybe use something else, like frames per second?
-		rAnimation.DurationInTicks = animation.DurationInTicks;
-		rAnimation.TicksPerSecond = animation.TicksPerSecond;
-		
-		byte[] json = SerializationUtility.SerializeValue(rAnimation, DataFormat.Binary);
+		var rhAnimation = new Animation
+		{
+			Name = animation.Name,
+			// TODO(Mirzi) maybe use something else, like frames per second?
+			DurationInTicks = animation.DurationInTicks,
+			TicksPerSecond = animation.TicksPerSecond,
+		};
+
+		ImportNodeAnimation.Copy(animation, rhAnimation);
+
+		byte[] json = SerializationUtility.SerializeValue(rhAnimation, DataFormat.Binary);
 		string relativeResourcePath = $"{Owner.RelativePath}_{animation.Name}.anim";
 		string absolutePath = Path.Join(resourcesRootPath, relativeResourcePath);
 		File.WriteAllBytes(absolutePath, json);
