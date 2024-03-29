@@ -6,7 +6,7 @@ using Quaternion = System.Numerics.Quaternion;
 
 namespace RedHerring.Studio;
 
-public static class ImportNodeAnimation
+internal static class NodeAnimation
 {
     public static void Copy(Assimp.Animation source, Animation destination)
     {

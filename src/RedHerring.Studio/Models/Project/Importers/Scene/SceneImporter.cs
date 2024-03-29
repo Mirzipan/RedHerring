@@ -223,6 +223,7 @@ public sealed class SceneImporter : Importer<Assimp.Scene>
 		}
 		
 		// anim
+		List<Animation> importedAnimations = new();
 		if (settings.ImportAnimations && assimpScene.HasAnimations)
 		{
 			for (int i = 0; i < assimpScene.AnimationCount; i++)
@@ -233,10 +234,29 @@ public sealed class SceneImporter : Importer<Assimp.Scene>
 					continue;
 				}
 				
-				var animation = assimpScene.Animations[i];
-				ImportAnimation(animation, settings, resourcesRootPath);
+				var source = assimpScene.Animations[i];
+				var animation = ImportAnimation(source, settings);
+				importedAnimations.Add(animation);
 			}
 		}
+
+		if (importedAnimations.Count > 0)
+		{
+			bool shouldAppendNames = importedAnimations.Count > 1;
+			for (int i = 0; i < importedAnimations.Count; i++)
+			{
+				var animation = importedAnimations[i];
+				SaveAnimation(animation, settings, resourcesRootPath, shouldAppendNames);
+			}
+			
+			relativeResourcePath = $"{Owner.RelativePath}.anim";
+		}
+
+		if (scene.Meshes.Count == 0 && importedAnimations.Count == 0)
+		{
+			relativeResourcePath = null;
+			return;
+		} 
 
 		// import
 		byte[] json         = SerializationUtility.SerializeValue(scene, DataFormat.Binary);
@@ -246,20 +266,24 @@ public sealed class SceneImporter : Importer<Assimp.Scene>
 		File.WriteAllBytes(absolutePath, json);
 	}
 
-	private void ImportAnimation(Assimp.Animation animation, SceneImporterSettings settings, string resourcesRootPath)
+	private Animation ImportAnimation(Assimp.Animation source, SceneImporterSettings settings)
 	{
-		var rhAnimation = new Animation
+		var animation = new Animation
 		{
-			Name = animation.Name,
+			Name = source.Name,
 			// TODO(Mirzi) maybe use something else, like frames per second?
-			DurationInTicks = animation.DurationInTicks,
-			TicksPerSecond = animation.TicksPerSecond,
+			DurationInTicks = source.DurationInTicks,
+			TicksPerSecond = source.TicksPerSecond,
 		};
 
-		ImportNodeAnimation.Copy(animation, rhAnimation);
+		NodeAnimation.Copy(source, animation);
+		return animation;
+	}
 
-		byte[] json = SerializationUtility.SerializeValue(rhAnimation, DataFormat.Binary);
-		string relativeResourcePath = $"{Owner.RelativePath}_{animation.Name}.anim";
+	private void SaveAnimation(Animation animation, SceneImporterSettings settings, string resourcesRootPath, bool shouldAppendName)
+	{
+		byte[] json = SerializationUtility.SerializeValue(animation, DataFormat.Binary);
+		string relativeResourcePath = shouldAppendName ? $"{Owner.RelativePath}_{animation.Name}.anim" : $"{Owner.RelativePath}.anim";
 		string absolutePath = Path.Join(resourcesRootPath, relativeResourcePath);
 		File.WriteAllBytes(absolutePath, json);
 	}
