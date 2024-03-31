@@ -427,3 +427,5 @@ Desktop.ini
 .DS_Store
 src/RedHerring.Sandbox/Project/Resources_PC
 Template/.idea
+Studio/XDG_CONFIG_HOME
+Studio/imgui.ini
