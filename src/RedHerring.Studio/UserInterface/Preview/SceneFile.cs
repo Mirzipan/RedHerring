@@ -16,7 +16,14 @@ internal static class SceneFile
 
     public static void Draw(SceneDescription description)
     {
-        BeginTable("Scene Properties", 2, ImGuiTableFlags.HighlightHoveredColumn);
+        const ImGuiTableFlags flags =
+            ImGuiTableFlags.BordersV |
+            ImGuiTableFlags.BordersOuterH |
+            ImGuiTableFlags.Resizable |
+            ImGuiTableFlags.RowBg |
+            ImGuiTableFlags.NoBordersInBody;
+        
+        BeginTable("Scene Properties", 2, flags);
         TableHeaderRow();
 
         PropertyRow("Root Name", description.RootName);
