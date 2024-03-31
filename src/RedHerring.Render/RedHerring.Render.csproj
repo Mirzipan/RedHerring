@@ -83,30 +83,6 @@
       <EmbeddedResource Include="Resources\Roboto-Regular.ttf">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </EmbeddedResource>
-      <None Remove="Resources\GLSL\imgui-frag.glsl" />
-      <EmbeddedResource Include="Resources\GLSL\imgui-frag.glsl">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="Resources\GLSL\imgui-vertex.glsl" />
-      <EmbeddedResource Include="Resources\GLSL\imgui-vertex.glsl">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="Resources\GLSL\imgui-vertex-legacy.glsl" />
-      <EmbeddedResource Include="Resources\GLSL\imgui-vertex-legacy.glsl">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="Resources\GLSLES\imgui-frag.glsles" />
-      <EmbeddedResource Include="Resources\GLSLES\imgui-frag.glsles">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="Resources\GLSLES\imgui-vertex.glsles" />
-      <EmbeddedResource Include="Resources\GLSLES\imgui-vertex.glsles">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="Resources\GLSLES\imgui-vertex-legacy.glsles" />
-      <EmbeddedResource Include="Resources\GLSLES\imgui-vertex-legacy.glsles">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
