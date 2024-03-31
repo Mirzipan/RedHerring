@@ -1,4 +1,4 @@
-﻿namespace RedHerring.Fingerprint;
+﻿namespace RedHerring.Inputs;
 
 [Flags]
 public enum Modifier

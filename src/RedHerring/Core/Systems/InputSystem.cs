@@ -1,9 +1,8 @@
 ﻿using ImGuiNET;
 using RedHerring.Alexandria;
-using RedHerring.Fingerprint;
-using RedHerring.Fingerprint.Layers;
-using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Infusion.Attributes;
+using RedHerring.Inputs;
+using RedHerring.Inputs.Layers;
 using RedHerring.Render.ImGui;
 using Silk.NET.Input;
 using Gui = ImGuiNET.ImGui;

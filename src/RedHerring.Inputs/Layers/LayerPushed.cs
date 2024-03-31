@@ -1,3 +1,3 @@
-﻿namespace RedHerring.Fingerprint.Layers;
+﻿namespace RedHerring.Inputs.Layers;
 
 public delegate void LayerPushed(InputLayer inputLayer);

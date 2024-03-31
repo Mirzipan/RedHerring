@@ -1,10 +1,10 @@
 ﻿using System.Numerics;
 using RedHerring.Alexandria.Disposables;
-using RedHerring.Fingerprint.Layers;
+using RedHerring.Inputs.Layers;
 using Silk.NET.Input;
 using Silk.NET.Windowing;
 
-namespace RedHerring.Fingerprint;
+namespace RedHerring.Inputs;
 
 public static class Interaction
 {

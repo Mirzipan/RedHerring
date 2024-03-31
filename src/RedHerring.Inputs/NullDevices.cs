@@ -1,4 +1,4 @@
-﻿namespace RedHerring.Fingerprint;
+﻿namespace RedHerring.Inputs;
 
 internal sealed class NullDevices : InputDevices
 {

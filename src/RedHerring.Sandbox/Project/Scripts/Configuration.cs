@@ -1,9 +1,8 @@
 ﻿using System.Numerics;
 using ImGuiNET;
 using RedHerring.Core;
-using RedHerring.Fingerprint;
-using RedHerring.Fingerprint.Shortcuts;
 using RedHerring.Infusion.Attributes;
+using RedHerring.Inputs;
 
 namespace RedHerring.Sandbox;
 

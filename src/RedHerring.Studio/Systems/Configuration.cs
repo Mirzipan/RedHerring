@@ -1,6 +1,6 @@
 ﻿using RedHerring.Core;
-using RedHerring.Fingerprint;
 using RedHerring.Infusion.Attributes;
+using RedHerring.Inputs;
 using RedHerring.Studio.Constants;
 
 namespace RedHerring.Studio.Systems;

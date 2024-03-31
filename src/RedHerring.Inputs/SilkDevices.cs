@@ -3,7 +3,7 @@ using Silk.NET.Input;
 using Silk.NET.Input.Sdl;
 using Silk.NET.Windowing;
 
-namespace RedHerring.Fingerprint;
+namespace RedHerring.Inputs;
 
 internal sealed class SilkDevices : InputDevices, IDisposable
 {

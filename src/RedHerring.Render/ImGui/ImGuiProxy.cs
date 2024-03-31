@@ -1,5 +1,5 @@
 ﻿using RedHerring.Alexandria;
-using RedHerring.Fingerprint;
+using RedHerring.Inputs;
 using Veldrid;
 using static ImGuiNET.ImGui;
 

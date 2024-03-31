@@ -2,7 +2,7 @@
 using System.Reflection;
 using ImGuiNET;
 using RedHerring.Alexandria.Pooling;
-using RedHerring.Fingerprint;
+using RedHerring.Inputs;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;

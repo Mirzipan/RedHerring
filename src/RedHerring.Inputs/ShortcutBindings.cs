@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace RedHerring.Fingerprint.Shortcuts;
+namespace RedHerring.Inputs;
 
 public class ShortcutBindings : Collection<ShortcutBinding>
 {

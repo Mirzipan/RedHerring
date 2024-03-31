@@ -1,4 +1,4 @@
-﻿namespace RedHerring.Fingerprint;
+﻿namespace RedHerring.Inputs;
 
 public class ShortcutBinding
 {

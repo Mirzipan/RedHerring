@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Numbers", "RedHe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Motive", "RedHerring.Motive\RedHerring.Motive.csproj", "{9CAE84B9-58D0-4770-AC91-91D6FF04077C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Fingerprint", "RedHerring.Fingerprint\RedHerring.Fingerprint.csproj", "{0923F672-E900-462A-8DA7-94CFD3C352A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Inputs", "RedHerring.Inputs\RedHerring.Inputs.csproj", "{0923F672-E900-462A-8DA7-94CFD3C352A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHerring.Serialization", "RedHerring.Serialization\RedHerring.Serialization.csproj", "{F65A11E2-FEC6-4A21-8869-274F35E9E761}"
 EndProject

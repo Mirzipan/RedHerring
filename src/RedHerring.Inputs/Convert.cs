@@ -1,6 +1,6 @@
 ﻿using Silk.NET.Input;
 
-namespace RedHerring.Fingerprint;
+namespace RedHerring.Inputs;
 
 internal static class Convert
 {

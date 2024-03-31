@@ -3,10 +3,10 @@ using RedHerring.Alexandria;
 using RedHerring.Core;
 using RedHerring.Core.Systems;
 using RedHerring.Deduction;
-using RedHerring.Fingerprint;
-using RedHerring.Fingerprint.Layers;
 using RedHerring.Game;
 using RedHerring.Infusion;
+using RedHerring.Inputs;
+using RedHerring.Inputs.Layers;
 using Silk.NET.Windowing;
 
 // ReSharper disable SuspiciousTypeConversion.Global

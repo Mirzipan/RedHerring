@@ -1,8 +1,8 @@
 ﻿using RedHerring.Alexandria.Identifiers;
 using RedHerring.Core;
-using RedHerring.Fingerprint;
-using RedHerring.Fingerprint.Layers;
 using RedHerring.Infusion.Attributes;
+using RedHerring.Inputs;
+using RedHerring.Inputs.Layers;
 using RedHerring.Render;
 using RedHerring.Studio.Constants;
 using RedHerring.Studio.Debug;

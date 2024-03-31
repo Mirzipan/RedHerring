@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace RedHerring.Fingerprint.Layers;
+namespace RedHerring.Inputs.Layers;
 
 internal class Processor
 {

@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using ImGuiNET;
-using RedHerring.Fingerprint;
 using RedHerring.Infusion.Attributes;
+using RedHerring.Inputs;
 using RedHerring.Studio.Constants;
 using static ImGuiNET.ImGui;
 using static RedHerring.Studio.Utils.ImGuiExtensions;

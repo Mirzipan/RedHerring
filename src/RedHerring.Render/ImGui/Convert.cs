@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using ImGuiNET;
-using RedHerring.Fingerprint;
+using RedHerring.Inputs;
 
 namespace RedHerring.Render.ImGui;
 

@@ -1,10 +1,10 @@
 ﻿using System.Numerics;
 using ImGuiNET;
 using RedHerring.Alexandria;
-using RedHerring.Fingerprint;
-using RedHerring.Fingerprint.Layers;
 using RedHerring.Game;
 using RedHerring.Infusion.Attributes;
+using RedHerring.Inputs;
+using RedHerring.Inputs.Layers;
 using RedHerring.Sandbox.MainMenu;
 using static ImGuiNET.ImGui;
 

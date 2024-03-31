@@ -24,7 +24,7 @@
     <ItemGroup>
       <ProjectReference Include="..\RedHerring.Alexandria\RedHerring.Alexandria.csproj" />
       <ProjectReference Include="..\RedHerring.Assets\RedHerring.Assets.csproj" />
-      <ProjectReference Include="..\RedHerring.Fingerprint\RedHerring.Fingerprint.csproj" />
+      <ProjectReference Include="..\RedHerring.Inputs\RedHerring.Inputs.csproj" />
       <ProjectReference Include="..\RedHerring.Infusion\RedHerring.Infusion.csproj" />
     </ItemGroup>
 

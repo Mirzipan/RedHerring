@@ -1,6 +1,6 @@
 ﻿using RedHerring.Alexandria.Identifiers;
 
-namespace RedHerring.Fingerprint.Layers;
+namespace RedHerring.Inputs.Layers;
 
 public class InputLayers
 {

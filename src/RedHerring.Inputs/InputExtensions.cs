@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace RedHerring.Fingerprint;
+namespace RedHerring.Inputs;
 
 public static class InputExtensions
 {

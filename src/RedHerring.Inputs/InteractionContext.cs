@@ -1,8 +1,7 @@
 ﻿using System.Numerics;
-using RedHerring.Fingerprint.Layers;
-using RedHerring.Fingerprint.Shortcuts;
+using RedHerring.Inputs.Layers;
 
-namespace RedHerring.Fingerprint;
+namespace RedHerring.Inputs;
 
 public sealed class InteractionContext : IDisposable
 {
