@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 using RedHerring.Alexandria.Disposables;
 using RedHerring.Inputs.Layers;
-using Silk.NET.Windowing;
 
 namespace RedHerring.Inputs;
 
@@ -13,17 +12,20 @@ public static class Interaction
 
     #region Lifecycle
 
-    public static void Init(IView? view)
+    public static InteractionContext Init(InputDevices devices)
     {
-        if (view is not null)
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (_devices is not null)
         {
-            _devices = new SilkDevices(view);
+            _devices.InputChanged -= OnInputChanged;
+            _devices.CharacterTyped -= OnCharacterTyped;
         }
-        
+
+        _devices = devices;
         _devices.InputChanged += OnInputChanged;
         _devices.CharacterTyped += OnCharacterTyped;
         
-        CreateContext();
+        return CreateContext();
     }
 
     public static void NextFrame()

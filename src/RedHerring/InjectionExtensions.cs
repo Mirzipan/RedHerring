@@ -67,8 +67,8 @@ public static class InjectionExtensions
 
     public static ContainerDescription AddInput(this ContainerDescription @this, IView? view)
     {
-        Interaction.Init(view);
-        var context = Interaction.CreateContext();
+        InputDevices devices = view is not null ? new SilkDevices(view) : new NullDevices();
+        var context = Interaction.Init(devices);
         @this.AddSingleton<InteractionContext>(context);
         @this.AddSingleton(typeof(InputLayer));
         @this.AddSystem(new InputSystem());

@@ -1,6 +1,6 @@
 ﻿namespace RedHerring.Inputs;
 
-internal interface InputDevices
+public interface InputDevices
 {
     void NextFrame();
     event Action<InputChanged>? InputChanged;

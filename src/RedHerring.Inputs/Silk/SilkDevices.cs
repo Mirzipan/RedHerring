@@ -5,7 +5,7 @@ using Silk.NET.Windowing;
 
 namespace RedHerring.Inputs;
 
-internal sealed class SilkDevices : InputDevices, IDisposable
+public sealed class SilkDevices : InputDevices, IDisposable
 {
     private readonly IInputContext _silkContext;
 
