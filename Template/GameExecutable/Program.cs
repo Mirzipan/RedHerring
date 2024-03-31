@@ -69,14 +69,14 @@ internal class Program
             Backend = _graphicsBackend,
             UseSeparateRenderThread = true,
         };
-        var gameEngineInstaller = new TemplateEngineInstaller();
+        var gameInstaller = new GameInstaller(_window);
         
         var context = new EngineContext
         {
             Name = "Template",
             Platform = _platform,
             Window = _window!,
-        }.WithAssemblies(AppDomain.CurrentDomain.GetAssemblies()).WithInstaller(render).WithInstaller(gameEngineInstaller);
+        }.WithAssemblies(AppDomain.CurrentDomain.GetAssemblies()).WithInstaller(render).WithInstaller(gameInstaller);
         _engine.Run(context);
 
         _sessionContext = new SessionContext();

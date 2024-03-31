@@ -31,17 +31,14 @@
       <Reference Include="RedHerring.Deduction">
         <HintPath>..\Libraries\RedHerring.Deduction.dll</HintPath>
       </Reference>
-      <Reference Include="RedHerring.Fingerprint">
-        <HintPath>..\Libraries\RedHerring.Fingerprint.dll</HintPath>
-      </Reference>
-      <Reference Include="RedHerring.ImGui">
-        <HintPath>..\Libraries\RedHerring.ImGui.dll</HintPath>
-      </Reference>
       <Reference Include="RedHerring.Incident">
         <HintPath>..\Libraries\RedHerring.Incident.dll</HintPath>
       </Reference>
       <Reference Include="RedHerring.Infusion">
         <HintPath>..\Libraries\RedHerring.Infusion.dll</HintPath>
+      </Reference>
+      <Reference Include="RedHerring.Inputs">
+        <HintPath>..\Libraries\RedHerring.Inputs.dll</HintPath>
       </Reference>
       <Reference Include="RedHerring.Motive">
         <HintPath>..\Libraries\RedHerring.Motive.dll</HintPath>
