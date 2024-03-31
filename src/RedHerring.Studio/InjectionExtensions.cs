@@ -1,6 +1,6 @@
 ﻿using RedHerring.Clues;
 using RedHerring.Infusion;
-using RedHerring.Studio.Definition;
+using RedHerring.Studio.Definitions;
 using RedHerring.Studio.Systems;
 using Configuration = RedHerring.Studio.Systems.Configuration;
 
@@ -10,9 +10,9 @@ public static class InjectionExtensions
 {
     public static ContainerDescription AddDefinitions(this ContainerDescription @this)
     {
-        var context = Definitions.CreateContext();
+        var context = Evidence.CreateContext();
         ThemeDefinition.AddToContext(context);
-        @this.AddSingleton<DefinitionsContext>(context);
+        @this.AddSingleton<EvidenceContext>(context);
         return @this;
     }
     

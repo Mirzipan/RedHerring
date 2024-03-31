@@ -1,16 +1,16 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace RedHerring.Clues;
+namespace RedHerring.Alexandria.Identifiers;
 
 [StructLayout(LayoutKind.Explicit)]
 [Serializable]
-public readonly struct DefinitionId : IComparable, IComparable<DefinitionId>, IEquatable<DefinitionId>
+public readonly struct StringId : IComparable, IComparable<StringId>, IEquatable<StringId>
 {
     private const int CharacterCount = 8;
     private const char PaddingCharacter = '_';
     
-    public static readonly DefinitionId Empty;
+    public static readonly StringId Empty;
     
     [FieldOffset(00)]
     private readonly long _pv;
@@ -44,13 +44,13 @@ public readonly struct DefinitionId : IComparable, IComparable<DefinitionId>, IE
     
     public bool IsEmpty => _pv == 0 && _sv == 0;
 
-    public DefinitionId(long primary, long secondary)
+    public StringId(long primary, long secondary)
     {
         _pv = primary;
         _sv = secondary;
     }
 
-    public DefinitionId(char a, char b, char c, char d, char e, char f, char g, char h)
+    public StringId(char a, char b, char c, char d, char e, char f, char g, char h)
     {
         _a = a;
         _b = b;
@@ -62,7 +62,7 @@ public readonly struct DefinitionId : IComparable, IComparable<DefinitionId>, IE
         _h = h;
     }
 
-    public DefinitionId(char[] characters)
+    public StringId(char[] characters)
     {
         _a = characters.Length > 0 ? characters[0] : PaddingCharacter;
         _b = characters.Length > 1 ? characters[1] : PaddingCharacter;
@@ -74,7 +74,7 @@ public readonly struct DefinitionId : IComparable, IComparable<DefinitionId>, IE
         _h = characters.Length > 7 ? characters[7] : PaddingCharacter;
     }
 
-    public DefinitionId(Span<char> characters)
+    public StringId(Span<char> characters)
     {
         _a = characters.Length > 0 ? characters[0] : PaddingCharacter;
         _b = characters.Length > 1 ? characters[1] : PaddingCharacter;
@@ -86,7 +86,7 @@ public readonly struct DefinitionId : IComparable, IComparable<DefinitionId>, IE
         _h = characters.Length > 7 ? characters[7] : PaddingCharacter;
     }
 
-    public DefinitionId(ReadOnlySpan<char> characters)
+    public StringId(ReadOnlySpan<char> characters)
     {
         _a = characters.Length > 0 ? characters[0] : PaddingCharacter;
         _b = characters.Length > 1 ? characters[1] : PaddingCharacter;
@@ -98,7 +98,7 @@ public readonly struct DefinitionId : IComparable, IComparable<DefinitionId>, IE
         _h = characters.Length > 7 ? characters[7] : PaddingCharacter;
     }
 
-    public DefinitionId(string id)
+    public StringId(string id)
     {
         if (id.Length < CharacterCount)
         {
@@ -132,12 +132,12 @@ public readonly struct DefinitionId : IComparable, IComparable<DefinitionId>, IE
             return 1;
         }
         
-        if (value is not DefinitionId)
+        if (value is not StringId)
         {
             return 1;
         }
         
-        DefinitionId id = (DefinitionId)value;
+        StringId id = (StringId)value;
 
         if (id._pv != _pv)
         {
@@ -152,7 +152,7 @@ public readonly struct DefinitionId : IComparable, IComparable<DefinitionId>, IE
         return 0;
     }
 
-    public int CompareTo(DefinitionId other)
+    public int CompareTo(StringId other)
     {
         if (other._pv != _pv)
         {
@@ -167,17 +167,17 @@ public readonly struct DefinitionId : IComparable, IComparable<DefinitionId>, IE
         return 0;
     }
     
-    public override bool Equals(object? obj) => obj is DefinitionId other && Equals(this, other);
+    public override bool Equals(object? obj) => obj is StringId other && Equals(this, other);
 
-    public bool Equals(DefinitionId other) => Equals(this, other);
+    public bool Equals(StringId other) => Equals(this, other);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool Equals(DefinitionId left, DefinitionId right) => left._pv == right._pv && left._sv == right._sv;
+    private static bool Equals(StringId left, StringId right) => left._pv == right._pv && left._sv == right._sv;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int GetResult(long @this, long other) => @this < other ? -1 : 1;
 
-    public static bool operator ==(DefinitionId left, DefinitionId right) => Equals(left, right);
+    public static bool operator ==(StringId left, StringId right) => Equals(left, right);
 
-    public static bool operator !=(DefinitionId left, DefinitionId right) => !Equals(left, right);
+    public static bool operator !=(StringId left, StringId right) => !Equals(left, right);
 }

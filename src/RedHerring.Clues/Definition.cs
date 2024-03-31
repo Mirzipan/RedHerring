@@ -1,8 +1,10 @@
-﻿namespace RedHerring.Clues;
+﻿using RedHerring.Alexandria.Identifiers;
 
-public abstract class Definition(DefinitionId id, string name, bool isDefault) : IDisposable
+namespace RedHerring.Clues;
+
+public abstract class Definition(StringId id, string name, bool isDefault) : IDisposable
 {
-    public readonly DefinitionId Id = id;
+    public readonly StringId Id = id;
     public readonly string Name = name;
     
     private bool _isDefault = isDefault;

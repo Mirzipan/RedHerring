@@ -3,7 +3,7 @@ using ImGuiNET;
 using RedHerring.Clues;
 using Gui = ImGuiNET.ImGui;
 
-namespace RedHerring.Studio.Definition;
+namespace RedHerring.Studio.Definitions;
 
 [DefinitionType(typeof(ThemeDefinition))]
 public sealed class BloodsuckerTheme() : ThemeDefinition("Bloodsucker", false)

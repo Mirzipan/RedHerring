@@ -1,16 +1,14 @@
-﻿using RedHerring.Alexandria.Pooling;
+﻿using RedHerring.Alexandria.Identifiers;
+using RedHerring.Alexandria.Pooling;
 using RedHerring.Deduction;
 
 namespace RedHerring.Clues;
 
-public sealed class DefinitionsContext : IDisposable
+public sealed class EvidenceContext : IDisposable
 {
-    private readonly Dictionary<Type, Dictionary<DefinitionId, Definition>> _data = new();
-
-    // TODO(Mirzi): replace with a pooled list instead
-    private static readonly List<Type> TmpIndexedTypes = new List<Type>(16);
+    private readonly Dictionary<Type, Dictionary<StringId, Definition>> _data = new();
     
-    internal DefinitionsContext()
+    internal EvidenceContext()
     {
     }
     
@@ -116,7 +114,7 @@ public sealed class DefinitionsContext : IDisposable
     /// <param name="id"></param>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>Definition of type and id, if found, null otherwise</returns>
-    public T? ById<T>(DefinitionId id) where T : Definition
+    public T? ById<T>(StringId id) where T : Definition
     {
         Type type = typeof(T);
         var collection = GetOrCreateCollection(type);
@@ -139,7 +137,7 @@ public sealed class DefinitionsContext : IDisposable
     /// <param name="id"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public bool Contains<T>(DefinitionId id) where T : Definition
+    public bool Contains<T>(StringId id) where T : Definition
     {
         Type type = typeof(T);
         return GetOrCreateCollection(type)?.ContainsKey(id) ?? false;
@@ -149,11 +147,11 @@ public sealed class DefinitionsContext : IDisposable
     
     #region Private
 
-    private Dictionary<DefinitionId, Definition>? GetOrCreateCollection(Type collectionType, bool allowCreation = false)
+    private Dictionary<StringId, Definition>? GetOrCreateCollection(Type collectionType, bool allowCreation = false)
     {
         if (!_data.TryGetValue(collectionType, out var innerDefinitions) && allowCreation)
         {
-            return _data[collectionType] = new Dictionary<DefinitionId, Definition>();
+            return _data[collectionType] = new Dictionary<StringId, Definition>();
         }
 
         return innerDefinitions;

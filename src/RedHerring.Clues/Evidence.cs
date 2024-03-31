@@ -1,24 +1,25 @@
 ﻿using RedHerring.Alexandria.Disposables;
+using RedHerring.Alexandria.Identifiers;
 
 namespace RedHerring.Clues;
 
-public static class Definitions
+public static class Evidence
 {
-    private static DefinitionsContext? _context;
+    private static EvidenceContext? _context;
     private static readonly Dictionary<Type, Definition> Defaults = new();
 
     #region Lifecycle
     
-    public static DefinitionsContext CreateContext()
+    public static EvidenceContext CreateContext()
     {
         var previous = CurrentContext();
-        var context = new DefinitionsContext();
+        var context = new EvidenceContext();
         CurrentContext(previous ?? context);
         
         return context;
     }
 
-    public static void DestroyContext(DefinitionsContext? context = null)
+    public static void DestroyContext(EvidenceContext? context = null)
     {
         var previous = CurrentContext();
         if (context is null)
@@ -30,9 +31,9 @@ public static class Definitions
         context.TryDispose();
     }
 
-    public static DefinitionsContext? CurrentContext() => _context;
+    public static EvidenceContext? CurrentContext() => _context;
 
-    public static void CurrentContext(DefinitionsContext? context)
+    public static void CurrentContext(EvidenceContext? context)
     {
         _context = context;
         UpdateDefaults();
@@ -58,7 +59,7 @@ public static class Definitions
     /// <param name="id"></param>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>Definition of type and id, if found, null otherwise</returns>
-    public static T? ById<T>(DefinitionId id) where T : Definition
+    public static T? ById<T>(StringId id) where T : Definition
     {
         return _context?.ById<T>(id);
     }
@@ -70,7 +71,7 @@ public static class Definitions
     /// <param name="definition"></param>
     /// <typeparam name="T">Definition type</typeparam>
     /// <returns>True if definition exists</returns>
-    public static bool TryById<T>(DefinitionId id, out T? definition) where T : Definition
+    public static bool TryById<T>(StringId id, out T? definition) where T : Definition
     {
         if (_context is null)
         {
@@ -87,7 +88,7 @@ public static class Definitions
     /// <param name="id"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static bool Contains<T>(DefinitionId id) where T : Definition
+    public static bool Contains<T>(StringId id) where T : Definition
     {
         return _context?.Contains<T>(id) ?? false;
     }

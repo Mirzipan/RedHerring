@@ -1,5 +1,6 @@
 ﻿using Migration;
-using RedHerring.Studio.Definition;
+using RedHerring.Clues;
+using RedHerring.Studio.Definitions;
 using RedHerring.Studio.Tools;
 using RedHerring.Studio.UserInterface.Attributes;
 
@@ -16,7 +17,7 @@ public sealed class StudioSettings
 	[ValueDropdown(nameof(_themes)), OnCommitValue(nameof(ApplyTheme))] public string Theme = DefaultTheme;
 
 	[HideInInspector, NonSerialized]
-	private static StudioTheme[] _themes = Clues.Definitions.ByType<ThemeDefinition>().Select(e => new StudioTheme(e.Name, e.Apply)).ToArray();
+	private static StudioTheme[] _themes = Evidence.ByType<ThemeDefinition>().Select(e => new StudioTheme(e.Name, e.Apply)).ToArray();
 	
 	#region Data storage
 	[HideInInspector] public string?       UiLayout;

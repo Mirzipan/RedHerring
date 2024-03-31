@@ -82,7 +82,7 @@ internal class Program
             Window = _window!,
         }
             .WithAssemblies(AppDomain.CurrentDomain.GetAssemblies())
-            .WithAssembly(typeof(Definitions).Assembly) //TODO(Mirzi): this should not have to be added manually
+            .WithAssembly(typeof(Evidence).Assembly) //TODO(Mirzi): this should not have to be added manually
             .WithInstaller(render)
             .WithInstaller(studio);
         _engine.Run(context);
@@ -115,7 +115,7 @@ internal class Program
 
     private static void OnEngineExit()
     {
-        Definitions.DestroyContext();
+        Evidence.DestroyContext();
         _window?.Close();
     }
 
