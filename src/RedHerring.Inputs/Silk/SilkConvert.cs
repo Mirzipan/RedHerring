@@ -2,7 +2,7 @@
 
 namespace RedHerring.Inputs;
 
-internal static class Convert
+internal static class SilkConvert
 {
     public static Input FromKey(Key key)
     {
@@ -175,6 +175,25 @@ internal static class Convert
             ButtonName.DPadDown => Input.GamepadDPadDown,
             ButtonName.DPadLeft => Input.GamepadDPadLeft,
             _ => Input.Unknown,
+        };
+    }
+
+    public static StandardCursor ToStandardCursor(CursorKind cursor)
+    {
+        return cursor switch
+        {
+            CursorKind.Default => StandardCursor.Default,
+            CursorKind.Arrow => StandardCursor.Arrow,
+            CursorKind.IBeam => StandardCursor.IBeam,
+            CursorKind.Crosshair => StandardCursor.Crosshair,
+            CursorKind.Hand => StandardCursor.Hand,
+            CursorKind.ResizeWE => StandardCursor.HResize,
+            CursorKind.ResizeNS => StandardCursor.VResize,
+            CursorKind.ResizeNESW => StandardCursor.Default,
+            CursorKind.ResizeNWSE => StandardCursor.Default,
+            CursorKind.No => StandardCursor.Default,
+            CursorKind.Wait => StandardCursor.Default,
+            _ => StandardCursor.Default,
         };
     }
 }

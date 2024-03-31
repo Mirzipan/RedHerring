@@ -4,7 +4,6 @@ using RedHerring.Infusion.Attributes;
 using RedHerring.Inputs;
 using RedHerring.Inputs.Layers;
 using RedHerring.Render.ImGui;
-using Silk.NET.Input;
 using Gui = ImGuiNET.ImGui;
 
 namespace RedHerring.Core.Systems;
@@ -55,20 +54,18 @@ public sealed class InputSystem : EngineSystem, Updatable, Drawable
 
     private void UpdateCursor()
     {
-        StandardCursor cursor = Gui.GetMouseCursor() switch
+        CursorKind cursor = Gui.GetMouseCursor() switch
         {
-            ImGuiMouseCursor.None       => StandardCursor.Default,
-            ImGuiMouseCursor.Arrow      => StandardCursor.Default,
-            ImGuiMouseCursor.TextInput  => StandardCursor.IBeam,
-            ImGuiMouseCursor.ResizeAll  => StandardCursor.Default,
-            ImGuiMouseCursor.ResizeNS   => StandardCursor.VResize,
-            ImGuiMouseCursor.ResizeEW   => StandardCursor.HResize,
-            ImGuiMouseCursor.ResizeNESW => StandardCursor.Default,
-            ImGuiMouseCursor.ResizeNWSE => StandardCursor.Default,
-            ImGuiMouseCursor.Hand       => StandardCursor.Hand,
-            ImGuiMouseCursor.NotAllowed => StandardCursor.Default,
-            ImGuiMouseCursor.COUNT      => StandardCursor.Default,
-            _                           => throw new ArgumentOutOfRangeException()
+            ImGuiMouseCursor.Arrow      => CursorKind.Default,
+            ImGuiMouseCursor.TextInput  => CursorKind.IBeam,
+            ImGuiMouseCursor.ResizeAll  => CursorKind.Default,
+            ImGuiMouseCursor.ResizeNS   => CursorKind.ResizeNS,
+            ImGuiMouseCursor.ResizeEW   => CursorKind.ResizeWE,
+            ImGuiMouseCursor.ResizeNESW => CursorKind.ResizeNESW,
+            ImGuiMouseCursor.ResizeNWSE => CursorKind.ResizeNWSE,
+            ImGuiMouseCursor.Hand       => CursorKind.Hand,
+            ImGuiMouseCursor.NotAllowed => CursorKind.No,
+            _                           => CursorKind.Default,
         };
 
         Interaction.Cursor(cursor);

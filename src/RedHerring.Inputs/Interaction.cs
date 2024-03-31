@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 using RedHerring.Alexandria.Disposables;
 using RedHerring.Inputs.Layers;
-using Silk.NET.Input;
 using Silk.NET.Windowing;
 
 namespace RedHerring.Inputs;
@@ -99,9 +98,9 @@ public static class Interaction
 
     #region Manipulation
 
-    public static void Cursor(StandardCursor cursor)
+    public static void Cursor(CursorKind cursor)
     {
-        //
+        _devices.Cursor(cursor);
     }
 
     private static void OnInputChanged(InputChanged evt)

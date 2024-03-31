@@ -36,6 +36,16 @@ internal sealed class SilkDevices : InputDevices, IDisposable
     public void NextFrame()
     {
     }
+    
+    public void Cursor(CursorKind cursor)
+    {
+        if (_mouse is null)
+        {
+            return;
+        }
+        
+        _mouse.Cursor.StandardCursor = SilkConvert.ToStandardCursor(cursor);
+    }
 
     public void Dispose()
     {
@@ -126,13 +136,13 @@ internal sealed class SilkDevices : InputDevices, IDisposable
 
     private void OnKeyDown(IKeyboard keyboard, Key key, int scanCode)
     {
-        var evt = new InputChanged(keyboard.Index, Convert.FromKey(key), true, 1.00f);
+        var evt = new InputChanged(keyboard.Index, SilkConvert.FromKey(key), true, 1.00f);
         InputChanged?.Invoke(evt);
     }
 
     private void OnKeyUp(IKeyboard keyboard, Key key, int scanCode)
     {
-        var evt = new InputChanged(keyboard.Index, Convert.FromKey(key), false, 0.00f);
+        var evt = new InputChanged(keyboard.Index, SilkConvert.FromKey(key), false, 0.00f);
         InputChanged?.Invoke(evt);
     }
 
@@ -183,13 +193,13 @@ internal sealed class SilkDevices : InputDevices, IDisposable
 
     private void OnMouseDown(IMouse mouse, MouseButton button)
     {
-        var evt = new InputChanged(mouse.Index, Convert.FromMouseButton(button), true, 1.00f);
+        var evt = new InputChanged(mouse.Index, SilkConvert.FromMouseButton(button), true, 1.00f);
         InputChanged?.Invoke(evt);
     }
 
     private void OnMouseUp(IMouse mouse, MouseButton button)
     {
-        var evt = new InputChanged(mouse.Index, Convert.FromMouseButton(button), false, 0.00f);
+        var evt = new InputChanged(mouse.Index, SilkConvert.FromMouseButton(button), false, 0.00f);
         InputChanged?.Invoke(evt);
     }
 
@@ -235,13 +245,13 @@ internal sealed class SilkDevices : InputDevices, IDisposable
 
     private void OnButtonDown(IGamepad gamepad, Button button)
     {
-        var evt = new InputChanged(gamepad.Index, Convert.FromGamepadButton(button), true, 1.00f);
+        var evt = new InputChanged(gamepad.Index, SilkConvert.FromGamepadButton(button), true, 1.00f);
         InputChanged?.Invoke(evt);
     }
 
     private void OnButtonUp(IGamepad gamepad, Button button)
     {
-        var evt = new InputChanged(gamepad.Index, Convert.FromGamepadButton(button), false, 0.00f);
+        var evt = new InputChanged(gamepad.Index, SilkConvert.FromGamepadButton(button), false, 0.00f);
         InputChanged?.Invoke(evt);
     }
 
