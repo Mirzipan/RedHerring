@@ -210,7 +210,7 @@ public sealed class StudioCamera : EngineSystem, Drawable
     private void SetupInput()
     {
         _layer.Name = "studio camera";
-        _layer.Layer = new OctoByte("camera");
+        _layer.Layer = "camera";
         _layer.ConsumesAllInput = false;
         
         _layer.Bind(InputAction.MoveLeft, InputState.Down, OnMoveLeft);

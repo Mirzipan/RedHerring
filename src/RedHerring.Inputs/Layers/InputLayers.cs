@@ -5,7 +5,7 @@ namespace RedHerring.Inputs.Layers;
 public class InputLayers
 {
     private readonly List<InputLayer?> _stack = new();
-    private readonly Dictionary<OctoByte, int> _fixedLayers = new();
+    private readonly Dictionary<StringId, int> _fixedLayers = new();
 
     public IReadOnlyList<InputLayer?> Stack => _stack;
     
@@ -20,7 +20,7 @@ public class InputLayers
 
     #region Manipulation
 
-    internal void SetLayers(IList<OctoByte> layers)
+    internal void SetLayers(IList<StringId> layers)
     {
         PopAll();
         _fixedLayers.Clear();
@@ -38,7 +38,7 @@ public class InputLayers
             return;
         }
 
-        if (inputLayer.Layer.Value != 0)
+        if (!inputLayer.Layer.IsEmpty)
         {
             SetAt(inputLayer.Layer, inputLayer);
         }
@@ -91,7 +91,7 @@ public class InputLayers
         HandleAdded(inputLayer);
     }
 
-    private void SetAt(OctoByte layer, InputLayer inputLayer)
+    private void SetAt(StringId layer, InputLayer inputLayer)
     {
         if (!_fixedLayers.TryGetValue(layer, out int index))
         {

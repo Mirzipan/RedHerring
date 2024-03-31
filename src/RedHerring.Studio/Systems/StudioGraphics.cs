@@ -45,7 +45,7 @@ public class StudioGraphics : EngineSystem
     private void SetupInput()
     {
         _layer.Name = "studio graphics";
-        _layer.Layer = new OctoByte("graphics");
+        _layer.Layer = "graphics";
         _layer.ConsumesAllInput = false;
         
         _layer.Bind(InputAction.ReloadShaders, InputState.Released, OnReloadShaders);

@@ -7,7 +7,7 @@ public class InputLayer
     private readonly Dictionary<string, ActionBinding> _bindings = new();
     
     public string? Name { get; set; }
-    public OctoByte Layer { get; set; }
+    public StringId Layer { get; set; }
     public bool IsActive { get; internal set; }
     public bool ConsumesAllInput { get; set; }
 
