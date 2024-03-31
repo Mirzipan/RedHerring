@@ -6,8 +6,7 @@ xcopy src\RedHerring.Alexandria\bin\Release\net8.0\*.dll Template\Libraries\ /Y
 xcopy src\RedHerring.Assets\bin\Release\net8.0\*.dll Template\Libraries\ /Y
 xcopy src\RedHerring.Clues\bin\Release\net8.0\*.dll Template\Libraries\ /Y
 xcopy src\RedHerring.Deduction\bin\Release\net8.0\*.dll Template\Libraries\ /Y
-xcopy src\RedHerring.Fingerprint\bin\Release\net8.0\*.dll Template\Libraries\ /Y
-xcopy src\RedHerring.ImGui\bin\Release\net8.0\*.dll Template\Libraries\ /Y
+xcopy src\RedHerring.Inputs\bin\Release\net8.0\*.dll Template\Libraries\ /Y
 xcopy src\RedHerring.Incident\bin\Release\net8.0\*.dll Template\Libraries\ /Y
 xcopy src\RedHerring.Infusion\bin\Release\net8.0\*.dll Template\Libraries\ /Y
 xcopy src\RedHerring.Motive\bin\Release\net8.0\*.dll Template\Libraries\ /Y
