@@ -180,4 +180,10 @@ public readonly struct StringId : IComparable, IComparable<StringId>, IEquatable
     public static bool operator ==(StringId left, StringId right) => Equals(left, right);
 
     public static bool operator !=(StringId left, StringId right) => !Equals(left, right);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator StringId(string value) => new StringId(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator StringId(Span<char> value) => new StringId(value);
 }
