@@ -429,3 +429,5 @@ src/RedHerring.Sandbox/Project/Resources_PC
 Template/.idea
 Studio/XDG_CONFIG_HOME
 Studio/imgui.ini
+Studio/Template/Libraries
+Studio/runtimes
