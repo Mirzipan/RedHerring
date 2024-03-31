@@ -36,8 +36,16 @@ public sealed class StudioAssetDatabase
 			using StreamWriter writer = new(stream);
 
 			writer.WriteLine("// this file is generated in RedHerring Studio");
+			writer.WriteLine();
 			writer.WriteLine("using RedHerring.Assets;");
+			writer.WriteLine("using RedHerring.Render;");
+			
+			// TODO(Mirzi): check if nameof can be used the get the full namespaces.
+			// writer.WriteLine($"using {nameof(RedHerring.Assets)};");
+			// writer.WriteLine($"using {nameof(RedHerring.Render)};");
+			
 			writer.WriteLine($"namespace {projectSettings.AssetDatabaseNamespace};");
+			writer.WriteLine();
 			writer.WriteLine($"public static class {projectSettings.AssetDatabaseClass}");
 			writer.WriteLine("{");
 			
