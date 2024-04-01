@@ -1,5 +1,4 @@
-﻿using ImGuiNET;
-using NativeFileDialogSharp;
+﻿using NativeFileDialogSharp;
 using RedHerring.Studio.Commands;
 using RedHerring.Studio.Models;
 using RedHerring.Studio.Models.ViewModels.Console;
