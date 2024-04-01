@@ -1,5 +1,6 @@
 ﻿using NativeFileDialogSharp;
 using RedHerring.Studio.Commands;
+using RedHerring.Studio.Creation;
 using RedHerring.Studio.Models;
 using RedHerring.Studio.Models.ViewModels.Console;
 using RedHerring.Studio.UserInterface.Attributes;
@@ -52,7 +53,8 @@ public sealed class NewProjectDialog
 		ConsoleViewModel.Log($"Creating new project at {_targetPath}", ConsoleItemKind.Info);
 		try
 		{
-			TemplateUtility.InstantiateTemplate(_targetPath, _name);
+			//TemplateUtility.InstantiateTemplate(_targetPath, _name);
+			GameProject.CreateAt(_path, _name);
 		}
 		catch(Exception e)
 		{
