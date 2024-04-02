@@ -11,6 +11,7 @@
     <ItemGroup>
       <PackageReference Include="ImGui.NET" Version="1.90.1.1" />
       <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.6.0" />
+      <PackageReference Include="Silk.NET.Assimp" Version="2.20.0" />
       <PackageReference Include="Silk.NET.Core" Version="2.20.0" />
       <PackageReference Include="Silk.NET.GLFW" Version="2.20.0" />
       <PackageReference Include="Silk.NET.Maths" Version="2.20.0" />
