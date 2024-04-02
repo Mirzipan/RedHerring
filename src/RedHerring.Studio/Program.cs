@@ -28,6 +28,8 @@ internal class Program
     {
         _platform = DesktopPlatform.Create("RedHerring Studio");
         
+        Logger.SystemInfo();
+        
         Init();
         
         var opts = new WindowOptions
