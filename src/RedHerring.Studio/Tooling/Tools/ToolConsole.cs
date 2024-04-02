@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using ImGuiNET;
+using RedHerring.Inputs;
 using RedHerring.Render.ImGui;
 using RedHerring.Studio.Models;
 using RedHerring.Studio.Models.ViewModels.Console;
@@ -136,6 +137,6 @@ public sealed class ToolConsole : Tool
 
     private void CopySelectedLineToClipboard()
     {
-        Gui.SetClipboardText(_selectedLine);
+        Interaction.Clipboard = _selectedLine;
     }
 }
