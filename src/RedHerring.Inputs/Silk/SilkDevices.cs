@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 using Silk.NET.Input;
-using Silk.NET.Input.Sdl;
+using Silk.NET.Input.Glfw;
 using Silk.NET.Windowing;
 
 namespace RedHerring.Inputs;
@@ -20,7 +20,7 @@ public sealed class SilkDevices : InputDevices, IDisposable
 
     public SilkDevices(IView view) 
     {
-        SdlInput.RegisterPlatform();
+        GlfwInput.RegisterPlatform();
         
         _silkContext = view.CreateInput();
         _silkContext.ConnectionChanged += OnConnectionChanged;
