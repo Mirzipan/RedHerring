@@ -16,4 +16,10 @@ public sealed class NullDevices : InputDevices
     public void Cursor(CursorKind cursor)
     {
     }
+
+    public string Clipboard() => string.Empty;
+
+    public void Clipboard(string text)
+    {
+    }
 }

@@ -71,6 +71,12 @@ public static class Interaction
 
     #region Queries
 
+    public static string Clipboard
+    {
+        get => _devices.Clipboard();
+        set => _devices.Clipboard(value);
+    }
+    
     public static Vector2 MousePosition => _context?.MousePosition ?? Vector2.Zero;
     public static Vector2 MousePositionDelta => _context?.MousePositionDelta ?? Vector2.Zero;
     public static Vector2 MouseWheelDelta = _context?.MouseWheelDelta ?? Vector2.Zero;

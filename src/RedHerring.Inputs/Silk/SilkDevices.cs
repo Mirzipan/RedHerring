@@ -55,6 +55,20 @@ public sealed class SilkDevices : InputDevices, IDisposable
     }
 
     #endregion Lifecycle
+
+    #region Clipboard
+
+    public string Clipboard() => _keyboard?.ClipboardText ?? string.Empty;
+
+    public void Clipboard(string text)
+    {
+        if (_keyboard is not null)
+        {
+            _keyboard.ClipboardText = text;
+        }
+    }
+
+    #endregion Clipboard
     
     #region Devices
 

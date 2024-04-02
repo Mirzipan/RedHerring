@@ -6,4 +6,6 @@ public interface InputDevices
     event Action<InputChanged>? InputChanged;
     event Action<int, char>? CharacterTyped;
     void Cursor(CursorKind cursor);
+    string Clipboard();
+    void Clipboard(string text);
 }
