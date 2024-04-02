@@ -23,7 +23,7 @@ public sealed class StudioCamera : EngineSystem, Drawable
     public const float MovementSpeedStep = 0.01f;
 
     [Infuse]
-    private RendererContext _rendererContext = null!;
+    private RenderContext _renderContext = null!;
     [Infuse]
     private InputLayer _layer = null!;
 
@@ -231,7 +231,7 @@ public sealed class StudioCamera : EngineSystem, Drawable
             CalculateMatrices();
         }
         
-        _rendererContext.SetCameraViewMatrix(_worldMatrix, _viewMatrix, _projectionMatrix, FieldOfView, ClipPlaneNear, ClipPlaneFar);
+        _renderContext.SetCameraViewMatrix(_worldMatrix, _viewMatrix, _projectionMatrix, FieldOfView, ClipPlaneNear, ClipPlaneFar);
     }
 
     private void CalculateMatrices()

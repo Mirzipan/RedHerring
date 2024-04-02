@@ -1,25 +1,35 @@
-using RedHerring.Alexandria.Disposables;
-using Silk.NET.Windowing;
-using Veldrid;
+using Silk.NET.Maths;
 
 namespace RedHerring.Render;
 
 public static class Renderer
 {
-	private static RendererContext? _context;
+	private static RenderDevice _device = null!;
+	private static RenderContext _context = null!;
 
 	#region Lifecycle
+
+	public static RenderContext Init(RenderDevice device)
+	{
+		_device = device;
+		_context = CreateContext();
+		
+		_device.Init();
+		
+		return _context;
+	}
     
-	public static RendererContext CreateContext(IView? view, GraphicsBackend backend, bool useSeparateThread)
+	public static RenderContext CreateContext()
 	{
 		var previous = CurrentContext();
-		RendererContext context = view is not null ? new UniversalRendererContext(view, backend, useSeparateThread) : new NullRendererContext();
-		CurrentContext(previous ?? context);
-        
+		// TODO(Mirzi): deactive context? unbind listeners?
+		
+		var context = new RenderContext(_device);
+		CurrentContext(context);
 		return context;
 	}
 
-	public static void DestroyContext(RendererContext? context = null)
+	public static void DestroyContext(RenderContext? context = null)
 	{
 		var previous = CurrentContext();
 		if (context is null)
@@ -27,16 +37,36 @@ public static class Renderer
 			context = previous;
 		}
 
-		CurrentContext(context != previous ? previous : null);
-		context.TryDispose();
+		CurrentContext(context != previous ? previous : CreateContext());
+		context.Dispose();
 	}
 
-	public static RendererContext? CurrentContext() => _context;
+	public static RenderContext CurrentContext() => _context;
 
-	public static void CurrentContext(RendererContext? context)
+	public static void CurrentContext(RenderContext context)
 	{
 		_context = context;
 	}
 
 	#endregion Lifecycle
+
+	#region Public
+
+	public static void Resize(Vector2D<int> size)
+	{
+		_device.Resize(size);
+		_context.Resize(size);
+	}
+
+	public static bool BeginDraw() => _device.BeginDraw();
+
+	public static void NextFrame() => _device.Draw(_context);
+	public static void EndDraw() => _device.EndDraw();
+
+	public static void ReloadShaders()
+	{
+		// TODO(Mirzi): force reload shaders
+	}
+
+	#endregion Public
 }

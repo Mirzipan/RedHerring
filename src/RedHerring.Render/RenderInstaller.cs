@@ -7,19 +7,30 @@ namespace RedHerring.Render;
 
 public class RenderInstaller : BindingsInstaller
 {
-    private IView _view;
+    private IView? _view;
     public GraphicsBackend Backend;
     public bool UseSeparateRenderThread;
 
-    public RenderInstaller(IView view)
+    public RenderInstaller(IView? view)
     {
         _view = view;
     }
 
     public void InstallBindings(ContainerDescription description)
     {
-        var renderer = Renderer.CreateContext(_view, Backend, UseSeparateRenderThread);
-        description.AddSingleton(renderer, typeof(RendererContext));
+        RenderDevice device;
+        
+        if (_view is not null)
+        {
+            device = new UniversalRenderDevice(_view, Backend);
+        }
+        else
+        {
+            device = new NullRenderDevice();
+        }
+        
+        var context = Renderer.Init(device);
+        description.AddSingleton(context, typeof(RenderContext));
     }
     
     public static GraphicsBackend PreferredBackend()

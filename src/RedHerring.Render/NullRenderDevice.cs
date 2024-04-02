@@ -4,13 +4,19 @@ using Silk.NET.Maths;
 
 namespace RedHerring.Render;
 
-public class NullRendererContext : RendererContext
+public class NullRenderDevice : RenderDevice
 {
     public RenderFeatureCollection Features { get; } = new();
     public Shared Shared => throw new NullReferenceException("Shared resources are not available in NullRendererContext!");
 
-    public void AddFeature(RenderFeature feature)
+    public void Init(RenderFeatureCollection features)
     {
+        
+    }
+
+    public void Init(RenderFeature feature)
+    {
+        
     }
 
     public void Init()
@@ -27,7 +33,7 @@ public class NullRendererContext : RendererContext
 
     public bool BeginDraw() => false;
 
-    public void Draw()
+    public void Draw(RenderContext context)
     {
     }
 
@@ -38,13 +44,8 @@ public class NullRendererContext : RendererContext
     public void Resize(Vector2D<int> size)
     {
     }
-
-    public void SetCameraViewMatrix(Matrix4x4 world, Matrix4x4 view, Matrix4x4 projection, float fieldOfView, float clipPlaneNear,
-        float clipPlaneFar)
-    {
-    }
-
-    public void ReloadShaders()
+    
+    public void ReloadShaders(RenderFeatureCollection features)
     {
     }
 }

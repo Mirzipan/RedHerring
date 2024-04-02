@@ -17,7 +17,6 @@ public sealed class Engine : NamedDisposer
     private int _frameCount;
     
     public EngineContext Context   { get; private set; } = null!;
-    public RendererContext      RendererContext  { get; private set; } = null!;
     public Session?      Session   => _session;
     public bool          IsRunning { get; private set; }
     public bool          IsExiting { get; private set; }
@@ -97,11 +96,11 @@ public sealed class Engine : NamedDisposer
         ++_frameCount;
         _drawTimeTracker.Update(TimeSpan.FromSeconds(delta));
         
-        bool isDrawing = RendererContext.BeginDraw();
+        bool isDrawing = Renderer.BeginDraw();
         if (isDrawing)
         {
             Draw(DrawTime);
-            RendererContext.EndDraw();
+            Renderer.EndDraw();
         }
     }
 
@@ -139,10 +138,7 @@ public sealed class Engine : NamedDisposer
 
     #region Public
 
-    public void Resize(Vector2D<int> size)
-    {
-        RendererContext?.Resize(size);
-    }
+    public void Resize(Vector2D<int> size) => Renderer.Resize(size);
 
     #endregion Public
 
@@ -152,23 +148,14 @@ public sealed class Engine : NamedDisposer
     {
         Context.Init(this);
         await Context.Load();
-
-        if (Context.Container.HasBinding<RendererContext>())
-        {
-            RendererContext = Context.Container.Resolve<RendererContext>();
-        }
-        else
-        {
-            RendererContext = new NullRendererContext();
-        }
     }
 
     private void Draw(GameTime time)
     {
         Context.Draw(time);
         Session?.Draw(time);
-        
-        RendererContext.Draw();
+
+        Renderer.NextFrame();
     }
     
     private void Update(GameTime time)

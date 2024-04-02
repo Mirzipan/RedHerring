@@ -8,7 +8,7 @@ namespace RedHerring.Motive.Entities.Components;
 public class PerspectiveCamera : EntityComponent
 {
     [Infuse]
-    private RendererContext _rendererContext = null!;
+    private RenderContext _renderContext = null!;
     
     private Matrix4x4 _viewMatrix;
     private Matrix4x4 _projectionMatrix;
@@ -72,7 +72,7 @@ public class PerspectiveCamera : EntityComponent
         }
         
         var world = Entity.Transform.WorldMatrix;
-        _rendererContext.SetCameraViewMatrix(world, _viewMatrix, _projectionMatrix, FieldOfView, ClipPlaneNear, ClipPlaneFar);
+        _renderContext.SetCameraViewMatrix(world, _viewMatrix, _projectionMatrix, FieldOfView, ClipPlaneNear, ClipPlaneFar);
     }
 
     private void CalculateMatrices()

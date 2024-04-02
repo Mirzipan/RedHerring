@@ -7,7 +7,7 @@ namespace RedHerring.Core.Systems;
 public sealed class GraphicsSystem : EngineSystem
 {
     [Infuse]
-    private RendererContext _rendererContext = null!;
+    private RenderContext _context = null!;
     
     protected override void Init()
     {
@@ -15,19 +15,17 @@ public sealed class GraphicsSystem : EngineSystem
 
     protected override ValueTask<int> Load()
     {
-        _rendererContext.Init();
-        _rendererContext.Resize(Context.Window.Size);
+        Renderer.Resize(Context.Window.Size);
         return ValueTask.FromResult(0);
     }
 
     protected override ValueTask<int> Unload()
     {
-        _rendererContext.Close();
         return ValueTask.FromResult(0);
     }
 
     public void RegisterFeature(RenderFeature feature)
     {
-        _rendererContext.AddFeature(feature);
+        _context.AddFeature(feature);
     }
 }

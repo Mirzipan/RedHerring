@@ -132,7 +132,7 @@ public class StudioTestRenderFeature : RenderFeature, IDisposable
 			throw new NullReferenceException($"{Cube.Path} is missing!");
 		}
 
-		_mesh = Renderer.CurrentContext()!.Shared.GetOrCreateMesh(device, Cube.Path, scene.Meshes[0]);
+		_mesh = Renderer.CurrentContext().Shared.GetOrCreateMesh(device, Cube.Path, scene.Meshes[0]);
 	}
 
 	private void InitShaders(GraphicsDevice device)
