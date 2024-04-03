@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using RedHerring.Alexandria.Extensions;
+using OdinSerializer;
 using RedHerring.Numbers;
 using RedHerring.Render;
 using RedHerring.Render.Models;
@@ -8,6 +8,7 @@ using RedHerring.Studio.Models.ViewModels.Console;
 using Silk.NET.Assimp;
 using Silk.NET.Maths;
 using Veldrid;
+using File = System.IO.File;
 using Scene = Silk.NET.Assimp.Scene;
 using RenderScene = RedHerring.Render.Models.Scene;
 
@@ -16,267 +17,388 @@ namespace RedHerring.Studio.Import;
 [Importer(ProjectNodeKind.AssetScene)]
 public class AssimpSceneImporter : Importer<Scene>
 {
-    private readonly Silk.NET.Assimp.Assimp _assimp = Silk.NET.Assimp.Assimp.GetApi();
-    private readonly AssimpContext _context = new();
-    
-    public AssimpSceneImporter(ProjectNode owner) : base(owner)
-    {
-    }
+	private readonly Silk.NET.Assimp.Assimp _assimp = Silk.NET.Assimp.Assimp.GetApi();
+	private readonly AssimpContext _context = new();
 
-    public override string ReferenceType => nameof(SceneReference);
-    public override void UpdateCache()
-    {
-        
-    }
+	public AssimpSceneImporter(ProjectNode owner) : base(owner)
+	{
+	}
 
-    public override void ClearCache()
-    {
-    }
+	public override string ReferenceType => nameof(SceneReference);
 
-    public override unsafe void Import(string resourcesRootPath, out string? relativeResourcePath)
-    {
-        AssimpSceneImporterSettings? settings = Owner.Meta?.ImporterSettings as AssimpSceneImporterSettings;
-        if (settings == null)
-        {
-            ConsoleViewModel.LogError($"Cannot import '{Owner.RelativePath}'. Settings are missing or invalid!");
-            relativeResourcePath = null;
-            return;
-        }
-        
-        relativeResourcePath = null;
+	public override void UpdateCache()
+	{
+	}
 
-        uint importFlags = 0;
-        uint postProcessFlags = 0;
+	public override void ClearCache()
+	{
+	}
 
-        var scene = FreshScene(Owner.AbsolutePath, importFlags, postProcessFlags);
-        var renderScene = ConvertScene(scene);
+	public override unsafe void Import(string resourcesRootPath, out string? relativeResourcePath)
+	{
+		AssimpSceneImporterSettings? settings = Owner.Meta?.ImporterSettings as AssimpSceneImporterSettings;
+		if (settings == null)
+		{
+			ConsoleViewModel.LogError($"Cannot import '{Owner.RelativePath}'. Settings are missing or invalid!");
+			relativeResourcePath = null;
+			return;
+		}
 
-        // TODO(Mirzi): do more stuff?
-    }
+		relativeResourcePath = null;
 
-    #region Private
+		uint importFlags = 0;
+		uint postProcessFlags = 0;
 
-    private unsafe RenderScene ConvertScene(Scene* scene)
-    {
-        RenderScene result = new();
+		var scene = FreshScene(Owner.AbsolutePath, importFlags, postProcessFlags);
+		var renderScene = ConvertScene(scene);
 
-        if (scene->MNumMeshes > 0)
-        {
-            result.Meshes = new List<SceneMesh>();
-            for (int i = 0; i < scene->MNumMeshes; i++)
-            {
-                var mesh = ProcessMesh(scene, scene->MMeshes[i]);
-                if (mesh is null)
-                {
-                    continue;
-                }
+		// import
+		byte[] json = SerializationUtility.SerializeValue(renderScene, DataFormat.Binary);
+		relativeResourcePath = $"{Owner.RelativePath}.scene";
+		string absolutePath = Path.Join(resourcesRootPath, relativeResourcePath);
+		Directory.CreateDirectory(Path.GetDirectoryName(absolutePath)!);
+		File.WriteAllBytes(absolutePath, json);
+	}
 
-                result.Meshes.Add(mesh);
-            }
-        }
+	#region Private
 
-        if (scene->MRootNode is not null)
-        {
-            result.Root = new SceneNode();
-            // TODO(Mirzi): import node
-            // TODO(Mirzi): import child nodes recursively
-        }
+	private unsafe RenderScene ConvertScene(Scene* scene)
+	{
+		RenderScene result = new();
 
-        return result;
-    }
+		if (scene->MNumMeshes > 0)
+		{
+			result.Meshes = new List<SceneMesh>();
+			for (int i = 0; i < scene->MNumMeshes; i++)
+			{
+				var mesh = ProcessMesh(scene, scene->MMeshes[i]);
+				if (mesh is null)
+				{
+					continue;
+				}
 
-    private unsafe SceneMesh? ProcessMesh(Scene* scene, Mesh* mesh)
-    {
-        if (mesh->MNumVertices == 0)
-        {
-            return null; // vertices are mandatory
-        }
+				result.Meshes.Add(mesh);
+			}
+		}
 
-        if (mesh->MPrimitiveTypes != (uint)PrimitiveType.Triangle)
-        {
-            return null; // ignore this mesh
-        }
+		if (scene->MRootNode is not null)
+		{
+			result.Root = new SceneNode();
+			// TODO(Mirzi): import node
+			// TODO(Mirzi): import child nodes recursively
+		}
 
-        var result = new SceneMesh();
-        result.Name = mesh->MName.ToString();
-        result.MaterialIndex = (int)mesh->MMaterialIndex;
-        
-        // only the triangle list is supported now
-        result.Topology = PrimitiveTopology.TriangleList;
+		return result;
+	}
 
-        var bb = mesh->MAABB;
-        result.BoundingBox = new BoundingBox(bb.Min.ToSystem(), bb.Max.ToSystem());
+	private unsafe SceneMesh? ProcessMesh(Scene* scene, Mesh* mesh)
+	{
+		if (mesh->MNumVertices == 0)
+		{
+			return null; // vertices are mandatory
+		}
 
-        // positions
-        int vertexCount = (int)mesh->MNumVertices;
-        result.Positions = new List<Vector3>(vertexCount);
-        for (int i = 0; i < vertexCount; i++)
-        {
-            result.Positions.Add(mesh->MVertices[i]);
-        }
-        
-        // normals
-        bool hasNormals = mesh->MNormals is not null;
-        if (hasNormals)
-        {
-            result.Normals = new List<Vector3>(vertexCount);
-        }
-        
-        // tangents and bitangents
-        bool hasTangents = mesh->MTangents is not null;
-        if (hasTangents)
-        {
-            result.Tangents = new List<Vector3>(vertexCount);
-        }
-        
-        bool hasBiTangents = mesh->MTangents is not null;
-        if (hasBiTangents)
-        {
-            result.BiTangents = new List<Vector3>(vertexCount);
-        }
-        
-        // UV
-        int uvChannelCount = AssimpUtils.UVChannelCount(mesh);
-        if (uvChannelCount > 0)
-        {
-            result.TextureCoordinateChannels = new List<SceneMeshTextureCoordinateChannel>(uvChannelCount);
-            for (int channelIndex = 0; channelIndex < uvChannelCount; channelIndex++)
-            {
-                uint size = mesh->MNumUVComponents[channelIndex];
-                var channel = result.TextureCoordinateChannels[channelIndex];
-                switch (size)
-                {
-                    case 2:
-                        channel.UV = new List<Vector2>(vertexCount);
-                        break;
-                    case 3:
-                        channel.UVW = new List<Vector3>(vertexCount);
-                        break;
-                }
-            }
-        }
+		if (mesh->MPrimitiveTypes != (uint)PrimitiveType.Triangle)
+		{
+			return null; // ignore this mesh
+		}
 
-        // colors
-        int colorChannelCount = AssimpUtils.ColorChannelCount(mesh);
-        if (colorChannelCount > 0)
-        {
-            result.VertexColorChannels = new List<SceneMeshVertexColorChannel>(colorChannelCount);
-            for (int channelIndex = 0; channelIndex < colorChannelCount; channelIndex++)
-            {
-                var channel = result.VertexColorChannels[channelIndex];
-                channel.Colors = new List<Color4>();
-            }
-        }
-        
-        for (int i = 0; i < vertexCount; i++)
-        {
-            result.Positions.Add(mesh->MVertices[i]);
+		var result = new SceneMesh();
+		result.Name = mesh->MName.ToString();
+		result.MaterialIndex = (int)mesh->MMaterialIndex;
 
-            if (hasNormals)
-            {
-                result.Normals!.Add(mesh->MNormals[i]);
-            }
+		// only the triangle list is supported now
+		result.Topology = PrimitiveTopology.TriangleList;
 
-            if (hasTangents)
-            {
-                result.Tangents!.Add(mesh->MTangents[i]);
-            }
+		var bb = mesh->MAABB;
+		result.BoundingBox = new BoundingBox(bb.Min.ToSystem(), bb.Max.ToSystem());
 
-            if (hasBiTangents)
-            {
-                result.BiTangents!.Add(mesh->MBitangents[i]);
-            }
-            
-            for (int channelIndex = 0; channelIndex < uvChannelCount; channelIndex++)
-            {
-                var uv = mesh->MTextureCoords[channelIndex][i];
-                uint size = mesh->MNumUVComponents[channelIndex];
-                var channel = result.TextureCoordinateChannels![channelIndex];
-                switch (size)
-                {
-                    case 2:
-                        channel.UV!.Add(uv.XY());
-                        break;
-                    case 3:
-                        channel.UVW!.Add(uv);
-                        break;
-                }
-            }
+		// positions
+		int vertexCount = (int)mesh->MNumVertices;
+		result.Positions = new List<Vector3>(vertexCount);
 
-            for (int channelIndex = 0; channelIndex < colorChannelCount; channelIndex++)
-            {
-                var color = mesh->MColors[channelIndex][i];
-                var channel = result.VertexColorChannels![channelIndex];
-                channel.Colors.Add(new Color4(color));
-            }
-        }
+		// normals
+		bool hasNormals = mesh->MNormals is not null;
+		if (hasNormals)
+		{
+			result.Normals = new List<Vector3>(vertexCount);
+		}
 
-        // faces
-        bool hasFaces = mesh->MNumFaces > 0;
-        if (hasFaces)
-        {
-            uint[]? unsignedIndices = AssimpUtils.UnsignedIndices(mesh);
-            if (unsignedIndices is not null)
-            {
-                if (result.Positions.Count <= 0xffff)
-                {
-                    result.UShortIndices = unsignedIndices.Select(idx => (ushort)idx).ToArray();
-                }
-                else
-                {
-                    result.UIntIndices = unsignedIndices;
-                }
-            }
-        }
+		// tangents and bitangents
+		bool hasTangents = mesh->MTangents is not null;
+		if (hasTangents)
+		{
+			result.Tangents = new List<Vector3>(vertexCount);
+		}
 
-        return result;
-    }
+		bool hasBiTangents = mesh->MTangents is not null;
+		if (hasBiTangents)
+		{
+			result.BiTangents = new List<Vector3>(vertexCount);
+		}
 
-    private unsafe Scene* FreshScene(string filePath, uint importFlags, uint postProcessFlags)
-    {
-        _context.Clear();
-        
-        var scene = _assimp.ImportFile(filePath, importFlags);
-        scene = _assimp.ApplyPostProcessing(scene, postProcessFlags);
+		// UV
+		int uvChannelCount = AssimpUtils.UVChannelCount(mesh);
+		if (uvChannelCount > 0)
+		{
+			result.TextureCoordinateChannels = new List<SceneMeshTextureCoordinateChannel>(uvChannelCount);
+			for (int channelIndex = 0; channelIndex < uvChannelCount; channelIndex++)
+			{
+				uint size = mesh->MNumUVComponents[channelIndex];
+				var channel = new SceneMeshTextureCoordinateChannel();
+				result.TextureCoordinateChannels.Add(channel);
+				switch (size)
+				{
+					case 2:
+						channel.UV = new List<Vector2>(vertexCount);
+						break;
+					case 3:
+						channel.UVW = new List<Vector3>(vertexCount);
+						break;
+				}
+			}
+		}
 
-        return scene;
-    }
+		// colors
+		int colorChannelCount = AssimpUtils.ColorChannelCount(mesh);
+		if (colorChannelCount > 0)
+		{
+			result.VertexColorChannels = new List<SceneMeshVertexColorChannel>(colorChannelCount);
+			for (int channelIndex = 0; channelIndex < colorChannelCount; channelIndex++)
+			{
+				var channel = new SceneMeshVertexColorChannel();
+				result.VertexColorChannels.Add(channel);
+				channel.Colors = new List<Color4>();
+			}
+		}
 
-    #endregion Private
-    
-    #region Settings
+		for (int i = 0; i < vertexCount; i++)
+		{
+			result.Positions.Add(mesh->MVertices[i]);
 
-    public override ImporterSettings CreateImportSettings()
-    {
-        AssimpSceneImporterSettings settings = new AssimpSceneImporterSettings();
-		
-        if (Owner.Extension == ".fbx")
-        {
-            settings.CompensateFBXScale = true;
-        }
+			if (hasNormals)
+			{
+				result.Normals!.Add(mesh->MNormals[i]);
+			}
 
-        UpdateImportSettings(settings);
-        return settings;
-    }
+			if (hasTangents)
+			{
+				result.Tangents!.Add(mesh->MTangents[i]);
+			}
 
-    public override bool UpdateImportSettings(ImporterSettings settings)
-    {
-        return false;
-    }
+			if (hasBiTangents)
+			{
+				result.BiTangents!.Add(mesh->MBitangents[i]);
+			}
 
-    #endregion Settings
+			for (int channelIndex = 0; channelIndex < uvChannelCount; channelIndex++)
+			{
+				var uv = mesh->MTextureCoords[channelIndex][i];
+				uint size = mesh->MNumUVComponents[channelIndex];
+				var channel = result.TextureCoordinateChannels![channelIndex];
+				switch (size)
+				{
+					case 2:
+						channel.UV!.Add(uv.XY());
+						break;
+					case 3:
+						channel.UVW!.Add(uv);
+						break;
+				}
+			}
 
-    #region Unused
+			for (int channelIndex = 0; channelIndex < colorChannelCount; channelIndex++)
+			{
+				var color = mesh->MColors[channelIndex][i];
+				var channel = result.VertexColorChannels![channelIndex];
+				channel.Colors.Add(new Color4(color));
+			}
+		}
 
-    public override Scene Load()
-    {
-        throw new NotImplementedException();
-    }
+		// faces
+		bool hasFaces = mesh->MNumFaces > 0;
+		if (hasFaces)
+		{
+			uint[]? unsignedIndices = AssimpUtils.UnsignedIndices(mesh);
+			if (unsignedIndices is not null)
+			{
+				if (result.Positions.Count <= 0xffff)
+				{
+					result.UShortIndices = unsignedIndices.Select(idx => (ushort)idx).ToArray();
+				}
+				else
+				{
+					result.UIntIndices = unsignedIndices;
+				}
+			}
+		}
 
-    public override void Save(Scene data)
-    {
-        throw new InvalidOperationException();
-    }
+		return result;
+	}
 
-    #endregion Unused
+	private unsafe Scene* FreshScene(string filePath, uint importFlags, uint postProcessFlags)
+	{
+		_context.Clear();
+
+		var scene = _assimp.ImportFile(filePath, importFlags);
+		scene = _assimp.ApplyPostProcessing(scene, postProcessFlags);
+
+		return scene;
+	}
+
+	#endregion Private
+
+	#region Settings
+
+	public override ImporterSettings CreateImportSettings()
+	{
+		AssimpSceneImporterSettings settings = new AssimpSceneImporterSettings();
+
+		if (Owner.Extension == ".fbx")
+		{
+			settings.CompensateFBXScale = true;
+		}
+
+		UpdateImportSettings(settings);
+		return settings;
+	}
+
+	public override unsafe bool UpdateImportSettings(ImporterSettings settings)
+	{
+		AssimpSceneImporterSettings? sceneSettings = settings as AssimpSceneImporterSettings;
+		if (sceneSettings == null)
+		{
+			return false;
+		}
+
+		uint importFlags = 0;
+		uint postProcessFlags = 0;
+
+		var freshScene = FreshScene(Owner.AbsolutePath, importFlags, postProcessFlags);
+
+		bool settingsChanged = false;
+
+		//----- meshes
+		settingsChanged |= ResizeAndUpdateList(
+			ref sceneSettings.Meshes!,
+			(int)freshScene->MNumMeshes,
+			(settingsMesh, index) => settingsMesh.Name != freshScene->MMeshes[index]->MName ||
+			                         settingsMesh.MaterialIndex != freshScene->MMeshes[index]->MMaterialIndex,
+			index => sceneSettings.Meshes[index] = new AssimpSceneImporterMeshSettings(freshScene->MMeshes[index]->MName,
+				(int)freshScene->MMeshes[index]->MMaterialIndex)
+		);
+
+		//----- materials
+		settingsChanged |= ResizeAndUpdateList(
+			ref sceneSettings.Materials!,
+			(int)freshScene->MNumMaterials,
+			(settingsMaterial, index) =>
+				settingsMaterial.Name != AssimpUtils.MaterialName(freshScene->MMaterials[index]),
+			index => sceneSettings.Materials[index] =
+				new AssimpSceneImporterMaterialSettings(AssimpUtils.MaterialName(freshScene->MMaterials[index]))
+		);
+
+		// animations
+		settingsChanged |= ResizeAndUpdateList(
+			ref sceneSettings.Animations!,
+			(int)freshScene->MNumAnimations,
+			(settingsAnimation, index) =>
+				string.CompareOrdinal(settingsAnimation.Name, freshScene->MAnimations[index]->MName) != 0,
+			index => sceneSettings.Animations[index] =
+				new AssimpSceneImporterAnimationSettings(freshScene->MAnimations[index]->MName)
+		);
+
+
+		//----- hierarchy
+		Node* root = freshScene->MRootNode;
+		sceneSettings.Root ??= new AssimpSceneImporterHierarchyNodeSettings(root is not null ? root->MName : string.Empty);
+		settingsChanged |= UpdateImportSettingsHierarchyNode(root, sceneSettings.Root);
+
+		return settingsChanged;
+	}
+
+	private unsafe bool UpdateImportSettingsHierarchyNode(
+		Node* node,
+		AssimpSceneImporterHierarchyNodeSettings hierarchyNodeSettings)
+	{
+		bool settingsChanged = false;
+		if (node is null)
+		{
+			return settingsChanged;
+		}
+
+		// children
+		settingsChanged |= ResizeAndUpdateList(
+			ref hierarchyNodeSettings.Children,
+			(int)node->MNumChildren,
+			(child, index) => child.Name != node->MChildren[index]->MName,
+			index => hierarchyNodeSettings.Children![index] =
+				new AssimpSceneImporterHierarchyNodeSettings(node->MChildren[index]->MName)
+		);
+
+		for (uint i = 0; i < node->MNumChildren; ++i)
+		{
+			settingsChanged |= UpdateImportSettingsHierarchyNode(node->MChildren[i],
+				hierarchyNodeSettings.Children![(int)i]);
+		}
+
+		// meshes
+		settingsChanged |= ResizeAndUpdateList(
+			ref hierarchyNodeSettings.Meshes,
+			(int)node->MNumMeshes,
+			(meshIndex, index) => meshIndex != node->MMeshes[index],
+			index => hierarchyNodeSettings.Meshes[index] = (int)node->MMeshes[index]
+		);
+
+		return settingsChanged;
+	}
+
+	private static bool ResizeAndUpdateList<T>(
+		ref List<T>? list,
+		int desiredCount,
+		Func<T, int, bool> needsUpdate,
+		Action<int> update)
+	{
+		bool changed = false;
+
+		list ??= new List<T>();
+		for (int i = 0; i < desiredCount; ++i)
+		{
+			if (i == list.Count)
+			{
+				list.Add(default);
+				update(i);
+				changed = true;
+			}
+			else if (needsUpdate(list[i], i))
+			{
+				update(i);
+				changed = true;
+			}
+		}
+
+		if (list.Count > desiredCount)
+		{
+			list.RemoveRange(desiredCount, list.Count - desiredCount);
+			changed = true;
+		}
+
+		return changed;
+	}
+
+	#endregion Settings
+
+	#region Unused
+
+	public override Scene Load()
+	{
+		throw new NotImplementedException();
+	}
+
+	public override void Save(Scene data)
+	{
+		throw new InvalidOperationException();
+	}
+
+	#endregion Unused
 }

@@ -1,4 +1,5 @@
-﻿using Silk.NET.Assimp;
+﻿using System.Text;
+using Silk.NET.Assimp;
 
 namespace RedHerring.Studio.Import;
 
@@ -48,6 +49,26 @@ internal static class AssimpUtils
         }
         
         return result.ToArray();
+    }
+
+    public static unsafe string MaterialName(Material* material)
+    {
+        if (material->MNumProperties == 0)
+        {
+            return string.Empty;
+        }
+
+        for (int i = 0; i < material->MNumProperties; i++)
+        {
+            var property = material->MProperties[i];
+            if (property->MKey == Silk.NET.Assimp.Assimp.MatkeyName)
+            {
+                string result = Encoding.UTF8.GetString(property->MData, (int)property->MDataLength);
+                return result;
+            }
+        }
+        
+        return string.Empty;
     }
 
     public static TimeSpan TimeToTimeSpan(double time, double ticksPerSecond)

@@ -18,10 +18,10 @@ public class AssimpSceneImporterAnimationSettings
 
 #region Migration
 
-[MigratableInterface(typeof(SceneImporterAnimationSettings))]
+[MigratableInterface(typeof(AssimpSceneImporterAnimationSettings))]
 public interface AssimpSceneImporterAnimationSettingsMigratable;
 
-[Serializable, LatestVersion(typeof(SceneImporterAnimationSettings))]
+[Serializable, LatestVersion(typeof(AssimpSceneImporterAnimationSettings))]
 public class AssimpSceneImporterAnimationSettings_000 : AssimpSceneImporterAnimationSettingsMigratable
 {
     public string Name;

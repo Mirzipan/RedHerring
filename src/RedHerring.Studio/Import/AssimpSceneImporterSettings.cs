@@ -16,7 +16,7 @@ public sealed class AssimpSceneImporterSettings : ImporterSettings
     [ReadOnlyInInspector]
     public List<AssimpSceneImporterMaterialSettings> Materials = new();
     [ReadOnlyInInspector]
-    public List<SceneImporterAnimationSettings> Animations = new();
+    public List<AssimpSceneImporterAnimationSettings> Animations = new();
     [ReadOnlyInInspector]
     public AssimpSceneImporterHierarchyNodeSettings Root = new("Root");
 }
@@ -39,7 +39,7 @@ public class AssimpSceneImporterSettings_000 : ImporterSettings_000, AssimpScene
     [MigrateField]
     public List<AssimpSceneImporterMaterialSettingsMigratable> Materials;
     [MigrateField]
-    public List<SceneImporterAnimationSettingsMigratable> Animations;
+    public List<AssimpSceneImporterAnimationSettingsMigratable> Animations;
 
     public AssimpSceneImporterHierarchyNodeSettingsMigratable Root;
 }

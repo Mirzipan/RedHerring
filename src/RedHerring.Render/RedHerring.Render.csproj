@@ -88,10 +88,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Shared\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Reference Include="OdinSerializer">
         <HintPath>..\Libraries\OdinSerializer\OdinSerializer.dll</HintPath>
       </Reference>
