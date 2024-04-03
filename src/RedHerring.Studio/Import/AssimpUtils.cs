@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Silk.NET.Assimp;
+using Api = Silk.NET.Assimp.Assimp;
 using AssimpMesh = Silk.NET.Assimp.Mesh;
 using AssimpMaterial = Silk.NET.Assimp.Material;
 
@@ -52,24 +53,11 @@ internal static class AssimpUtils
         return result.ToArray();
     }
 
-    public static unsafe string MaterialName(AssimpMaterial* material)
+    public static unsafe string MaterialName(Api api, AssimpMaterial* material)
     {
-        if (material->MNumProperties == 0)
-        {
-            return string.Empty;
-        }
-
-        for (int i = 0; i < material->MNumProperties; i++)
-        {
-            var property = material->MProperties[i];
-            if (property->MKey == Silk.NET.Assimp.Assimp.MatkeyName)
-            {
-                string result = Encoding.UTF8.GetString(property->MData, (int)property->MDataLength);
-                return result;
-            }
-        }
-        
-        return string.Empty;
+        AssimpString aiMaterial = new AssimpString();
+        var result = api.GetMaterialString(material, Api.MaterialNameBase, 0, 0, ref aiMaterial);
+        return result == Return.Success ? aiMaterial.AsString : "Material";
     }
 
     public static TimeSpan TimeToTimeSpan(double time, double ticksPerSecond)
