@@ -1,5 +1,6 @@
 ﻿using System.Text;
-using Silk.NET.Assimp;
+using AssimpMesh = Silk.NET.Assimp.Mesh;
+using AssimpMaterial = Silk.NET.Assimp.Material;
 
 namespace RedHerring.Studio.Import;
 
@@ -9,7 +10,7 @@ internal static class AssimpUtils
     public const int MaxNumberOfColorSets = 8;
     
     // ReSharper disable once InconsistentNaming
-    public static unsafe int UVChannelCount(Mesh* mesh)
+    public static unsafe int UVChannelCount(AssimpMesh* mesh)
     {
         int result = 0;
         while (result < MaxNumberOfTextureCoords && mesh->MTextureCoords[result] != null)
@@ -20,7 +21,7 @@ internal static class AssimpUtils
         return result;
     }
 
-    public static unsafe int ColorChannelCount(Mesh* mesh)
+    public static unsafe int ColorChannelCount(AssimpMesh* mesh)
     {
         int result = 0;
         while (result < MaxNumberOfColorSets && mesh->MColors[result] != null)
@@ -31,7 +32,7 @@ internal static class AssimpUtils
         return result;
     }
     
-    public static unsafe uint[]? UnsignedIndices(Mesh* mesh)
+    public static unsafe uint[]? UnsignedIndices(AssimpMesh* mesh)
     {
         if (mesh->MNumFaces == 0)
         {
@@ -51,7 +52,7 @@ internal static class AssimpUtils
         return result.ToArray();
     }
 
-    public static unsafe string MaterialName(Material* material)
+    public static unsafe string MaterialName(AssimpMaterial* material)
     {
         if (material->MNumProperties == 0)
         {

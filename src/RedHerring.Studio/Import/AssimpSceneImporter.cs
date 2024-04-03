@@ -9,13 +9,15 @@ using Silk.NET.Assimp;
 using Silk.NET.Maths;
 using Veldrid;
 using File = System.IO.File;
-using Scene = Silk.NET.Assimp.Scene;
-using RenderScene = RedHerring.Render.Models.Scene;
+using AssimpScene = Silk.NET.Assimp.Scene;
+using AssimpMesh = Silk.NET.Assimp.Mesh;
+using AssimpMaterial = Silk.NET.Assimp.Material;
+using Scene = RedHerring.Render.Models.Scene;
 
 namespace RedHerring.Studio.Import;
 
 [Importer(ProjectNodeKind.AssetScene)]
-public class AssimpSceneImporter : Importer<Scene>
+public class AssimpSceneImporter : Importer<AssimpScene>
 {
 	private readonly Silk.NET.Assimp.Assimp _assimp = Silk.NET.Assimp.Assimp.GetApi();
 	private readonly AssimpContext _context = new();
@@ -62,9 +64,9 @@ public class AssimpSceneImporter : Importer<Scene>
 
 	#region Private
 
-	private unsafe RenderScene ConvertScene(Scene* scene)
+	private unsafe Scene ConvertScene(AssimpScene* scene)
 	{
-		RenderScene result = new();
+		Scene result = new();
 
 		if (scene->MNumMeshes > 0)
 		{
@@ -91,7 +93,7 @@ public class AssimpSceneImporter : Importer<Scene>
 		return result;
 	}
 
-	private unsafe SceneMesh? ProcessMesh(Scene* scene, Mesh* mesh)
+	private unsafe SceneMesh? ProcessMesh(AssimpScene* scene, AssimpMesh* mesh)
 	{
 		if (mesh->MNumVertices == 0)
 		{
@@ -236,7 +238,7 @@ public class AssimpSceneImporter : Importer<Scene>
 		return result;
 	}
 
-	private unsafe Scene* FreshScene(string filePath, uint importFlags, uint postProcessFlags)
+	private unsafe AssimpScene* FreshScene(string filePath, uint importFlags, uint postProcessFlags)
 	{
 		_context.Clear();
 
@@ -390,12 +392,12 @@ public class AssimpSceneImporter : Importer<Scene>
 
 	#region Unused
 
-	public override Scene Load()
+	public override AssimpScene Load()
 	{
 		throw new NotImplementedException();
 	}
 
-	public override void Save(Scene data)
+	public override void Save(AssimpScene data)
 	{
 		throw new InvalidOperationException();
 	}
