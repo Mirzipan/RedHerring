@@ -2,6 +2,7 @@
 using ImGuiNET;
 using RedHerring.Render.ImGui;
 using RedHerring.Studio.Commands;
+using RedHerring.Studio.Import;
 using RedHerring.Studio.Models.Project.FileSystem;
 using RedHerring.Studio.Models.ViewModels;
 using Gui = ImGuiNET.ImGui;
@@ -198,15 +199,21 @@ public class FilePreview
 
         if (SceneFile.HasExtension(node.Extension))
         {
-            if (node.Meta?.ImporterSettings is not SceneImporterSettings)
+            if (node.Meta?.ImporterSettings is SceneImporterSettings settings)
             {
+                _sceneDescription = new SceneDescription(settings);
+                _kind = FileKind.Scene;
+                _filePath = node.RelativePath;
                 return;
             }
 
-            _sceneDescription = new SceneDescription((node.Meta.ImporterSettings as SceneImporterSettings)!);
-            _kind = FileKind.Scene;
-            _filePath = node.RelativePath;
-            return;
+            if (node.Meta?.ImporterSettings is AssimpSceneImporterSettings assimpSettings)
+            {
+                _sceneDescription = new SceneDescription(assimpSettings);
+                _kind = FileKind.Scene;
+                _filePath = node.RelativePath;
+                return;
+            }
         }
     }
 

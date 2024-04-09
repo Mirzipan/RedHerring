@@ -11,7 +11,7 @@ using Animation = RedHerring.Render.Animations.Animation;
 
 namespace RedHerring.Studio;
 
-[Importer(ProjectNodeKind.AssetScene)]
+//[Importer(ProjectNodeKind.AssetScene)]
 public sealed class SceneImporter : Importer<Assimp.Scene>
 {
 	public override string ReferenceType => nameof(SceneReference);
