@@ -7,7 +7,7 @@ namespace RedHerring.Inputs;
 public static class Interaction
 {
     private static InputDevices _devices = new NullDevices();
-    private static InteractionContext? _context;
+    private static InteractionContext _context = null!;
     private static Processor _processor = new();
 
     #region Lifecycle
@@ -32,17 +32,15 @@ public static class Interaction
     {
         _devices.NextFrame();
 
-        if (_context is not null)
-        {
-            _processor.NextFrame(_context);
-            _context.NextFrame();
-        }
+        _processor.NextFrame(_context);
+        _context.NextFrame();
     }
     
     public static InteractionContext CreateContext()
     {
         var previous = CurrentContext();
         InteractionContext context = new InteractionContext();
+        // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
         CurrentContext(previous ?? context);
         
         return context;
@@ -56,13 +54,13 @@ public static class Interaction
             context = previous;
         }
 
-        CurrentContext(context != previous ? previous : null);
+        CurrentContext(context != previous ? previous : new InteractionContext());
         context.TryDispose();
     }
 
-    public static InteractionContext? CurrentContext() => _context;
+    public static InteractionContext CurrentContext() => _context;
 
-    public static void CurrentContext(InteractionContext? context)
+    public static void CurrentContext(InteractionContext context)
     {
         _context = context;
     }
@@ -77,30 +75,30 @@ public static class Interaction
         set => _devices.Clipboard(value);
     }
     
-    public static Vector2 MousePosition => _context?.MousePosition ?? Vector2.Zero;
-    public static Vector2 MousePositionDelta => _context?.MousePositionDelta ?? Vector2.Zero;
-    public static Vector2 MouseWheelDelta = _context?.MouseWheelDelta ?? Vector2.Zero;
+    public static Vector2 MousePosition => _context.MousePosition;
+    public static Vector2 MousePositionDelta => _context.MousePositionDelta;
+    public static Vector2 MouseWheelDelta => _context.MouseWheelDelta;
     
     public static InputState State(Input input) => InputState.Up;
-    public static bool IsPressed(Input input) => _context?.IsPressed(input) ?? false;
-    public static bool IsDown(Input input) => _context?.IsDown(input) ?? false;
-    public static bool IsReleased(Input input) => _context?.IsReleased(input) ?? false;
+    public static bool IsPressed(Input input) => _context.IsPressed(input);
+    public static bool IsDown(Input input) => _context.IsDown(input);
+    public static bool IsReleased(Input input) => _context.IsReleased(input);
 
-    public static float AnalogValue(Input input) => _context?.AnalogValue(input) ?? 0.00f;
+    public static float AnalogValue(Input input) => _context.AnalogValue(input);
 
     public static Modifier Modifiers() => Modifier.None;
-    public static bool AreDown(Modifier modifiers) => _context?.AreDown(modifiers) ?? false;
-    public static bool Any() => _context?.Any() ?? false;
-    public static bool AnyKeyboardKey() =>  _context?.AnyKeyboardKey() ?? false;
-    public static bool AnyMouseButton() =>  _context?.AnyMouseButton() ?? false;
-    public static bool AnyMouseAxis() =>  _context?.AnyMouseAxis() ?? false;
-    public static bool AnyGamepadButton() =>  _context?.AnyGamepadButton() ?? false;
-    public static bool AnyGamepadAxis() =>  _context?.AnyGamepadAxis() ?? false;
+    public static bool AreDown(Modifier modifiers) => _context.AreDown(modifiers);
+    public static bool Any() => _context.Any();
+    public static bool AnyKeyboardKey() =>  _context.AnyKeyboardKey();
+    public static bool AnyMouseButton() =>  _context.AnyMouseButton();
+    public static bool AnyMouseAxis() =>  _context.AnyMouseAxis();
+    public static bool AnyGamepadButton() =>  _context.AnyGamepadButton();
+    public static bool AnyGamepadAxis() =>  _context.AnyGamepadAxis();
 
-    public static void Pressed(List<Input> result) => _context?.Pressed(result);
-    public static void Down(List<Input> result) => _context?.Down(result);
-    public static void Released(List<Input> result) => _context?.Released(result);
-    public static void Characters(List<char> result) => _context?.Characters(result);
+    public static void Pressed(List<Input> result) => _context.Pressed(result);
+    public static void Down(List<Input> result) => _context.Down(result);
+    public static void Released(List<Input> result) => _context.Released(result);
+    public static void Characters(List<char> result) => _context.Characters(result);
 
     #endregion Queries
 
@@ -113,12 +111,12 @@ public static class Interaction
 
     private static void OnInputChanged(InputChanged evt)
     {
-        _context?.OnInputChanged(evt);
+        _context.OnInputChanged(evt);
     }
 
     private static void OnCharacterTyped(int deviceId, char character)
     {
-        _context?.OnCharacterTyped(deviceId, character);
+        _context.OnCharacterTyped(deviceId, character);
     }
 
     #endregion Manipulation
